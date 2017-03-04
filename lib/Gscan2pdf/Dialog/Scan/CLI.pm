@@ -210,7 +210,7 @@ sub scan_options {
     $self->set( 'cursor', 'wait' );
 
     # Remove any existing pages
-    while ( $self->{notebook}->get_n_pages > 1 ) {
+    while ( $self->{notebook}->get_n_pages > 2 ) {
         $self->{notebook}->remove_page($LAST_PAGE);
     }
 
@@ -517,7 +517,7 @@ sub _update_option_visibility {
     my ( $self, $options, $visible_options, $hboxp ) = @_;
 
     # Show all notebook tabs
-    for ( 1 .. $self->{notebook}->get_n_pages - 1 ) {
+    for ( 2 .. $self->{notebook}->get_n_pages - 1 ) {
         $self->{notebook}->get_nth_page($_)->show_all;
     }
 
@@ -597,7 +597,7 @@ sub _find_visible_group {
     }
     return $self->{option_widgets}{ $options->{array}[$option_number]->{name} }
       if ( $option_number > 0 );
-    return $self->{notebook}->get_nth_page(1);
+    return $self->{notebook}->get_nth_page(2);
 }
 
 # Update the sane option in the thread

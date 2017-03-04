@@ -4561,15 +4561,14 @@ sub add_postprocessing_ocr {
 sub add_postprocessing_options {
     my ($self) = @_;
 
-    # pick up the vbox inside the scrolled window, not the main content area
-    my $vbox = $self->{vbox};
+    my $scwin = Gtk3::ScrolledWindow->new;
 
-    # Frame for post-processing
-    my $framep = Gtk3::Frame->new( __('Post-processing') );
-    $vbox->pack_start( $framep, FALSE, FALSE, 0 );
+    $self->{notebook}->append_page( $scwin, Gtk3::Label->new( __( 'Post-processing' ) ) );
+    $scwin->set_policy( 'automatic', 'automatic' );
+
     my $vboxp = Gtk3::VBox->new;
     $vboxp->set_border_width( $self->style_get('content-area-border') );
-    $framep->add($vboxp);
+    $scwin->add_with_viewport($vboxp);
 
     # Rotate
     my ( $rotate, $side, $side2, $rbutton, $r2button, $comboboxr, $comboboxr2 )
@@ -4704,6 +4703,8 @@ sub add_postprocessing_options {
             }
         }
     );
+
+    #$self->{notebook}->get_nth_page(1)->show_all;
 
     return;
 }

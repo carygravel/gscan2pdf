@@ -126,7 +126,7 @@ sub scan_options {
     my ($self) = @_;
 
     # Remove any existing pages
-    while ( $self->{notebook}->get_n_pages > 1 ) {
+    while ( $self->{notebook}->get_n_pages > 2 ) {
         $self->{notebook}->remove_page($LAST_PAGE);
     }
 
@@ -372,7 +372,7 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
     }
 
     # Show new pages
-    for ( 1 .. $self->{notebook}->get_n_pages - 1 ) {
+    for ( 2 .. $self->{notebook}->get_n_pages - 1 ) {
         $self->{notebook}->get_nth_page($_)->show_all;
     }
 
