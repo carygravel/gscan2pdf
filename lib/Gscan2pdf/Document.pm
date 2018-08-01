@@ -2042,10 +2042,12 @@ sub text_to_datetime {
 
 sub expand_metadata_pattern {
     my (%data) = @_;
-    my ( $dyear, $dmonth, $dday, $dhour, $dmin, $dsec ) =
-      text_to_datetime( $data{docdate}, @{ $data{today_and_now} } );
+    my ( $dyear, $dmonth, $dday, $dhour, $dmin, $dsec ) = @{ $data{docdate} };
     my ( $tyear, $tmonth, $tday, $thour, $tmin, $tsec ) =
       @{ $data{today_and_now} };
+    if ( not defined $dhour ) { $dhour = 0 }
+    if ( not defined $dmin )  { $dmin  = 0 }
+    if ( not defined $dsec )  { $dsec  = 0 }
     if ( not defined $thour ) { $thour = 0 }
     if ( not defined $tmin )  { $tmin  = 0 }
     if ( not defined $tsec )  { $tsec  = 0 }

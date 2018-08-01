@@ -1,9 +1,10 @@
 use warnings;
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
+use Date::Calc qw(Today_and_Now);
 
 BEGIN {
     use_ok('Gscan2pdf::Dialog::Save');
@@ -16,59 +17,47 @@ my $window = Gtk3::Window->new;
 
 ok(
     my $dialog = Gscan2pdf::Dialog::Save->new(
-        title           => 'title',
-        'transient-for' => $window
+        title                       => 'title',
+        'transient-for'             => $window,
+        'meta-datetime'             => [ 2017, 01, 01 ],
+        'select-datetime'           => TRUE,
+        'meta-title'                => 'title',
+        'meta-title-suggestions'    => ['title-suggestion'],
+        'meta-author'               => 'author',
+        'meta-author-suggestions'   => ['author-suggestion'],
+        'meta-subject'              => 'subject',
+        'meta-subject-suggestions'  => ['subject-suggestion'],
+        'meta-keywords'             => 'keywords',
+        'meta-keywords-suggestions' => ['keyword-suggestion'],
     ),
     'Created dialog'
 );
 isa_ok( $dialog, 'Gscan2pdf::Dialog::Save' );
 
-$dialog->add_metadata(
-    {
-        date => {
-            today  => [ 2017, 01, 01 ],
-            offset => 0
-        },
-        title => {
-            default     => 'title',
-            suggestions => ['title-suggestion'],
-        },
-        author => {
-            default     => 'author',
-            suggestions => ['author-suggestion'],
-        },
-        subject => {
-            default     => 'subject',
-            suggestions => ['subject-suggestion'],
-        },
-        keywords => {
-            default     => 'keywords',
-            suggestions => ['keywords-suggestion'],
-        },
-    }
-);
-is( $dialog->{mdwidgets}{date}->get_text,     '2017-01-01', 'date' );
-is( $dialog->{mdwidgets}{author}->get_text,   'author',     'author' );
-is( $dialog->{mdwidgets}{title}->get_text,    'title',      'title' );
-is( $dialog->{mdwidgets}{subject}->get_text,  'subject',    'subject' );
-is( $dialog->{mdwidgets}{keywords}->get_text, 'keywords',   'keywords' );
+$dialog->add_metadata;
+is_deeply( $dialog->get('meta-datetime'), [ 2017, 1, 1, 0, 0, 0 ], 'date' );
+is( $dialog->get('meta-author'),   'author',   'author' );
+is( $dialog->get('meta-title'),    'title',    'title' );
+is( $dialog->get('meta-subject'),  'subject',  'subject' );
+is( $dialog->get('meta-keywords'), 'keywords', 'keywords' );
 
-$dialog = Gscan2pdf::Dialog::Save->new;
-$dialog->set( 'include-time', TRUE );
-$dialog->add_metadata(
-    {
-        date => {
-            today  => [ 2017, 01, 01 ],
-            offset => 0,
-            time   => [ 23,   59, 5 ],
-            now    => FALSE
-        },
-    }
+$dialog = Gscan2pdf::Dialog::Save->new(
+    'include-time'    => TRUE,
+    'meta-datetime'   => [ 2017, 01, 01, 23, 59, 5 ],
+    'select-datetime' => TRUE,
 );
-is(
-    $dialog->{mdwidgets}{date}->get_text,
-    '2017-01-01 23:59:05',
+$dialog->add_metadata;
+is_deeply(
+    $dialog->get('meta-datetime'),
+    [ 2017, 01, 01, 23, 59, 5 ],
     'date and time'
 );
+
+$dialog = Gscan2pdf::Dialog::Save->new(
+    'include-time'  => TRUE,
+    'meta-datetime' => [ 2017, 01, 01, 23, 59, 5 ],
+);
+$dialog->add_metadata;
+is_deeply( $dialog->get('meta-datetime'), [Today_and_Now], 'now' );
 
 __END__

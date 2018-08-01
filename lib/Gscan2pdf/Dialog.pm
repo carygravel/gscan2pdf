@@ -3,7 +3,9 @@ package Gscan2pdf::Dialog;
 use warnings;
 use strict;
 use Gtk3;
-use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
+use Glib 1.220 qw(TRUE FALSE);      # To get TRUE and FALSE
+use Gscan2pdf::PageRange;
+use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
@@ -35,6 +37,14 @@ use Glib::Object::Subclass Gtk3::Window::,
         'VBox which is automatically added to the Gscan2pdf::Dialog', # blurb
         'Gtk3::VBox',                                                 # package
         [qw/readable writable/]                                       # flags
+    ),
+    Glib::ParamSpec->enum(
+        'page-range',                                                 # name
+        'page-range',                                                 # nickname
+        'Either selected or all',                                     #blurb
+        'Gscan2pdf::PageRange::Range',
+        'selected',                                                   # default
+        [qw/readable writable/]                                       #flags
     ),
   ];
 
@@ -94,6 +104,23 @@ sub on_key_press_event {
         $widget->destroy;
     }
     return Gtk3::EVENT_STOP;
+}
+
+# Add a frame and radio buttons to $vbox,
+sub add_page_range {
+    my ($self) = @_;
+    my $frame = Gtk3::Frame->new( __('Page Range') );
+    $self->get('vbox')->pack_start( $frame, FALSE, FALSE, 0 );
+
+    my $pr = Gscan2pdf::PageRange->new;
+    $pr->set_active( $self->get('page-range') );
+    $pr->signal_connect(
+        changed => sub {
+            $self->set( 'page-range', $pr->get_active );
+        }
+    );
+    $frame->add($pr);
+    return;
 }
 
 sub dump_or_stringify {

@@ -2011,48 +2011,16 @@ sub import_files {
     return;
 }
 
-# Add a frame and radio buttons to $vbox,
-sub add_page_range {
-    my ($vbox) = @_;
-    my $frame = Gtk3::Frame->new( __('Page Range') );
-    $vbox->pack_start( $frame, FALSE, FALSE, 0 );
-
-    my $pr = Gscan2pdf::PageRange->new;
-    if ( defined $SETTING{'Page range'} ) {
-        $pr->set_active( $SETTING{'Page range'} );
-    }
-    $pr->signal_connect(
-        changed => sub {
-            $SETTING{'Page range'} = $pr->get_active;
-        }
-    );
-    $frame->add($pr);
-    return;
-}
-
+# Get metadata
 sub update_metadata_settings {
-    my ($dialog)    = @_;
-    my ($mdwidgets) = $dialog->{mdwidgets};
+    my ($dialog) = @_;
 
-    # Get metadata
     for my $name (qw(author title subject keywords)) {
-        if ( not defined $SETTING{"$name-suggestions"} ) {
-            $SETTING{"$name-suggestions"} = [];
-        }
-        $SETTING{$name} =
-          $mdwidgets->{$name}->update( $SETTING{"$name-suggestions"} );
+        $SETTING{$name} = $dialog->get("meta-$name");
+        $SETTING{"$name-suggestions"} = $dialog->get("meta-$name-suggestions");
     }
-
-    if ( $mdwidgets->{button_now}->get_active ) {
-        $mdwidgets->{date}
-          ->set_text( $dialog->datetime_string( Today_and_Now() ) );
-    }
-
-    # the focus-out event validates a new document date before the save button
-    # is pressed, so we can simply take the contents of the field
-    my @datetime =
-      Gscan2pdf::Document::text_to_datetime( $mdwidgets->{date}->get_text );
-    $SETTING{'date offset'} = Delta_Days( Today(), @datetime[ 0 .. 2 ] );
+    my $datetime = $dialog->get('meta-datetime');
+    $SETTING{'date offset'} = Delta_Days( Today(), @{$datetime}[ 0 .. 2 ] );
 
     return;
 }
@@ -2234,15 +2202,27 @@ sub save_dialog {
         title            => __('Save'),
         'hide-on-delete' => TRUE,
         border_width     => $BORDER_WIDTH,
+        'page-range'     => $SETTING{'Page range'},
         'include-time'   => $SETTING{use_time},
+        'meta-datetime' =>
+          [ Add_Delta_Days( Today(), $SETTING{'date offset'} ), Now() ],
+        'select-datetime'           => ( $SETTING{'date offset'} != 0 ),
+        'meta-title'                => $SETTING{'title'},
+        'meta-title-suggestions'    => $SETTING{'title-suggestions'},
+        'meta-author'               => $SETTING{'author'},
+        'meta-author-suggestions'   => $SETTING{'author-suggestions'},
+        'meta-subject'              => $SETTING{'subject'},
+        'meta-subject-suggestions'  => $SETTING{'subject-suggestions'},
+        'meta-keywords'             => $SETTING{'keywords'},
+        'meta-keywords-suggestions' => $SETTING{'keywords-suggestions'},
     );
-    my $vbox = $windowi->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowi->add_page_range;
 
     # Image type ComboBox
     my $hboxi = Gtk3::HBox->new;
+    my $vbox  = $windowi->get('vbox');
     $vbox->pack_start( $hboxi, FALSE, FALSE, 0 );
     my $label = Gtk3::Label->new( __('Image type') );
     $hboxi->pack_start( $label, FALSE, FALSE, 0 );
@@ -2352,35 +2332,7 @@ sub save_dialog {
     $hboxc->pack_end( $combobtc, FALSE, FALSE, 0 );
 
     # metadata options
-    my %metadata = (
-        date => {
-            today  => [ Today() ],
-            offset => $SETTING{'date offset'},
-        },
-        title => {
-            default     => $SETTING{'title'},
-            suggestions => $SETTING{'title-suggestions'},
-        },
-        author => {
-            default     => $SETTING{'author'},
-            suggestions => $SETTING{'author-suggestions'},
-        },
-        subject => {
-            default     => $SETTING{'subject'},
-            suggestions => $SETTING{'subject-suggestions'},
-        },
-        keywords => {
-            default     => $SETTING{'keywords'},
-            suggestions => $SETTING{'keywords-suggestions'},
-        },
-    );
-    if ( $SETTING{use_time} ) {
-        $metadata{date}{time} = [ Now() ];
-        if ( $SETTING{'date offset'} ) {
-            $metadata{date}{now} = TRUE;
-        }
-    }
-    $windowi->add_metadata( \%metadata );
+    $windowi->add_metadata;
 
     # PDF options
     my $vboxp = Gtk3::VBox->new;
@@ -2608,6 +2560,7 @@ sub save_button_clicked_callback {
     ) = @{$data};
 
     # Compile list of pages
+    $SETTING{'Page range'} = $windowi->get('page-range');
     my $list_of_pages = list_of_pages;
 
     # dig out the image type, compression and quality
@@ -2654,7 +2607,7 @@ sub save_button_clicked_callback {
                       $SETTING{'convert whitespace to underscores'},
                     author        => $SETTING{author},
                     title         => $SETTING{title},
-                    docdate       => $windowi->{mdwidgets}{date}->get_text,
+                    docdate       => $windowi->get('meta-datetime'),
                     today_and_now => [ Today_and_Now() ]
                 );
 
@@ -2702,7 +2655,7 @@ sub save_button_clicked_callback {
                   $SETTING{'convert whitespace to underscores'},
                 author        => $SETTING{author},
                 title         => $SETTING{title},
-                docdate       => $windowi->{mdwidgets}{date}->get_text,
+                docdate       => $windowi->get('meta-datetime'),
                 today_and_now => [ Today_and_Now() ]
             );
 
@@ -3312,40 +3265,30 @@ sub email {
         'transient-for'  => $window,
         title            => __('Email as PDF'),
         'hide-on-delete' => TRUE,
-        'border-width'   => $BORDER_WIDTH
+        'border-width'   => $BORDER_WIDTH,
+        'page-range'     => $SETTING{'Page range'},
+        'include-time'   => $SETTING{use_time},
+        'meta-datetime' =>
+          [ Add_Delta_Days( Today(), $SETTING{'date offset'} ), Now() ],
+        'select-datetime'           => ( $SETTING{'date offset'} != 0 ),
+        'meta-title'                => $SETTING{'title'},
+        'meta-title-suggestions'    => $SETTING{'title-suggestions'},
+        'meta-author'               => $SETTING{'author'},
+        'meta-author-suggestions'   => $SETTING{'author-suggestions'},
+        'meta-subject'              => $SETTING{'subject'},
+        'meta-subject-suggestions'  => $SETTING{'subject-suggestions'},
+        'meta-keywords'             => $SETTING{'keywords'},
+        'meta-keywords-suggestions' => $SETTING{'keywords-suggestions'},
     );
-    my $vbox = $windowe->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowe->add_page_range;
 
     # PDF options
-    $windowe->add_metadata(
-        {
-            date => {
-                today  => [ Today() ],
-                offset => $SETTING{'date offset'},
-            },
-            title => {
-                default     => $SETTING{'title'},
-                suggestions => $SETTING{'title-suggestions'},
-            },
-            author => {
-                default     => $SETTING{'author'},
-                suggestions => $SETTING{'author-suggestions'},
-            },
-            subject => {
-                default     => $SETTING{'subject'},
-                suggestions => $SETTING{'subject-suggestions'},
-            },
-            keywords => {
-                default     => $SETTING{'keywords'},
-                suggestions => $SETTING{'keywords-suggestions'},
-            },
-        }
-    );
+    $windowe->add_metadata;
 
     # Compression options
+    my $vbox = $windowe->get('vbox');
     my ( $buttond, $spinbuttond, $combob, $hboxq, $spinbuttonq, @compression )
       = add_pdf_compression($vbox);
 
@@ -3363,6 +3306,7 @@ sub email {
             update_metadata_settings($windowe);
 
             # Compile list of pages
+            $SETTING{'Page range'} = $windowe->get('page-range');
             my $list_of_pages = list_of_pages;
 
             # dig out the compression
@@ -3387,7 +3331,7 @@ sub email {
                   $SETTING{'convert whitespace to underscores'},
                 author        => $SETTING{author},
                 title         => $SETTING{title},
-                docdate       => $windowe->{mdwidgets}{date}->get_text,
+                docdate       => $windowe->get('meta-datetime'),
                 today_and_now => [ Today_and_Now() ]
             );
             if ( $filename =~ /^\s+$/xsm ) { $filename = 'document' }
@@ -4884,13 +4828,13 @@ sub threshold {
         title           => __('Threshold'),
         border_width    => $BORDER_WIDTH
     );
-    my $vbox = $windowt->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowt->add_page_range;
 
     # SpinButton for threshold
     my $hboxt = Gtk3::HBox->new;
+    my $vbox  = $windowt->get('vbox');
     $vbox->pack_start( $hboxt, FALSE, TRUE, 0 );
     my $label = Gtk3::Label->new( __('Threshold') );
     $hboxt->pack_start( $label, FALSE, TRUE, 0 );
@@ -4962,14 +4906,14 @@ sub brightness_contrast {
         title           => __('Brightness / Contrast'),
         border_width    => $BORDER_WIDTH
     );
-    my $vbox = $windowt->get('vbox');
     my ( $hbox, $label );
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowt->add_page_range;
 
     # SpinButton for brightness
     $hbox = Gtk3::HBox->new;
+    my $vbox = $windowt->get('vbox');
     $vbox->pack_start( $hbox, FALSE, TRUE, 0 );
     $label = Gtk3::Label->new( __('Brightness') );
     $hbox->pack_start( $label, FALSE, TRUE, 0 );
@@ -5052,10 +4996,9 @@ sub negate {
         title           => __('Negate'),
         border_width    => $BORDER_WIDTH
     );
-    my $vbox = $windowt->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowt->add_page_range;
 
     # HBox for buttons
     my $hboxb = _hbox_with_apply_cancel_buttons(
@@ -5100,6 +5043,7 @@ sub negate {
         },
         sub { $windowt->destroy }
     );
+    my $vbox = $windowt->get('vbox');
     $vbox->pack_end( $hboxb, FALSE, TRUE, 0 );
     $windowt->show_all;
     return;
@@ -5114,10 +5058,9 @@ sub unsharp {
         title           => __('Unsharp mask'),
         border_width    => $BORDER_WIDTH
     );
-    my $vbox = $windowum->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowum->add_page_range;
 
     my $spinbuttonr = Gtk3::SpinButton->new_with_range( 0, $_100_PERCENT, 1 );
     my $spinbuttons =
@@ -5162,6 +5105,7 @@ sub unsharp {
 
     # grid for layout
     my $grid = Gtk3::Grid->new;
+    my $vbox = $windowum->get('vbox');
     $vbox->pack_start( $grid, TRUE, TRUE, 0 );
 
     for my $row ( 0 .. $#layout ) {
@@ -5280,10 +5224,9 @@ sub crop {
         'hide-on-delete' => TRUE,
         border_width     => $BORDER_WIDTH
     );
-    my $vbox = $windowc->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowc->add_page_range;
 
     $sb_selector_x =
       Gtk3::SpinButton->new_with_range( 0, $current_page->{w}, 1 );
@@ -5309,6 +5252,7 @@ sub crop {
 
     # grid for layout
     my $grid = Gtk3::Grid->new;
+    my $vbox = $windowc->get('vbox');
     $vbox->pack_start( $grid, TRUE, TRUE, 0 );
 
     for my $row ( 0 .. $#layout ) {
@@ -5452,12 +5396,12 @@ sub user_defined_dialog {
         'hide-on-delete' => TRUE,
         border_width     => $BORDER_WIDTH
     );
-    my $vbox = $windowudt->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowudt->add_page_range;
 
     my $hbox = Gtk3::HBox->new;
+    my $vbox = $windowudt->get('vbox');
     $vbox->pack_start( $hbox, FALSE, FALSE, 0 );
     my $label = Gtk3::Label->new( __('Selected tool') );
     $hbox->pack_start( $label, FALSE, TRUE, 0 );
@@ -5593,12 +5537,12 @@ sub unpaper {
         'hide-on-delete' => TRUE,
         border_width     => $BORDER_WIDTH
     );
-    my $vbox = $windowu->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowu->add_page_range;
 
     # add unpaper options
+    my $vbox = $windowu->get('vbox');
     $unpaper->add_options($vbox);
 
     # HBox for buttons
@@ -5741,13 +5685,13 @@ sub ocr_dialog {
         'hide-on-delete' => TRUE,
         border_width     => $BORDER_WIDTH
     );
-    my $vbox = $windowo->get('vbox');
 
     # Frame for page range
-    add_page_range($vbox);
+    $windowo->add_page_range;
 
     # OCR engine selection
     my $hboxe = Gtk3::HBox->new;
+    my $vbox  = $windowo->get('vbox');
     $vbox->pack_start( $hboxe, FALSE, TRUE, 0 );
     my $label = Gtk3::Label->new( __('OCR Engine') );
     $hboxe->pack_start( $label, FALSE, TRUE, 0 );
