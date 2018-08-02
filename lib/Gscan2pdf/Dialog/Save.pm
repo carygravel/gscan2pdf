@@ -106,23 +106,16 @@ sub SET_PROPERTY {
     }
     elsif ( $name =~ /^meta_([^_]+)(_suggestions)?$/xsm ) {
         my $key = $1;
-        if ( defined $2 ) {
-            if ( defined $self->{"meta-$key-widget"} ) {
-                my $completion = $self->{"meta-$key-widget"}->get_completion;
-                my $model      = Gtk3::ListStore->new('Glib::String');
-                $completion->set_model($model);
-                if ( defined $newval ) {
-                    for my $suggestion ( @{$newval} ) {
-                        $model->set( $model->append, 0, $suggestion );
-                    }
+        if ( defined $self->{"meta-$key-widget"} ) {
+            if ( defined $2 ) {
+                $self->{"meta-$key-widget"}->add_to_suggestions($newval);
+            }
+            else {
+                if ( $key eq 'datetime' ) {
+                    $newval = $self->datetime2string( @{$newval} );
                 }
+                $self->{"meta-$key-widget"}->set_text($newval);
             }
-        }
-        elsif ( defined $self->{"meta-$key-widget"} ) {
-            if ( $key eq 'datetime' ) {
-                $newval = $self->datetime2string( @{$newval} );
-            }
-            $self->{"meta-$key-widget"}->set_text($newval);
         }
     }
     return;
@@ -135,25 +128,7 @@ sub GET_PROPERTY {
         my $key = $1;
         if ( defined $self->{"meta-$key-widget"} ) {
             if ( defined $2 ) {
-                my $entry      = $self->{"meta-$key-widget"};
-                my $completion = $entry->get_completion;
-                my $text       = $entry->get_text;
-                my $model      = $completion->get_model;
-                my $flag       = FALSE;
-                my @suggestions;
-                $model->foreach(
-                    sub {
-                        ( $model, my $path, my $iter ) = @_;
-                        my $suggestion = $model->get( $iter, 0 );
-                        push @suggestions, $suggestion;
-                        if ( $suggestion eq $text ) { $flag = TRUE }
-                    }
-                );
-                if ( not $flag ) {
-                    $model->set( $model->append, 0, $text );
-                    push @suggestions, $text;
-                }
-                $self->{$name} = \@suggestions;
+                $self->{$name} = $self->{"meta-$key-widget"}->get_suggestions;
             }
             else {
                 $self->{$name} = $self->{"meta-$key-widget"}->get_text;
@@ -170,6 +145,10 @@ sub GET_PROPERTY {
                             )
                         ];
                     }
+                }
+                elsif ( $self->{$name} ne $EMPTY ) {
+                    $self->{"meta-$key-widget"}
+                      ->add_to_suggestions( [ $self->{$name} ] );
                 }
             }
         }

@@ -20,7 +20,7 @@ BEGIN {
 }
 
 sub new {
-    my ( $class, $default, $suggestions ) = @_;
+    my ( $class, $text, $suggestions ) = @_;
     my $self       = Gtk3::Entry->new;
     my $completion = Gtk3::EntryCompletion->new;
     $completion->set_inline_completion(TRUE);
@@ -28,38 +28,47 @@ sub new {
     $self->set_completion($completion);
     my $model = Gtk3::ListStore->new('Glib::String');
     $completion->set_model($model);
-
-    if ( defined $suggestions ) {
-        for my $suggestion ( @{$suggestions} ) {
-            $model->set( $model->append, 0, $suggestion );
-        }
-    }
     $self->set_activates_default(TRUE);
-    if ( defined $default ) { $self->set_text($default) }
     bless $self, $class;
+    if ( defined $text )        { $self->set_text($text) }
+    if ( defined $suggestions ) { $self->add_to_suggestions($suggestions) }
     return $self;
 }
 
-sub update {
-    my ( $self, $suggestions ) = @_;
-    my $text       = $self->get_text;
+sub get_suggestions {
+    my ($self) = @_;
     my $completion = $self->get_completion;
-    my $model      = $completion->get_model;
-    my $flag       = FALSE;
-    my $iter       = $model->get_iter_first;
-    $model->foreach(
+    my @suggestions;
+    $completion->get_model->foreach(
         sub {
             my ( $model, $path, $iter ) = @_;
             my $suggestion = $model->get( $iter, 0 );
-            if ( $suggestion eq $text ) { $flag = TRUE }
-            return $flag;    # FALSE=continue
+            push @suggestions, $suggestion;
+            return FALSE;    # FALSE=continue
         }
     );
-    if ( not $flag ) {
-        $model->set( $model->append, 0, $text );
-        push @{$suggestions}, $text;
+    return \@suggestions;
+}
+
+sub add_to_suggestions {
+    my ( $self, $suggestions ) = @_;
+    my $completion = $self->get_completion;
+    my $model      = $completion->get_model;
+    for my $text ( @{$suggestions} ) {
+        my $flag = FALSE;
+        $model->foreach(
+            sub {
+                ( $model, my $path, my $iter ) = @_;
+                my $suggestion = $model->get( $iter, 0 );
+                if ( $suggestion eq $text ) { $flag = TRUE }
+                return $flag;    # FALSE=continue
+            }
+        );
+        if ( not $flag ) {
+            $model->set( $model->append, 0, $text );
+        }
     }
-    return $text;
+    return;
 }
 
 1;
