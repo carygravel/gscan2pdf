@@ -119,8 +119,7 @@ $dialog->{signal} = $dialog->signal_connect(
                 $loop->quit;
             }
         );
-        Gscan2pdf::Dialog::Scan::set_combobox_by_text( $dialog->{combobp},
-            'Manual' );
+        $dialog->{combobp}->set_active_by_text('Manual');
         $loop->run unless ($flag);
 
         $dialog->add_profile(

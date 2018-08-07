@@ -9,6 +9,7 @@ use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 use Storable qw(dclone);
 use feature 'switch';
+use Gscan2pdf::ComboBoxText;
 use Gscan2pdf::Dialog;
 use Gscan2pdf::Scanner::Options;
 use Gscan2pdf::Scanner::Profile;
@@ -524,7 +525,7 @@ sub INIT_INSTANCE {
     my $vboxsp = Gtk3::VBox->new;
     $vboxsp->set_border_width($border_width);
     $framesp->add($vboxsp);
-    $self->{combobsp} = Gtk3::ComboBoxText->new;
+    $self->{combobsp} = Gscan2pdf::ComboBoxText->new;
     $self->{combobsp}->signal_connect(
         changed => sub {
             $self->{num_reloads} = 0;    # num-reloads is read-only
@@ -583,7 +584,7 @@ sub _add_device_combobox {
     $self->{hboxd} = Gtk3::HBox->new;
     my $labeld = Gtk3::Label->new( __('Device') );
     $self->{hboxd}->pack_start( $labeld, FALSE, FALSE, 0 );
-    $self->{combobd} = Gtk3::ComboBoxText->new;
+    $self->{combobd} = Gscan2pdf::ComboBoxText->new;
     $self->{combobd}->append_text( __('Rescan for devices') );
 
     $self->{combobd_changed_signal} = $self->{combobd}->signal_connect(
@@ -609,8 +610,7 @@ sub _add_device_combobox {
             if ( defined $device and $device ne $EMPTY ) {
                 for ( @{$device_list} ) {
                     if ( $_->{name} eq $device ) {
-                        Gscan2pdf::Dialog::Scan::set_combobox_by_text(
-                            $self->{combobd}, $_->{label} );
+                        $self->{combobd}->set_active_by_text( $_->{label} );
                         $self->scan_options($device);
                         return;
                     }
@@ -771,7 +771,7 @@ sub SET_PROPERTY {
                     'changed-paper' => sub {
                         $self->signal_handler_disconnect($signal);
                         my $paper = defined $newval ? $newval : __('Manual');
-                        set_combobox_by_text( $self->{combobp}, $paper );
+                        $self->{combobp}->set_active_by_text($paper);
                         if ( defined $logger ) {
                             $logger->debug("Finished$msg");
                         }
@@ -792,7 +792,7 @@ sub SET_PROPERTY {
                 $signal = $self->signal_connect(
                     'changed-profile' => sub {
                         $self->signal_handler_disconnect($signal);
-                        set_combobox_by_text( $self->{combobsp}, $newval );
+                        $self->{combobsp}->set_active_by_text($newval);
                         if ( defined $logger ) {
                             $logger->debug("Finished$msg");
                         }
@@ -1006,7 +1006,7 @@ sub set_device_list {
     $self->{combobd}->signal_handler_block( $self->{combobd_changed_signal} );
 
     # Remove all entries apart from rescan
-    my $num_rows = get_combobox_num_rows( $self->{combobd} );
+    my $num_rows = $self->{combobd}->get_num_rows;
     while ( $num_rows-- > 1 ) {
         $self->{combobd}->remove(0);
     }
@@ -1110,7 +1110,7 @@ sub create_paper_widget {
         my $label = Gtk3::Label->new( __('Paper size') );
         $hboxp->pack_start( $label, FALSE, FALSE, 0 );
 
-        $self->{combobp} = Gtk3::ComboBoxText->new;
+        $self->{combobp} = Gscan2pdf::ComboBoxText->new;
         $self->{combobp}->append_text( __('Manual') );
         $self->{combobp}->append_text( __('Edit') );
         $self->{combobp}
@@ -1368,7 +1368,7 @@ sub set_paper_formats {
     if ( defined $combobp ) {
 
         # Remove all formats, leaving Manual and Edit
-        my $n = get_combobox_num_rows($combobp);
+        my $n = $combobp->get_num_rows;
         while ( $n-- > 2 ) { $combobp->remove(0) }
 
         $self->{ignored_paper_formats} = ();
@@ -1387,7 +1387,7 @@ sub set_paper_formats {
         # Set the combobox back from Edit to the previous value
         my $paper = $self->get('paper');
         if ( not defined $paper ) { $paper = __('Manual') }
-        set_combobox_by_text( $combobp, $paper );
+        $combobp->set_active_by_text($paper);
     }
     return;
 }
@@ -1638,7 +1638,7 @@ sub edit_paper {
         clicked => sub {
 
             # Set the combobox back from Edit to the previous value
-            set_combobox_by_text( $combobp, $self->get('paper') );
+            $combobp->set_active_by_text( $self->get('paper') );
 
             $window->destroy;
         }
@@ -1652,8 +1652,7 @@ sub edit_paper {
 sub save_current_profile {
     my ( $self, $name ) = @_;
     $self->add_profile( $name, $self->{current_scan_options} );
-    $self->{combobsp}
-      ->set_active( get_combobox_num_rows( $self->{combobsp} ) - 1 );
+    $self->{combobsp}->set_active( $self->{combobsp}->get_num_rows - 1 );
     return;
 }
 
@@ -1677,26 +1676,12 @@ sub add_profile {
     # we get strange action-at-a-distance problems
     $self->{profiles}{$name} = dclone($profile);
 
-    _combobox_remove_item_by_text( $self->{combobsp}, $name );
+    $self->{combobsp}->remove_item_by_text($name);
 
     $self->{combobsp}->append_text($name);
     $logger->debug( "Saved profile '$name':",
         Dumper( $self->{profiles}{$name}->get_data ) );
     $self->signal_emit( 'added-profile', $name, $self->{profiles}{$name} );
-    return;
-}
-
-sub _combobox_remove_item_by_text {
-    my ( $combobox, $text ) = @_;
-    if ( defined $text ) {
-        my $i = get_combobox_by_text( $combobox, $text );
-        if ( $i > $NO_INDEX ) {
-            if ( $combobox->get_active == $i ) {
-                $combobox->set_active($NO_INDEX);
-            }
-            $combobox->remove($i);
-        }
-    }
     return;
 }
 
@@ -1747,60 +1732,9 @@ sub set_profile {
 sub remove_profile {
     my ( $self, $name ) = @_;
     if ( defined $name and defined $self->{profiles}{$name} ) {
-        _combobox_remove_item_by_text( $self->{combobsp}, $name );
+        $self->{combobsp}->remove_item_by_text($name);
         $self->signal_emit( 'removed-profile', $name );
         delete $self->{profiles}{$name};
-    }
-    return;
-}
-
-sub get_combobox_num_rows {
-    my ($combobox) = @_;
-    my $i = 0;
-    if ( defined $combobox and defined( $combobox->get_model ) ) {
-        $combobox->get_model->foreach(
-            sub {
-                ++$i;
-                return FALSE;    # continue the foreach()
-            }
-        );
-    }
-    return $i;
-}
-
-sub get_combobox_by_text {
-    my ( $combobox, $text ) = @_;
-    my $o = $NO_INDEX;
-    my $i = 0;
-    if (    defined $combobox
-        and defined( $combobox->get_model )
-        and defined $text )
-    {
-        $combobox->get_model->foreach(
-            sub {
-                my ( $model, $path, $iter ) = @_;
-                if ( $model->get( $iter, 0 ) eq $text ) {
-                    $o = $i;
-                    return TRUE;    # found - stop the foreach()
-                }
-                else {
-                    ++$i;
-                    return FALSE;    # not found - continue the foreach()
-                }
-            }
-        );
-    }
-    return $o;
-}
-
-sub set_combobox_by_text {
-    my ( $combobox, $text ) = @_;
-    if ( defined $combobox ) {
-        my $index = get_combobox_by_text( $combobox, $text );
-        if ( $index > $NO_INDEX or not defined $text ) {
-            $combobox->set_active($index);
-            return TRUE;
-        }
     }
     return;
 }

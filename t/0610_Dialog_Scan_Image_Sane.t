@@ -125,13 +125,8 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     },
                     'new added-profile profile'
                 );
-                is(
-                    Gscan2pdf::Dialog::Scan::get_combobox_num_rows(
-                        $dialog->{combobsp}
-                    ),
-                    1,
-                    'replaced entry in combobox'
-                );
+                is( $dialog->{combobsp}->get_num_rows,
+                    1, 'replaced entry in combobox' );
             }
         );
         $dialog->add_profile(
@@ -513,13 +508,8 @@ $dialog->{signal} = $dialog->signal_connect(
             'add model field if missing'
         );
 
-        is(
-            Gscan2pdf::Dialog::Scan::get_combobox_num_rows(
-                $dialog->{combobd}
-            ),
-            3,
-            'we still have the rescan item'
-        );
+        is( $dialog->{combobd}->get_num_rows,
+            3, 'we still have the rescan item' );
 
         $dialog->{signal} = $dialog->signal_connect(
             'changed-device' => sub {

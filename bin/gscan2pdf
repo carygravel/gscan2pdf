@@ -2170,10 +2170,10 @@ sub add_pdf_compression {
 
   # Set up quality spinbutton here so that it can be shown or hidden by callback
     my ( $hboxq, $spinbuttonq ) = add_quality_spinbutton($vbox);
-    my $combob = combobox_from_array(@compression);
+    my $combob = Gscan2pdf::ComboBoxText->new_from_array(@compression);
     $combob->signal_connect(
         changed => sub {
-            if ( $compression[ $combob->get_active ][0] eq 'jpg' ) {
+            if ( $combob->get_active_index eq 'jpg' ) {
                 $hboxq->show_all;
             }
             else {
@@ -2181,7 +2181,7 @@ sub add_pdf_compression {
             }
         }
     );
-    combobox_set_active( $combob, $SETTING{'pdf compression'}, @compression );
+    $combob->set_active_index( $SETTING{'pdf compression'} );
     $hbox->pack_end( $combob, FALSE, FALSE, 0 );
 
     return ( $button, $spinbutton, $combob, $hboxq, $spinbuttonq,
@@ -2282,8 +2282,8 @@ sub save_dialog {
             push @ps_backend, $backend;
         }
     }
-    my $combops = combobox_from_array(@ps_backend);
-    combobox_set_active( $combops, $SETTING{ps_backend}, @ps_backend );
+    my $combops = Gscan2pdf::ComboBoxText->new_from_array(@ps_backend);
+    $combops->set_active_index( $SETTING{ps_backend} );
     $hboxps->pack_end( $combops, TRUE, TRUE, 0 );
 
     my @tiff_compression = (
@@ -2315,10 +2315,10 @@ sub save_dialog {
     my ( $hboxtq, $spinbuttontq ) = add_quality_spinbutton($vbox);
 
     # Fill compression ComboBox
-    my $combobtc = combobox_from_array(@tiff_compression);
+    my $combobtc = Gscan2pdf::ComboBoxText->new_from_array(@tiff_compression);
     $combobtc->signal_connect(
         changed => sub {
-            if ( $tiff_compression[ $combobtc->get_active ][0] eq 'jpeg' ) {
+            if ( $combobtc->get_active_index eq 'jpeg' ) {
                 $hboxtq->show_all;
             }
             else {
@@ -2327,8 +2327,7 @@ sub save_dialog {
             }
         }
     );
-    combobox_set_active( $combobtc, $SETTING{'tiff compression'},
-        @tiff_compression );
+    $combobtc->set_active_index( $SETTING{'tiff compression'} );
     $hboxc->pack_end( $combobtc, FALSE, FALSE, 0 );
 
     # metadata options
@@ -2373,12 +2372,12 @@ sub save_dialog {
         }
     }
     @fonts = sort { $a->[1] cmp $b->[1] } @fonts;
-    my $combof = combobox_from_array(@fonts);
-    combobox_set_active( $combof, $SETTING{'pdf font'}, @fonts );
+    my $combof = Gscan2pdf::ComboBoxText->new_from_array(@fonts);
+    $combof->set_active_index( $SETTING{'pdf font'} );
     $hboxf->pack_start( $combof, FALSE, FALSE, 0 );
 
     # Fill image type ComboBox
-    my $combobi = combobox_from_array(@type);
+    my $combobi = Gscan2pdf::ComboBoxText->new_from_array(@type);
     $combobi->signal_connect(
         changed => \&image_type_changed_callback,
         [
@@ -2387,7 +2386,7 @@ sub save_dialog {
             $combobtc, $hboxtq, $hboxps, \@ps_backend,
         ]
     );
-    combobox_set_active( $combobi, $SETTING{'image type'}, @type );
+    $combobi->set_active_index( $SETTING{'image type'} );
     $hboxi->pack_end( $combobi, FALSE, FALSE, 0 );
 
     # Post-save hook
@@ -3841,7 +3840,7 @@ sub add_postprocessing_rotate {
         [ 'facing',  __('Facing side'),  __('Facing side.') ],
         [ 'reverse', __('Reverse side'), __('Reverse side.') ],
     );
-    $rotate_side_cmbx = combobox_from_array(@side);
+    $rotate_side_cmbx = Gscan2pdf::ComboBoxText->new_from_array(@side);
     $rotate_side_cmbx->set_tooltip_text( __('Select side to rotate') );
     $hboxr->pack_start( $rotate_side_cmbx, TRUE, TRUE, 0 );
     my @rotate = (
@@ -3852,7 +3851,7 @@ sub add_postprocessing_rotate {
             __('Rotate image 90 degrees anticlockwise.')
         ],
     );
-    my $comboboxr = combobox_from_array(@rotate);
+    my $comboboxr = Gscan2pdf::ComboBoxText->new_from_array(@rotate);
     $comboboxr->set_tooltip_text( __('Select direction of rotation') );
     $hboxr->pack_end( $comboboxr, TRUE, TRUE, 0 );
 
@@ -3865,7 +3864,7 @@ sub add_postprocessing_rotate {
     $rotate_side_cmbx2 = Gtk3::ComboBoxText->new;
     $rotate_side_cmbx2->set_tooltip_text( __('Select side to rotate') );
     $hboxr->pack_start( $rotate_side_cmbx2, TRUE, TRUE, 0 );
-    my $comboboxr2 = combobox_from_array(@rotate);
+    my $comboboxr2 = Gscan2pdf::ComboBoxText->new_from_array(@rotate);
     $comboboxr2->set_tooltip_text( __('Select direction of rotation') );
     $hboxr->pack_end( $comboboxr2, TRUE, TRUE, 0 );
 
@@ -3911,28 +3910,27 @@ sub add_postprocessing_rotate {
     );
 
     # In case it isn't set elsewhere
-    combobox_set_active( $comboboxr2, $_90_DEGREES, @rotate );
+    $comboboxr2->set_active_index($_90_DEGREES);
 
     if ( $SETTING{'rotate facing'} or $SETTING{'rotate reverse'} ) {
         $rbutton->set_active(TRUE);
     }
     if ( $SETTING{'rotate facing'} == $SETTING{'rotate reverse'} ) {
-        combobox_set_active( $rotate_side_cmbx, 'both', @side );
-        combobox_set_active( $comboboxr, $SETTING{'rotate facing'}, @rotate );
+        $rotate_side_cmbx->set_active_index('both');
+        $comboboxr->set_active_index( $SETTING{'rotate facing'} );
     }
     elsif ( $SETTING{'rotate facing'} ) {
-        combobox_set_active( $rotate_side_cmbx, 'facing', @side );
-        combobox_set_active( $comboboxr, $SETTING{'rotate facing'}, @rotate );
+        $rotate_side_cmbx->set_active_index('facing');
+        $comboboxr->set_active_index( $SETTING{'rotate facing'} );
         if ( $SETTING{'rotate reverse'} ) {
             $r2button->set_active(TRUE);
-            combobox_set_active( $rotate_side_cmbx2, 'reverse', @side2 );
-            combobox_set_active( $comboboxr2, $SETTING{'rotate reverse'},
-                @rotate );
+            $rotate_side_cmbx2->set_active_index('reverse');
+            $comboboxr2->set_active_index( $SETTING{'rotate reverse'} );
         }
     }
     else {
-        combobox_set_active( $rotate_side_cmbx, 'reverse', @side );
-        combobox_set_active( $comboboxr, $SETTING{'rotate reverse'}, @rotate );
+        $rotate_side_cmbx->set_active_index('reverse');
+        $comboboxr->set_active_index( $SETTING{'rotate reverse'} );
     }
     return ( \@rotate, \@side, \@side2, $rbutton, $r2button,
         $comboboxr, $comboboxr2 );
@@ -3963,8 +3961,8 @@ sub add_udt_combobox {
     for ( @{ $SETTING{user_defined_tools} } ) {
         push @toolarray, [ $_, $_ ];
     }
-    my $combobox = combobox_from_array(@toolarray);
-    combobox_set_active( $combobox, $SETTING{current_udt}, @toolarray );
+    my $combobox = Gscan2pdf::ComboBoxText->new_from_array(@toolarray);
+    $combobox->set_active_index( $SETTING{current_udt} );
     $hbox->pack_start( $combobox, TRUE, TRUE, 0 );
     return $combobox;
 }
@@ -3983,7 +3981,7 @@ sub add_postprocessing_ocr {
         $obutton->set_active(TRUE);
     }
     $hboxo->pack_start( $obutton, TRUE, TRUE, 0 );
-    my $comboboxe = combobox_from_array(@ocr_engine);
+    my $comboboxe = Gscan2pdf::ComboBoxText->new_from_array(@ocr_engine);
     $comboboxe->set_tooltip_text( __('Select OCR engine') );
     $hboxo->pack_end( $comboboxe, TRUE, TRUE, 0 );
     my ( $comboboxtl, $hboxtl, @tesslang, $comboboxcl, $hboxcl, @cflang );
@@ -4027,7 +4025,7 @@ sub add_postprocessing_ocr {
             }
         );
     }
-    combobox_set_active( $comboboxe, $SETTING{'ocr engine'}, @ocr_engine );
+    $comboboxe->set_active_index( $SETTING{'ocr engine'} );
 
     my $cbto = Gtk3::CheckButton->new_with_label( __('Threshold before OCR') );
     $cbto->set_tooltip_text(
@@ -5587,39 +5585,6 @@ sub unpaper {
     return;
 }
 
-# Create a combobox from the second column of an array
-
-sub combobox_from_array {
-    my (@array) = @_;
-
-    # Fill ComboBox
-    my $combobox = Gtk3::ComboBoxText->new;
-    for (@array) {
-        $combobox->append_text( $_->[1] );
-    }
-    return $combobox;
-}
-
-# Set the current active item of a combobox
-# based on the first column of an array
-
-sub combobox_set_active {
-    my ( $combobox, $default, @array ) = @_;
-    my $i = 0;
-    my $o = 0;
-    if ( defined $default ) {
-        for (@array) {
-            if ( defined $_->[0] and $_->[0] eq $default ) {
-                $o = $i;
-                last;
-            }
-            ++$i;
-        }
-    }
-    $combobox->set_active($o);
-    return;
-}
-
 # Add hbox for tesseract languages
 
 sub add_tess_languages {
@@ -5642,8 +5607,8 @@ sub add_tess_languages {
         $logger->info('No tesseract languages found');
     }
 
-    my $combobox = combobox_from_array(@tesslang);
-    combobox_set_active( $combobox, $SETTING{'ocr language'}, @tesslang );
+    my $combobox = Gscan2pdf::ComboBoxText->new_from_array(@tesslang);
+    $combobox->set_active_index( $SETTING{'ocr language'} );
     $hbox->pack_end( $combobox, FALSE, TRUE, 0 );
     return $hbox, $combobox, @tesslang;
 }
@@ -5664,8 +5629,8 @@ sub add_cf_languages {
         push @lang, [ $_, __( ${ Gscan2pdf::Cuneiform->languages }{$_} ) ];
     }
 
-    my $combobox = combobox_from_array(@lang);
-    combobox_set_active( $combobox, $SETTING{'ocr language'}, @lang );
+    my $combobox = Gscan2pdf::ComboBoxText->new_from_array(@lang);
+    $combobox->set_active_index( $SETTING{'ocr language'} );
     $hbox->pack_end( $combobox, FALSE, TRUE, 0 );
     return $hbox, $combobox, @lang;
 }
@@ -5695,8 +5660,8 @@ sub ocr_dialog {
     $vbox->pack_start( $hboxe, FALSE, TRUE, 0 );
     my $label = Gtk3::Label->new( __('OCR Engine') );
     $hboxe->pack_start( $label, FALSE, TRUE, 0 );
-    my $combobe = combobox_from_array(@ocr_engine);
-    combobox_set_active( $combobe, $SETTING{'ocr engine'}, @ocr_engine );
+    my $combobe = Gscan2pdf::ComboBoxText->new_from_array(@ocr_engine);
+    $combobe->set_active_index( $SETTING{'ocr engine'} );
     $hboxe->pack_end( $combobe, FALSE, TRUE, 0 );
     my ( $comboboxtl, $hboxtl, @tesslang, $comboboxcl, $hboxcl, @cflang );
 
@@ -6289,7 +6254,7 @@ sub _preferences_scan_options {
         push @frontends,
           [ 'scanadf', __('scanadf'), __('Scan using the scanadf frontend.') ];
     }
-    my $combob = combobox_from_array(@frontends);
+    my $combob = Gscan2pdf::ComboBoxText->new_from_array(@frontends);
     $hbox->set_tooltip_text( __('Interface used for scanner access') );
     $hbox->pack_end( $combob, TRUE, TRUE, 0 );
 
@@ -6486,7 +6451,7 @@ sub _preferences_scan_options {
             $oframe->set_sensitive( not $libsane_active );
         }
     );
-    combobox_set_active( $combob, $SETTING{frontend}, @frontends );
+    $combob->set_active_index( $SETTING{frontend} );
     return $vbox, \@frontends, $combob, $preentry, $cbc, $cbo, $blacklist,
       $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages;
 }
@@ -6637,8 +6602,8 @@ sub _preferences_general_options {
             __('Append the OCR output to the text buffer.')
         ],
     );
-    my $comboo = combobox_from_array(@ocr_function);
-    combobox_set_active( $comboo, $SETTING{'OCR output'}, @ocr_function );
+    my $comboo = Gscan2pdf::ComboBoxText->new_from_array(@ocr_function);
+    $comboo->set_active_index( $SETTING{'OCR output'} );
     $hbox->pack_end( $comboo, TRUE, TRUE, 0 );
 
     # Manage user-defined tools
@@ -6647,10 +6612,9 @@ sub _preferences_general_options {
     my $vboxt = Gtk3::VBox->new;
     $vboxt->set_border_width($BORDER_WIDTH);
     $frame->add($vboxt);
-    my $udtools = [];
 
     for my $tool ( @{ $SETTING{user_defined_tools} } ) {
-        add_user_defined_tool_entry( $vboxt, [], $tool, $udtools );
+        add_user_defined_tool_entry( $vboxt, [], $tool );
     }
     my $abutton = Gtk3::Button->new_from_stock('gtk-add');
     $vboxt->pack_start( $abutton, TRUE, TRUE, 0 );
@@ -6659,11 +6623,11 @@ sub _preferences_general_options {
             add_user_defined_tool_entry(
                 $vboxt,
                 [ $comboboxudt, $windows->{comboboxudt} ],
-                'my-tool %i %o', $udtools
+                'my-tool %i %o'
             );
             $vboxt->reorder_child( $abutton, $EMPTY_LIST );
             update_list_user_defined_tools( $vboxt,
-                [ $comboboxudt, $windows->{comboboxudt} ], $udtools );
+                [ $comboboxudt, $windows->{comboboxudt} ] );
         }
     );
     return $vbox, $fileentry, $cbw, $cbtz, $cbtm, $cbts, $tmpentry,
@@ -6701,15 +6665,14 @@ sub _cb_array_append {
 
 # Update list of user-defined tools
 sub update_list_user_defined_tools {
-    my ( $vbox, $combobox_array, $udtools ) = @_;
+    my ( $vbox, $combobox_array ) = @_;
     my (@list);
-    while ( $#{$udtools} > $EMPTY_LIST ) {
-        for my $combobox ( @{$combobox_array} ) {
-            if ( defined $combobox ) {
+    for my $combobox ( @{$combobox_array} ) {
+        if ( defined $combobox ) {
+            while ( $combobox->get_num_rows > 0 ) {
                 $combobox->remove(0);
             }
         }
-        pop @{$udtools};
     }
     for my $hbox ( $vbox->get_children ) {
         if ( $hbox->isa('Gtk3::HBox') ) {
@@ -6717,7 +6680,6 @@ sub update_list_user_defined_tools {
                 if ( $widget->isa('Gtk3::Entry') ) {
                     my $text = $widget->get_text;
                     push @list, $text;
-                    push @{$udtools}, [ $text, $text ];
                     _cb_array_append( $combobox_array, $text );
                 }
             }
@@ -6727,8 +6689,7 @@ sub update_list_user_defined_tools {
     update_post_save_hooks();
     for my $combobox ( @{$combobox_array} ) {
         if ( defined $combobox ) {
-            combobox_set_active( $combobox, $SETTING{current_udt},
-                @{$udtools} );
+            $combobox->set_active_by_text( $SETTING{current_udt} );
         }
     }
     return;
@@ -6736,16 +6697,15 @@ sub update_list_user_defined_tools {
 
 # Add user-defined tool entry
 sub add_user_defined_tool_entry {
-    my ( $vbox, $combobox_array, $tool, $udtools ) = @_;
+    my ( $vbox, $combobox_array, $tool ) = @_;
     _cb_array_append( $combobox_array, $tool );
-    push @{$udtools}, [ $tool, $tool ];
     my $hbox = Gtk3::HBox->new;
     $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
     my $entry = Gtk3::Entry->new;
     $entry->set_text($tool);
     $entry->signal_connect(
         changed => sub {
-            update_list_user_defined_tools( $vbox, $combobox_array, $udtools );
+            update_list_user_defined_tools( $vbox, $combobox_array );
             ()    # this callback must return either 2 or 0 items.
         }
     );
@@ -6761,7 +6721,7 @@ sub add_user_defined_tool_entry {
     $button->signal_connect(
         clicked => sub {
             $hbox->destroy;
-            update_list_user_defined_tools( $vbox, $combobox_array, $udtools );
+            update_list_user_defined_tools( $vbox, $combobox_array );
         }
     );
     $hbox->pack_end( $button, FALSE, FALSE, 0 );
@@ -6775,12 +6735,7 @@ sub update_post_save_hooks {
         if ( defined $windowi->{comboboxpsh} ) {
 
             # empty combobox
-            for (
-                1 .. Gscan2pdf::Dialog::Scan::get_combobox_num_rows(
-                    $windowi->{comboboxpsh}
-                )
-              )
-            {
+            for ( 1 .. $windowi->{comboboxpsh}->get_num_rows ) {
                 $windowi->{comboboxpsh}->remove(0);
             }
         }
@@ -6790,15 +6745,12 @@ sub update_post_save_hooks {
         }
 
         # fill it again
-        my @pshooks;
         for my $tool ( @{ $SETTING{user_defined_tools} } ) {
             if ( $tool !~ /%o/xsm ) {
-                push @pshooks, [ $tool, $tool ];
                 $windowi->{comboboxpsh}->append_text($tool);
             }
         }
-        combobox_set_active( $windowi->{comboboxpsh},
-            $SETTING{current_psh}, @pshooks );
+        $windowi->{comboboxpsh}->set_active_by_text( $SETTING{current_psh} );
     }
     return;
 }

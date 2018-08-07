@@ -304,7 +304,7 @@ $dialog->set( 'device', 'test' );
 $dialog->scan_options;
 Gtk3->main;
 
-is( Gscan2pdf::Dialog::Scan::get_combobox_num_rows( $dialog->{combobp} ),
+is( $dialog->{combobp}->get_num_rows,
     3, 'available paper reapplied after setting/changing device' );
 is( $dialog->{combobp}->get_active_text,
     'Manual', 'paper combobox has a value' );
