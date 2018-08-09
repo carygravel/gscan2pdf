@@ -60,4 +60,11 @@ $dialog = Gscan2pdf::Dialog::Save->new(
 $dialog->add_metadata;
 is_deeply( $dialog->get('meta-datetime'), [Today_and_Now], 'now' );
 
+$dialog = Gscan2pdf::Dialog::Save->new(
+    'image-types' => [qw(pdf gif jpg png pnm ps tif txt hocr session)],
+    'ps-backends' => [qw(libtiff pdf2ps pdftops)],
+);
+$dialog->add_metadata;
+$dialog->add_image_type;
+
 __END__

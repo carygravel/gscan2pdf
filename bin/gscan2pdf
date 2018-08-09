@@ -2103,91 +2103,6 @@ sub save_pdf {
     return;
 }
 
-# Set up quality spinbutton here so that it can be shown or hidden by callback
-
-sub add_quality_spinbutton {
-    my ($vbox) = @_;
-    my $hbox = Gtk3::HBox->new;
-    $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
-    my $label = Gtk3::Label->new( __('JPEG Quality') );
-    $hbox->pack_start( $label, FALSE, FALSE, 0 );
-    my $spinbutton = Gtk3::SpinButton->new_with_range( 1, $_100_PERCENT, 1 );
-    $spinbutton->set_value( $SETTING{'quality'} );
-    $hbox->pack_end( $spinbutton, FALSE, FALSE, 0 );
-    return ( $hbox, $spinbutton );
-}
-
-sub add_pdf_compression {
-    my ($vbox) = @_;
-
-    # Downsample options
-    my $hboxd = Gtk3::HBox->new;
-    $vbox->pack_start( $hboxd, FALSE, FALSE, 0 );
-    my $button = Gtk3::CheckButton->new( __('Downsample to') );
-    $button->set_active(TRUE);
-    $hboxd->pack_start( $button, FALSE, FALSE, 0 );
-    my $spinbutton = Gtk3::SpinButton->new_with_range( 1, $MAX_DPI, 1 );
-    $spinbutton->set_value( $SETTING{'downsample dpi'} );
-    my $label = Gtk3::Label->new( __('PPI') );
-    $hboxd->pack_end( $label,      FALSE, FALSE, 0 );
-    $hboxd->pack_end( $spinbutton, FALSE, FALSE, 0 );
-    $button->signal_connect(
-        toggled => sub {
-            $spinbutton->set_sensitive( $button->get_active );
-        }
-    );
-    $button->set_active( $SETTING{'downsample'} );
-
-    # Compression options
-    my @compression = (
-        [
-            'auto', __('Automatic'),
-            __('Let gscan2pdf which type of compression to use.')
-        ],
-        [
-            'lzw', __('LZW'),
-            __('Compress output with Lempel-Ziv & Welch encoding.')
-        ],
-        [ 'zip', __('Zip'), __('Compress output with deflate encoding.') ],
-        [
-            'packbits', __('Packbits'),
-            __('Compress output with Packbits encoding.')
-        ],
-
-      # g3 and 4 give an error message
-      #  [ 'g3', __('G3'), __('Compress output with CCITT Group 3 encoding.') ],
-      #  [ 'g4', __('G4'), __('Compress output with CCITT Group 4 encoding.') ],
-        [ 'png',  __('PNG'),  __('Compress output with PNG encoding.') ],
-        [ 'jpg',  __('JPEG'), __('Compress output with JPEG encoding.') ],
-        [ 'none', __('None'), __('Use no compression algorithm on output.') ],
-    );
-
-    # Compression ComboBox
-    my $hbox = Gtk3::HBox->new;
-    $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
-    $label = Gtk3::Label->new( __('Compression') );
-    $hbox->pack_start( $label, FALSE, FALSE, 0 );
-
-  # Set up quality spinbutton here so that it can be shown or hidden by callback
-    my ( $hboxq, $spinbuttonq ) = add_quality_spinbutton($vbox);
-    my $combob = Gscan2pdf::ComboBoxText->new_from_array(@compression);
-    $combob->signal_connect(
-        changed => sub {
-            if ( $combob->get_active_index eq 'jpg' ) {
-                $hboxq->show_all;
-            }
-            else {
-                $hboxq->hide;
-            }
-        }
-    );
-    $combob->set_active_index( $SETTING{'pdf compression'} );
-    $hbox->pack_end( $combob, FALSE, FALSE, 0 );
-
-    return ( $button, $spinbutton, $combob, $hboxq, $spinbuttonq,
-        @compression );
-}
-
 # Display page selector and on save a fileselector.
 
 sub save_dialog {
@@ -2197,6 +2112,16 @@ sub save_dialog {
         return;
     }
 
+    my @image_types = qw(pdf gif jpg png pnm ps tif txt hocr session);
+    if ( $dependencies{pdfunite} ) {
+        push @image_types, 'prependpdf', 'appendpdf';
+    }
+    if ( $dependencies{djvu} ) { push @image_types, 'djvu' }
+    my @ps_backends;
+    for my $backend (qw(libtiff pdf2ps pdftops)) {
+        $logger->debug("checking $backend");
+        if ( $dependencies{$backend} ) { push @ps_backends, $backend }
+    }
     $windowi = Gscan2pdf::Dialog::Save->new(
         'transient-for'  => $window,
         title            => __('Save'),
@@ -2215,179 +2140,20 @@ sub save_dialog {
         'meta-subject-suggestions'  => $SETTING{'subject-suggestions'},
         'meta-keywords'             => $SETTING{'keywords'},
         'meta-keywords-suggestions' => $SETTING{'keywords-suggestions'},
+        'image-types'               => \@image_types,
+        'image-type'                => $SETTING{'image type'},
+        'ps-backends'               => \@ps_backends,
+        'jpeg-quality'              => $SETTING{quality},
+        'downsample-dpi'            => $SETTING{'downsample dpi'},
+        downsample                  => $SETTING{downsample},
+        'pdf-compression'           => $SETTING{'pdf compression'},
+        'pdf-font'                  => $SETTING{'pdf font'},
     );
 
     # Frame for page range
     $windowi->add_page_range;
 
-    # Image type ComboBox
-    my $hboxi = Gtk3::HBox->new;
-    my $vbox  = $windowi->get('vbox');
-    $vbox->pack_start( $hboxi, FALSE, FALSE, 0 );
-    my $label = Gtk3::Label->new( __('Image type') );
-    $hboxi->pack_start( $label, FALSE, FALSE, 0 );
-
-    my @type = (
-        [ 'pdf', __('PDF'), __('Portable Document Format') ],
-        [ 'gif', __('GIF'), __('CompuServe graphics interchange format') ],
-        [
-            'jpg', __('JPEG'),
-            __('Joint Photographic Experts Group JFIF format')
-        ],
-        [ 'png',     __('PNG'),     __('Portable Network Graphics') ],
-        [ 'pnm',     __('PNM'),     __('Portable anymap') ],
-        [ 'ps',      __('PS'),      __('Postscript') ],
-        [ 'tif',     __('TIFF'),    __('Tagged Image File Format') ],
-        [ 'txt',     __('Text'),    __('Plain text') ],
-        [ 'hocr',    __('hOCR'),    __('hOCR markup language') ],
-        [ 'session', __('Session'), __('gscan2pdf session file') ],
-    );
-    if ( $dependencies{pdfunite} ) {
-        push @type,
-          [
-            'prependpdf', __('Prepend to PDF'),
-            __('Prepend to an existing PDF')
-          ];
-        push @type,
-          [ 'appendpdf', __('Append to PDF'), __('Append to an existing PDF') ];
-    }
-    if ( $dependencies{djvu} ) {
-        push @type, [ 'djvu', __('DjVu'), __('Deja Vu') ];
-    }
-
-    # Postscript backend
-    my $hboxps = Gtk3::HBox->new;
-    $vbox->pack_start( $hboxps, TRUE, TRUE, 0 );
-    $label = Gtk3::Label->new( __('Postscript backend') );
-    $hboxps->pack_start( $label, FALSE, FALSE, 0 );
-    my @ps_backend;
-    my @backends = (
-        [
-            'libtiff', __('LibTIFF'),
-            __('Use LibTIFF (tiff2ps) to create Postscript files from TIFF.')
-        ],
-        [
-            'pdf2ps',
-            __('Ghostscript'),
-            __('Use Ghostscript (pdf2ps) to create Postscript files from PDF.')
-        ],
-        [
-            'pdftops', __('Poppler'),
-            __('Use Poppler (pdftops) to create Postscript files from PDF.')
-        ],
-    );
-    for my $backend (@backends) {
-        $logger->debug("checking $backend->[0]");
-        if ( $dependencies{ $backend->[0] } ) {
-            push @ps_backend, $backend;
-        }
-    }
-    my $combops = Gscan2pdf::ComboBoxText->new_from_array(@ps_backend);
-    $combops->set_active_index( $SETTING{ps_backend} );
-    $hboxps->pack_end( $combops, TRUE, TRUE, 0 );
-
-    my @tiff_compression = (
-        [
-            'lzw', __('LZW'),
-            __('Compress output with Lempel-Ziv & Welch encoding.')
-        ],
-        [ 'zip', __('Zip'), __('Compress output with deflate encoding.') ],
-
-        # jpeg rather than jpg needed here because tiffcp uses -c jpeg
-        [ 'jpeg', __('JPEG'), __('Compress output with JPEG encoding.') ],
-        [
-            'packbits', __('Packbits'),
-            __('Compress output with Packbits encoding.')
-        ],
-        [ 'g3', __('G3'), __('Compress output with CCITT Group 3 encoding.') ],
-        [ 'g4', __('G4'), __('Compress output with CCITT Group 4 encoding.') ],
-        [ 'none', __('None'), __('Use no compression algorithm on output.') ],
-    );
-
-    # Compression ComboBox
-    my $hboxc = Gtk3::HBox->new;
-    $vbox->pack_start( $hboxc, FALSE, FALSE, 0 );
-    $label = Gtk3::Label->new( __('Compression') );
-    $hboxc->pack_start( $label, FALSE, FALSE, 0 );
-
-    # Set up quality spinbutton here
-    # so that it can be shown or hidden by callback
-    my ( $hboxtq, $spinbuttontq ) = add_quality_spinbutton($vbox);
-
-    # Fill compression ComboBox
-    my $combobtc = Gscan2pdf::ComboBoxText->new_from_array(@tiff_compression);
-    $combobtc->signal_connect(
-        changed => sub {
-            if ( $combobtc->get_active_index eq 'jpeg' ) {
-                $hboxtq->show_all;
-            }
-            else {
-                $hboxtq->hide;
-                $windowi->resize( 1, 1 );
-            }
-        }
-    );
-    $combobtc->set_active_index( $SETTING{'tiff compression'} );
-    $hboxc->pack_end( $combobtc, FALSE, FALSE, 0 );
-
-    # metadata options
-    $windowi->add_metadata;
-
-    # PDF options
-    my $vboxp = Gtk3::VBox->new;
-    $vbox->pack_start( $vboxp, FALSE, FALSE, 0 );
-
-    # Compression options
-    my ( $buttond, $spinbuttond, $combob, $hboxpq, $spinbuttonpq,
-        @pdf_compression )
-      = add_pdf_compression($vboxp);
-
-    # Font for non-ASCII text
-    my $scwinf = Gtk3::ScrolledWindow->new;
-    $scwinf->set_policy( 'automatic', 'automatic' );
-    $vbox->pack_start( $scwinf, TRUE, TRUE, 0 );
-    my $hboxf = Gtk3::HBox->new;
-    $scwinf->add_with_viewport($hboxf);
-    $scwinf->get_child->set_shadow_type('none');
-    $label = Gtk3::Label->new( __('Font for non-ASCII text') );
-    $hboxf->pack_start( $label, FALSE, FALSE, 0 );
-    my @fonts;
-    my ( undef, $stdout ) =
-      Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
-
-    for ( split /\n/sm, $stdout ) {
-        if (/ttf:[ ]/xsm) {
-            my ( $file, $family, $style ) = split /:/xsm;
-            chomp $style;
-            $family =~ s/^[ ]//xsm;
-            $style =~ s/^style=//xsm;
-            $style =~ s/,.*$//xsm;
-            my $font = "$family $style";
-            push @fonts, [ $file, $font, $font ];
-            if ( not defined $SETTING{'pdf font'}
-                and $font eq 'Times New Roman Regular' )
-            {
-                $SETTING{'pdf font'} = $file;
-            }
-        }
-    }
-    @fonts = sort { $a->[1] cmp $b->[1] } @fonts;
-    my $combof = Gscan2pdf::ComboBoxText->new_from_array(@fonts);
-    $combof->set_active_index( $SETTING{'pdf font'} );
-    $hboxf->pack_start( $combof, FALSE, FALSE, 0 );
-
-    # Fill image type ComboBox
-    my $combobi = Gscan2pdf::ComboBoxText->new_from_array(@type);
-    $combobi->signal_connect(
-        changed => \&image_type_changed_callback,
-        [
-            \@type,    $vboxp,  $hboxf,  \@pdf_compression,
-            $combob,   $hboxpq, $hboxc,  \@tiff_compression,
-            $combobtc, $hboxtq, $hboxps, \@ps_backend,
-        ]
-    );
-    $combobi->set_active_index( $SETTING{'image type'} );
-    $hboxi->pack_end( $combobi, FALSE, FALSE, 0 );
+    $windowi->add_image_type;
 
     # Post-save hook
     my $pshbutton = Gtk3::CheckButton->new( __('Post-save hook') );
@@ -2396,6 +2162,7 @@ sub save_dialog {
 'Run command on saved file. The available commands are those user-defined tools that do not specify %o'
         )
     );
+    my $vbox = $windowi->get('vbox');
     $vbox->pack_start( $pshbutton, FALSE, TRUE, 0 );
     update_post_save_hooks();
     $vbox->pack_start( $windowi->{comboboxpsh}, FALSE, TRUE, 0 );
@@ -2424,14 +2191,7 @@ sub save_dialog {
     $save_button->grab_default;
     $save_button->signal_connect(
         clicked => \&save_button_clicked_callback,
-        [
-            \@type,             $combobi,          $buttond,
-            $spinbuttond,       \@pdf_compression, $combob,
-            $spinbuttonpq,      \@fonts,           $combof,
-            \@tiff_compression, $combobtc,         $spinbuttontq,
-            $kbutton,           $pshbutton,        $combops,
-            \@ps_backend,
-        ]
+        [ $kbutton, $pshbutton ]
     );
 
     # Cancel button
@@ -2440,96 +2200,6 @@ sub save_dialog {
     $cbutton->signal_connect( clicked => sub { $windowi->hide; } );
 
     $windowi->show_all;
-    image_type_changed_callback(
-        $combobi,
-        [
-            \@type,    $vboxp,  $hboxf,  \@pdf_compression,
-            $combob,   $hboxpq, $hboxc,  \@tiff_compression,
-            $combobtc, $hboxtq, $hboxps, \@ps_backend,
-        ]
-    );
-    $windowi->resize( 1, 1 );
-    return;
-}
-
-sub image_type_changed_callback {
-    my ( $widget, $data ) = @_;
-    my (
-        $type,     $vboxp,  $hboxf,  $pdf_compression,
-        $combob,   $hboxpq, $hboxc,  $tiff_compression,
-        $combobtc, $hboxtq, $hboxps, $ps_backend,
-    ) = @{$data};
-    given ( $type->[ $widget->get_active ][0] ) {
-        when (/pdf/xsm) {
-            $vboxp->show_all;
-            $hboxf->show_all;
-            $hboxc->hide;
-            $hboxtq->hide;
-            $hboxps->hide;
-            if ( $_ eq 'pdf' ) {
-                $windowi->{mdwidgets}{box}->show;
-            }
-            else {    # don't show metadata for pre-/append to pdf
-                $windowi->{mdwidgets}{box}->hide;
-            }
-            if ( $pdf_compression->[ $combob->get_active ][0] eq 'jpg' ) {
-                $hboxpq->show_all;
-            }
-            else {
-                $hboxpq->hide;
-            }
-        }
-        when ('djvu') {
-            $windowi->{mdwidgets}{box}->show;
-            $hboxc->hide;
-            $vboxp->hide;
-            $hboxf->hide;
-            $hboxpq->hide;
-            $hboxtq->hide;
-            $hboxps->hide;
-        }
-        when ('tif') {
-            $hboxc->show_all;
-            $windowi->{mdwidgets}{box}->hide;
-            $vboxp->hide;
-            $hboxf->hide;
-            $hboxpq->hide;
-            if ( $tiff_compression->[ $combobtc->get_active ][0] eq 'jpeg' ) {
-                $hboxtq->show_all;
-            }
-            else {
-                $hboxtq->hide;
-            }
-            $hboxps->hide;
-        }
-        when ('ps') {
-            $hboxc->hide;
-            $windowi->{mdwidgets}{box}->hide;
-            $vboxp->hide;
-            $hboxf->hide;
-            $hboxpq->hide;
-            $hboxtq->hide;
-            $hboxps->show_all;
-        }
-        when ('jpg') {
-            $windowi->{mdwidgets}{box}->hide;
-            $hboxf->hide;
-            $hboxc->hide;
-            $vboxp->hide;
-            $hboxpq->hide;
-            $hboxtq->show_all;
-            $hboxps->hide;
-        }
-        default {
-            $windowi->{mdwidgets}{box}->hide;
-            $vboxp->hide;
-            $hboxf->hide;
-            $hboxc->hide;
-            $hboxpq->hide;
-            $hboxtq->hide;
-            $hboxps->hide;
-        }
-    }
     $windowi->resize( 1, 1 );
     return;
 }
@@ -2548,22 +2218,15 @@ sub list_of_pages {
 }
 
 sub save_button_clicked_callback {
-    my ( $widget, $data ) = @_;
-    my (
-        $type,             $combobi,         $buttond,
-        $spinbuttond,      $pdf_compression, $combob,
-        $spinbuttonpq,     $fonts,           $combof,
-        $tiff_compression, $combobtc,        $spinbuttontq,
-        $kbutton,          $pshbutton,       $combops,
-        $ps_backend
-    ) = @{$data};
+    my ( $widget,  $data )      = @_;
+    my ( $kbutton, $pshbutton ) = @{$data};
 
     # Compile list of pages
     $SETTING{'Page range'} = $windowi->get('page-range');
     my $list_of_pages = list_of_pages;
 
     # dig out the image type, compression and quality
-    $SETTING{'image type'} = $type->[ $combobi->get_active ][0];
+    $SETTING{'image type'} = $windowi->get('image-type');
     $SETTING{close_dialog_on_save} = $kbutton->get_active;
 
     $SETTING{post_save_hook} = $pshbutton->get_active;
@@ -2577,13 +2240,12 @@ sub save_button_clicked_callback {
         when (/pdf/xsm) {
 
             # dig out the compression
-            $SETTING{'downsample'}     = $buttond->get_active;
-            $SETTING{'downsample dpi'} = $spinbuttond->get_value;
-            $SETTING{'pdf compression'} =
-              $pdf_compression->[ $combob->get_active ][0];
-            $SETTING{quality} = $spinbuttonpq->get_value;
+            $SETTING{downsample}        = $windowi->get('downsample');
+            $SETTING{'downsample dpi'}  = $windowi->get('downsample-dpi');
+            $SETTING{'pdf compression'} = $windowi->get('pdf-compression');
+            $SETTING{quality}           = $windowi->get('jpeg-quality');
 
-            $SETTING{'pdf font'} = $fonts->[ $combof->get_active ][0];
+            $SETTING{'pdf font'} = $windowi->get('pdf-font');
 
             # cd back to cwd to save
             chdir $SETTING{cwd};
@@ -2673,9 +2335,8 @@ sub save_button_clicked_callback {
             chdir $session;
         }
         when ('tif') {
-            $SETTING{'tiff compression'} =
-              $tiff_compression->[ $combobtc->get_active ][0];
-            $SETTING{'quality'} = $spinbuttontq->get_value;
+            $SETTING{'tiff compression'} = $windowi->get('tiff-compression');
+            $SETTING{quality} = $windowi->get('jpeg-quality');
 
             # cd back to cwd to save
             chdir $SETTING{cwd};
@@ -2752,7 +2413,7 @@ sub save_button_clicked_callback {
             chdir $session;
         }
         when ('ps') {
-            $SETTING{ps_backend} = $ps_backend->[ $combops->get_active ][0];
+            $SETTING{ps_backend} = $windowi->get('ps-backend');
 
             # cd back to cwd to save
             chdir $SETTING{cwd};
@@ -2803,7 +2464,7 @@ sub save_button_clicked_callback {
             chdir $session;
         }
         when ('jpg') {
-            $SETTING{quality} = $spinbuttontq->get_value;
+            $SETTING{quality} = $windowi->get('jpeg-quality');
             save_image($list_of_pages);
         }
         default {
@@ -3278,21 +2939,25 @@ sub email {
         'meta-subject-suggestions'  => $SETTING{'subject-suggestions'},
         'meta-keywords'             => $SETTING{'keywords'},
         'meta-keywords-suggestions' => $SETTING{'keywords-suggestions'},
+        'jpeg-quality'              => $SETTING{quality},
+        'downsample-dpi'            => $SETTING{'downsample dpi'},
+        downsample                  => $SETTING{downsample},
+        'pdf-compression'           => $SETTING{'pdf compression'},
+        'pdf-font'                  => $SETTING{'pdf font'},
     );
 
     # Frame for page range
     $windowe->add_page_range;
 
-    # PDF options
+    # Metadata
     $windowe->add_metadata;
 
-    # Compression options
-    my $vbox = $windowe->get('vbox');
-    my ( $buttond, $spinbuttond, $combob, $hboxq, $spinbuttonq, @compression )
-      = add_pdf_compression($vbox);
+    # PDF options
+    my ( $vboxp, $hboxp ) = $windowe->add_pdf_options;
 
     # HBox for buttons
     my $hboxb = Gtk3::HBox->new;
+    my $vbox  = $windowe->get('vbox');
     $vbox->pack_start( $hboxb, FALSE, TRUE, 0 );
 
     # OK button
@@ -3309,11 +2974,10 @@ sub email {
             my $list_of_pages = list_of_pages;
 
             # dig out the compression
-            $SETTING{downsample} = $buttond->get_active;
-            $SETTING{'downsample dpi'} = $spinbuttond->get_value;
-            $SETTING{'pdf compression'} =
-              $compression[ $combob->get_active ][0];
-            $SETTING{quality} = $spinbuttonq->get_value;
+            $SETTING{downsample}        = $windowe->get('downsample');
+            $SETTING{'downsample dpi'}  = $windowe->get('downsample-dpi');
+            $SETTING{'pdf compression'} = $windowe->get('pdf-compression');
+            $SETTING{quality}           = $windowe->get('jpeg-quality');
 
             # Compile options
             my %options = (
@@ -3398,7 +3062,6 @@ sub email {
     $cbutton->signal_connect( clicked => sub { $windowe->hide; } );
 
     $windowe->show_all;
-    if ( $compression[ $combob->get_active ][0] ne 'jpg' ) { $hboxq->hide }
     return;
 }
 
@@ -6741,7 +6404,7 @@ sub update_post_save_hooks {
         }
         else {
             # create it
-            $windowi->{comboboxpsh} = Gtk3::ComboBoxText->new;
+            $windowi->{comboboxpsh} = Gscan2pdf::ComboBoxText->new;
         }
 
         # fill it again

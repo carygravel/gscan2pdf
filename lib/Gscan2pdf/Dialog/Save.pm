@@ -2,14 +2,15 @@ package Gscan2pdf::Dialog::Save;
 
 use warnings;
 use strict;
-use Glib 1.220 qw(TRUE FALSE);      # To get TRUE and FALSE
+use feature 'switch';
+use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
+use Gscan2pdf::ComboBoxText;
 use Gscan2pdf::Dialog;
 use Gscan2pdf::Document;
 use Gscan2pdf::EntryCompletion;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Date::Calc qw(Today Today_and_Now);
-use Data::Dumper;
-$Data::Dumper::Sortkeys = 1;
+no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use Readonly;
 Readonly my $ENTRY_WIDTH_DATE     => 10;
 Readonly my $ENTRY_WIDTH_DATETIME => 19;
@@ -18,6 +19,14 @@ our $VERSION = '2.1.4';
 my $EMPTY           = q{};
 my $DATE_FORMAT     = '%04d-%02d-%02d';
 my $DATETIME_FORMAT = '%04d-%02d-%02d %02d:%02d:%02d';
+my ( $_100_PERCENT, $MAX_DPI );
+
+# need to register this with Glib before we can use it below
+BEGIN {
+    use Readonly;
+    Readonly $_100_PERCENT => 100;
+    Readonly $MAX_DPI      => 2400;
+}
 
 use Glib::Object::Subclass Gscan2pdf::Dialog::, properties => [
     Glib::ParamSpec->scalar(
@@ -92,6 +101,78 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, properties => [
         'Used by entry completion widget',          # blurb
         [qw/readable writable/]                     # flags
     ),
+    Glib::ParamSpec->scalar(
+        'image-types',                                            # name
+        'Array of available image types',                         # nick
+        'To allow djvu, pdfunite dependencies to be optional',    # blurb
+        [qw/readable writable/]                                   # flags
+    ),
+    Glib::ParamSpec->string(
+        'image-type',                                             # name
+        'Image type',                                             # nick
+        'Currently selected image type',                          # blurb
+        'pdf',                                                    # default
+        [qw/readable writable/]                                   # flags
+    ),
+    Glib::ParamSpec->scalar(
+        'ps-backends',                                            # name
+        'PS backends',                                            # nick
+        'Array of available postscript backends',                 # blurb
+        [qw/readable writable/]                                   # flags
+    ),
+    Glib::ParamSpec->string(
+        'ps-backend',                                             # name
+        'PS backend',                                             # nick
+        'Currently selected postscript backend',                  # blurb
+        'pdftops',                                                # default
+        [qw/readable writable/]                                   # flags
+    ),
+    Glib::ParamSpec->string(
+        'tiff-compression',                                       # name
+        'TIFF compression',                                       # nick
+        'Currently selected TIFF compression method',             # blurb
+        undef,                                                    # default
+        [qw/readable writable/]                                   # flags
+    ),
+    Glib::ParamSpec->float(
+        'jpeg-quality',                                      # name
+        'JPEG quality',                                      # nick
+        'Affects the compression level of JPEG encoding',    # blurb
+        1,                                                   # minimum
+        $_100_PERCENT,                                       # maximum
+        75,                                                  # default_value
+        [qw/readable writable/]                              # flags
+    ),
+    Glib::ParamSpec->float(
+        'downsample-dpi',                                    # name
+        'Downsample DPI',                                    # nick
+        'Resolution to use when downsampling',               # blurb
+        1,                                                   # minimum
+        $MAX_DPI,                                            # maximum
+        150,                                                 # default_value
+        [qw/readable writable/]                              # flags
+    ),
+    Glib::ParamSpec->boolean(
+        'downsample',                                        # name
+        'Downsample',                                        # nickname
+        'Whether to downsample',                             # blurb
+        FALSE,                                               # default
+        [qw/readable writable/]                              # flags
+    ),
+    Glib::ParamSpec->string(
+        'pdf-compression',                                   # name
+        'PDF compression',                                   # nick
+        'Currently selected PDF compression method',         # blurb
+        'auto',                                              # default
+        [qw/readable writable/]                              # flags
+    ),
+    Glib::ParamSpec->string(
+        'pdf-font',                                           # name
+        'PDF font',                                           # nick
+        'Font with with to write hidden OCR layer of PDF',    # blurb
+        undef,                                                # default
+        [qw/readable writable/]                               # flags
+    ),
 ];
 
 sub SET_PROPERTY {
@@ -158,7 +239,7 @@ sub GET_PROPERTY {
 
 sub on_toggle_include_time {
     my ( $self, $newval ) = @_;
-    if ( defined $self->{mdwidgets} ) {
+    if ( defined $self->{'meta-box-widget'} ) {
         if ($newval) {
             $self->{'meta-now-widget'}->get_child->set_text( __('Now') );
             $self->{'meta-now-widget'}
@@ -180,15 +261,15 @@ sub on_toggle_include_time {
 
 sub add_metadata {
     my ( $self, $defaults ) = @_;
-    my ($vbox) = $self->get('vbox');
+    my $vbox = $self->get('vbox');
 
     # it needs its own box to be able to hide it if necessary
-    my $hboxmd = Gtk3::HBox->new;
-    $vbox->pack_start( $hboxmd, FALSE, FALSE, 0 );
+    $self->{'meta-box-widget'} = Gtk3::HBox->new;
+    $vbox->pack_start( $self->{'meta-box-widget'}, FALSE, FALSE, 0 );
 
     # Frame for metadata
     my $frame = Gtk3::Frame->new( __('Document Metadata') );
-    $hboxmd->pack_start( $frame, TRUE, TRUE, 0 );
+    $self->{'meta-box-widget'}->pack_start( $frame, TRUE, TRUE, 0 );
     my $hboxm = Gtk3::VBox->new;
     $hboxm->set_border_width( $self->get('border-width') );
     $frame->add($hboxm);
@@ -346,7 +427,6 @@ sub add_metadata {
         { subject  => __('Subject') },
         { keywords => __('Keywords') },
     );
-    my %widgets = ( box => $hboxmd, );
     for my $entry (@label) {
         my ( $name, $label ) = %{$entry};
         my $hbox = Gtk3::HBox->new;
@@ -360,7 +440,6 @@ sub add_metadata {
             $self->get("meta-$name-suggestions") );
         $hbox->pack_start( $self->{"meta-$name-widget"}, TRUE, TRUE, 0 );
     }
-    $self->{mdwidgets} = \%widgets;
     $self->on_toggle_include_time( $self->get('include-time') );
     return;
 }
@@ -393,13 +472,363 @@ sub insert_text_handler {
     return $position;
 }
 
-sub dump_or_stringify {
-    my ($val) = @_;
-    return (
-        defined $val
-        ? ( ref($val) eq $EMPTY ? $val : Dumper($val) )
-        : 'undef'
+sub add_image_type {
+    my ($self) = @_;
+    my $vbox = $self->get('vbox');
+
+    # Image type ComboBox
+    my $hboxi = Gtk3::HBox->new;
+    $vbox->pack_start( $hboxi, FALSE, FALSE, 0 );
+    my $label = Gtk3::Label->new( __('Image type') );
+    $hboxi->pack_start( $label, FALSE, FALSE, 0 );
+
+    my @image_types = (
+        [ 'pdf', __('PDF'), __('Portable Document Format') ],
+        [ 'gif', __('GIF'), __('CompuServe graphics interchange format') ],
+        [
+            'jpg', __('JPEG'),
+            __('Joint Photographic Experts Group JFIF format')
+        ],
+        [ 'png',     __('PNG'),     __('Portable Network Graphics') ],
+        [ 'pnm',     __('PNM'),     __('Portable anymap') ],
+        [ 'ps',      __('PS'),      __('Postscript') ],
+        [ 'tif',     __('TIFF'),    __('Tagged Image File Format') ],
+        [ 'txt',     __('Text'),    __('Plain text') ],
+        [ 'hocr',    __('hOCR'),    __('hOCR markup language') ],
+        [ 'session', __('Session'), __('gscan2pdf session file') ],
+        [
+            'prependpdf', __('Prepend to PDF'), __('Prepend to an existing PDF')
+        ],
+        [ 'appendpdf', __('Append to PDF'), __('Append to an existing PDF') ],
+        [ 'djvu',      __('DjVu'),          __('Deja Vu') ],
     );
+    my @type =
+      @{ filter_table( \@image_types, @{ $self->get('image-types') } ) };
+    my $combobi = Gscan2pdf::ComboBoxText->new_from_array(@type);
+    $hboxi->pack_end( $combobi, FALSE, FALSE, 0 );
+
+    $self->add_metadata;
+
+    # Postscript backend
+    my $hboxps = Gtk3::HBox->new;
+    $vbox->pack_start( $hboxps, TRUE, TRUE, 0 );
+    $label = Gtk3::Label->new( __('Postscript backend') );
+    $hboxps->pack_start( $label, FALSE, FALSE, 0 );
+    my @backends = (
+        [
+            'libtiff', __('LibTIFF'),
+            __('Use LibTIFF (tiff2ps) to create Postscript files from TIFF.')
+        ],
+        [
+            'pdf2ps',
+            __('Ghostscript'),
+            __('Use Ghostscript (pdf2ps) to create Postscript files from PDF.')
+        ],
+        [
+            'pdftops', __('Poppler'),
+            __('Use Poppler (pdftops) to create Postscript files from PDF.')
+        ],
+    );
+    my @ps_backend =
+      @{ filter_table( \@backends, @{ $self->get('ps-backends') } ) };
+    my $combops = Gscan2pdf::ComboBoxText->new_from_array(@ps_backend);
+    $combops->set_active_index( $self->get('ps-backend') );
+    $hboxps->pack_end( $combops, TRUE, TRUE, 0 );
+
+    my @tiff_compression = (
+        [
+            'lzw', __('LZW'),
+            __('Compress output with Lempel-Ziv & Welch encoding.')
+        ],
+        [ 'zip', __('Zip'), __('Compress output with deflate encoding.') ],
+
+        # jpeg rather than jpg needed here because tiffcp uses -c jpeg
+        [ 'jpeg', __('JPEG'), __('Compress output with JPEG encoding.') ],
+        [
+            'packbits', __('Packbits'),
+            __('Compress output with Packbits encoding.')
+        ],
+        [ 'g3', __('G3'), __('Compress output with CCITT Group 3 encoding.') ],
+        [ 'g4', __('G4'), __('Compress output with CCITT Group 4 encoding.') ],
+        [ 'none', __('None'), __('Use no compression algorithm on output.') ],
+    );
+
+    # Compression ComboBox
+    my $hboxc = Gtk3::HBox->new;
+    $vbox->pack_start( $hboxc, FALSE, FALSE, 0 );
+    $label = Gtk3::Label->new( __('Compression') );
+    $hboxc->pack_start( $label, FALSE, FALSE, 0 );
+
+    # Set up quality spinbutton here
+    # so that it can be shown or hidden by callback
+    my ( $hboxtq, $spinbuttontq ) = $self->add_quality_spinbutton($vbox);
+
+    # Fill compression ComboBox
+    my $combobtc = Gscan2pdf::ComboBoxText->new_from_array(@tiff_compression);
+    $combobtc->signal_connect(
+        changed => sub {
+            my $compression = $combobtc->get_active_index;
+            $self->set( 'tiff-compression', $compression );
+            if ( $compression eq 'jpeg' ) {
+                $hboxtq->show;
+            }
+            else {
+                $hboxtq->hide;
+                $self->resize( 1, 1 );
+            }
+        }
+    );
+    $combobtc->set_active_index( $self->get('tiff-compression') );
+    $hboxc->pack_end( $combobtc, FALSE, FALSE, 0 );
+
+    # PDF options
+    my ( $vboxp, $hboxpq ) = $self->add_pdf_options;
+
+    $combobi->signal_connect(
+        changed => \&image_type_changed_callback,
+        [ $self, $vboxp, $hboxpq, $hboxc, $hboxtq, $hboxps, ]
+    );
+    $self->show_all;
+    $hboxc->set_no_show_all(TRUE);
+    $hboxtq->set_no_show_all(TRUE);
+    $hboxps->set_no_show_all(TRUE);
+    $combobi->set_active_index( $self->get('image-type') );
+    return;
+}
+
+sub image_type_changed_callback {
+    my ( $widget, $data ) = @_;
+    my ( $self, $vboxp, $hboxpq, $hboxc, $hboxtq, $hboxps, ) = @{$data};
+    my $image_type = $widget->get_active_index;
+    $self->set( 'image-type', $image_type );
+    given ($image_type) {
+        when (/pdf/xsm) {
+            $vboxp->show;
+            $hboxc->hide;
+            $hboxtq->hide;
+            $hboxps->hide;
+            if ( $_ eq 'pdf' ) {
+                $self->{'meta-box-widget'}->show;
+            }
+            else {    # don't show metadata for pre-/append to pdf
+                $self->{'meta-box-widget'}->hide;
+            }
+            if ( $self->get('pdf-compression') eq 'jpg' ) {
+                $hboxpq->show;
+            }
+            else {
+                $hboxpq->hide;
+            }
+        }
+        when ('djvu') {
+            $self->{'meta-box-widget'}->show;
+            $hboxc->hide;
+            $vboxp->hide;
+            $hboxpq->hide;
+            $hboxtq->hide;
+            $hboxps->hide;
+        }
+        when ('tif') {
+            $hboxc->show;
+            $self->{'meta-box-widget'}->hide;
+            $vboxp->hide;
+            $hboxpq->hide;
+            if ( $self->get('tiff-compression') eq 'jpeg' ) {
+                $hboxtq->show;
+            }
+            else {
+                $hboxtq->hide;
+            }
+            $hboxps->hide;
+        }
+        when ('ps') {
+            $hboxc->hide;
+            $self->{'meta-box-widget'}->hide;
+            $vboxp->hide;
+            $hboxpq->hide;
+            $hboxtq->hide;
+            $hboxps->show;
+        }
+        when ('jpg') {
+            $self->{'meta-box-widget'}->hide;
+            $hboxc->hide;
+            $vboxp->hide;
+            $hboxpq->hide;
+            $hboxtq->show;
+            $hboxps->hide;
+        }
+        default {
+            $self->{'meta-box-widget'}->hide;
+            $vboxp->hide;
+            $hboxc->hide;
+            $hboxpq->hide;
+            $hboxtq->hide;
+            $hboxps->hide;
+        }
+    }
+    $self->resize( 1, 1 );
+    return;
+}
+
+sub filter_table {
+    my ( $table, @filter ) = @_;
+    my @sub_table;
+    for my $row ( @{$table} ) {
+        if ( $row->[0] ~~ @filter ) { push @sub_table, $row }
+    }
+    return \@sub_table;
+}
+
+# Set up quality spinbutton here so that it can be shown or hidden by callback
+
+sub add_quality_spinbutton {
+    my ( $self, $vbox ) = @_;
+    my $hbox = Gtk3::HBox->new;
+    $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
+    my $label = Gtk3::Label->new( __('JPEG Quality') );
+    $hbox->pack_start( $label, FALSE, FALSE, 0 );
+    my $spinbutton = Gtk3::SpinButton->new_with_range( 1, $_100_PERCENT, 1 );
+    $spinbutton->set_value( $self->get('jpeg-quality') );
+    $hbox->pack_end( $spinbutton, FALSE, FALSE, 0 );
+    return $hbox, $spinbutton;
+}
+
+sub add_pdf_options {
+    my ($self) = @_;
+
+    # pack everything in one vbox to be able to show/hide them all at once
+    my $vboxp = Gtk3::VBox->new;
+    my $vbox  = $self->get('vbox');
+    $vbox->pack_start( $vboxp, FALSE, FALSE, 0 );
+
+    # Downsample options
+    my $hboxd = Gtk3::HBox->new;
+    $vboxp->pack_start( $hboxd, FALSE, FALSE, 0 );
+    my $button = Gtk3::CheckButton->new( __('Downsample to') );
+    $hboxd->pack_start( $button, FALSE, FALSE, 0 );
+    my $spinbutton = Gtk3::SpinButton->new_with_range( 1, $MAX_DPI, 1 );
+    $spinbutton->set_value( $self->get('downsample-dpi') );
+    my $label = Gtk3::Label->new( __('PPI') );
+    $hboxd->pack_end( $label,      FALSE, FALSE, 0 );
+    $hboxd->pack_end( $spinbutton, FALSE, FALSE, 0 );
+    $button->signal_connect(
+        toggled => sub {
+            my $active = $button->get_active;
+            $self->set( 'downsample', $active );
+            $spinbutton->set_sensitive($active);
+        }
+    );
+    $spinbutton->signal_connect(
+        'value-changed' => sub {
+            $self->set( 'downsample-dpi', $spinbutton->get_value );
+        }
+    );
+    $spinbutton->set_sensitive( $self->get('downsample') );
+    $button->set_active( $self->get('downsample') );
+
+    # Compression options
+    my @compression = (
+        [
+            'auto', __('Automatic'),
+            __('Let gscan2pdf which type of compression to use.')
+        ],
+        [
+            'lzw', __('LZW'),
+            __('Compress output with Lempel-Ziv & Welch encoding.')
+        ],
+        [ 'zip', __('Zip'), __('Compress output with deflate encoding.') ],
+        [
+            'packbits', __('Packbits'),
+            __('Compress output with Packbits encoding.')
+        ],
+
+      # g3 and 4 give an error message
+      #  [ 'g3', __('G3'), __('Compress output with CCITT Group 3 encoding.') ],
+      #  [ 'g4', __('G4'), __('Compress output with CCITT Group 4 encoding.') ],
+        [ 'png',  __('PNG'),  __('Compress output with PNG encoding.') ],
+        [ 'jpg',  __('JPEG'), __('Compress output with JPEG encoding.') ],
+        [ 'none', __('None'), __('Use no compression algorithm on output.') ],
+    );
+
+    # Compression ComboBox
+    my $hbox = Gtk3::HBox->new;
+    $vboxp->pack_start( $hbox, TRUE, TRUE, 0 );
+    $label = Gtk3::Label->new( __('Compression') );
+    $hbox->pack_start( $label, FALSE, FALSE, 0 );
+
+  # Set up quality spinbutton here so that it can be shown or hidden by callback
+    my ( $hboxq, $spinbuttonq ) = $self->add_quality_spinbutton($vboxp);
+
+    my $combob = Gscan2pdf::ComboBoxText->new_from_array(@compression);
+    $combob->signal_connect(
+        changed => sub {
+            my $compression = $combob->get_active_index;
+            $self->set( 'pdf-compression', $compression );
+            if ( $compression eq 'jpg' ) {
+                $hboxq->show;
+            }
+            else {
+                $hboxq->hide;
+                $self->resize( 1, 1 );
+            }
+        }
+    );
+    $spinbuttonq->signal_connect(
+        'value-changed' => sub {
+            $self->set( 'jpeg-quality', $spinbuttonq->get_value );
+        }
+    );
+    $hbox->pack_end( $combob, FALSE, FALSE, 0 );
+
+    # Font for non-ASCII text
+    my $scwinf = Gtk3::ScrolledWindow->new;
+    $scwinf->set_policy( 'automatic', 'automatic' );
+    $vboxp->pack_start( $scwinf, TRUE, TRUE, 0 );
+    my $hboxf = Gtk3::HBox->new;
+    $scwinf->add_with_viewport($hboxf);
+    $scwinf->get_child->set_shadow_type('none');
+    $label = Gtk3::Label->new( __('Font for non-ASCII text') );
+    $hboxf->pack_start( $label, FALSE, FALSE, 0 );
+    my @fonts;
+    my ( undef, $stdout ) =
+      Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
+
+    my $font = $self->get('pdf-font');
+    for ( split /\n/sm, $stdout ) {
+        if (/ttf:[ ]/xsm) {
+            my ( $file, $family, $style ) = split /:/xsm;
+            chomp $style;
+            $family =~ s/^[ ]//xsm;
+            $style =~ s/^style=//xsm;
+            $style =~ s/,.*$//xsm;
+            my $family_style = "$family $style";
+            push @fonts, [ $file, $family_style, $family_style ];
+            if ( not defined $font
+                and $family_style eq 'Times New Roman Regular' )
+            {
+                $font = $file;
+            }
+        }
+    }
+    @fonts = sort { $a->[1] cmp $b->[1] } @fonts;
+    my $combof = Gscan2pdf::ComboBoxText->new_from_array(@fonts);
+    $combof->signal_connect(
+        changed => sub {
+            $self->set( 'pdf-font', $combof->get_active_index );
+        }
+    );
+    $combof->set_active_index($font);
+    $hboxf->pack_start( $combof, FALSE, FALSE, 0 );
+
+    $vboxp->show_all;
+    $hboxq->set_no_show_all(TRUE);
+    $vboxp->set_no_show_all(TRUE);
+
+    # do this after show all and set_no_show_all
+    # to make sure child widgets are shown.
+    $combob->set_active_index( $self->get('pdf-compression') );
+
+    return $vboxp, $hboxq;
 }
 
 1;
