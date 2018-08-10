@@ -87,7 +87,7 @@ sub new {
 
     $self->set( 'title', __('Renumber') );
 
-    my $vbox = $self->get('vbox');
+    my $vbox = $self->get_content_area;
 
     # Frame for page range
     my $frame = Gtk3::Frame->new( __('Page Range') );

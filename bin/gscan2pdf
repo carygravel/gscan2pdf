@@ -2162,7 +2162,7 @@ sub save_dialog {
 'Run command on saved file. The available commands are those user-defined tools that do not specify %o'
         )
     );
-    my $vbox = $windowi->get('vbox');
+    my $vbox = $windowi->get_content_area;
     $vbox->pack_start( $pshbutton, FALSE, TRUE, 0 );
     update_post_save_hooks();
     $vbox->pack_start( $windowi->{comboboxpsh}, FALSE, TRUE, 0 );
@@ -2957,7 +2957,7 @@ sub email {
 
     # HBox for buttons
     my $hboxb = Gtk3::HBox->new;
-    my $vbox  = $windowe->get('vbox');
+    my $vbox  = $windowe->get_content_area;
     $vbox->pack_start( $hboxb, FALSE, TRUE, 0 );
 
     # OK button
@@ -3725,7 +3725,9 @@ sub add_postprocessing_ocr {
 
 sub add_postprocessing_options {
     my ($self) = @_;
-    my $vbox = $self->get('vbox');
+
+    # pick up the vbox inside the scrolled window, not the main content area
+    my $vbox = $self->{vbox};
 
     # Frame for post-processing
     my $framep = Gtk3::Frame->new( __('Post-processing') );
@@ -3761,7 +3763,7 @@ sub add_postprocessing_options {
                 title           => __('unpaper options'),
                 border_width    => $BORDER_WIDTH
             );
-            my $vbox1 = $windowuo->get('vbox');
+            my $vbox1 = $windowuo->get_content_area;
             $unpaper->add_options($vbox1);
 
             # HBox for buttons
@@ -4495,7 +4497,7 @@ sub threshold {
 
     # SpinButton for threshold
     my $hboxt = Gtk3::HBox->new;
-    my $vbox  = $windowt->get('vbox');
+    my $vbox  = $windowt->get_content_area;
     $vbox->pack_start( $hboxt, FALSE, TRUE, 0 );
     my $label = Gtk3::Label->new( __('Threshold') );
     $hboxt->pack_start( $label, FALSE, TRUE, 0 );
@@ -4574,7 +4576,7 @@ sub brightness_contrast {
 
     # SpinButton for brightness
     $hbox = Gtk3::HBox->new;
-    my $vbox = $windowt->get('vbox');
+    my $vbox = $windowt->get_content_area;
     $vbox->pack_start( $hbox, FALSE, TRUE, 0 );
     $label = Gtk3::Label->new( __('Brightness') );
     $hbox->pack_start( $label, FALSE, TRUE, 0 );
@@ -4704,7 +4706,7 @@ sub negate {
         },
         sub { $windowt->destroy }
     );
-    my $vbox = $windowt->get('vbox');
+    my $vbox = $windowt->get_content_area;
     $vbox->pack_end( $hboxb, FALSE, TRUE, 0 );
     $windowt->show_all;
     return;
@@ -4766,7 +4768,7 @@ sub unsharp {
 
     # grid for layout
     my $grid = Gtk3::Grid->new;
-    my $vbox = $windowum->get('vbox');
+    my $vbox = $windowum->get_content_area;
     $vbox->pack_start( $grid, TRUE, TRUE, 0 );
 
     for my $row ( 0 .. $#layout ) {
@@ -4913,7 +4915,7 @@ sub crop {
 
     # grid for layout
     my $grid = Gtk3::Grid->new;
-    my $vbox = $windowc->get('vbox');
+    my $vbox = $windowc->get_content_area;
     $vbox->pack_start( $grid, TRUE, TRUE, 0 );
 
     for my $row ( 0 .. $#layout ) {
@@ -5062,7 +5064,7 @@ sub user_defined_dialog {
     $windowudt->add_page_range;
 
     my $hbox = Gtk3::HBox->new;
-    my $vbox = $windowudt->get('vbox');
+    my $vbox = $windowudt->get_content_area;
     $vbox->pack_start( $hbox, FALSE, FALSE, 0 );
     my $label = Gtk3::Label->new( __('Selected tool') );
     $hbox->pack_start( $label, FALSE, TRUE, 0 );
@@ -5203,7 +5205,7 @@ sub unpaper {
     $windowu->add_page_range;
 
     # add unpaper options
-    my $vbox = $windowu->get('vbox');
+    my $vbox = $windowu->get_content_area;
     $unpaper->add_options($vbox);
 
     # HBox for buttons
@@ -5319,7 +5321,7 @@ sub ocr_dialog {
 
     # OCR engine selection
     my $hboxe = Gtk3::HBox->new;
-    my $vbox  = $windowo->get('vbox');
+    my $vbox  = $windowo->get_content_area;
     $vbox->pack_start( $hboxe, FALSE, TRUE, 0 );
     my $label = Gtk3::Label->new( __('OCR Engine') );
     $hboxe->pack_start( $label, FALSE, TRUE, 0 );
@@ -5756,7 +5758,7 @@ sub preferences {
         'hide-on-delete' => TRUE,
         border_width     => $BORDER_WIDTH
     );
-    my $vbox = $windowr->get('vbox');
+    my $vbox = $windowr->get_content_area;
 
     # Notebook for scan and general options
     my $notebook = Gtk3::Notebook->new;
@@ -6431,7 +6433,7 @@ sub properties {
         'hide-on-delete' => TRUE,
         border_width     => $BORDER_WIDTH
     );
-    my $vbox = $windowp->get('vbox');
+    my $vbox = $windowp->get_content_area;
 
     my $hbox = Gtk3::HBox->new;
     $vbox->pack_start( $hbox, TRUE, TRUE, 0 );

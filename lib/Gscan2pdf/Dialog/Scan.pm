@@ -283,7 +283,7 @@ my $SANE_NAME_PAGE_WIDTH  = SANE_NAME_PAGE_WIDTH;
 sub INIT_INSTANCE {
     my $self = shift;
 
-    my $vbox = $self->get('vbox');
+    my $vbox = $self->get_content_area;
 
     $d_sane = Locale::gettext->domain('sane-backends');
 
@@ -805,7 +805,7 @@ sub SET_PROPERTY {
                 $self->signal_emit( 'changed-option-visibility', $newval );
             }
             default {
-                $self->SUPER::SET_PROPERTY( $pspec, $newval );
+                $self->{$name} = $newval;
             }
         }
         if ( defined $logger and not $callback ) {
@@ -1482,7 +1482,7 @@ sub edit_paper {
         title           => __('Edit paper size'),
         border_width    => $self->get('border-width'),
     );
-    my $vbox = $window->get('vbox');
+    my $vbox = $window->get_content_area;
 
     # Buttons for SimpleList
     my $hboxl = Gtk3::HBox->new;

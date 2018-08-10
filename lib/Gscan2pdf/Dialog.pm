@@ -9,7 +9,7 @@ use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 
-use Glib::Object::Subclass Gtk3::Window::,
+use Glib::Object::Subclass Gtk3::Dialog::,
   signals => {
     delete_event    => \&on_delete_event,
     key_press_event => \&on_key_press_event,
@@ -29,13 +29,6 @@ use Glib::Object::Subclass Gtk3::Window::,
         'Hide on delete',                                             # nickname
         'Whether to destroy or hide the dialog when it is dismissed', # blurb
         FALSE,                                                        # default
-        [qw/readable writable/]                                       # flags
-    ),
-    Glib::ParamSpec->object(
-        'vbox',                                                       # name
-        'VBox',                                                       # nickname
-        'VBox which is automatically added to the Gscan2pdf::Dialog', # blurb
-        'Gtk3::VBox',                                                 # package
         [qw/readable writable/]                                       # flags
     ),
     Glib::ParamSpec->enum(
@@ -61,24 +54,8 @@ my $INTREGEX = qr{^(.*)           # start of message
 
 sub INIT_INSTANCE {
     my $self = shift;
-
     $self->set_position('center-on-parent');
-
-    # VBox for window
-    my $vbox = Gtk3::VBox->new;
-    $self->add($vbox);
-    $self->set( 'vbox', $vbox );
     return $self;
-}
-
-sub SET_PROPERTY {
-    my ( $self, $pspec, $newval ) = @_;
-    my $name = $pspec->get_name;
-    $self->{$name} = $newval;
-    if ( $name eq 'border_width' ) {
-        $self->get('vbox')->set( 'border-width', $newval );
-    }
-    return;
 }
 
 sub on_delete_event {
@@ -110,7 +87,7 @@ sub on_key_press_event {
 sub add_page_range {
     my ($self) = @_;
     my $frame = Gtk3::Frame->new( __('Page Range') );
-    $self->get('vbox')->pack_start( $frame, FALSE, FALSE, 0 );
+    $self->get_content_area->pack_start( $frame, FALSE, FALSE, 0 );
 
     my $pr = Gscan2pdf::PageRange->new;
     $pr->set_active( $self->get('page-range') );

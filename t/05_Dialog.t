@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 22;
+use Test::More tests => 17;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -25,20 +25,6 @@ is( $dialog->get('transient-for'), $window, 'transient-for' );
 ok( $dialog->get('hide-on-delete') == FALSE, 'default destroy' );
 is( $dialog->get('border-width'), 0,          'default border width' );
 is( $dialog->get('page-range'),   'selected', 'default page-range' );
-
-ok( my $vbox = $dialog->get('vbox'), 'Get vbox' );
-isa_ok( $vbox, 'Gtk3::VBox' );
-is(
-    $vbox->get('border-width'),
-    $dialog->get('border-width'),
-    'border width applied to vbox'
-);
-
-my $border_width = 6;
-$dialog->set( 'border-width', $border_width );
-is( $dialog->get('border-width'), $border_width, 'set border width' );
-is( $vbox->get('border-width'),
-    $border_width, 'new border width applied to vbox' );
 
 $dialog = Gscan2pdf::Dialog->new;
 $dialog->signal_emit( 'delete_event', undef );

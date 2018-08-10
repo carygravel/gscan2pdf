@@ -179,10 +179,7 @@ sub SET_PROPERTY {
     my ( $self, $pspec, $newval ) = @_;
     my $name = $pspec->get_name;
     $self->{$name} = $newval;
-    if ( $name eq 'border_width' ) {
-        $self->get('vbox')->set( 'border-width', $newval );
-    }
-    elsif ( $name eq 'include_time' ) {
+    if ( $name eq 'include_time' ) {
         $self->on_toggle_include_time($newval);
     }
     elsif ( $name =~ /^meta_([^_]+)(_suggestions)?$/xsm ) {
@@ -261,7 +258,7 @@ sub on_toggle_include_time {
 
 sub add_metadata {
     my ( $self, $defaults ) = @_;
-    my $vbox = $self->get('vbox');
+    my $vbox = $self->get_content_area;
 
     # it needs its own box to be able to hide it if necessary
     $self->{'meta-box-widget'} = Gtk3::HBox->new;
@@ -349,7 +346,7 @@ sub add_metadata {
                 title           => __('Select Date'),
                 border_width    => $self->get('border-width')
             );
-            my $vbox_date = $window_date->get('vbox');
+            my $vbox_date = $window_date->get_content_area;
             $window_date->set_resizable(FALSE);
             my $calendar = Gtk3::Calendar->new;
 
@@ -474,7 +471,7 @@ sub insert_text_handler {
 
 sub add_image_type {
     my ($self) = @_;
-    my $vbox = $self->get('vbox');
+    my $vbox = $self->get_content_area;
 
     # Image type ComboBox
     my $hboxi = Gtk3::HBox->new;
@@ -698,7 +695,7 @@ sub add_pdf_options {
 
     # pack everything in one vbox to be able to show/hide them all at once
     my $vboxp = Gtk3::VBox->new;
-    my $vbox  = $self->get('vbox');
+    my $vbox  = $self->get_content_area;
     $vbox->pack_start( $vboxp, FALSE, FALSE, 0 );
 
     # Downsample options
