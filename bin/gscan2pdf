@@ -3805,31 +3805,24 @@ sub add_postprocessing_options {
             $SETTING{'rotate facing'}  = 0;
             $SETTING{'rotate reverse'} = 0;
             if ( $rbutton->get_active ) {
-                if ( $side->[ $rotate_side_cmbx->get_active ][0] eq 'both' ) {
-                    $SETTING{'rotate facing'} =
-                      $rotate->[ $comboboxr->get_active ][0];
+                if ( $rotate_side_cmbx->get_active_index eq 'both' ) {
+                    $SETTING{'rotate facing'}  = $comboboxr->get_active_index;
                     $SETTING{'rotate reverse'} = $SETTING{'rotate facing'};
                 }
-                elsif (
-                    $side->[ $rotate_side_cmbx->get_active ][0] eq 'facing' )
-                {
-                    $SETTING{'rotate facing'} =
-                      $rotate->[ $comboboxr->get_active ][0];
+                elsif ( $rotate_side_cmbx->get_active_index eq 'facing' ) {
+                    $SETTING{'rotate facing'} = $comboboxr->get_active_index;
                 }
                 else {
-                    $SETTING{'rotate reverse'} =
-                      $rotate->[ $comboboxr->get_active ][0];
+                    $SETTING{'rotate reverse'} = $comboboxr->get_active_index;
                 }
                 if ( $r2button->get_active ) {
-                    if ( $side2->[ $rotate_side_cmbx2->get_active ][0] eq
-                        'facing' )
-                    {
+                    if ( $rotate_side_cmbx2->get_active_index eq 'facing' ) {
                         $SETTING{'rotate facing'} =
-                          $rotate->[ $comboboxr2->get_active ][0];
+                          $comboboxr2->get_active_index;
                     }
                     else {
                         $SETTING{'rotate reverse'} =
-                          $rotate->[ $comboboxr2->get_active ][0];
+                          $comboboxr2->get_active_index;
                     }
                 }
             }
@@ -3854,12 +3847,10 @@ sub add_postprocessing_options {
                 if (   $SETTING{'ocr engine'} eq 'tesseract'
                     or $SETTING{'ocr engine'} eq 'ocropus' )
                 {
-                    $SETTING{'ocr language'} =
-                      $tesslang->[ $comboboxtl->get_active ][0];
+                    $SETTING{'ocr language'} = $comboboxtl->get_active_index;
                 }
                 if ( $SETTING{'ocr engine'} eq 'cuneiform' ) {
-                    $SETTING{'ocr language'} =
-                      $cflang->[ $comboboxcl->get_active ][0];
+                    $SETTING{'ocr language'} = $comboboxcl->get_active_index;
                 }
                 $SETTING{'threshold-before-ocr'} = $tbutton->get_active;
                 $logger->info(
@@ -5781,9 +5772,8 @@ sub preferences {
     my $hbox = _hbox_with_apply_cancel_buttons(
         sub {
             $windowr->hide;
-            if ( $SETTING{frontend} ne $frontends->[ $combob->get_active ][0] )
-            {
-                $SETTING{frontend} = $frontends->[ $combob->get_active ][0];
+            if ( $SETTING{frontend} ne $combob->get_active_index ) {
+                $SETTING{frontend} = $combob->get_active_index;
                 $windows->hide;
                 undef $windows;
             }
@@ -5867,7 +5857,7 @@ sub preferences {
             $SETTING{'available-tmp-warning'} = $spinbuttonw->get_value;
             $SETTING{'Blank threshold'}       = $spinbuttonb->get_value;
             $SETTING{'Dark threshold'}        = $spinbuttond->get_value;
-            $SETTING{'OCR output'} = $ocr_function->[ $comboo->get_active ][0];
+            $SETTING{'OCR output'}            = $comboo->get_active_index;
 
             # Store viewer preferences
             $SETTING{'view files toggle'} = $cbv->get_active;
@@ -6107,8 +6097,8 @@ sub _preferences_scan_options {
 
     $combob->signal_connect(
         changed => sub {
-            my $libsane_active = $frontends[ $combob->get_active ][0] =~
-              /lib(:?image-)?sane-perl/xsm;
+            my $libsane_active =
+              $combob->get_active_index =~ /lib(:?image-)?sane-perl/xsm;
             $cbcsh->set_sensitive($libsane_active);
             $hboxp->set_sensitive( not $libsane_active );
             $cbc->set_sensitive( not $libsane_active );
