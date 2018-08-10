@@ -268,7 +268,7 @@ sub add_metadata {
     my $frame = Gtk3::Frame->new( __('Document Metadata') );
     $self->{'meta-box-widget'}->pack_start( $frame, TRUE, TRUE, 0 );
     my $hboxm = Gtk3::VBox->new;
-    $hboxm->set_border_width( $self->get('border-width') );
+    $hboxm->set_border_width( $self->style_get('content-area-border') );
     $frame->add($hboxm);
 
     # grid to align widgets
@@ -281,7 +281,7 @@ sub add_metadata {
     $grid->attach( $dtframe, 0, $row++, 2, 1 );
     $dtframe->set_hexpand(TRUE);
     my $vboxdt = Gtk3::VBox->new;
-    $vboxdt->set_border_width( $self->get('border-width') );
+    $vboxdt->set_border_width( $self->style_get('content-area-border') );
     $dtframe->add($vboxdt);
 
     # the first radio button has to set the group,
@@ -344,7 +344,6 @@ sub add_metadata {
             my $window_date = Gscan2pdf::Dialog->new(
                 'transient-for' => $self,
                 title           => __('Select Date'),
-                border_width    => $self->get('border-width')
             );
             my $vbox_date = $window_date->get_content_area;
             $window_date->set_resizable(FALSE);

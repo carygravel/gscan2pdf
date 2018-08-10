@@ -112,7 +112,7 @@ sub new {
     my $framex = Gtk3::Frame->new( __('Page numbering') );
     $vbox->pack_start( $framex, FALSE, FALSE, 0 );
     my $vboxx = Gtk3::VBox->new;
-    $vboxx->set_border_width( $self->get('border_width') );
+    $vboxx->set_border_width( $self->style_get('content-area-border') );
     $framex->add($vboxx);
 
     # SpinButton for starting page number

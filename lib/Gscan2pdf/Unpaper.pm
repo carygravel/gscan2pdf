@@ -11,8 +11,6 @@ use Gtk3;
 use version;
 use Gscan2pdf::Document;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
-use Readonly;
-Readonly my $BORDER_WIDTH => 6;
 
 BEGIN {
     use Exporter ();
@@ -285,7 +283,7 @@ sub add_options {
 
     # Notebook page 1
     my $vbox1 = Gtk3::VBox->new;
-    $vbox1->set_border_width($BORDER_WIDTH);
+    $vbox1->set_border_width( $vbox->get('border-width') );
     $notebook->append_page( $vbox1, Gtk3::Label->new( __('Deskew') ) );
 
     my $dsbutton = $self->add_widget( $vbox1, $options, 'no-deskew' );
@@ -318,7 +316,7 @@ sub add_options {
 
     # Notebook page 2
     my $vbox2 = Gtk3::VBox->new;
-    $vbox2->set_border_width($BORDER_WIDTH);
+    $vbox2->set_border_width( $vbox->get('border-width') );
     $notebook->append_page( $vbox2, Gtk3::Label->new( __('Border') ) );
 
     my $bsbutton = $self->add_widget( $vbox2, $options, 'no-border-scan' );
@@ -378,7 +376,7 @@ sub add_options {
 
     # Notebook page 3
     my $vbox3 = Gtk3::VBox->new;
-    $vbox3->set_border_width($BORDER_WIDTH);
+    $vbox3->set_border_width( $vbox->get('border-width') );
     $notebook->append_page( $vbox3, Gtk3::Label->new( __('Filters') ) );
 
     my $spinbuttonwt = $self->add_widget( $vbox3, $options, 'white-threshold' );
@@ -467,7 +465,7 @@ sub add_widget {
             $widget = Gtk3::Frame->new( $hashref->{$option}{string} );
             $vbox->pack_start( $widget, TRUE, TRUE, 0 );
             my $vboxf = Gtk3::VBox->new;
-            $vboxf->set_border_width($BORDER_WIDTH);
+            $vboxf->set_border_width( $vbox->get('border-width') );
             $widget->add($vboxf);
             $widget->set_tooltip_text( $hashref->{$option}{tooltip} );
             for ( keys %{ $hashref->{$option}{options} } ) {
@@ -497,7 +495,7 @@ sub add_widget {
             $widget = Gtk3::Frame->new( $hashref->{$option}{string} );
             $vbox->pack_start( $widget, TRUE, TRUE, 0 );
             my $vboxf = Gtk3::VBox->new;
-            $vboxf->set_border_width($BORDER_WIDTH);
+            $vboxf->set_border_width( $vbox->get('border-width') );
             $widget->add($vboxf);
             for (
                 sort {

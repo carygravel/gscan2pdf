@@ -15,8 +15,6 @@ use Gscan2pdf::Scanner::Options;
 use Gscan2pdf::Scanner::Profile;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use List::MoreUtils qw(first_index);
-use Readonly;
-Readonly my $BORDER_WIDTH => 6;
 
 my (
     $MAX_PAGES,        $MAX_INCREMENT, $DOUBLE_INCREMENT,
@@ -300,14 +298,14 @@ sub INIT_INSTANCE {
     $scwin->set_policy( 'automatic', 'automatic' );
     my $vbox1 = Gtk3::VBox->new;
     $self->{vbox} = $vbox1;
-    $vbox1->set_border_width($BORDER_WIDTH);
+    my $border_width = $self->style_get('content-area-border');
+    $vbox1->set_border_width($border_width);
     $scwin->add_with_viewport($vbox1);
 
     # Frame for # pages
     $self->{framen} = Gtk3::Frame->new( __('# Pages') );
     $vbox1->pack_start( $self->{framen}, FALSE, FALSE, 0 );
-    my $vboxn        = Gtk3::VBox->new;
-    my $border_width = $self->get('border_width');
+    my $vboxn = Gtk3::VBox->new;
     $vboxn->set_border_width($border_width);
     $self->{framen}->add($vboxn);
 
@@ -1480,7 +1478,6 @@ sub edit_paper {
     my $window = Gscan2pdf::Dialog->new(
         'transient-for' => $self,
         title           => __('Edit paper size'),
-        border_width    => $self->get('border-width'),
     );
     my $vbox = $window->get_content_area;
 
@@ -1812,7 +1809,6 @@ sub set_options {
         'transient-for' => $self,
         title           => $d_sane->get( $opt->{title} ),
         destroy         => TRUE,
-        border_width    => $self->get('border_width'),
     );
     my $vbox   = $window->vbox;
     my $canvas = Goo::Canvas->new;

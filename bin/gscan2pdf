@@ -110,7 +110,6 @@ Readonly my $HALF                    => 0.5;
 Readonly my $UNIT_SLIDER_STEP        => 0.001;
 Readonly my $SIGMA_STEP              => 0.1;
 Readonly my $MAX_SIGMA               => 5;
-Readonly my $BORDER_WIDTH            => 6;               # Window parameters
 Readonly my $_90_DEGREES             => 90;
 Readonly my $_180_DEGREES            => 180;
 Readonly my $_270_DEGREES            => 270;
@@ -2126,7 +2125,6 @@ sub save_dialog {
         'transient-for'  => $window,
         title            => __('Save'),
         'hide-on-delete' => TRUE,
-        border_width     => $BORDER_WIDTH,
         'page-range'     => $SETTING{'Page range'},
         'include-time'   => $SETTING{use_time},
         'meta-datetime' =>
@@ -2925,7 +2923,6 @@ sub email {
         'transient-for'  => $window,
         title            => __('Email as PDF'),
         'hide-on-delete' => TRUE,
-        'border-width'   => $BORDER_WIDTH,
         'page-range'     => $SETTING{'Page range'},
         'include-time'   => $SETTING{use_time},
         'meta-datetime' =>
@@ -3087,7 +3084,6 @@ sub scan_dialog {
     my %options = (
         'transient-for'       => $window,
         title                 => __('Scan Document'),
-        'border-width'        => $BORDER_WIDTH,
         'default-width'       => $SETTING{scan_window_width},
         'default-height'      => $SETTING{scan_window_height},
         logger                => $logger,
@@ -3733,7 +3729,7 @@ sub add_postprocessing_options {
     my $framep = Gtk3::Frame->new( __('Post-processing') );
     $vbox->pack_start( $framep, FALSE, FALSE, 0 );
     my $vboxp = Gtk3::VBox->new;
-    $vboxp->set_border_width($BORDER_WIDTH);
+    $vboxp->set_border_width( $self->style_get('content-area-border') );
     $framep->add($vboxp);
 
     # Rotate
@@ -3761,7 +3757,6 @@ sub add_postprocessing_options {
             my $windowuo = Gscan2pdf::Dialog->new(
                 'transient-for' => $window,
                 title           => __('unpaper options'),
-                border_width    => $BORDER_WIDTH
             );
             my $vbox1 = $windowuo->get_content_area;
             $unpaper->add_options($vbox1);
@@ -4318,7 +4313,6 @@ sub renumber_dialog {
         document         => $slist,
         logger           => $logger,
         'hide-on-delete' => FALSE,
-        border_width     => $BORDER_WIDTH
     );
 
     # Update undo/redo buffers
@@ -4480,7 +4474,6 @@ sub threshold {
     my $windowt = Gscan2pdf::Dialog->new(
         'transient-for' => $window,
         title           => __('Threshold'),
-        border_width    => $BORDER_WIDTH
     );
 
     # Frame for page range
@@ -4558,7 +4551,6 @@ sub brightness_contrast {
     my $windowt = Gscan2pdf::Dialog->new(
         'transient-for' => $window,
         title           => __('Brightness / Contrast'),
-        border_width    => $BORDER_WIDTH
     );
     my ( $hbox, $label );
 
@@ -4648,7 +4640,6 @@ sub negate {
     my $windowt = Gscan2pdf::Dialog->new(
         'transient-for' => $window,
         title           => __('Negate'),
-        border_width    => $BORDER_WIDTH
     );
 
     # Frame for page range
@@ -4710,7 +4701,6 @@ sub unsharp {
     my $windowum = Gscan2pdf::Dialog->new(
         'transient-for' => $window,
         title           => __('Unsharp mask'),
-        border_width    => $BORDER_WIDTH
     );
 
     # Frame for page range
@@ -4876,7 +4866,6 @@ sub crop {
         'transient-for'  => $window,
         title            => __('Crop'),
         'hide-on-delete' => TRUE,
-        border_width     => $BORDER_WIDTH
     );
 
     # Frame for page range
@@ -5048,7 +5037,6 @@ sub user_defined_dialog {
         'transient-for'  => $window,
         title            => __('User-defined tools'),
         'hide-on-delete' => TRUE,
-        border_width     => $BORDER_WIDTH
     );
 
     # Frame for page range
@@ -5189,7 +5177,6 @@ sub unpaper {
         'transient-for'  => $window,
         title            => __('unpaper'),
         'hide-on-delete' => TRUE,
-        border_width     => $BORDER_WIDTH
     );
 
     # Frame for page range
@@ -5304,7 +5291,6 @@ sub ocr_dialog {
         'transient-for'  => $window,
         title            => __('OCR'),
         'hide-on-delete' => TRUE,
-        border_width     => $BORDER_WIDTH
     );
 
     # Frame for page range
@@ -5747,7 +5733,6 @@ sub preferences {
         'transient-for'  => $window,
         title            => __('Preferences'),
         'hide-on-delete' => TRUE,
-        border_width     => $BORDER_WIDTH
     );
     my $vbox = $windowr->get_content_area;
 
@@ -5757,7 +5742,7 @@ sub preferences {
 
     my ( $vbox1, $frontends, $combob, $preentry, $cbc, $cbo,
         $blacklist, $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages )
-      = _preferences_scan_options();
+      = _preferences_scan_options( $windowr->style_get('content-area-border') );
     $notebook->append_page( $vbox1, Gtk3::Label->new( __('Scan options') ) );
 
     my (
@@ -5765,7 +5750,9 @@ sub preferences {
         $cbtm,        $cbts,        $tmpentry,     $spinbuttonw,
         $spinbuttonb, $spinbuttond, $ocr_function, $comboo,
         $cbv,         $cbb
-    ) = _preferences_general_options();
+      )
+      = _preferences_general_options(
+        $windowr->style_get('content-area-border') );
     $notebook->append_page( $vbox2, Gtk3::Label->new( __('General options') ) );
 
     # Apply button
@@ -5872,8 +5859,9 @@ sub preferences {
 }
 
 sub _preferences_scan_options {
+    my ($border_width) = @_;
     my $vbox = Gtk3::VBox->new;
-    $vbox->set_border_width($BORDER_WIDTH);
+    $vbox->set_border_width($border_width);
 
     my $cbo =
       Gtk3::CheckButton->new_with_label( __('Open scanner at program start') );
@@ -6011,7 +5999,7 @@ sub _preferences_scan_options {
     my $oframe = Gtk3::Frame->new( __('Option visibility & control') );
     $vbox->pack_start( $oframe, TRUE, TRUE, 0 );
     my $vvbox = Gtk3::VBox->new;
-    $vvbox->set_border_width($BORDER_WIDTH);
+    $vvbox->set_border_width($border_width);
     $oframe->add($vvbox);
     my $scwin = Gtk3::ScrolledWindow->new;
     $vvbox->pack_start( $scwin, TRUE, TRUE, 0 );
@@ -6112,8 +6100,9 @@ sub _preferences_scan_options {
 }
 
 sub _preferences_general_options {
+    my ($border_width) = @_;
     my $vbox = Gtk3::VBox->new;
-    $vbox->set_border_width($BORDER_WIDTH);
+    $vbox->set_border_width($border_width);
 
     # Restore window setting
     my $cbw = Gtk3::CheckButton->new_with_label(
@@ -6265,7 +6254,7 @@ sub _preferences_general_options {
     my $frame = Gtk3::Frame->new( __('Manage user-defined tools') );
     $vbox->pack_start( $frame, TRUE, TRUE, 0 );
     my $vboxt = Gtk3::VBox->new;
-    $vboxt->set_border_width($BORDER_WIDTH);
+    $vboxt->set_border_width($border_width);
     $frame->add($vboxt);
 
     for my $tool ( @{ $SETTING{user_defined_tools} } ) {
@@ -6421,7 +6410,6 @@ sub properties {
         'transient-for'  => $window,
         title            => __('Properties'),
         'hide-on-delete' => TRUE,
-        border_width     => $BORDER_WIDTH
     );
     my $vbox = $windowp->get_content_area;
 

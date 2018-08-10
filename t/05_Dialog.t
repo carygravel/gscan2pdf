@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 17;
+use Test::More tests => 16;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -23,8 +23,7 @@ isa_ok( $dialog, 'Gscan2pdf::Dialog' );
 is( $dialog->get('title'),         'title', 'title' );
 is( $dialog->get('transient-for'), $window, 'transient-for' );
 ok( $dialog->get('hide-on-delete') == FALSE, 'default destroy' );
-is( $dialog->get('border-width'), 0,          'default border width' );
-is( $dialog->get('page-range'),   'selected', 'default page-range' );
+is( $dialog->get('page-range'), 'selected', 'default page-range' );
 
 $dialog = Gscan2pdf::Dialog->new;
 $dialog->signal_emit( 'delete_event', undef );

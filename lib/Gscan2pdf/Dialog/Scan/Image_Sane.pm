@@ -205,7 +205,7 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
         # Notebook page for group
         if ( $opt->{type} == SANE_TYPE_GROUP or not defined $vbox ) {
             $vbox = Gtk3::VBox->new;
-            $vbox->set_border_width( $self->get('border-width') );
+            $vbox->set_border_width( $self->style_get('content-area-border') );
             my $text =
                 $opt->{type} == SANE_TYPE_GROUP
               ? $d_sane->get( $opt->{title} )

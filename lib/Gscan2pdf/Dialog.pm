@@ -15,15 +15,6 @@ use Glib::Object::Subclass Gtk3::Dialog::,
     key_press_event => \&on_key_press_event,
   },
   properties => [
-    Glib::ParamSpec->uint(
-        'border-width',             # name
-        'Border width',             # nickname
-        'Border width for vbox',    # blurb
-        0,                          # min
-        999,                        # max
-        0,                          # default
-        [qw/readable writable/]     # flags
-    ),
     Glib::ParamSpec->boolean(
         'hide-on-delete',                                             # name
         'Hide on delete',                                             # nickname
