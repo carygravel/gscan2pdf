@@ -548,25 +548,15 @@ sub INIT_INSTANCE {
     );
     $hboxsp->pack_start( $dbutton, FALSE, FALSE, 0 );
 
-    # HBox for buttons
-    my $hboxb = Gtk3::HBox->new;
-    $vbox->pack_end( $hboxb, FALSE, FALSE, 0 );
-
-    # Scan button
-    $self->{sbutton} = Gtk3::Button->new( __('Scan') );
-    $hboxb->pack_start( $self->{sbutton}, TRUE, TRUE, 0 );
-    $self->{sbutton}->signal_connect(
-        clicked => sub {
+    $self->add_actions(
+        __('Scan'),
+        sub {
             $self->signal_emit('clicked-scan-button');
             $self->scan;
-        }
+        },
+        'gtk-close',
+        sub { $self->hide; }
     );
-    $self->{sbutton}->grab_focus;
-
-    # Cancel button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-close');
-    $hboxb->pack_end( $cbutton, FALSE, FALSE, 0 );
-    $cbutton->signal_connect( clicked => sub { $self->hide; } );
 
     # initialise stack of uuids - needed for cases where setting a profile
     # requires several reloads, and therefore reapplying the same profile

@@ -183,19 +183,10 @@ sub new {
         }
     );
 
-    # HBox for buttons
-    my $hbox = Gtk3::HBox->new;
-    $vbox->pack_start( $hbox, FALSE, TRUE, 0 );
-
-    # Start button
-    my $obutton = Gtk3::Button->new( __('Renumber') );
-    $hbox->pack_start( $obutton, TRUE, TRUE, 0 );
-    $obutton->signal_connect( clicked => sub { $self->renumber } );
-
-    # Close button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-close');
-    $hbox->pack_end( $cbutton, FALSE, FALSE, 0 );
-    $cbutton->signal_connect( clicked => sub { $self->hide; } );
+    $self->add_actions(
+        __('Renumber'), sub { $self->renumber },
+        'gtk-close',    sub { $self->hide }
+    );
 
     return $self;
 }

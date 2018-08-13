@@ -91,6 +91,25 @@ sub add_page_range {
     return;
 }
 
+# Add buttons and link up their actions
+sub add_actions {
+    my ( $self, $button1, $callback1, $button2, $callback2 ) = @_;
+    $self->add_buttons( $button1 => 'ok', $button2 => 'cancel' );
+    $self->set_default_response('ok');
+    $self->signal_connect(
+        response => sub {
+            my ( $widget, $response ) = @_;
+            if ( $response eq 'ok' ) {
+                $callback1->();
+            }
+            else {
+                $callback2->();
+            }
+        }
+    );
+    return;
+}
+
 sub dump_or_stringify {
     my ($val) = @_;
     return (

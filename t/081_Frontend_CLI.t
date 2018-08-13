@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use Image::Sane ':all';    # To get SANE_* enums
+use Gscan2pdf::Scanner::Profile;
 use Test::More tests => 48;
 
 BEGIN {

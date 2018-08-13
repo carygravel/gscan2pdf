@@ -216,7 +216,7 @@ sub scan_options {
     delete $self->{option_widgets};
 
     # Ghost the scan button whilst options being updated
-    if ( defined $self->{sbutton} ) { $self->{sbutton}->set_sensitive(FALSE) }
+    $self->set_response_sensitive( 'ok', FALSE );
 
     my ( $pbar, $cache_key );
     my $hboxd = $self->{hboxd};
@@ -494,8 +494,7 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
     $self->_update_option_visibility( $options,
         $self->get('visible-scan-options'), $hboxp );
 
-    $self->{sbutton}->set_sensitive(TRUE);
-    $self->{sbutton}->grab_focus;
+    $self->set_response_sensitive( 'ok', TRUE );
     return;
 }
 

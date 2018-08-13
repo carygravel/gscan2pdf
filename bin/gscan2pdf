@@ -2177,25 +2177,9 @@ sub save_dialog {
     $kbutton->set_active( $SETTING{close_dialog_on_save} );
     $vbox->pack_start( $kbutton, FALSE, TRUE, 0 );
 
-    # HBox for buttons
-    my $hboxb = Gtk3::HBox->new;
-    $vbox->pack_end( $hboxb, FALSE, TRUE, 0 );
-
-    # Save button
-    $save_button = Gtk3::Button->new_from_stock('gtk-save');
-    $hboxb->pack_start( $save_button, TRUE, TRUE, 0 );
-    $save_button->grab_focus;
-    $save_button->set_can_default(TRUE);
-    $save_button->grab_default;
-    $save_button->signal_connect(
-        clicked => \&save_button_clicked_callback,
-        [ $kbutton, $pshbutton ]
-    );
-
-    # Cancel button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-cancel');
-    $hboxb->pack_end( $cbutton, FALSE, FALSE, 0 );
-    $cbutton->signal_connect( clicked => sub { $windowi->hide; } );
+    $windowi->add_actions( 'gtk-save',
+        sub { save_button_clicked_callback( $kbutton, $pshbutton ) },
+        'gtk-cancel', sub { $windowi->hide } );
 
     $windowi->show_all;
     $windowi->resize( 1, 1 );
@@ -2216,8 +2200,7 @@ sub list_of_pages {
 }
 
 sub save_button_clicked_callback {
-    my ( $widget,  $data )      = @_;
-    my ( $kbutton, $pshbutton ) = @{$data};
+    my ( $kbutton, $pshbutton ) = @_;
 
     # Compile list of pages
     $SETTING{'Page range'} = $windowi->get('page-range');
@@ -2952,16 +2935,9 @@ sub email {
     # PDF options
     my ( $vboxp, $hboxp ) = $windowe->add_pdf_options;
 
-    # HBox for buttons
-    my $hboxb = Gtk3::HBox->new;
-    my $vbox  = $windowe->get_content_area;
-    $vbox->pack_start( $hboxb, FALSE, TRUE, 0 );
-
-    # OK button
-    my $sbutton = Gtk3::Button->new_from_stock('gtk-ok');
-    $hboxb->pack_start( $sbutton, TRUE, TRUE, 0 );
-    $sbutton->signal_connect(
-        clicked => sub {
+    $windowe->add_actions(
+        'gtk-ok',
+        sub {
 
             # Set options
             update_metadata_settings($windowe);
@@ -3049,14 +3025,10 @@ sub email {
             );
 
             $windowe->hide;
-
-        }
+        },
+        'gtk-cancel',
+        sub { $windowe->hide }
     );
-
-    # Cancel button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-cancel');
-    $hboxb->pack_end( $cbutton, FALSE, FALSE, 0 );
-    $cbutton->signal_connect( clicked => sub { $windowe->hide; } );
 
     $windowe->show_all;
     return;
@@ -3758,31 +3730,19 @@ sub add_postprocessing_options {
                 'transient-for' => $window,
                 title           => __('unpaper options'),
             );
-            my $vbox1 = $windowuo->get_content_area;
-            $unpaper->add_options($vbox1);
+            $unpaper->add_options( $windowuo->get_content_area );
 
-            # HBox for buttons
-            my $hboxb = Gtk3::HBox->new;
-            $vbox1->pack_start( $hboxb, FALSE, TRUE, 0 );
-
-            # OK button
-            my $sbutton = Gtk3::Button->new_from_stock('gtk-ok');
-            $hboxb->pack_start( $sbutton, TRUE, TRUE, 0 );
-            $sbutton->signal_connect(
-                clicked => sub {
+            $windowuo->add_actions(
+                'gtk-ok',
+                sub {
 
                     # Update $SETTING
                     $SETTING{'unpaper options'} = $unpaper->get_options;
-
                     $windowuo->destroy;
-                }
+                },
+                'gtk-cancel',
+                sub { $windowuo->destroy }
             );
-
-            # Cancel button
-            my $cbutton = Gtk3::Button->new_from_stock('gtk-cancel');
-            $hboxb->pack_end( $cbutton, FALSE, FALSE, 0 );
-            $cbutton->signal_connect( clicked => sub { $windowuo->destroy; } );
-
             $windowuo->show_all;
         }
     );
@@ -4492,7 +4452,8 @@ sub threshold {
     $hboxt->pack_end( $spinbutton, FALSE, TRUE, 0 );
 
     # HBox for buttons
-    my $hboxb = _hbox_with_apply_cancel_buttons(
+    $windowt->add_actions(
+        'gtk-apply',
         sub {
 
             # Update undo/redo buffers
@@ -4537,9 +4498,9 @@ sub threshold {
                 );
             }
         },
+        'gtk-cancel',
         sub { $windowt->destroy }
     );
-    $vbox->pack_end( $hboxb, FALSE, TRUE, 0 );
     $windowt->show_all;
     return;
 }
@@ -4581,7 +4542,8 @@ sub brightness_contrast {
     $hbox->pack_end( $spinbuttonc, FALSE, TRUE, 0 );
 
     # HBox for buttons
-    my $hboxb = _hbox_with_apply_cancel_buttons(
+    $windowt->add_actions(
+        'gtk-apply',
         sub {
 
             # Update undo/redo buffers
@@ -4626,9 +4588,9 @@ sub brightness_contrast {
                 );
             }
         },
+        'gtk-cancel',
         sub { $windowt->destroy }
     );
-    $vbox->pack_end( $hboxb, FALSE, TRUE, 0 );
     $windowt->show_all;
     return;
 }
@@ -4646,7 +4608,8 @@ sub negate {
     $windowt->add_page_range;
 
     # HBox for buttons
-    my $hboxb = _hbox_with_apply_cancel_buttons(
+    $windowt->add_actions(
+        'gtk-apply',
         sub {
 
             # Update undo/redo buffers
@@ -4686,10 +4649,9 @@ sub negate {
                 );
             }
         },
+        'gtk-cancel',
         sub { $windowt->destroy }
     );
-    my $vbox = $windowt->get_content_area;
-    $vbox->pack_end( $hboxb, FALSE, TRUE, 0 );
     $windowt->show_all;
     return;
 }
@@ -4775,7 +4737,8 @@ sub unsharp {
     }
 
     # HBox for buttons
-    my $hboxb = _hbox_with_apply_cancel_buttons(
+    $windowum->add_actions(
+        'gtk-apply',
         sub {
 
             # Update undo/redo buffers
@@ -4824,9 +4787,9 @@ sub unsharp {
                 );
             }
         },
+        'gtk-cancel',
         sub { $windowum->destroy }
     );
-    $vbox->pack_start( $hboxb, FALSE, TRUE, 0 );
     $windowum->show_all;
     return;
 }
@@ -4961,8 +4924,8 @@ sub crop {
         $sb_selector_h->set_value( $SETTING{selection}{height} );
     }
 
-    # HBox for buttons
-    my $hboxb = _hbox_with_apply_cancel_buttons(
+    $windowc->add_actions(
+        'gtk-apply',
         sub {
 
             if ( not %{ $SETTING{selection} } ) { return }
@@ -5009,9 +4972,9 @@ sub crop {
             }
 
         },
+        'gtk-cancel',
         sub { $windowc->hide }
     );
-    $vbox->pack_start( $hboxb, FALSE, TRUE, 0 );
     $windowc->show_all;
     return;
 }
@@ -5049,16 +5012,9 @@ sub user_defined_dialog {
     $hbox->pack_start( $label, FALSE, TRUE, 0 );
     $comboboxudt = add_udt_combobox($hbox);
 
-    # HBox for buttons
-    my $hboxb = Gtk3::HBox->new;
-    $vbox->pack_start( $hboxb, FALSE, TRUE, 0 );
-
-    # OK button
-    my $sbutton = Gtk3::Button->new_from_stock('gtk-ok');
-    $hboxb->pack_start( $sbutton, TRUE, TRUE, 0 );
-    $sbutton->grab_focus;
-    $sbutton->signal_connect(
-        clicked => sub {
+    $windowc->add_actions(
+        'gtk-ok',
+        sub {
             my @pagelist = indices2pages(
                 $slist->get_page_index(
                     $SETTING{'Page range'}, \&error_callback
@@ -5069,13 +5025,10 @@ sub user_defined_dialog {
             user_defined_tool( \@pagelist, $SETTING{current_udt} );
 
             $windowudt->hide;
-        }
+        },
+        'gtk-cancel',
+        sub { $windowudt->hide; }
     );
-
-    # Cancel button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-cancel');
-    $hboxb->pack_end( $cbutton, FALSE, FALSE, 0 );
-    $cbutton->signal_connect( clicked => sub { $windowudt->hide; } );
 
     $windowudt->show_all;
     return;
@@ -5186,16 +5139,9 @@ sub unpaper {
     my $vbox = $windowu->get_content_area;
     $unpaper->add_options($vbox);
 
-    # HBox for buttons
-    my $hboxb = Gtk3::HBox->new;
-    $vbox->pack_start( $hboxb, FALSE, TRUE, 0 );
-
-    # OK button
-    my $sbutton = Gtk3::Button->new_from_stock('gtk-ok');
-    $hboxb->pack_start( $sbutton, TRUE, TRUE, 0 );
-    $sbutton->grab_focus;
-    $sbutton->signal_connect(
-        clicked => sub {
+    $unpaper->add_actions(
+        'gtk-ok',
+        sub {
 
             # Update $SETTING
             $SETTING{'unpaper options'} = $unpaper->get_options;
@@ -5216,13 +5162,10 @@ sub unpaper {
             );
 
             $windowu->hide;
-        }
+        },
+        'gtk-cancel',
+        sub { $windowu->hide; }
     );
-
-    # Cancel button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-cancel');
-    $hboxb->pack_end( $cbutton, FALSE, FALSE, 0 );
-    $cbutton->signal_connect( clicked => sub { $windowu->hide; } );
 
     $windowu->show_all;
     return;
@@ -5365,16 +5308,9 @@ sub ocr_dialog {
         }
     );
 
-    # HBox for buttons
-    my $hbox = Gtk3::HBox->new;
-    $vbox->pack_start( $hbox, FALSE, TRUE, 0 );
-
-    # Start button
-    my $obutton = Gtk3::Button->new( __('Start OCR') );
-    $hbox->pack_start( $obutton, TRUE, TRUE, 0 );
-    $obutton->grab_focus;
-    $obutton->signal_connect(
-        clicked => sub {
+    $windowo->add_actions(
+        __('Start OCR'),
+        sub {
             my ( $tesslang, $cflang );
             if ( defined $comboboxtl ) {
                 $tesslang = $tesslang[ $comboboxtl->get_active ]->[0];
@@ -5384,13 +5320,10 @@ sub ocr_dialog {
             }
             run_ocr( $ocr_engine[ $combobe->get_active ]->[0],
                 $tesslang, $cflang, $cbto->get_active, $spinbutton->get_value );
-        }
+        },
+        'gtk-close',
+        sub { $windowo->hide }
     );
-
-    # Close button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-close');
-    $hbox->pack_end( $cbutton, FALSE, FALSE, 0 );
-    $cbutton->signal_connect( clicked => sub { $windowo->hide; } );
 
     $windowo->show_all;
     if (
@@ -5755,8 +5688,8 @@ sub preferences {
         $windowr->style_get('content-area-border') );
     $notebook->append_page( $vbox2, Gtk3::Label->new( __('General options') ) );
 
-    # Apply button
-    my $hbox = _hbox_with_apply_cancel_buttons(
+    $windowr->add_actions(
+        'gtk-apply',
         sub {
             $windowr->hide;
             if ( $SETTING{frontend} ne $combob->get_active_index ) {
@@ -5849,11 +5782,11 @@ sub preferences {
             # Store viewer preferences
             $SETTING{'view files toggle'} = $cbv->get_active;
         },
+        'gtk-cancel',
         sub {
             $windowr->hide;
         }
     );
-    $vbox->pack_start( $hbox, FALSE, FALSE, 0 );
     $windowr->show_all;
     return;
 }
@@ -6279,24 +6212,6 @@ sub _preferences_general_options {
       $spinbuttonb, $spinbuttond, \@ocr_function, $comboo, $cbv, $cbb;
 }
 
-sub _hbox_with_apply_cancel_buttons {
-    my ( $apply_callback, $cancel_callback ) = @_;
-
-    my $hbox = Gtk3::HBox->new;
-
-    # Apply button
-    my $button = Gtk3::Button->new_from_stock('gtk-apply');
-    $hbox->pack_start( $button, TRUE, TRUE, 0 );
-    $button->grab_focus;
-    $button->signal_connect( clicked => $apply_callback );
-
-    # Cancel button
-    $button = Gtk3::Button->new_from_stock('gtk-cancel');
-    $hbox->pack_end( $button, TRUE, TRUE, 0 );
-    $button->signal_connect( clicked => $cancel_callback );
-    return $hbox;
-}
-
 sub _cb_array_append {
     my ( $combobox_array, $text ) = @_;
     for my $combobox ( @{$combobox_array} ) {
@@ -6433,12 +6348,9 @@ sub properties {
     $hbox = Gtk3::HBox->new;
     $vbox->pack_end( $hbox, FALSE, FALSE, 0 );
 
-    # Apply button
-    my $button = Gtk3::Button->new_from_stock('gtk-apply');
-    $hbox->pack_start( $button, TRUE, TRUE, 0 );
-    $button->grab_focus;
-    $button->signal_connect(
-        clicked => sub {
+    $windowp->add_actions(
+        'gtk-apply',
+        sub {
             $windowp->hide;
             my $resolution = $spinbutton->get_value;
             $slist->get_model->signal_handler_block(
@@ -6448,14 +6360,9 @@ sub properties {
             }
             $slist->get_model->signal_handler_unblock(
                 $slist->{row_changed_signal} );
-        }
-    );
-
-    # Cancel button
-    $button = Gtk3::Button->new_from_stock('gtk-cancel');
-    $hbox->pack_end( $button, TRUE, TRUE, 0 );
-    $button->signal_connect(
-        clicked => sub {
+        },
+        'gtk-cancel',
+        sub {
             $windowp->hide;
         }
     );

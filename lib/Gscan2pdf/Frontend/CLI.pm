@@ -15,7 +15,6 @@ use IPC::Open3;
 use IO::Handle;
 use Gscan2pdf::NetPBM;
 use Gscan2pdf::Scanner::Options;
-use Gscan2pdf::Dialog::Scan;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Image::Sane ':all';    # To get SANE_NAME_PAGE_WIDTH & SANE_NAME_PAGE_HEIGHT
 use Cwd;

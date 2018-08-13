@@ -133,7 +133,7 @@ sub scan_options {
     delete $self->{option_widgets};
 
     # Ghost the scan button whilst options being updated
-    if ( defined $self->{sbutton} ) { $self->{sbutton}->set_sensitive(FALSE) }
+    $self->set_response_sensitive( 'ok', FALSE );
 
     my $signal;
     Gscan2pdf::Frontend::Image_Sane->open_device(
@@ -358,8 +358,7 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
         $self->{notebook}->get_nth_page($_)->show_all;
     }
 
-    $self->{sbutton}->set_sensitive(TRUE);
-    $self->{sbutton}->grab_focus;
+    $self->set_response_sensitive( 'ok', TRUE );
     return;
 }
 
