@@ -29,7 +29,7 @@ $slist->import_files(
     finished_callback => sub {
         my $md5sum = `md5sum $slist->{data}[0][2]{filename} | cut -c -32`;
         $slist->to_png(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub { ok 0, 'Finished callback' }
         );
         $slist->cancel(
@@ -41,7 +41,7 @@ $slist->import_files(
                 );
                 $slist->save_image(
                     path              => 'test.jpg',
-                    list_of_pages     => [ $slist->{data}[0][2] ],
+                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                     finished_callback => sub { Gtk3->main_quit }
                 );
             }

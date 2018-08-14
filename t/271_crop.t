@@ -29,7 +29,7 @@ $slist->import_files(
     paths             => ['test.gif'],
     finished_callback => sub {
         $slist->crop(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]->{uuid},
             x                 => 10,
             y                 => 10,
             w                 => 10,

@@ -38,7 +38,7 @@ SKIP: {
         paths             => [$filename],
         finished_callback => sub {
             $slist->unpaper(
-                page           => $slist->{data}[0][2],
+                page           => $slist->{data}[0][2]{uuid},
                 options        => { command => $unpaper->get_cmdline },
                 error_callback => sub {
                     my ($message) = @_;

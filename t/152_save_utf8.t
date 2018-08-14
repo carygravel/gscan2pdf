@@ -31,7 +31,7 @@ $slist->import_files(
           'пени способствовала сохранению';
         $slist->save_text(
             path              => 'test.txt',
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub { Gtk3->main_quit }
         );
     }

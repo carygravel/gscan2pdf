@@ -65,7 +65,7 @@ SKIP: {
                 300,
                 'simulated having imported non-standard pnm with 300 PPI' );
             $slist->unpaper(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },
                 finished_callback => sub {
                     is( $slist->{data}[0][2]{resolution},

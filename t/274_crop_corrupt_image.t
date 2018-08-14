@@ -33,7 +33,7 @@ $slist->import_files(
         # remove the data to give a corrupt image
         system("echo '' > $slist->{data}[0][2]->{filename}");
         $slist->crop(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             x                 => 10,
             y                 => 10,
             w                 => 10,

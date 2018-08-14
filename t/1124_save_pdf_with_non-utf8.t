@@ -33,7 +33,7 @@ $slist->import_files(
           Gscan2pdf::Document::slurp('t/non-utf8.html');
         $slist->save_pdf(
             path              => 'test.pdf',
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub { Gtk3->main_quit }
         );
     }

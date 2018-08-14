@@ -29,7 +29,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->rotate(
             angle             => 90,
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub { ok 0, 'Finished callback' }
         );
         $slist->cancel(
@@ -41,7 +41,7 @@ $slist->import_files(
                 );
                 $slist->save_image(
                     path              => 'test2.jpg',
-                    list_of_pages     => [ $slist->{data}[0][2] ],
+                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                     finished_callback => sub { Gtk3->main_quit }
                 );
             }

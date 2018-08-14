@@ -29,7 +29,7 @@ $slist->import_files(
     paths             => ['test.jpg'],
     finished_callback => sub {
         $slist->brightness_contrast(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             brightness        => 65,
             contrast          => 65,
             finished_callback => sub {

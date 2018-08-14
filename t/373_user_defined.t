@@ -50,7 +50,7 @@ $slist->import_files(
         is( int( abs( $slist->{data}[0][2]{resolution} - 25.4 ) ),
             0, 'Resolution of imported image' );
         $slist->user_defined(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             command           => 'convert %i tmp.pbm;mv tmp.pbm %i',
             finished_callback => sub {
                 is( int( abs( $slist->{data}[0][2]{resolution} - 25.4 ) ),
@@ -61,7 +61,7 @@ $slist->import_files(
                 is( $suffix, ".pbm", 'still has an extension' );
                 $slist->save_pdf(
                     path              => 'test.pdf',
-                    list_of_pages     => [ $slist->{data}[0][2] ],
+                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                     finished_callback => sub { Gtk3->main_quit }
                 );
             }

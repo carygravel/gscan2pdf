@@ -33,14 +33,14 @@ $slist->import_files(
 
         $slist->save_djvu(
             path           => 'test.djvu',
-            list_of_pages  => [ $slist->{data}[0][2] ],
+            list_of_pages  => [ $slist->{data}[0][2]{uuid} ],
             error_callback => sub {
                 pass('caught error injected before save_djvu');
                 chmod 0700, $dir;    # allow write access
 
                 $slist->save_djvu(
                     path            => 'test.djvu',
-                    list_of_pages   => [ $slist->{data}[0][2] ],
+                    list_of_pages   => [ $slist->{data}[0][2]{uuid} ],
                     queued_callback => sub {
 
                         # inject error during save_djvu

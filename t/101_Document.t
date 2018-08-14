@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 46;
+use Test::More tests => 44;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 
@@ -93,6 +93,8 @@ is_deeply(
 );
 is( $slist->pages_possible( 2, 1 ),
     4, 'pages_possible finite forwards starting in middle of range2' );
+
+Gscan2pdf::Document->quit();
 
 #########################
 
@@ -346,40 +348,5 @@ is(
     '/command/not/found: command not found',
     'stderr open3 running unknown command'
 );
-
-#########################
-
-$slist = Gscan2pdf::Document->new;
-
-# dir for temporary files
-my $dir = File::Temp->newdir;
-
-# build a cropped (i.e. too little data compared with header) pnm
-# to test padding code
-system('convert rose: test.ppm');
-my $old = `identify -format '%m %G %g %z-bit %r' test.ppm`;
-system('convert rose: - | head -c -1K > test.pnm');
-
-$slist->set_dir($dir);
-$slist->import_scan(
-    filename          => 'test.pnm',
-    page              => 1,
-    delete            => 1,
-    dir               => $dir,
-    finished_callback => sub {
-        system("convert $slist->{data}[0][2]{filename} test2.ppm");
-        is( `identify -format '%m %G %g %z-bit %r' test2.ppm`,
-            $old, 'padded pnm imported correctly (as PNG)' );
-        is( -s 'test2.ppm', -s 'test.ppm', 'padded pnm correct size' );
-        Gtk3->main_quit;
-    }
-);
-Gtk3->main;
-
-#########################
-
-unlink 'test.ppm', 'test2.ppm', 'test.pnm', <$dir/*>;
-rmdir $dir;
-Gscan2pdf::Document->quit();
 
 __END__

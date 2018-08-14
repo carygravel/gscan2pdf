@@ -35,7 +35,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->save_djvu(
             path          => $djvu,
-            list_of_pages => [ $slist->{data}[0][2] ],
+            list_of_pages => [ $slist->{data}[0][2]{uuid} ],
             metadata      => \%metadata,
             options       => {
                 set_timestamp => TRUE,

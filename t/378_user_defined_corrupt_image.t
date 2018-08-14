@@ -52,7 +52,7 @@ $slist->import_files(
         # remove the data to give a corrupt image
         system("echo '' > $slist->{data}[0][2]->{filename}");
         $slist->user_defined(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             command           => 'convert %i -negate %o',
             finished_callback => sub {
                 Gtk3->main_quit;

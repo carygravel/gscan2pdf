@@ -29,7 +29,7 @@ $slist->import_files(
     paths             => ['test.jpg'],
     finished_callback => sub {
         $slist->unsharp(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             radius            => 100,
             sigma             => 5,
             gain              => 100,

@@ -38,7 +38,7 @@ $slist->import_files(
           'пени способствовала сохранению';
         $slist->save_pdf(
             path              => 'test.pdf',
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             options           => \%options,
             finished_callback => sub { Gtk3->main_quit }
         );

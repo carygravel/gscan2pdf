@@ -2194,7 +2194,7 @@ sub list_of_pages {
       $slist->get_page_index( $SETTING{'Page range'}, \&error_callback );
     if ( not @pagelist ) { return }
     for (@pagelist) {
-        push @list_of_pages, $slist->{data}[$_][2];
+        push @list_of_pages, $slist->{data}[$_][2]->{uuid};
     }
     return \@list_of_pages;
 }
@@ -4369,7 +4369,7 @@ sub analyse {
             );
             my ( $signal, $pid );
             $pid = $slist->analyse(
-                page            => $slist->{data}[$i][2],
+                page            => $slist->{data}[$i][2]->{uuid},
                 queued_callback => sub {
                     return update_tpbar(@_);
                 },
@@ -4471,7 +4471,7 @@ sub threshold {
                 my ( $signal, $pid );
                 $pid = $slist->threshold(
                     threshold       => $SETTING{'threshold tool'},
-                    page            => $slist->{data}[$i][2],
+                    page            => $slist->{data}[$i][2]->{uuid},
                     queued_callback => sub {
                         return update_tpbar(@_);
                     },
@@ -4561,7 +4561,7 @@ sub brightness_contrast {
                 $pid = $slist->brightness_contrast(
                     brightness      => $SETTING{'brightness tool'},
                     contrast        => $SETTING{'contrast tool'},
-                    page            => $slist->{data}[$i][2],
+                    page            => $slist->{data}[$i][2]->{uuid},
                     queued_callback => sub {
                         return update_tpbar(@_);
                     },
@@ -4622,7 +4622,7 @@ sub negate {
             for my $i (@pagelist) {
                 my ( $signal, $pid );
                 $pid = $slist->negate(
-                    page            => $slist->{data}[$i][2],
+                    page            => $slist->{data}[$i][2]->{uuid},
                     queued_callback => sub {
                         return update_tpbar(@_);
                     },
@@ -4756,7 +4756,7 @@ sub unsharp {
             for my $i (@pagelist) {
                 my ( $signal, $pid );
                 $pid = $slist->unsharp(
-                    page            => $slist->{data}[$i][2],
+                    page            => $slist->{data}[$i][2]->{uuid},
                     radius          => $SETTING{'unsharp radius'},
                     sigma           => $SETTING{'unsharp sigma'},
                     gain            => $SETTING{'unsharp gain'},
@@ -4940,7 +4940,7 @@ sub crop {
             for my $i (@pagelist) {
                 my ( $signal, $pid );
                 $pid = $slist->crop(
-                    page            => $slist->{data}[$i][2],
+                    page            => $slist->{data}[$i][2]->{uuid},
                     x               => $SETTING{selection}{x},
                     y               => $SETTING{selection}{y},
                     w               => $SETTING{selection}{width},
@@ -5592,7 +5592,10 @@ sub mark_pages {
     my ($pages) = @_;
     $slist->get_model->signal_handler_block( $slist->{row_changed_signal} );
     for ( @{$pages} ) {
-        $_->{saved} = TRUE;
+        my $i = $slist->find_page_by_uuid($_);
+        if ( defined $i ) {
+            $slist->{data}[$i][2]->{saved} = TRUE;
+        }
     }
     $slist->get_model->signal_handler_unblock( $slist->{row_changed_signal} );
     return;

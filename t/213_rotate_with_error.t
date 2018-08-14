@@ -33,14 +33,14 @@ $slist->import_files(
 
         $slist->rotate(
             angle          => 90,
-            page           => $slist->{data}[0][2],
+            page           => $slist->{data}[0][2]{uuid},
             error_callback => sub {
                 pass('caught error injected before rotate');
                 chmod 0700, $dir;    # allow write access
 
                 $slist->rotate(
                     angle           => 90,
-                    page            => $slist->{data}[0][2],
+                    page            => $slist->{data}[0][2]{uuid},
                     queued_callback => sub {
 
                         # inject error during rotate

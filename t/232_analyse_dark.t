@@ -29,7 +29,7 @@ $slist->import_files(
     paths             => ['black.pnm'],
     finished_callback => sub {
         $slist->analyse(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub {
                 is( $slist->{data}[0][2]{mean}, 0, 'Found dark page' );
                 is( dirname("$slist->{data}[0][2]{filename}"),

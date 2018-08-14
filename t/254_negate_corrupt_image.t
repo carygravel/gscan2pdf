@@ -33,7 +33,7 @@ $slist->import_files(
         # remove the data to give a corrupt image
         system("echo '' > $slist->{data}[0][2]->{filename}");
         $slist->negate(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub {
                 fail('caught errors from negate');
                 Gtk3->main_quit;

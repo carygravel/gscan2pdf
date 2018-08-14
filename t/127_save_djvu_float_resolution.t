@@ -31,7 +31,7 @@ $slist->import_files(
         $slist->{data}[0][2]{resolution} = 299.72;
         $slist->save_djvu(
             path              => 'test.djvu',
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub {
                 is( -s 'test.djvu', 1054, 'DjVu created with expected size' );
                 Gtk3->main_quit;

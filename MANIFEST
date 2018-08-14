@@ -206,6 +206,7 @@ t/0823_Frontend_Image_Sane.t
 t/09_EntryCompletion.t
 t/101_Document.t
 t/102_Document.t
+t/103_Document.t
 t/1111_save_pdf.t
 t/1112_save_pdf_with_locale.t
 t/1113_save_pdf_with_error.t

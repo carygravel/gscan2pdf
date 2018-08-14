@@ -62,7 +62,7 @@ SKIP: {
             # remove the data to give a corrupt image
             system("echo '' > $slist->{data}[0][2]->{filename}");
             $slist->unpaper(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },
                 finished_callback => sub {
                     Gtk3->main_quit;

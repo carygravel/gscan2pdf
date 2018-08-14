@@ -50,11 +50,11 @@ $slist->import_files(
         is( int( abs( $slist->{data}[0][2]{resolution} - 25.4 ) ),
             0, 'Resolution of imported image' );
         $slist->user_defined(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             command           => 'convert %i -negate %o',
             finished_callback => sub {
                 $slist->analyse(
-                    page              => $slist->{data}[0][2],
+                    page              => $slist->{data}[0][2]{uuid},
                     finished_callback => sub {
                         is( $slist->{data}[0][2]{mean},
                             0, 'User-defined with %i and %o' );
@@ -69,7 +69,7 @@ $slist->import_files(
                             "$dir", 'using session directory' );
                         $slist->save_pdf(
                             path              => 'test.pdf',
-                            list_of_pages     => [ $slist->{data}[0][2] ],
+                            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                             finished_callback => sub { Gtk3->main_quit }
                         );
                     }

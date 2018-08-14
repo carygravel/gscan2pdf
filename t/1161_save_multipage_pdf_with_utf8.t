@@ -47,7 +47,7 @@ $slist->import_files(
         for my $i ( 1 .. $n ) {
             $slist->{data}[ $i - 1 ][2]{hocr} =
               'пени способствовала сохранению';
-            push @pages, $slist->{data}[ $i - 1 ][2];
+            push @pages, $slist->{data}[ $i - 1 ][2]{uuid};
         }
         $slist->save_pdf(
             path              => 'test.pdf',

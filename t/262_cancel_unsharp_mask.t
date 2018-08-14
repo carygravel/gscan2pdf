@@ -28,7 +28,7 @@ $slist->import_files(
     paths             => ['test.jpg'],
     finished_callback => sub {
         $slist->unsharp(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             radius            => 100,
             sigma             => 5,
             gain              => 100,
@@ -44,7 +44,7 @@ $slist->import_files(
                 );
                 $slist->save_image(
                     path              => 'test2.jpg',
-                    list_of_pages     => [ $slist->{data}[0][2] ],
+                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                     finished_callback => sub { Gtk3->main_quit }
                 );
             }

@@ -37,7 +37,7 @@ SKIP: {
         paths             => ['test.png'],
         finished_callback => sub {
             $slist->cuneiform(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 language          => 'eng',
                 finished_callback => sub {
                     like(

@@ -30,9 +30,10 @@ SKIP: {
         paths             => [ 'test.pnm', 'test.pnm' ],
         finished_callback => sub {
             $slist->save_tiff(
-                path          => 'test.tif',
-                list_of_pages => [ $slist->{data}[0][2], $slist->{data}[1][2] ],
-                options       => {
+                path => 'test.tif',
+                list_of_pages =>
+                  [ $slist->{data}[0][2]{uuid}, $slist->{data}[1][2]{uuid} ],
+                options => {
                     ps                     => 'te st.ps',
                     post_save_hook         => 'convert %i test2.png',
                     post_save_hook_options => 'fg',

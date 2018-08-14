@@ -30,14 +30,14 @@ $slist->import_files(
     finished_callback => sub {
         $slist->save_pdf(
             path              => 'test.pdf',
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub { ok 0, 'Finished callback' }
         );
         $slist->cancel(
             sub {
                 $slist->save_image(
                     path              => 'test.jpg',
-                    list_of_pages     => [ $slist->{data}[0][2] ],
+                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                     finished_callback => sub { Gtk3->main_quit }
                 );
             }

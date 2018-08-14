@@ -35,7 +35,7 @@ SKIP: {
         paths             => ['test.pnm'],
         finished_callback => sub {
             $slist->gocr(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 finished_callback => sub {
                     is( Encode::is_utf8( $slist->{data}[0][2]{hocr}, 1 ),
                         1, "gocr returned UTF8" );

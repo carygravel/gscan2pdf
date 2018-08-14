@@ -1,5 +1,10 @@
 2.1.5 (29.08.2018):
 
+* Pass page data to thread just in time to process it, rather than when the
+  process is defined. Previously, if the application was still busy, say with
+  tesseract whilst the user tried to save, then the resulting document would be
+  missing the pages updated by tesseract. Closes bug #247
+  (Error creating PDF image object: Can't call method "val" on an undefined value)
 * Update to Hungarian translation (thanks to csola)
 
 

@@ -40,14 +40,14 @@ SKIP: {
             chmod 0500, $dir;    # no write access
 
             $slist->tesseract(
-                page           => $slist->{data}[0][2],
+                page           => $slist->{data}[0][2]{uuid},
                 language       => 'eng',
                 error_callback => sub {
                     pass('caught error injected before tesseract');
                     chmod 0700, $dir;    # allow write access
 
                     $slist->tesseract(
-                        page            => $slist->{data}[0][2],
+                        page            => $slist->{data}[0][2]{uuid},
                         language        => 'eng',
                         queued_callback => sub {
 

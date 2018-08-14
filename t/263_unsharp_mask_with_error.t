@@ -32,7 +32,7 @@ $slist->import_files(
         chmod 0500, $dir;    # no write access
 
         $slist->unsharp(
-            page           => $slist->{data}[0][2],
+            page           => $slist->{data}[0][2]{uuid},
             radius         => 100,
             sigma          => 5,
             gain           => 100,
@@ -42,7 +42,7 @@ $slist->import_files(
                 chmod 0700, $dir;    # allow write access
 
                 $slist->unsharp(
-                    page            => $slist->{data}[0][2],
+                    page            => $slist->{data}[0][2]{uuid},
                     radius          => 100,
                     sigma           => 5,
                     gain            => 100,

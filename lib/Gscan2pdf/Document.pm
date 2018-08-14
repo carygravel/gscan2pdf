@@ -106,6 +106,7 @@ sub setup {
 
     $_self->{requests} = Thread::Queue->new;
     $_self->{return}   = Thread::Queue->new;
+    $_self->{pages}    = Thread::Queue->new;
     share $_self->{progress};
     share $_self->{message};
     share $_self->{process_name};
@@ -227,9 +228,16 @@ sub cancel {
 
     # Empty process queue first to stop any new process from starting
     $logger->info('Emptying process queue');
-    while ( $_self->{requests}->dequeue_nb ) { }
+    while ( $_self->{requests}->pending ) {
+        $_self->{requests}->dequeue;
+    }
     $jobs_completed = 0;
     $jobs_total     = 0;
+
+    # Empty pages queue
+    while ( $_self->{pages}->pending ) {
+        $_self->{pages}->dequeue;
+    }
 
     # Then send the thread a cancel signal
     # to stop it going beyond the next break point
@@ -256,6 +264,10 @@ sub cancel {
     # Add a cancel request to ensure the reply is not blocked
     $logger->info('Requesting cancel');
     my $sentinel = _enqueue_request( 'cancel', { uuid => $uuid } );
+
+    # Send a dummy page to the pages queue in case the thread is waiting there
+    $_self->{pages}->enqueue( { page => 'cancel' } );
+
     return $self->_monitor_process( sentinel => $sentinel, uuid => $uuid );
 }
 
@@ -301,7 +313,6 @@ sub _get_file_info_finished_callback1 {
     my $uuid = $self->_note_callbacks(%options);
     $callback{$uuid}{finished} = sub {
         my ($info) = @_;
-        $logger->debug("In finished_callback for $path");
         if ( $info->{encrypted} and $options{password_callback} ) {
             $options{passwords}[$i] = $options{password_callback}->($path);
             if ( defined $options{passwords}[$i]
@@ -434,7 +445,7 @@ sub _note_callbacks {
             # list_of_pages is frozen,
             # so find the original pages from their uuids
             for ( @{ $options{list_of_pages} } ) {
-                my $page = $self->find_page_by_uuid( $_->{uuid} );
+                my $page = $self->find_page_by_uuid($_);
                 $self->{data}[$page][2]->{saved} = TRUE;
             }
         };
@@ -480,7 +491,7 @@ sub _post_process_scan {
         and $page->{format} =~ /Portable[ ](any|pix|gray|bit)map/xsm )
     {
         $self->to_png(
-            page              => $page,
+            page              => $page->{uuid},
             queued_callback   => $options{queued_callback},
             started_callback  => $options{started_callback},
             finished_callback => sub {
@@ -496,7 +507,7 @@ sub _post_process_scan {
     if ( $options{rotate} ) {
         $self->rotate(
             angle             => $options{rotate},
-            page              => $page,
+            page              => $page->{uuid},
             queued_callback   => $options{queued_callback},
             started_callback  => $options{started_callback},
             finished_callback => sub {
@@ -512,7 +523,7 @@ sub _post_process_scan {
     }
     if ( $options{unpaper} ) {
         $self->unpaper(
-            page    => $page,
+            page    => $page->{uuid},
             options => {
                 command   => $options{unpaper}->get_cmdline,
                 direction => $options{unpaper}->get_option('direction'),
@@ -532,7 +543,7 @@ sub _post_process_scan {
     }
     if ( $options{udt} ) {
         $self->user_defined(
-            page              => $page,
+            page              => $page->{uuid},
             command           => $options{udt},
             queued_callback   => $options{queued_callback},
             started_callback  => $options{started_callback},
@@ -549,7 +560,7 @@ sub _post_process_scan {
     }
     if ( $options{ocr} ) {
         $self->ocr_pages(
-            [$page],
+            [ $page->{uuid} ],
             threshold         => $options{threshold},
             engine            => $options{engine},
             language          => $options{language},
@@ -684,6 +695,22 @@ sub check_return_queue {
                     $callback{ $data->{uuid} }{finished}->( $data->{info} );
                     delete $callback{ $data->{uuid} };
                 }
+            }
+            when ('page request') {
+                my $i = $self->find_page_by_uuid( $data->{uuid} );
+                if ( defined $i ) {
+                    $_self->{pages}->enqueue(
+                        {
+                            # sharing File::Temp objects causes problems,
+                            # so freeze
+                            page => $self->{data}[$i][2]->freeze,
+                        }
+                    );
+                }
+                else {
+                    $logger->error("No page with UUID $data->{uuid}");
+                }
+                return Glib::SOURCE_CONTINUE;
             }
             when ('page') {
                 if ( defined $data->{page} ) {
@@ -1168,12 +1195,6 @@ sub delete_selection_extra {
 sub save_pdf {
     my ( $self, %options ) = @_;
 
-    for my $i ( 0 .. $#{ $options{list_of_pages} } ) {
-        $options{list_of_pages}->[$i] =
-          $options{list_of_pages}->[$i]
-          ->freeze;    # sharing File::Temp objects causes problems
-    }
-
    # File in which to store the process ID so that it can be killed if necessary
     my $pidfile = $self->create_pidfile(%options);
     if ( not defined $pidfile ) { return }
@@ -1203,12 +1224,6 @@ sub save_pdf {
 sub save_djvu {
     my ( $self, %options ) = @_;
 
-    for my $i ( 0 .. $#{ $options{list_of_pages} } ) {
-        $options{list_of_pages}->[$i] =
-          $options{list_of_pages}->[$i]
-          ->freeze;    # sharing File::Temp objects causes problems
-    }
-
    # File in which to store the process ID so that it can be killed if necessary
     my $pidfile = $self->create_pidfile(%options);
     if ( not defined $pidfile ) { return }
@@ -1237,12 +1252,6 @@ sub save_djvu {
 
 sub save_tiff {
     my ( $self, %options ) = @_;
-
-    for my $i ( 0 .. $#{ $options{list_of_pages} } ) {
-        $options{list_of_pages}->[$i] =
-          $options{list_of_pages}->[$i]
-          ->freeze;    # sharing File::Temp objects causes problems
-    }
 
    # File in which to store the process ID so that it can be killed if necessary
     my $pidfile = $self->create_pidfile(%options);
@@ -1276,7 +1285,7 @@ sub rotate {
         'rotate',
         {
             angle => $options{angle},
-            page  => $options{page}->freeze,
+            page  => $options{page},
             dir   => "$self->{dir}",
             uuid  => $uuid,
         }
@@ -1290,12 +1299,6 @@ sub rotate {
 
 sub save_image {
     my ( $self, %options ) = @_;
-
-    for my $i ( 0 .. $#{ $options{list_of_pages} } ) {
-        $options{list_of_pages}->[$i] =
-          $options{list_of_pages}->[$i]
-          ->freeze;    # sharing File::Temp objects causes problems
-    }
 
    # File in which to store the process ID so that it can be killed if necessary
     my $pidfile = $self->create_pidfile(%options);
@@ -1333,11 +1336,6 @@ sub scans_saved {
 sub save_text {
     my ( $self, %options ) = @_;
 
-    for my $i ( 0 .. $#{ $options{list_of_pages} } ) {
-        $options{list_of_pages}->[$i] =
-          $options{list_of_pages}->[$i]
-          ->freeze;    # sharing File::Temp objects causes problems
-    }
     my $uuid     = $self->_note_callbacks(%options);
     my $sentinel = _enqueue_request(
         'save-text',
@@ -1357,11 +1355,6 @@ sub save_text {
 sub save_hocr {
     my ( $self, %options ) = @_;
 
-    for my $i ( 0 .. $#{ $options{list_of_pages} } ) {
-        $options{list_of_pages}->[$i] =
-          $options{list_of_pages}->[$i]
-          ->freeze;    # sharing File::Temp objects causes problems
-    }
     my $uuid     = $self->_note_callbacks(%options);
     my $sentinel = _enqueue_request(
         'save-hocr',
@@ -1384,7 +1377,7 @@ sub analyse {
     my $sentinel = _enqueue_request(
         'analyse',
         {
-            page => $options{page}->freeze,
+            page => $options{page},
             uuid => $uuid
         }
     );
@@ -1401,7 +1394,7 @@ sub threshold {
         'threshold',
         {
             threshold => $options{threshold},
-            page      => $options{page}->freeze,
+            page      => $options{page},
             dir       => "$self->{dir}",
             uuid      => $uuid,
         }
@@ -1418,7 +1411,7 @@ sub brightness_contrast {
     my $sentinel = _enqueue_request(
         'brightness-contrast',
         {
-            page       => $options{page}->freeze,
+            page       => $options{page},
             brightness => $options{brightness},
             contrast   => $options{contrast},
             dir        => "$self->{dir}",
@@ -1438,7 +1431,7 @@ sub negate {
     my $sentinel = _enqueue_request(
         'negate',
         {
-            page => $options{page}->freeze,
+            page => $options{page},
             dir  => "$self->{dir}",
             uuid => $uuid
         }
@@ -1455,7 +1448,7 @@ sub unsharp {
     my $sentinel = _enqueue_request(
         'unsharp',
         {
-            page      => $options{page}->freeze,
+            page      => $options{page},
             radius    => $options{radius},
             sigma     => $options{sigma},
             gain      => $options{gain},
@@ -1476,7 +1469,7 @@ sub crop {
     my $sentinel = _enqueue_request(
         'crop',
         {
-            page => $options{page}->freeze,
+            page => $options{page},
             x    => $options{x},
             y    => $options{y},
             w    => $options{w},
@@ -1497,7 +1490,7 @@ sub to_png {
     my $sentinel = _enqueue_request(
         'to-png',
         {
-            page => $options{page}->freeze,
+            page => $options{page},
             dir  => "$self->{dir}",
             uuid => $uuid
         }
@@ -1519,7 +1512,7 @@ sub tesseract {
     my $sentinel = _enqueue_request(
         'tesseract',
         {
-            page      => $options{page}->freeze,
+            page      => $options{page},
             language  => $options{language},
             threshold => $options{threshold},
             pidfile   => "$pidfile",
@@ -1544,7 +1537,7 @@ sub ocropus {
     my $sentinel = _enqueue_request(
         'ocropus',
         {
-            page      => $options{page}->freeze,
+            page      => $options{page},
             language  => $options{language},
             threshold => $options{threshold},
             pidfile   => "$pidfile",
@@ -1569,7 +1562,7 @@ sub cuneiform {
     my $sentinel = _enqueue_request(
         'cuneiform',
         {
-            page      => $options{page}->freeze,
+            page      => $options{page},
             language  => $options{language},
             threshold => $options{threshold},
             pidfile   => "$pidfile",
@@ -1594,7 +1587,7 @@ sub gocr {
     my $sentinel = _enqueue_request(
         'gocr',
         {
-            page      => $options{page}->freeze,
+            page      => $options{page},
             threshold => $options{threshold},
             pidfile   => "$pidfile",
             uuid      => $uuid,
@@ -1640,7 +1633,7 @@ sub unpaper {
     my $sentinel = _enqueue_request(
         'unpaper',
         {
-            page    => $options{page}->freeze,
+            page    => $options{page},
             options => $options{options},
             pidfile => "$pidfile",
             dir     => "$self->{dir}",
@@ -1665,7 +1658,7 @@ sub user_defined {
     my $sentinel = _enqueue_request(
         'user-defined',
         {
-            page    => $options{page}->freeze,
+            page    => $options{page},
             command => $options{command},
             dir     => "$self->{dir}",
             pidfile => "$pidfile",
@@ -2249,6 +2242,33 @@ sub _thread_main {
 
         # Signal the sentinel that the request was started.
         ${ $request->{sentinel} }++;
+
+        # Ask for page data given UUID
+        if ( defined $request->{page} ) {
+            $self->{return}
+              ->enqueue( { type => 'page request', uuid => $request->{page} } );
+            my $page_request = $self->{pages}->dequeue;
+            if ( $page_request->{page} eq 'cancel' ) { next }
+            $request->{page} = $page_request->{page};
+        }
+        elsif ( defined $request->{list_of_pages} ) {
+            my $cancel = FALSE;
+            for my $i ( 0 .. $#{ $request->{list_of_pages} } ) {
+                $self->{return}->enqueue(
+                    {
+                        type => 'page request',
+                        uuid => $request->{list_of_pages}[$i]
+                    }
+                );
+                my $page_request = $self->{pages}->dequeue;
+                if ( $page_request->{page} eq 'cancel' ) {
+                    $cancel = TRUE;
+                    last;
+                }
+                $request->{list_of_pages}[$i] = $page_request->{page};
+            }
+            if ($cancel) { next }
+        }
 
         given ( $request->{action} ) {
             when ('analyse') {

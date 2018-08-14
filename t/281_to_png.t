@@ -29,7 +29,7 @@ $slist->import_files(
     paths             => ['test.pnm'],
     finished_callback => sub {
         $slist->to_png(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub {
                 is( system("identify $slist->{data}[0][2]{filename}"),
                     0, 'valid PNG created' );

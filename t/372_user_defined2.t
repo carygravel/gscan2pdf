@@ -27,11 +27,11 @@ $slist->import_files(
     paths             => ['white.pnm'],
     finished_callback => sub {
         $slist->user_defined(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             command           => 'convert %i -negate %i',
             finished_callback => sub {
                 $slist->analyse(
-                    page              => $slist->{data}[0][2],
+                    page              => $slist->{data}[0][2]{uuid},
                     finished_callback => sub { Gtk3->main_quit }
                 );
             }

@@ -36,7 +36,7 @@ $slist->import_files(
         is( $slist->scans_saved, '', 'pages not tagged as saved' );
         $slist->save_pdf(
             path             => 'test.pdf',
-            list_of_pages    => [ $slist->{data}[0][2] ],
+            list_of_pages    => [ $slist->{data}[0][2]{uuid} ],
             started_callback => sub {
                 my ( $thread, $process, $completed, $total ) = @_;
                 is( $completed, 0, 'completed counter re-initialised' );

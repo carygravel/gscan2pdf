@@ -36,7 +36,7 @@ SKIP: {
         paths             => ['test.png'],
         finished_callback => sub {
             $slist->cuneiform(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 language          => 'eng',
                 finished_callback => sub { ok 0, 'Finished callback' }
             );
@@ -45,7 +45,7 @@ SKIP: {
                     is( $slist->{data}[0][2]{hocr}, undef, 'no OCR output' );
                     $slist->save_image(
                         path              => 'test.jpg',
-                        list_of_pages     => [ $slist->{data}[0][2] ],
+                        list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                         finished_callback => sub { Gtk3->main_quit }
                     );
                 }

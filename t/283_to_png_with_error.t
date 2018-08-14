@@ -33,13 +33,13 @@ $slist->import_files(
         chmod 0500, $dir;    # no write access
 
         $slist->to_png(
-            page           => $slist->{data}[0][2],
+            page           => $slist->{data}[0][2]{uuid},
             error_callback => sub {
                 pass('caught error injected before to_png');
                 chmod 0700, $dir;    # allow write access
 
                 $slist->to_png(
-                    page            => $slist->{data}[0][2],
+                    page            => $slist->{data}[0][2]{uuid},
                     queued_callback => sub {
 
                         # inject error during to_png

@@ -30,7 +30,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->threshold(
             threshold         => 80,
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub {
                 is( system("identify $slist->{data}[0][2]{filename}"),
                     0, 'created valid file' );
@@ -38,7 +38,7 @@ $slist->import_files(
                     "$dir", 'using session directory' );
                 $slist->save_pdf(
                     path          => 'test.pdf',
-                    list_of_pages => [ $slist->{data}[0][2] ],
+                    list_of_pages => [ $slist->{data}[0][2]{uuid} ],
                     options       => {
                         compression => 'none',
                     },

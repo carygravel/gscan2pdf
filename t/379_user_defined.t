@@ -27,7 +27,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->{data}[0][2]{resolution} = 10;
         $slist->user_defined(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             command           => 'convert %i tmp.ppm;mv tmp.ppm %i',
             finished_callback => sub {
                 is( $slist->{data}[0][2]{resolution},

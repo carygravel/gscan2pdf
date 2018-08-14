@@ -33,7 +33,7 @@ $slist->import_files(
         # remove the data to give a corrupt image
         system("echo '' > $slist->{data}[0][2]->{filename}");
         $slist->unsharp(
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             radius            => 100,
             sigma             => 5,
             gain              => 100,

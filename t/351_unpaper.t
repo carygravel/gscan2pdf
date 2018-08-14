@@ -61,7 +61,7 @@ SKIP: {
             is( int( abs( $slist->{data}[0][2]{resolution} - 254 ) ),
                 0, 'Resolution of imported image' );
             $slist->unpaper(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },
                 finished_callback => sub {
                     is( int( abs( $slist->{data}[0][2]{resolution} - 254 ) ),
@@ -72,7 +72,7 @@ SKIP: {
                         "$dir", 'using session directory' );
                     $slist->save_pdf(
                         path              => 'test.pdf',
-                        list_of_pages     => [ $slist->{data}[0][2] ],
+                        list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                         finished_callback => sub { Gtk3->main_quit }
                     );
                 },

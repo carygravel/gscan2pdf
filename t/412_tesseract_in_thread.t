@@ -36,7 +36,7 @@ SKIP: {
         paths             => ['test.png'],
         finished_callback => sub {
             $slist->tesseract(
-                page           => $slist->{data}[0][2],
+                page           => $slist->{data}[0][2]{uuid},
                 language       => 'eng',
                 error_callback => sub {
                     fail('error thrown running tesseract');

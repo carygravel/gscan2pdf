@@ -32,11 +32,11 @@ $slist->import_files(
     finished_callback => sub {
         $slist->save_pdf(
             path              => 'test.pdf',
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub {
                 $slist->save_pdf(
                     path          => 'test2.pdf',
-                    list_of_pages => [ $slist->{data}[0][2] ],
+                    list_of_pages => [ $slist->{data}[0][2]{uuid} ],
                     options       => {
                         downsample       => 1,
                         'downsample dpi' => 150,

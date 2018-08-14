@@ -55,14 +55,14 @@ $slist->import_files(
         chmod 0500, $dir;    # no write access
 
         $slist->user_defined(
-            page           => $slist->{data}[0][2],
+            page           => $slist->{data}[0][2]{uuid},
             command        => 'convert %i -negate %o',
             error_callback => sub {
                 pass('caught error injected before user_defined');
                 chmod 0700, $dir;    # allow write access
 
                 $slist->user_defined(
-                    page            => $slist->{data}[0][2],
+                    page            => $slist->{data}[0][2]{uuid},
                     command         => 'convert %i -negate %o',
                     queued_callback => sub {
 

@@ -61,7 +61,7 @@ $slist->import_files(
         $slist->{data}[0][2]{hocr} = $hocr;
         $slist->save_pdf(
             path              => 'test.pdf',
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub {
                 $slist->import_files(
                     paths             => ['test.pdf'],

@@ -35,7 +35,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->save_pdf(
             path              => $pdf,
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             metadata          => \%metadata,
             options           => { set_timestamp => TRUE },
             finished_callback => sub { Gtk3->main_quit }

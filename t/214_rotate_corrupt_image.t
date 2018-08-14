@@ -34,7 +34,7 @@ $slist->import_files(
         system("echo '' > $slist->{data}[0][2]->{filename}");
         $slist->rotate(
             angle             => 90,
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub {
                 fail('caught errors from rotate');
                 Gtk3->main_quit;

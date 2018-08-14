@@ -32,7 +32,7 @@ $slist->import_files(
         chmod 0500, $dir;    # no write access
 
         $slist->crop(
-            page           => $slist->{data}[0][2],
+            page           => $slist->{data}[0][2]{uuid},
             x              => 10,
             y              => 10,
             w              => 10,
@@ -42,7 +42,7 @@ $slist->import_files(
                 chmod 0700, $dir;    # allow write access
 
                 $slist->crop(
-                    page            => $slist->{data}[0][2],
+                    page            => $slist->{data}[0][2]{uuid},
                     x               => 10,
                     y               => 10,
                     w               => 10,

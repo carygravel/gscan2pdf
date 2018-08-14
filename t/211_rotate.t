@@ -31,7 +31,7 @@ $slist->import_files(
         $slist->{data}[0][2]{saved} = 1;
         $slist->rotate(
             angle             => 90,
-            page              => $slist->{data}[0][2],
+            page              => $slist->{data}[0][2]{uuid},
             display_callback  => sub { ok 1, 'Triggered display callback' },
             finished_callback => sub {
                 is( system("identify $slist->{data}[0][2]{filename}"),

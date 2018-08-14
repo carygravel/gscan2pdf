@@ -31,7 +31,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->save_pdf(
             path          => "te'st.pdf",
-            list_of_pages => [ $slist->{data}[0][2] ],
+            list_of_pages => [ $slist->{data}[0][2]{uuid} ],
             options       => {
                 prepend => "te'st.pdf",
             },

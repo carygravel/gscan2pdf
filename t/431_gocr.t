@@ -34,7 +34,7 @@ SKIP: {
         paths             => ['test.pnm'],
         finished_callback => sub {
             $slist->gocr(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 finished_callback => sub {
                     like(
                         $slist->{data}[0][2]{hocr},

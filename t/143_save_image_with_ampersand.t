@@ -31,7 +31,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->save_image(
             path              => $path,
-            list_of_pages     => [ $slist->{data}[0][2] ],
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub { Gtk3->main_quit }
         );
     }

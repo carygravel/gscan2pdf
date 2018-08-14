@@ -28,9 +28,10 @@ $slist->import_files(
     paths             => [ 'test.pnm', 'test.pnm' ],
     finished_callback => sub {
         $slist->save_pdf(
-            path          => 'test.pdf',
-            list_of_pages => [ $slist->{data}[0][2], $slist->{data}[1][2] ],
-            options       => {
+            path => 'test.pdf',
+            list_of_pages =>
+              [ $slist->{data}[0][2]{uuid}, $slist->{data}[1][2]{uuid} ],
+            options => {
                 ps                     => 'te st.ps',
                 pstool                 => 'pdftops',
                 post_save_hook         => 'cp %i test2.ps',

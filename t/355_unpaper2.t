@@ -40,7 +40,7 @@ SKIP: {
         paths             => ['test.pnm'],
         finished_callback => sub {
             $slist->unpaper(
-                page              => $slist->{data}[0][2],
+                page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },
                 finished_callback => sub {
                     is( system("identify $slist->{data}[0][2]{filename}"),
