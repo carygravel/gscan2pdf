@@ -4249,6 +4249,7 @@ Daniel Nylander
 csola
 Po-Hsu Lin
 Tobias Bannert
+Ettore Atalan
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
