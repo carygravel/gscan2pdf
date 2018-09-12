@@ -6,6 +6,7 @@
   missing the pages updated by tesseract. Closes bug #247
   (Error creating PDF image object: Can't call method "val" on an undefined value)
 * Update to Hungarian translation (thanks to csola)
+* Update to Czech translation (thanks to Pavel Borecki)
 
 
 2.1.4 (29.07.2018):
