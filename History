@@ -1,4 +1,4 @@
-2.1.5 (29.08.2018):
+2.1.5 (11.09.2018):
 
 * Pass page data to thread just in time to process it, rather than when the
   process is defined. Previously, if the application was still busy, say with
