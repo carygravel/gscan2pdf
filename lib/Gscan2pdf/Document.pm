@@ -2287,6 +2287,11 @@ sub _thread_main {
             }
 
             when ('cancel') {
+
+                # Empty pages queue
+                while ( $_self->{pages}->pending ) {
+                    $_self->{pages}->dequeue;
+                }
                 $self->{return}->enqueue(
                     { type => 'cancelled', uuid => $request->{uuid} } );
             }

@@ -12,8 +12,7 @@ BEGIN {
 Gscan2pdf::Translation::set_domain('gscan2pdf');
 use Log::Log4perl qw(:easy);
 
-#Log::Log4perl->easy_init($WARN);
-Log::Log4perl->easy_init($DEBUG);
+Log::Log4perl->easy_init($WARN);
 my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
@@ -31,28 +30,29 @@ $slist->import_files(
     finished_callback => sub {
         my $md5sum = `md5sum $slist->{data}[0][2]{filename} | cut -c -32`;
         $slist->user_defined(
-            page              => $slist->{data}[0][2]{uuid},
-            command           => 'sleep 10',
-            finished_callback => sub { fail 'Finished callback' }
-        );
-        sleep 2;    # wait a second to allow the processes to start
-        $slist->cancel(
-            sub {
-                is(
-                    $md5sum,
-                    `md5sum $slist->{data}[0][2]{filename} | cut -c -32`,
-                    'image not modified'
-                );
-                $slist->save_image(
-                    path              => 'test.jpg',
-                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
-                    finished_callback => sub { Gtk3->main_quit }
+            page             => $slist->{data}[0][2]{uuid},
+            command          => 'sleep 10',
+            running_callback => sub {
+                $slist->cancel(
+                    sub {
+                        is(
+                            $md5sum,
+`md5sum $slist->{data}[0][2]{filename} | cut -c -32`,
+                            'image not modified'
+                        );
+                        $slist->save_image(
+                            path              => 'test.jpg',
+                            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
+                            finished_callback => sub { Gtk3->main_quit },
+                        );
+                    },
+                    sub {
+                        my ($pid) = @_;
+                        pass "found PID $pid";
+                    }
                 );
             },
-            sub {
-                my ($pid) = @_;
-                pass "found PID $pid";
-            }
+            finished_callback => sub { fail 'Finished callback' },
         );
     }
 );
