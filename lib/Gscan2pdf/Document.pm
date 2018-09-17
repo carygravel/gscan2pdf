@@ -3284,7 +3284,13 @@ sub _convert_image_for_pdf {
                 DIR    => $options{dir},
                 SUFFIX => ".$compression"
             );
-            $logger->info("Converting $ofn to $filename");
+            my $msg = "Converting $ofn to $filename";
+            if ( defined( $options{options}->{quality} )
+                and $compression eq 'jpg' )
+            {
+                $msg .= " with quality=$options{options}->{quality}";
+            }
+            $logger->info($msg);
         }
 
         if ( $options{options}->{downsample} ) {
