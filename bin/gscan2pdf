@@ -5013,7 +5013,7 @@ sub user_defined_dialog {
     $hbox->pack_start( $label, FALSE, TRUE, 0 );
     $comboboxudt = add_udt_combobox($hbox);
 
-    $windowc->add_actions(
+    $windowudt->add_actions(
         'gtk-ok',
         sub {
             my @pagelist = indices2pages(
@@ -5140,7 +5140,7 @@ sub unpaper {
     my $vbox = $windowu->get_content_area;
     $unpaper->add_options($vbox);
 
-    $unpaper->add_actions(
+    $windowu->add_actions(
         'gtk-ok',
         sub {
 
