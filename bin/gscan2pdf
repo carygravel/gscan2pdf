@@ -4305,7 +4305,7 @@ sub indices2pages {
     my @indices = @_;
     my @pages;
     for (@indices) {
-        push @pages, $slist->{data}[$_][2];
+        push @pages, $slist->{data}[$_][2]->{uuid};
     }
     return @pages;
 }
