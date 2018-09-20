@@ -1,4 +1,4 @@
-2.1.6 (18.09.2018):
+2.1.6 (20.09.2018):
 
 * Fixed starting processes from tools menu.
   Closes bug #308 (Exit on Starting OCR)
