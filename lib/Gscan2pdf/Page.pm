@@ -721,7 +721,7 @@ sub im_object {
     my ($self) = @_;
     my $image  = Image::Magick->new;
     my $x      = $image->Read( $self->{filename} );
-    if ("$x") { $logger->warn("Error creating IM object - $x") }
+    if ("$x") { $logger->warn("Error creating IM object - $x"); croak $x }
     return $image;
 }
 
