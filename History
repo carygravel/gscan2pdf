@@ -1,6 +1,7 @@
 2.1.7 (30.09.2018):
 
 * Report PerlMagick errors to user.
+* Add note about checking policy.xml in case of ImageMagick Exception 445.
 
 
 2.1.6 (20.09.2018):

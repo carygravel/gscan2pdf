@@ -4381,6 +4381,10 @@ sub _thread_to_png {
     }
     catch {
         $logger->error("Error converting to png: $_");
+        if (/^Exception[ ]445:[ ]cache[ ]resources[ ]exhausted/xsm) {
+            $_ .= "\nPlease examine ImageMagick's policy.xml file and check";
+            $_ .= ' that the memory limits are set high enough for this image.';
+        }
         _thread_throw_error( $self, $uuid, "Error converting to png: $_." );
         $error = TRUE;
     };
