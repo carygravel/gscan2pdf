@@ -121,7 +121,7 @@ Gscan2pdf::Config::add_defaults( \%output );
     'frontend'                          => 'libimage-sane-perl',
     'rotate facing'                     => 0,
     'rotate reverse'                    => 0,
-    'default filename'                  => '%Da %DY-%Dm-%Dd',
+    'default filename'                  => '%Da %DY-%Dm-%Dd.%De',
     'convert whitespace to underscores' => FALSE,
     'scan prefix'                       => $EMPTY,
     'Blank threshold'                   => 0.005,

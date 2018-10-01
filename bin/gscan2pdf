@@ -2250,7 +2250,8 @@ sub save_button_clicked_callback {
                     author        => $SETTING{author},
                     title         => $SETTING{title},
                     docdate       => $windowi->get('meta-datetime'),
-                    today_and_now => [ Today_and_Now() ]
+                    today_and_now => [ Today_and_Now() ],
+                    extension     => 'pdf',
                 );
 
                 $file_chooser->set_current_name($filename);
@@ -2298,7 +2299,8 @@ sub save_button_clicked_callback {
                 author        => $SETTING{author},
                 title         => $SETTING{title},
                 docdate       => $windowi->get('meta-datetime'),
-                today_and_now => [ Today_and_Now() ]
+                today_and_now => [ Today_and_Now() ],
+                extension     => 'djvu',
             );
 
             $file_chooser->set_current_name($filename);
@@ -2968,7 +2970,8 @@ sub email {
                 author        => $SETTING{author},
                 title         => $SETTING{title},
                 docdate       => $windowe->get('meta-datetime'),
-                today_and_now => [ Today_and_Now() ]
+                today_and_now => [ Today_and_Now() ],
+                extension     => 'pdf',
             );
             if ( $filename =~ /^\s+$/xsm ) { $filename = 'document' }
             $pdf = "$session/$filename.pdf";
@@ -6061,9 +6064,20 @@ sub _preferences_general_options {
     $hbox->pack_start( $label, FALSE, FALSE, 0 );
     my $fileentry = Gtk3::Entry->new;
     $fileentry->set_tooltip_text(
-        __(
-"strftime codes, e.g.:\n\%Y\tcurrent year\n\nwith the following additions:\n\%Da\t author\n\%Dt\t title\n\nAll document date codes use strftime codes with a leading D, e.g.:\n\%DY\t document year\n\%Dm\t document month\n\%Dd\t document day"
-        )
+        __(<<'EOS')
+strftime codes, e.g.:
+%Y	current year
+
+with the following additions:
+%Da	author
+%De	filename extension
+%Dt	title
+
+All document date codes use strftime codes with a leading D, e.g.:
+%DY	document year
+%Dm	document month
+%Dd	document day
+EOS
     );
     $hbox->add($fileentry);
 
@@ -6954,6 +6968,7 @@ All strftime codes (e.g. %Y for the current year) are available as variables,
 with the following additions:
 
  %Da	author
+ %De	filename extension
  %Dt	title
 
 All document date codes use strftime codes with a leading D, e.g.:

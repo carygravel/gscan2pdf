@@ -2045,9 +2045,10 @@ sub expand_metadata_pattern {
     if ( not defined $tmin )  { $tmin  = 0 }
     if ( not defined $tsec )  { $tsec  = 0 }
 
-    # Expand author and title
+    # Expand author, title and extension
     $data{template} =~ s/%Da/$data{author}/gsm;
     $data{template} =~ s/%Dt/$data{title}/gsm;
+    $data{template} =~ s/%De/$data{extension}/gsm;
 
     # Expand convert %Dx code to %x, convert using strftime and replace
     while ( $data{template} =~ /%D([[:alpha:]])/smx ) {

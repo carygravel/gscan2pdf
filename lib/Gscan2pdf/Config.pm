@@ -282,7 +282,7 @@ sub add_defaults {
         'default-scan-options'              => undef,
         'rotate facing'                     => 0,
         'rotate reverse'                    => 0,
-        'default filename'                  => '%Da %DY-%Dm-%Dd',
+        'default filename'                  => '%Da %DY-%Dm-%Dd.%De',
         'convert whitespace to underscores' => FALSE,
         'view files toggle'                 => TRUE,
         'threshold-before-ocr'              => FALSE,

@@ -2,6 +2,7 @@
 
 * Report PerlMagick errors to user.
 * Add note about checking policy.xml in case of ImageMagick Exception 445.
+* Add %De for filename extension to default filenames directives.
 
 
 2.1.6 (20.09.2018):
