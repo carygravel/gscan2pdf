@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 19;
+use Test::More tests => 20;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -282,6 +282,8 @@ $signal = $dialog->signal_connect(
         );
         $loop->run unless ($flag);
 
+        $loop = Glib::MainLoop->new;
+        $flag = FALSE;
         $dialog->set( 'adf-defaults-scan-all-pages', 0 );
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
@@ -293,11 +295,31 @@ $signal = $dialog->signal_connect(
                 is $dialog->{vboxx}->get_visible, TRUE,
                   'simplex ADF, so show vbox for page numbering';
 
-                Gtk3->main_quit;
+                $flag = TRUE;
+                $loop->quit;
             }
         );
         $dialog->set_option( $options->by_name('source'),
             'Automatic Document Feeder' );
+        $loop->run unless ($flag);
+
+        # bug previous to v2.1.7 where having having set double sided and
+        # reverse, and then switched from ADF to flatbed, clicking scan produced
+        # the error message that the facing pages should be scanned first
+        $dialog->set( 'side-to-scan', 'reverse' );
+        $signal = $dialog->signal_connect(
+            'changed-scan-option' => sub {
+                my ( $widget, $option, $value ) = @_;
+                $dialog->signal_handler_disconnect($signal);
+
+                # if allow-batch-flatbed = FALSE
+                is $dialog->get('sided'), 'single',
+                  'selecting flatbed forces single sided';
+
+                Gtk3->main_quit;
+            }
+        );
+        $dialog->set_option( $options->by_name('source'), 'Flatbed' );
     }
 );
 $dialog->set( 'device', 'test' );

@@ -832,6 +832,7 @@ sub _changed_scan_option_callback {
         else {
             $bscannum->set_active(TRUE);
             $self->set( 'num-pages', 1 );
+            $self->set( 'sided',     'single' );
             $self->{framen}->set_sensitive(FALSE);
         }
 
