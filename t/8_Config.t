@@ -506,6 +506,6 @@ is_deeply( \%output, \%example, 'convert pre-2.0.0 selection' );
 
 #########################
 
-unlink $rc;
+unlink $rc, "$rc.old";
 
 __END__

@@ -53,5 +53,5 @@ like(
 
 #########################
 
-unlink 'test.pnm', 'test.jpg';
+unlink 'test.pnm', 'test.jpg', 'test2.png';
 Gscan2pdf::Document->quit();
