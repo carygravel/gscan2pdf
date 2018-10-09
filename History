@@ -4,6 +4,8 @@
 * Add note about checking policy.xml in case of ImageMagick Exception 445.
 * Add %De for filename extension to default filenames directives.
 * On selecting flatbed, force single-sided unless allow-batch-flatbed is enabled
+* Fixed saving PDFs with non-ASCII characters in the path and no extension.
+  Closes bug #312 (Bug: since v2.1.6 concerning special characters in file path)
 
 
 2.1.6 (20.09.2018):

@@ -94,6 +94,9 @@ use English qw( -no_match_vars )
 use POSIX qw(locale_h :signal_h :errno_h :sys_wait_h);
 use Date::Calc qw(Delta_Days Add_Delta_Days Today Now Today_and_Now Timezone);
 
+# to deal with utf8 in filenames
+use Encode qw(_utf8_off _utf8_on);
+
 # Bind the Gio API
 # This is necessary mainly for Gtk3::Application
 BEGIN {
@@ -2466,8 +2469,16 @@ sub file_chooser_response_callback {
     if ( $suffix =~ /pdf/ixsm ) { $suffix = 'pdf' }
     if ( $response eq 'ok' ) {
         my $filename = $dialog->get_filename;
+        $logger->debug("FileChooserDialog returned $filename");
         if ( $filename !~ /[.]$suffix$/ixsm ) {
+
+            # a filename returned by Gtk3::FileChooserDialog containing utf8 is
+            # not marked as utf8. This is then mangled by the append operation
+            # below, but not for the operations than come afterwards, so just
+            # turning on utf8 for the append.
+            _utf8_on($filename);
             $filename = "$filename.$type";
+            _utf8_off($filename);
             return if ( file_exists( $dialog, $filename ) );
         }
 

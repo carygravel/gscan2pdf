@@ -3001,7 +3001,7 @@ sub _thread_save_pdf {
     my ( $self, %options ) = @_;
 
     my $pagenr = 0;
-    my ( $cache, $resolution );
+    my ( $cache, $resolution, $pdf, $error );
 
     # Create PDF with PDF::API2
     $self->{message} = __('Setting up PDF');
@@ -3012,7 +3012,16 @@ sub _thread_save_pdf {
     {
         $filename = File::Temp->new( DIR => $options{dir}, SUFFIX => '.pdf' );
     }
-    my $pdf = PDF::API2->new( -file => $filename );
+    try {
+        $pdf = PDF::API2->new( -file => $filename );
+    }
+    catch {
+        $logger->error("Caught error creating PDF $filename: $_");
+        _thread_throw_error( $self, $options{uuid},
+            sprintf( __('Caught error creating PDF %s: %s'), $filename, $_ ) );
+        $error = TRUE;
+    };
+    if ($error) { return 1 }
 
     if ( defined $options{metadata} ) {
         my $metadata = prepare_output_metadata( 'PDF', $options{metadata} );
