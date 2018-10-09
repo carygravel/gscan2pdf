@@ -7,6 +7,7 @@
 * Fixed saving PDFs with non-ASCII characters in the path and no extension.
   Closes bug #312 (Bug: since v2.1.6 concerning special characters in file path)
 * Update to Spanish translation (thanks to Eric Brandwein)
+* Update to Russian translation (thanks to Mikhail Novosyolov)
 
 
 2.1.6 (20.09.2018):

@@ -4265,6 +4265,7 @@ Po-Hsu Lin
 Tobias Bannert
 Ettore Atalan
 Eric Brandwein
+Mikhail Novosyolov
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );

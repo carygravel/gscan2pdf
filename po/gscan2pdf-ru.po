@@ -5,6 +5,32 @@
 #
 msgid ""
 msgstr ""
+"#-#-#-#-#  git.po (gscan2pdf)  #-#-#-#-#\n"
+"Project-Id-Version: gscan2pdf\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2015-12-20 16:30+0100\n"
+"PO-Revision-Date: 2015-02-24 11:24+0000\n"
+"Last-Translator: Mikhail Novosyolov <mikhailnov@dumalogiya.ru>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2016-02-02 12:44+0000\n"
+"X-Generator: Launchpad (build 17908)\n"
+"#-#-#-#-#  git-new.po (gscan2pdf)  #-#-#-#-#\n"
+"#-#-#-#-#  launchpad.po (gscan2pdf)  #-#-#-#-#\n"
+"Project-Id-Version: gscan2pdf\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2018-09-16 20:45+0200\n"
+"PO-Revision-Date: 2018-09-20 23:19+0000\n"
+"Last-Translator: Mikhail Novosyolov <Unknown>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2018-09-20 23:20+0000\n"
+"X-Generator: Launchpad (build 18783)\n"
+"#-#-#-#-#  git.po (gscan2pdf)  #-#-#-#-#\n"
 "Project-Id-Version: gscan2pdf\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-12-20 16:30+0100\n"
@@ -88,11 +114,11 @@ msgstr "Открыть файлы изображений"
 
 #: bin/gscan2pdf:732
 msgid "Open c_rashed session"
-msgstr ""
+msgstr "Переоткрыть у_павшую сессию"
 
 #: bin/gscan2pdf:733 bin/gscan2pdf:1824
 msgid "Open crashed session"
-msgstr ""
+msgstr "Переоткрыть упавшую сессию"
 
 #: bin/gscan2pdf:737
 msgid "S_can"
@@ -336,7 +362,7 @@ msgstr "С_ервис"
 
 #: bin/gscan2pdf:923
 msgid "_Threshold"
-msgstr "_Порог"
+msgstr "_Пороговая обработка"
 
 #: bin/gscan2pdf:924
 msgid "Change each pixel above this threshold to black"
@@ -466,15 +492,16 @@ msgstr ""
 "Внимание: %s нельзя использовать для временного хранилища. Переход на "
 "использование %s."
 
-#: bin/gscan2pdf:1571
 msgid "Crashed sessions"
-msgstr ""
+msgstr "Упавшие сессии"
 
 #: bin/gscan2pdf:1580
 msgid ""
 "The following list of sessions cannot be restored. Please retrieve any "
 "images you require from them. Selected sessions will be deleted."
 msgstr ""
+"Следующие сессии не могут быть восстановлены. Пожалуйста, извлеките из них "
+"нужные изображения. Выбранные сессии будут удалены."
 
 #: bin/gscan2pdf:1587 bin/gscan2pdf:1612 bin/gscan2pdf:2569
 msgid "Session"
@@ -536,7 +563,7 @@ msgstr "Диапазон страниц"
 
 #: bin/gscan2pdf:2111
 msgid "Document Metadata"
-msgstr ""
+msgstr "Метаданные документа"
 
 #: bin/gscan2pdf:2125
 msgid "Date"
@@ -565,15 +592,14 @@ msgstr "Сегодня"
 
 #: bin/gscan2pdf:2213
 msgid "Select date with calendar"
-msgstr ""
+msgstr "Выбрать дату в календаре"
 
 #: bin/gscan2pdf:2222 bin/gscan2pdf:6659
 msgid "Title"
 msgstr "Заголовок"
 
-#: bin/gscan2pdf:2237
 msgid "Author"
-msgstr ""
+msgstr "Автор"
 
 #: bin/gscan2pdf:2254
 msgid "Subject"
@@ -721,27 +747,25 @@ msgstr "hOCR"
 
 #: bin/gscan2pdf:2568
 msgid "hOCR markup language"
-msgstr ""
+msgstr "Язык разметки hOCR"
 
 #: bin/gscan2pdf:2569
 msgid "gscan2pdf session file"
 msgstr "Файл сеанса gscan2pdf"
 
-#: bin/gscan2pdf:2574
 msgid "Prepend to PDF"
-msgstr ""
+msgstr "Добавить в начало PDF"
 
 #: bin/gscan2pdf:2575
 msgid "Prepend to an existing PDF"
-msgstr ""
+msgstr "Добавить в начало существующего PDF"
 
-#: bin/gscan2pdf:2579
 msgid "Append to PDF"
-msgstr ""
+msgstr "Добавить в конец"
 
 #: bin/gscan2pdf:2580
 msgid "Append to an existing PDF"
-msgstr ""
+msgstr "Добавить в конец существующего PDF"
 
 #: bin/gscan2pdf:2584
 msgid "DjVu"
@@ -805,11 +829,11 @@ msgstr "Текстовые файлы"
 
 #: bin/gscan2pdf:3022
 msgid "hOCR filename"
-msgstr ""
+msgstr "Имя файла hOCR"
 
 #: bin/gscan2pdf:3030
 msgid "hOCR files"
-msgstr ""
+msgstr "Файлы hOCR"
 
 #: bin/gscan2pdf:3050
 msgid "PS filename"
@@ -850,11 +874,13 @@ msgid ""
 "You seem to be using Gnome or XFCE, but do not have gconftool installed. "
 "Unable to determine email client."
 msgstr ""
+"Похоже, вы используете GNOME или XFCE, но gconftool не установлена. "
+"Невозможно определить почтовый клиент."
 
 #: bin/gscan2pdf:3503
 msgid ""
 "Unable to determine your desktop enviroment, and therefore your email client."
-msgstr ""
+msgstr "Невозможно определить ваше DE, а, следовательно, и почтовый клиент."
 
 #: bin/gscan2pdf:3528
 msgid "Email as PDF"
@@ -999,9 +1025,8 @@ msgstr "Распознать отсканированные страницы"
 msgid "Select OCR engine"
 msgstr "Выберите движок распознавания текста"
 
-#: bin/gscan2pdf:4196 bin/gscan2pdf:6078
 msgid "Threshold before OCR"
-msgstr ""
+msgstr "Пороговая обработка изображения перед распознаванием"
 
 #: bin/gscan2pdf:4200 bin/gscan2pdf:6082
 msgid ""
@@ -1012,7 +1037,7 @@ msgstr ""
 #: bin/gscan2pdf:4212 bin/gscan2pdf:5166 bin/gscan2pdf:5177 bin/gscan2pdf:5405
 #: bin/gscan2pdf:6095
 msgid "Threshold"
-msgstr "Порог"
+msgstr "Пороговая обработка"
 
 #: bin/gscan2pdf:4237
 msgid "Post-processing"
@@ -1207,7 +1232,7 @@ msgstr ""
 #: bin/gscan2pdf:6341
 #, perl-format
 msgid "%dMb free in %s."
-msgstr ""
+msgstr "%dМб свободно в %s."
 
 #: bin/gscan2pdf:6474
 msgid "This operation cannot be undone. Are you sure?"
@@ -1281,11 +1306,11 @@ msgstr "Сканирование с использованием scanadf"
 
 #: bin/gscan2pdf:6599
 msgid "Device blacklist"
-msgstr ""
+msgstr "Черный список устройств"
 
 #: bin/gscan2pdf:6604
 msgid "Device blacklist (regular expression)"
-msgstr ""
+msgstr "Черный список устройств (регулярное выражение)"
 
 #: bin/gscan2pdf:6613
 msgid "Cycle SANE handle after scan"
@@ -1329,15 +1354,16 @@ msgstr "Скрыть"
 
 #: bin/gscan2pdf:6687
 msgid "List current options"
-msgstr ""
+msgstr "Перечислить текущие опции"
 
 #: bin/gscan2pdf:6707
 msgid "No scanner currently open with command line frontend."
 msgstr ""
+"Ни один сканер сейчас не открыт фронтендом с интерфейсом командной строки"
 
 #: bin/gscan2pdf:6715
 msgid "Show options not listed"
-msgstr ""
+msgstr "Показать не перечисленные опции"
 
 #: bin/gscan2pdf:6758
 msgid "General options"
@@ -1353,7 +1379,7 @@ msgstr "Просмотр файла после сохранения"
 
 #: bin/gscan2pdf:6778
 msgid "Default PDF & DjVu filename"
-msgstr "Имя файла PDF по умолчанию"
+msgstr "Имя файла PDF или DjVu по умолчанию"
 
 #: bin/gscan2pdf:6784
 msgid ""
@@ -1369,6 +1395,17 @@ msgid ""
 "%i\tdocument's minute\n"
 "%s\t document's second"
 msgstr ""
+"%a\t автор\n"
+"%t\t название\n"
+"%y\t год документа\n"
+"%Y\t текущий год\n"
+"%m\t месяц документа\n"
+"%M\t текущий месяц\n"
+"%d\t день документа\n"
+"%D\t сегодняшний день\n"
+"%h\t час документа\n"
+"%i\t минута документа\n"
+"%s\t секунда документа"
 
 #: bin/gscan2pdf:6796
 msgid "Temporary directory"
@@ -1384,13 +1421,15 @@ msgstr "Выбрать временный каталог"
 
 #: bin/gscan2pdf:6823
 msgid "Warn if available space less than (Mb)"
-msgstr ""
+msgstr "Предупреждать, если свободного места меньше чем (Мб)"
 
 #: bin/gscan2pdf:6833
 msgid ""
 "Warn if the available space in the temporary directory is less than this "
 "value"
 msgstr ""
+"Предупреждать, если во временной папке места меньше, чем это"
+"значение"
 
 #: bin/gscan2pdf:6841
 msgid "Blank threshold"
@@ -1417,8 +1456,7 @@ msgid "Replace"
 msgstr "Заменить"
 
 #: bin/gscan2pdf:6874
-msgid ""
-"Replace the contents of the text buffer with that from the OCR output."
+msgid "Replace the contents of the text buffer with that from the OCR output."
 msgstr "Заменить содержимое текстового буфера из вывода OCR."
 
 #: bin/gscan2pdf:6878
@@ -1472,9 +1510,8 @@ msgstr "Свойства"
 msgid "Resolution"
 msgstr "Разрешение"
 
-#: bin/gscan2pdf:7130
 msgid "dpi"
-msgstr ""
+msgstr "точек на дюйм"
 
 #: bin/gscan2pdf:7198
 msgid "Don't show this message again"
@@ -1508,12 +1545,12 @@ msgstr ""
 
 #: lib/Gscan2pdf/Dialog/Renumber.pm:88 lib/Gscan2pdf/Dialog/Renumber.pm:191
 msgid "Renumber"
-msgstr ""
+msgstr "Перенумеровать"
 
 #: lib/Gscan2pdf/Dialog/Renumber.pm:108 lib/Gscan2pdf/Dialog/Renumber.pm:248
 #: lib/Gscan2pdf/Dialog/Renumber.pm:285
 msgid "range"
-msgstr ""
+msgstr "диапазон"
 
 #: lib/Gscan2pdf/Dialog/Renumber.pm:112
 msgid "Page numbering"
@@ -1725,11 +1762,15 @@ msgstr ""
 msgid ""
 "Multiple unconstrained values are not currently supported. Please file a bug."
 msgstr ""
+"Несколько неограниченных значений не поддерживаются должным образом. "
+"Пожалуйста, сделайте баг-репорт."
 
 #: lib/Gscan2pdf/Dialog/Scan.pm:1278
 msgid ""
 "Multiple non-numerical values are not currently supported. Please file a bug."
 msgstr ""
+"Несколько нецифровых значений не поддерживаются должным образом. Пожалуйста, "
+"сделайте баг-репорт."
 
 #: lib/Gscan2pdf/Dialog/Scan.pm:1721
 #, perl-format
@@ -1839,11 +1880,11 @@ msgstr "Ошибка при открытии устройства: "
 #: lib/Gscan2pdf/Dialog/Scan/Sane.pm:475
 #, perl-format
 msgid "Setting option %s"
-msgstr ""
+msgstr "Применение настройки %s"
 
 #: lib/Gscan2pdf/Dialog/Scan/Sane.pm:512
 msgid "Error setting option: "
-msgstr ""
+msgstr "Ошибка применения настройки: "
 
 #: lib/Gscan2pdf/Document.pm:105
 msgid "Thumbnails"
@@ -1851,11 +1892,11 @@ msgstr "Миниатюры"
 
 #: lib/Gscan2pdf/Document.pm:243
 msgid "Error: cannot open a session file at the same time as another file."
-msgstr ""
+msgstr "Ошибка: невозможно открыть файл сессии одновременно с другим файлом."
 
 #: lib/Gscan2pdf/Document.pm:256
 msgid "Error: import a multipage file at the same time as another file."
-msgstr ""
+msgstr "Ошибка: импорт многостраничного файла одновременно с другим файлом."
 
 #: lib/Gscan2pdf/Document.pm:1221
 #, perl-format
@@ -1868,17 +1909,16 @@ msgstr "Нет страниц для обработки"
 
 #: lib/Gscan2pdf/Document.pm:1335
 msgid "No pages selected"
-msgstr ""
+msgstr "Не выбрано ни одной страницы"
 
 #: lib/Gscan2pdf/Document.pm:1736
-#, perl-format
 msgid "File %s not found"
 msgstr "Файл «%s» не найден"
 
 #: lib/Gscan2pdf/Document.pm:1749
 #, perl-format
 msgid "Error importing zero-length file %s."
-msgstr ""
+msgstr "Ошибка импорта файла нулевого размера (%s)."
 
 #: lib/Gscan2pdf/Document.pm:1787
 msgid "Unknown DjVu file structure. Please contact the author."
@@ -1911,15 +1951,13 @@ msgstr "Сохранение страницы %i из %i"
 msgid "Closing PDF"
 msgstr "Закрытие PDF"
 
-#: lib/Gscan2pdf/Document.pm:2130
 #, perl-format
 msgid "Error prepending PDF: %s"
-msgstr ""
+msgstr "Ошибка добавления в начало PDF: %s"
 
 #: lib/Gscan2pdf/Document.pm:2138
-#, perl-format
 msgid "Error appending PDF: %s"
-msgstr ""
+msgstr "Ошибка добавления в конец PDF: %s"
 
 #: lib/Gscan2pdf/Document.pm:2263
 #, perl-format
@@ -1945,13 +1983,12 @@ msgstr "Запись страницы %i из %i"
 msgid "Error writing DjVu"
 msgstr "Ошибка при сохранении DjVu"
 
-#: lib/Gscan2pdf/Document.pm:2573
 msgid "Merging DjVu"
-msgstr ""
+msgstr "Соединение DjVu"
 
 #: lib/Gscan2pdf/Document.pm:2581
 msgid "Error merging DjVu"
-msgstr ""
+msgstr "Ошибка соединения DjVu"
 
 #: lib/Gscan2pdf/Document.pm:2598
 #, perl-format
@@ -1960,9 +1997,8 @@ msgstr "Не удалось записать в файл: %s"
 
 #: lib/Gscan2pdf/Document.pm:2617 lib/Gscan2pdf/Document.pm:2648
 #: lib/Gscan2pdf/Document.pm:2907 lib/Gscan2pdf/Document.pm:2931
-#, perl-format
 msgid "Can't open file: %s"
-msgstr "Не могу открыть файл: %s"
+msgstr "Не удалось открыть файл: %s"
 
 #: lib/Gscan2pdf/Document.pm:2621 lib/Gscan2pdf/Document.pm:2667
 #: lib/Gscan2pdf/Document.pm:2913 lib/Gscan2pdf/Document.pm:2942
@@ -2278,3 +2314,259 @@ msgstr ""
 #: t/0621_Dialog_Scan_CLI.t:212
 msgid "profile"
 msgstr ""
+
+msgid "_Brightness / Contrast"
+msgstr "_Яркость / Контраст"
+
+msgid "Change brightness & contrast"
+msgstr "Изменить яркость и контраст"
+
+msgid "Process images with user-defined tool"
+msgstr "Обработать изображения указанной пользователем программой"
+
+#, perl-format
+msgid "Enter user password for PDF %s"
+msgstr "Введите пароль для PDF %s"
+
+msgid "Post-save hook"
+msgstr "Хук после сохранения"
+
+#, perl-format
+msgid ""
+"Run command on saved file. The available commands are those user-defined "
+"tools that do not specify %o"
+msgstr ""
+"Запустить команду для сохраненного файла. Доступные команды — это те те "
+"указанные пользователем доп. команды (программы) обработки изображений, в "
+"которых нет %o"
+
+msgid "Close dialog on save"
+msgstr "Закрывать диалог при сохранении"
+
+#, perl-format
+msgid "Directory %s is read-only"
+msgstr "Директория %s доступна только для чтения"
+
+msgid "Process with user-defined tool"
+msgstr "Обработать указанной пользователем утилитой"
+
+msgid "Process scanned images with user-defined tool"
+msgstr ""
+"Обработать отсканированные изображения указанной пользователем программой"
+
+msgid "Copyright 2006--2018 Jeffrey Ratcliffe"
+msgstr "Copyright 2006--2018 Jeffrey Ratcliffe"
+
+msgid "Brightness / Contrast"
+msgstr "Яркость / Контраст"
+
+msgid "Brightness"
+msgstr "Яркость"
+
+msgid "Contrast"
+msgstr "Контраст"
+
+msgid "Gain"
+msgstr "Усиление"
+
+msgid "Selected tool"
+msgstr "Выбранная программа"
+
+msgid "Open scanner at program start"
+msgstr "Открывать сканер при запуске программы"
+
+msgid "libimage-sane-perl"
+msgstr "libimage-sane-perl"
+
+msgid "Scan using the Perl bindings for SANE."
+msgstr "Сканировать используя биндинги Perl для SANE"
+
+msgid "Some ADFs do not feed out the last page if this is not enabled"
+msgstr ""
+"Некоторые автоматические податчики документов не подают последнюю страницу, "
+"если это не включено"
+
+msgid "Allow batch scanning from flatbed"
+msgstr "Разрешить пакетное сканирование с планшетного сканера"
+
+msgid "If not set, switching to a flatbed scanner will force # pages to 1."
+msgstr ""
+"Если не настроено, переключение на планшетный сканер сбросит  # стр. на 1."
+
+msgid "Force new scan job between pages"
+msgstr "Принудительный новый запуск сканирования между страницами"
+
+msgid ""
+"Otherwise, some Brother scanners report out of documents, despite scanning "
+"from flatbed."
+msgstr ""
+"иначе некоторые сканеры Brother говорят, что в их автоподатчике закончились "
+"документы, не смотря на то что идет сканирование с планшета."
+
+msgid "Select # pages = all on selecting ADF"
+msgstr "Выбрать # стр. = все при выборе автоподатчика документов"
+
+msgid ""
+"If this option is enabled, when switching to source=ADF, # pages = all is "
+"selected"
+msgstr ""
+"Если эта опция включена, # старниц = все выбираются при переключении на "
+"автоподатчик документов"
+
+msgid ""
+"strftime codes, e.g.:\n"
+"%Y\tcurrent year\n"
+"\n"
+"with the following additions:\n"
+"%Da\t author\n"
+"%Dt\t title\n"
+"\n"
+"All document date codes use strftime codes with a leading D, e.g.:\n"
+"%DY\t document year\n"
+"%Dm\t document month\n"
+"%Dd\t document day"
+msgstr ""
+"Коды strftime, например:\n"
+"%Y\tтекущий год\n"
+"￼\n"
+"со следующими условиями:\n"
+"%Da\t автор\n"
+"%Dt\t название\n"
+"￼\n"
+"Все даты документов используют коды strftime с заглавной D, например.:￼\n"
+"%DY\t год документа\n"
+"%Dm\t месяц документа\n"
+"%Dd\t день документа"
+
+msgid "Replace whitespace in filenames with underscores"
+msgstr "Заменять пробелы нижним подчеркиванием в именах файлов"
+
+msgid "Use timezone from locale"
+msgstr "Использовать часовые пояса из системной локали"
+
+msgid "Specify time as well as date"
+msgstr "Указать время и также дату"
+
+msgid "Set access and modification times to metadata date"
+msgstr "Сделать дату в метаданных равной времени доступа и изменения"
+
+msgid "Manage user-defined tools"
+msgstr "Управление заданными пользователем программами"
+
+msgid "A3"
+msgstr "A3"
+
+msgid "Now"
+msgstr "Сейчас"
+
+msgid "Use current date and time"
+msgstr "Использовать текущие дату и время"
+
+msgid "Use today's date"
+msgstr "Использовать сегодняшнюю дату"
+
+msgid "Date/Time"
+msgstr "Дата/Время"
+
+msgid "Specify"
+msgstr "Укажите"
+
+msgid "Specify date and time"
+msgstr "Укажите дату и время"
+
+msgid "Postscript backend"
+msgstr "Бекенд Postscript"
+
+msgid "LibTIFF"
+msgstr "LibTIFF"
+
+msgid "Use LibTIFF (tiff2ps) to create Postscript files from TIFF."
+msgstr "Использовать LibTIFF (tiff2ps) для создания файлов PostScript из TIFF."
+
+msgid "Ghostscript"
+msgstr "Ghostscript"
+
+msgid "Use Ghostscript (pdf2ps) to create Postscript files from PDF."
+msgstr ""
+"Использовать Ghostscript (pdf2ps) для создания файлов PostScript из PDF."
+
+msgid "Poppler"
+msgstr "Poppler"
+
+msgid "Use Poppler (pdftops) to create Postscript files from PDF."
+msgstr "Не найден Poppler (pdftops) для создания файлов PostScript из PDF."
+
+#, perl-format
+msgid "Profile '%s' exists. Overwrite?"
+msgstr "Профиль '%s' существует. Перезаписать?"
+
+#, perl-format
+msgid ""
+"Reload recursion limit (%d) exceeded. Please file a bug, attaching a log "
+"file reproducing the problem."
+msgstr ""
+"Предел рекурсии (%d) превышен. Пожалуйста, сделайте баг-репорт, приложив "
+"файл-лог с воспроизведением проблемы."
+
+msgid "Units"
+msgstr "Единицы измерения"
+
+msgid "Error extracting text layer from PDF"
+msgstr "Ошибка извлечения текстового слоя из PDF"
+
+msgid "Error importing PDF"
+msgstr "Ошибка импорта PDF"
+
+msgid ""
+"Warning: gscan2pdf expects one image per page, but this was not satisfied. "
+"It is probable that the PDF has not been correctly imported.\n"
+"\n"
+"If you wish to add scans to an existing PDF, use the prepend/append to PDF "
+"options in the Save dialogue.\n"
+msgstr ""
+"Предупреждение: gscan2pdf ожидает одно изображение на страницу, но это "
+"условие не удовлетворено. Возможно, что PDF не был правильно импортирован.\n"
+"\n"
+"Если вы хотите добавить сканы в существующий PDF, используйте "
+"соответствующие пункты меню \"Сохранить\".\n"
+
+#, perl-format
+msgid "Error converting PDF to PS: %s"
+msgstr "Ошибка конвертирования PDF в PS: %s"
+
+msgid "Error creating backup of PDF"
+msgstr "Ошибка создания резервной копии PDF"
+
+msgid "Unable to set file timestamp for dates prior to 1970"
+msgstr "Невозможно задать дату файла для дат до 1970 года"
+
+#, perl-format
+msgid "Error converting TIFF to PS: %s"
+msgstr "Ошибка конвертирования TIFF в PS: %s"
+
+#, perl-format
+msgid "Error copying image %s: %s"
+msgstr "Ошибка копирования изображения %s: %s"
+
+msgid "Writing system"
+msgstr ""
+
+msgid "Left-to-right"
+msgstr "Слева направо"
+
+msgid "Most writings systems, e.g. Latin, Greek, Cyrillic."
+msgstr ""
+"Большинство систем письменности, например, Латиница, Кириллица, Греческое "
+"письмо."
+
+msgid "Right-to-left"
+msgstr "Справа налево"
+
+msgid "Scripts like Arabic or Hebrew."
+msgstr "Такие языки как арабский и иврит."
+
+msgid "No mask centering"
+msgstr "Без центрирования маски"
+
+msgid "Disable mask centering."
+msgstr "Отключить центрирования маски"
