@@ -4264,6 +4264,7 @@ csola
 Po-Hsu Lin
 Tobias Bannert
 Ettore Atalan
+Eric Brandwein
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
