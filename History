@@ -6,6 +6,7 @@
 * On selecting flatbed, force single-sided unless allow-batch-flatbed is enabled
 * Fixed saving PDFs with non-ASCII characters in the path and no extension.
   Closes bug #312 (Bug: since v2.1.6 concerning special characters in file path)
+* Update page range before calling process (e.g. OCR, crop, etc.)
 * Update to Spanish translation (thanks to Eric Brandwein)
 * Update to Russian translation (thanks to Mikhail Novosyolov)
 
