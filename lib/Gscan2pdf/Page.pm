@@ -690,14 +690,20 @@ sub resolution {
 
 sub matching_paper_sizes {
     my ( $self, $paper_sizes ) = @_;
+    my %matching;
     if ( not( defined $self->{height} and defined $self->{width} ) ) {
         my $image = $self->im_object;
         $self->{width}  = $image->Get('width');
         $self->{height} = $image->Get('height');
+        if ( not( defined $self->{height} and defined $self->{width} ) ) {
+            $logger->warn(
+"ImageMagick returns undef for image size - resolution cannot be guessed"
+            );
+            return \%matching;
+        }
     }
     my $ratio = $self->{height} / $self->{width};
     if ( $ratio < 1 ) { $ratio = 1 / $ratio }
-    my %matching;
     for ( keys %{$paper_sizes} ) {
         if ( $paper_sizes->{$_}{x} > 0
             and abs( $ratio - $paper_sizes->{$_}{y} / $paper_sizes->{$_}{x} ) <
