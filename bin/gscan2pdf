@@ -5756,9 +5756,30 @@ sub preferences {
                 }
             }
             $SETTING{'auto-open-scan-dialog'} = $cbo->get_active;
-            $SETTING{'device blacklist'}      = $blacklist->get_text;
-            $SETTING{'cycle sane handle'}     = $cbcsh->get_active;
-            $SETTING{'allow-batch-flatbed'}   = $cb_batch_flatbed->get_active;
+
+            try {
+                my $text = $blacklist->get_text;
+                'dummy_device' =~ /$text/xsm;
+            }
+            catch {
+                my $msg =
+                  __(
+                    "Invalid regex. Try without special characters such as '*'"
+                  );
+                $logger->warn($msg);
+                show_message_dialog(
+                    parent           => $windowr,
+                    type             => 'error',
+                    buttons          => 'close',
+                    text             => $msg,
+                    'store-response' => TRUE
+                );
+                $blacklist->set_text( $SETTING{'device blacklist'} );
+            };
+            $SETTING{'device blacklist'} = $blacklist->get_text;
+
+            $SETTING{'cycle sane handle'}    = $cbcsh->get_active;
+            $SETTING{'allow-batch-flatbed'}  = $cb_batch_flatbed->get_active;
             $SETTING{'cancel-between-pages'} = $cb_cancel_btw_pages->get_active;
             $SETTING{'default filename'}     = $fileentry->get_text;
             $SETTING{'restore window'}       = $cbw->get_active;
