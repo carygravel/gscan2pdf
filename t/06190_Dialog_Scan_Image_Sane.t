@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 2;
+use Test::More tests => 3;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -69,6 +69,19 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         $dialog->scan;
         $loop->run unless ($flag);
 
+        # bug 309 reported that the cancel-between-pages options, which fixed
+        # a problem where some brother scanners reported SANE_STATUS_NO_DOCS
+        # despite using the flatbed, stopped the ADF from feeding more that 1
+        # sheet. We can't test the fix directly, but at least make sure the code
+        # is reached by piggybacking the next two lines.
+        $dialog->set( 'cancel-between-pages', TRUE );
+        is(
+            $dialog->_flatbed_selected(
+                $dialog->get('available-scan-options')
+            ),
+            TRUE,
+            'flatbed selected'
+        );
         $dialog->{new_signal} = $dialog->signal_connect(
             'new-scan' => sub {
                 $dialog->signal_handler_disconnect( $dialog->{new_signal} );

@@ -1,6 +1,8 @@
 2.1.8 (12.11.2018):
 
 * Check validity of device blacklist regex when applying preferences
+* Modify preference "Force new scan job between pages" to only take effect when
+  scanning from flatbed. Closes bug #309 (ADF-duplex mode brocken)
 
 
 2.1.7 (12.10.2018):

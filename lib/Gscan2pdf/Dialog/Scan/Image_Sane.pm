@@ -462,8 +462,11 @@ sub scan {
         npages               => $npages,
         start                => $start,
         step                 => $step,
-        cancel_between_pages => $self->get('cancel-between-pages'),
-        started_callback     => sub {
+        cancel_between_pages => (
+                  $self->get('cancel-between-pages')
+              and $self->_flatbed_selected( $self->get('current-scan-options') )
+        ),
+        started_callback => sub {
             if ( $npages == 0 and $self->get('max-pages') > 0 ) {
                 $npages = $self->get('max-pages');
             }
