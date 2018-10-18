@@ -165,8 +165,7 @@ $signal = $dialog->signal_connect(
         $dialog->set( 'num-pages', 2 );
         is $dialog->get('num-pages'), 1,
           'allow-batch-flatbed should force num-pages2';
-        ok $dialog->_flatbed_selected($options),
-          '_flatbed_selected() via value';
+        ok $options->flatbed_selected, 'flatbed_selected() via value';
 
         is $dialog->{vboxx}->get_visible, FALSE,
           'flatbed, so hide vbox for page numbering';
@@ -196,8 +195,8 @@ $signal = $dialog->signal_connect(
                     $dialog->signal_handler_disconnect($signal);
                     is $dialog->get('num-pages'), 0,
                       'adf-defaults-scan-all-pages should force num-pages';
-                    is $dialog->_flatbed_selected($options), FALSE,
-                      'not _flatbed_selected() via value';
+                    is $options->flatbed_selected, FALSE,
+                      'not flatbed_selected() via value';
                     $flag = TRUE;
                     $loop->quit;
                 }

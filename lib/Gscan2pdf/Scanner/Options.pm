@@ -223,6 +223,16 @@ sub can_duplex {
     return FALSE;
 }
 
+sub flatbed_selected {
+    my ($self) = @_;
+    return (
+        defined $self->{source} and ( defined $self->{source}{val}
+            and $self->{source}{val} =~ /flatbed/xsmi )
+          or (  $#{ $self->{source}{constraint} } == 0
+            and $self->{source}{constraint}[0] =~ /flatbed/xsmi )
+    );
+}
+
 # returns TRUE/FALSE if the value is within the tolerance of the given option or
 # not, and undef for options with no value or for an invalid value
 

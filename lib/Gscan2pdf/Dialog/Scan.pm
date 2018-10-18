@@ -807,7 +807,7 @@ sub _flatbed_or_duplex_callback {
     my ($self) = @_;
     my $options = $self->get('available-scan-options');
     if ( defined $options ) {
-        if ( $self->_flatbed_selected($options) or $options->can_duplex ) {
+        if ( $options->flatbed_selected or $options->can_duplex ) {
             $self->{vboxx}->hide;
         }
         else {
@@ -825,7 +825,7 @@ sub _changed_scan_option_callback {
         and $name eq $options->{source}{name} )
     {
         if ( $self->get('allow-batch-flatbed')
-            or not $self->_flatbed_selected($options) )
+            or not $options->flatbed_selected )
         {
             $self->{framen}->set_sensitive(TRUE);
         }
@@ -854,7 +854,7 @@ sub _set_allow_batch_flatbed {
     }
     else {
         my $options = $self->get('available-scan-options');
-        if ( $self->_flatbed_selected($options) ) {
+        if ( defined $options and $options->flatbed_selected ) {
             $self->{framen}->set_sensitive(FALSE);
 
             # emits changed-num-pages signal, allowing us to test
@@ -865,24 +865,10 @@ sub _set_allow_batch_flatbed {
     return;
 }
 
-sub _flatbed_selected {
-    my ( $self, $options ) = @_;
-    return (
-              defined $options
-          and defined $options->{source}
-          and ( defined $options->{source}{val}
-            and $options->{source}{val} =~ /flatbed/xsmi )
-          or (  $#{ $options->{source}{constraint} } == 0
-            and $options->{source}{constraint}[0] =~ /flatbed/xsmi )
-    );
-}
-
 sub _set_available_scan_options {
     my ( $self, $name, $newval ) = @_;
     $self->{$name} = $newval;
-    if ( not $self->get('allow-batch-flatbed')
-        and $self->_flatbed_selected($newval) )
-    {
+    if ( not $self->get('allow-batch-flatbed') and $newval->flatbed_selected ) {
         if ( $self->get('num-pages') != 1 ) { $self->set( 'num-pages', 1 ) }
         $self->{framen}->set_sensitive(FALSE);
     }
@@ -909,7 +895,7 @@ sub _set_num_pages {
         or $self->get('allow-batch-flatbed')
         or (    defined $options
             and defined $options->{source}{val}
-            and not $self->_flatbed_selected($options) )
+            and not $options->flatbed_selected )
       )
     {
         $self->{$name} = $newval;

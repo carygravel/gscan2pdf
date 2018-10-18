@@ -75,13 +75,8 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         # sheet. We can't test the fix directly, but at least make sure the code
         # is reached by piggybacking the next two lines.
         $dialog->set( 'cancel-between-pages', TRUE );
-        is(
-            $dialog->_flatbed_selected(
-                $dialog->get('available-scan-options')
-            ),
-            TRUE,
-            'flatbed selected'
-        );
+        is( $dialog->get('available-scan-options')->flatbed_selected,
+            TRUE, 'flatbed selected' );
         $dialog->{new_signal} = $dialog->signal_connect(
             'new-scan' => sub {
                 $dialog->signal_handler_disconnect( $dialog->{new_signal} );

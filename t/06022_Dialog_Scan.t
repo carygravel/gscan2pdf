@@ -118,8 +118,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         ######################################
 
         my $options = $dialog->get('available-scan-options');
-        ok $dialog->_flatbed_selected($options),
-          '_flatbed_selected() without value';
+        ok $options->flatbed_selected, 'flatbed_selected() without value';
 
         is $dialog->{framen}->is_sensitive, FALSE, 'num-page gui ghosted';
         $dialog->set( 'num-pages', 2 );
