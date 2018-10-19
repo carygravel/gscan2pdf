@@ -3,6 +3,8 @@
 * Check validity of device blacklist regex when applying preferences
 * Modify preference "Force new scan job between pages" to only take effect when
   scanning from flatbed. Closes bug #309 (ADF-duplex mode brocken)
+* Fixed crash switching frontend option in Edit/Preferences between
+  libimage-sane-perl and scanimage.
 
 
 2.1.7 (12.10.2018):

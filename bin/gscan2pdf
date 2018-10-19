@@ -5794,11 +5794,11 @@ sub preferences {
                 {
                     $windows->set( 'cycle-sane-handle',
                         $SETTING{'cycle sane handle'} );
+                    $windows->set( 'cancel-between-pages',
+                        $SETTING{'cancel-between-pages'} );
                 }
                 $windows->set( 'allow-batch-flatbed',
                     $SETTING{'allow-batch-flatbed'} );
-                $windows->set( 'cancel-between-pages',
-                    $SETTING{'cancel-between-pages'} );
             }
 
             if ( defined $windowi ) {
