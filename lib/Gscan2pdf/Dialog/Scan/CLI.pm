@@ -522,7 +522,8 @@ sub _update_option_visibility {
           : $self->{option_widgets}{ $opt->{name} }->get_parent;
         my $geometry = $self->_geometry_option($opt);
         if ($show) {
-            $container->show_all;
+            $container->show_all;            # show hbox
+            $container->get_parent->show;    # show vbox
 
             # Find associated group
             next if ( $opt->{type} == SANE_TYPE_GROUP );

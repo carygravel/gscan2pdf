@@ -5,6 +5,8 @@
   scanning from flatbed. Closes bug #309 (ADF-duplex mode brocken)
 * Fixed crash switching frontend option in Edit/Preferences between
   libimage-sane-perl and scanimage.
+* Fixed visibility of scan widgets when switching from libimage-sane-perl to
+  scanimage.
 
 
 2.1.7 (12.10.2018):
