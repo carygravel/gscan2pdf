@@ -25,10 +25,10 @@ use Glib::Object::Subclass Gtk3::Dialog::,
     Glib::ParamSpec->enum(
         'page-range',                                                 # name
         'page-range',                                                 # nickname
-        'Either selected or all',                                     #blurb
+        'Either selected or all',                                     # blurb
         'Gscan2pdf::PageRange::Range',
         'selected',                                                   # default
-        [qw/readable writable/]                                       #flags
+        [qw/readable writable/]                                       # flags
     ),
   ];
 
@@ -94,7 +94,12 @@ sub add_page_range {
 # Add buttons and link up their actions
 sub add_actions {
     my ( $self, $button1, $callback1, $button2, $callback2 ) = @_;
-    $self->add_buttons( $button1 => 'ok', $button2 => 'cancel' );
+    if ( defined $button2 ) {
+        $self->add_buttons( $button1 => 'ok', $button2 => 'cancel' );
+    }
+    else {
+        $self->add_buttons( $button1 => 'ok' );
+    }
     $self->set_default_response('ok');
     $self->signal_connect(
         response => sub {
@@ -102,7 +107,7 @@ sub add_actions {
             if ( $response eq 'ok' ) {
                 $callback1->();
             }
-            else {
+            elsif ( defined $callback2 ) {
                 $callback2->();
             }
         }

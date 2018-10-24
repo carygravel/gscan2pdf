@@ -280,8 +280,11 @@ sub create_pidfile {
     catch {
         $logger->error("Caught error writing to $self->{dir}: $_");
         if ( $options{error_callback} ) {
-            $options{error_callback}
-              ->("Error: unable to write to $self->{dir}.");
+            $options{error_callback}->(
+                $options{page},
+                'create PID file',
+                "Error: unable to write to $self->{dir}."
+            );
         }
     };
     return $pidfile;
@@ -364,6 +367,8 @@ sub _get_file_info_finished_callback2 {
                 );
                 if ( $options{error_callback} ) {
                     $options{error_callback}->(
+                        undef,
+                        'Open file',
                         __(
 'Error: cannot open a session file at the same time as another file.'
                         )
@@ -377,6 +382,8 @@ sub _get_file_info_finished_callback2 {
                 );
                 if ( $options{error_callback} ) {
                     $options{error_callback}->(
+                        undef,
+                        'Open file',
                         __(
 'Error: import a multipage file at the same time as another file.'
                         )
@@ -632,7 +639,8 @@ sub import_scan {
                 );
                 my $index = $self->add_page( 'none', $page, $options{page} );
                 if ( $index == $NOT_FOUND and $options{error_callback} ) {
-                    $options{error_callback}->( __('Unable to load image') );
+                    $options{error_callback}
+                      ->( undef, 'Import scan', __('Unable to load image') );
                 }
                 else {
                     if ( $options{display_callback} ) {
@@ -650,9 +658,9 @@ sub import_scan {
 }
 
 sub _throw_error {
-    my ( $uuid, $message ) = @_;
+    my ( $uuid, $page_uuid, $process, $message ) = @_;
     if ( defined $callback{$uuid}{error} ) {
-        $callback{$uuid}{error}->($message);
+        $callback{$uuid}{error}->( $page_uuid, $process, $message );
         delete $callback{$uuid}{error};
     }
     return;
@@ -723,7 +731,10 @@ sub check_return_queue {
                 }
             }
             when ('error') {
-                _throw_error( $data->{uuid}, $data->{message} );
+                _throw_error(
+                    $data->{uuid},    $data->{page},
+                    $data->{process}, $data->{message}
+                );
             }
             when ('finished') {
                 if ( defined $callback{ $data->{uuid} }{started} ) {
@@ -1706,7 +1717,8 @@ sub open_session_file {
     my ( $self, %options ) = @_;
     if ( not defined $options{info} ) {
         if ( $options{error_callback} ) {
-            $options{error_callback}->('Error: session file not supplied.');
+            $options{error_callback}
+              ->( undef, 'Open file', 'Error: session file not supplied.' );
         }
         return;
     }
@@ -1727,14 +1739,16 @@ sub open_session {
     my ( $self, %options ) = @_;
     if ( not defined $options{dir} ) {
         if ( $options{error_callback} ) {
-            $options{error_callback}->('Error: session folder not defined');
+            $options{error_callback}
+              ->( undef, 'Open file', 'Error: session folder not defined' );
         }
         return;
     }
     my $sessionfile = File::Spec->catfile( $options{dir}, 'session' );
     if ( not -r $sessionfile ) {
         if ( $options{error_callback} ) {
-            $options{error_callback}->("Error: Unable to read $sessionfile");
+            $options{error_callback}
+              ->( undef, 'Open file', "Error: Unable to read $sessionfile" );
         }
         return;
     }
@@ -1776,6 +1790,7 @@ sub open_session {
         catch {
             if ( $options{error_callback} ) {
                 $options{error_callback}->(
+                    undef, 'Open file',
                     sprintf __('Error importing page %d. Ignoring.'), $pagenum
                 );
             }
@@ -1888,14 +1903,14 @@ sub get_page_index {
             return 0 .. $#{ $self->{data} };
         }
         else {
-            $error_callback->( __('No pages to process') );
+            $error_callback->( undef, 'Get page', __('No pages to process') );
             return;
         }
     }
     elsif ( $page_range eq 'selected' ) {
         @index = $self->get_selected_indices;
         if ( @index == 0 ) {
-            $error_callback->( __('No pages selected') );
+            $error_callback->( undef, 'Get page', __('No pages selected') );
             return;
         }
     }
@@ -2517,11 +2532,13 @@ sub _thread_main {
 }
 
 sub _thread_throw_error {
-    my ( $self, $uuid, $message ) = @_;
+    my ( $self, $uuid, $page_uuid, $process, $message ) = @_;
     $self->{return}->enqueue(
         {
             type    => 'error',
             uuid    => $uuid,
+            page    => $page_uuid,
+            process => $process,
             message => $message
         }
     );
@@ -2532,9 +2549,11 @@ sub _thread_get_file_info {
     my ( $self, %options ) = @_;
 
     if ( not -e $options{filename} ) {
-        _thread_throw_error( $self, $options{uuid},
-            sprintf __('File %s not found'),
-            $options{filename} );
+        _thread_throw_error(
+            $self, $options{uuid}, $options{page}{uuid},
+            'Open file', sprintf __('File %s not found'),
+            $options{filename}
+        );
         return;
     }
 
@@ -2546,9 +2565,14 @@ sub _thread_get_file_info {
 
     given ($format) {
         when ('very short file (no magic)') {
-            _thread_throw_error( $self, $options{uuid},
+            _thread_throw_error(
+                $self,
+                $options{uuid},
+                $options{page}{uuid},
+                'Open file',
                 sprintf __('Error importing zero-length file %s.'),
-                $options{filename} );
+                $options{filename}
+            );
             return;
         }
         when (/gzip[ ]compressed[ ]data/xsm) {
@@ -2589,6 +2613,8 @@ sub _thread_get_file_info {
                 _thread_throw_error(
                     $self,
                     $options{uuid},
+                    $options{page}{uuid},
+                    'Open file',
                     __(
 'Unknown DjVu file structure. Please contact the author.'
                     )
@@ -2662,17 +2688,27 @@ sub _thread_get_file_info {
             my $e     = $image->Read( $options{filename} );
             if ("$e") {
                 $logger->error($e);
-                _thread_throw_error( $self, $options{uuid},
+                _thread_throw_error(
+                    $self,
+                    $options{uuid},
+                    $options{page}{uuid},
+                    'Open file',
                     sprintf __('%s is not a recognised image type'),
-                    $options{filename} );
+                    $options{filename}
+                );
                 return;
             }
             return if $_self->{cancel};
             $format = $image->Get('format');
             if ( not defined $format ) {
-                _thread_throw_error( $self, $options{uuid},
+                _thread_throw_error(
+                    $self,
+                    $options{uuid},
+                    $options{page}{uuid},
+                    'Open file',
                     sprintf __('%s is not a recognised image type'),
-                    $options{filename} );
+                    $options{filename}
+                );
                 return;
             }
             $logger->info("Format $format");
@@ -2732,14 +2768,24 @@ sub _thread_import_file {
                     catch {
                         if ( defined $tif ) {
                             $logger->error("Caught error creating $tif: $_");
-                            _thread_throw_error( $self, $options{uuid},
-                                "Error: unable to write to $tif." );
+                            _thread_throw_error(
+                                $self,
+                                $options{uuid},
+                                $options{page}{uuid},
+                                'Open file',
+                                "Error: unable to write to $tif."
+                            );
                         }
                         else {
                             $logger->error(
                                 "Caught error writing to $options{dir}: $_");
-                            _thread_throw_error( $self, $options{uuid},
-                                "Error: unable to write to $options{dir}." );
+                            _thread_throw_error(
+                                $self,
+                                $options{uuid},
+                                $options{page}{uuid},
+                                'Open file',
+                                "Error: unable to write to $options{dir}."
+                            );
                         }
                         $error = TRUE;
                     };
@@ -2758,7 +2804,8 @@ sub _thread_import_file {
                         $logger->error(
                             "Caught error parsing DjVU text layer: $_");
                         _thread_throw_error( $self, $options{uuid},
-                            'Error: parsing DjVU text layer' );
+                            $options{page}{uuid},
+                            'Open file', 'Error: parsing DjVU text layer' );
                     };
                     $self->{return}->enqueue(
                         {
@@ -2819,7 +2866,11 @@ sub _thread_import_file {
                             $logger->error(
 "Caught error extracting page $i from $options{info}->{path}: $err"
                             );
-                            _thread_throw_error( $self, $options{uuid},
+                            _thread_throw_error(
+                                $self,
+                                $options{uuid},
+                                $options{page}{uuid},
+                                'Open file',
 "Caught error extracting page $i from $options{info}->{path}: $err"
                             );
                         }
@@ -2827,14 +2878,24 @@ sub _thread_import_file {
                     catch {
                         if ( defined $tif ) {
                             $logger->error("Caught error creating $tif: $_");
-                            _thread_throw_error( $self, $options{uuid},
-                                "Error: unable to write to $tif." );
+                            _thread_throw_error(
+                                $self,
+                                $options{uuid},
+                                $options{page}{uuid},
+                                'Open file',
+                                "Error: unable to write to $tif."
+                            );
                         }
                         else {
                             $logger->error(
                                 "Caught error writing to $options{dir}: $_");
-                            _thread_throw_error( $self, $options{uuid},
-                                "Error: unable to write to $options{dir}." );
+                            _thread_throw_error(
+                                $self,
+                                $options{uuid},
+                                $options{page}{uuid},
+                                'Open file',
+                                "Error: unable to write to $options{dir}."
+                            );
                         }
                         $error = TRUE;
                     };
@@ -2873,7 +2934,8 @@ sub _thread_import_file {
             catch {
                 $logger->error("Caught error writing to $options{dir}: $_");
                 _thread_throw_error( $self, $options{uuid},
-                    "Error: unable to write to $options{dir}." );
+                    $options{page}{uuid},
+                    'Open file', "Error: unable to write to $options{dir}." );
             };
         }
 
@@ -2897,7 +2959,8 @@ sub _thread_import_file {
             catch {
                 $logger->error("Caught error writing to $options{dir}: $_");
                 _thread_throw_error( $self, $options{uuid},
-                    "Error: unable to write to $options{dir}." );
+                    $options{page}{uuid},
+                    'Open file', "Error: unable to write to $options{dir}." );
             };
         }
     }
@@ -2931,7 +2994,8 @@ sub _thread_import_pdf {
             return if $_self->{cancel};
             if ($status) {
                 _thread_throw_error( $self, $options{uuid},
-                    __('Error extracting images from PDF') );
+                    $options{page}{uuid},
+                    'Open file', __('Error extracting images from PDF') );
             }
 
             my $html =
@@ -2953,7 +3017,8 @@ sub _thread_import_pdf {
             return if $_self->{cancel};
             if ($status) {
                 _thread_throw_error( $self, $options{uuid},
-                    __('Error extracting text layer from PDF') );
+                    $options{page}{uuid},
+                    'Open file', __('Error extracting text layer from PDF') );
             }
 
             # Import each image
@@ -2981,13 +3046,15 @@ sub _thread_import_pdf {
                 catch {
                     $logger->error("Caught error importing PDF: $_");
                     _thread_throw_error( $self, $options{uuid},
-                        __('Error importing PDF') );
+                        $options{page}{uuid},
+                        'Open file', __('Error importing PDF') );
                 };
             }
         }
 
         if ($warning_flag) {
-            _thread_throw_error( $self, $options{uuid}, __(<<'EOS') );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Open file', __(<<'EOS') );
 Warning: gscan2pdf expects one image per page, but this was not satisfied. It is probable that the PDF has not been correctly imported.
 
 If you wish to add scans to an existing PDF, use the prepend/append to PDF options in the Save dialogue.
@@ -3017,8 +3084,11 @@ sub _thread_save_pdf {
     }
     catch {
         $logger->error("Caught error creating PDF $filename: $_");
-        _thread_throw_error( $self, $options{uuid},
-            sprintf( __('Caught error creating PDF %s: %s'), $filename, $_ ) );
+        _thread_throw_error(
+            $self, $options{uuid}, $options{page}{uuid},
+            'Save file', sprintf __('Caught error creating PDF %s: %s'),
+            $filename, $_
+        );
         $error = TRUE;
     };
     if ($error) { return 1 }
@@ -3067,11 +3137,12 @@ sub _thread_save_pdf {
 
         my @cmd =
           ( $options{options}->{pstool}, $filename, $options{options}->{ps} );
-        my ( $status, undef, $error ) =
+        ( my $status, undef, $error ) =
           exec_command( \@cmd, $options{pidfile} );
         if ( $status or $error ) {
             $logger->info($error);
-            _thread_throw_error( $self, $options{uuid},
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file',
                 sprintf __('Error converting PDF to PS: %s'), $error );
             return;
         }
@@ -3112,8 +3183,8 @@ sub _append_pdf {
     }
 
     if ( not move( $out, $bak ) ) {
-        _thread_throw_error( $self, $options{uuid},
-            __('Error creating backup of PDF') );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', __('Error creating backup of PDF') );
         return;
     }
 
@@ -3121,7 +3192,8 @@ sub _append_pdf {
       exec_command( [ 'pdfunite', $file1, $file2, $out ], $options{pidfile} );
     if ($status) {
         $logger->info($error);
-        _thread_throw_error( $self, $options{uuid}, sprintf $message, $error );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', sprintf $message, $error );
         return $status;
     }
 }
@@ -3134,8 +3206,11 @@ sub _set_timestamp {
     }
     catch {
         $logger->error('Unable to set file timestamp for dates prior to 1970');
-        _thread_throw_error( $self, $uuid,
-            __('Unable to set file timestamp for dates prior to 1970') );
+        _thread_throw_error(
+            $self, $uuid, undef,
+            'Set timestamp',
+            __('Unable to set file timestamp for dates prior to 1970')
+        );
     };
     return;
 }
@@ -3188,8 +3263,8 @@ sub _add_page_to_pdf {
     }
     catch {
         $logger->error("Caught error converting image: $_");
-        _thread_throw_error( $self, $options{uuid},
-            "Caught error converting image: $_." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', "Caught error converting image: $_." );
         $error = TRUE;
     };
     if ($error) { return 1 }
@@ -3237,7 +3312,8 @@ sub _add_page_to_pdf {
     return if $_self->{cancel};
     if ($msg) {
         $logger->warn($msg);
-        _thread_throw_error( $self, $options{uuid},
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file',
             sprintf __('Error creating PDF image object: %s'), $msg );
         return 1;
     }
@@ -3251,9 +3327,12 @@ sub _add_page_to_pdf {
     }
     catch {
         $logger->warn($_);
-        _thread_throw_error( $self, $options{uuid},
+        _thread_throw_error(
+            $self, $options{uuid}, $options{page}{uuid},
+            'Save file',
             sprintf __('Error embedding file image in %s format to PDF: %s'),
-            $format, $_ );
+            $format, $_
+        );
         $error = TRUE;
     };
     if ($error) { return 1 }
@@ -3335,6 +3414,8 @@ sub _convert_image_for_pdf {
             if ($status) {
                 $logger->info($error);
                 _thread_throw_error( $self, $options{uuid},
+                    $options{page}{uuid},
+                    'Save file',
                     sprintf __('Error compressing image: %s'), $error );
                 return;
             }
@@ -3481,8 +3562,8 @@ sub _thread_save_djvu {
         }
         catch {
             $logger->error("Caught error writing DjVu: $_");
-            _thread_throw_error( $self, $options{uuid},
-                "Caught error writing DjVu: $_." );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file', "Caught error writing DjVu: $_." );
             $error = TRUE;
         };
         if ($error) { return }
@@ -3492,8 +3573,8 @@ sub _thread_save_djvu {
         my $e     = $image->Read($filename);
         if ("$e") {
             $logger->error($e);
-            _thread_throw_error( $self, $options{uuid},
-                "Error reading $filename: $e." );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file', "Error reading $filename: $e." );
             return;
         }
         my $depth = $image->Get('depth');
@@ -3520,7 +3601,8 @@ sub _thread_save_djvu {
                 if ("$e") {
                     $logger->error($e);
                     _thread_throw_error( $self, $options{uuid},
-                        "Error writing $pnm: $e." );
+                        $options{page}{uuid},
+                        'Save file', "Error writing $pnm: $e." );
                     return;
                 }
                 $filename = $pnm;
@@ -3539,7 +3621,8 @@ sub _thread_save_djvu {
                 if ("$e") {
                     $logger->error($e);
                     _thread_throw_error( $self, $options{uuid},
-                        "Error writing $pbm: $e." );
+                        $options{page}{uuid},
+                        'Save file', "Error writing $pbm: $e." );
                     return;
                 }
                 $filename = $pbm;
@@ -3562,8 +3645,8 @@ sub _thread_save_djvu {
             $logger->error(
 "Error writing image for page $page of DjVu (process returned $status, image size $size)"
             );
-            _thread_throw_error( $self, $options{uuid},
-                __('Error writing DjVu') );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file', __('Error writing DjVu') );
             return;
         }
         push @filelist, $djvu;
@@ -3578,7 +3661,8 @@ sub _thread_save_djvu {
     return if $_self->{cancel};
     if ($status) {
         $logger->error('Error merging DjVu');
-        _thread_throw_error( $self, $options{uuid}, __('Error merging DjVu') );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', __('Error merging DjVu') );
     }
     _add_metadata_to_djvu( $self, %options );
 
@@ -3604,7 +3688,7 @@ sub _thread_save_djvu {
 sub _write_file {
     my ( $self, $fh, $filename, $data, $uuid ) = @_;
     if ( not print {$fh} $data ) {
-        _thread_throw_error( $self, $uuid,
+        _thread_throw_error( $self, $uuid, undef, 'Save file',
             sprintf __("Can't write to file: %s"), $filename );
         return FALSE;
     }
@@ -3639,8 +3723,8 @@ sub _add_text_to_djvu {
             $logger->error(
                 "Error adding text layer to DjVu page $pagedata->{page_number}"
             );
-            _thread_throw_error( $self, $uuid,
-                __('Error adding text layer to DjVu') );
+            _thread_throw_error( $self, $uuid, $pagedata->{uuid},
+                'Save file', __('Error adding text layer to DjVu') );
         }
     }
     return;
@@ -3685,8 +3769,8 @@ sub _add_metadata_to_djvu {
         return if $_self->{cancel};
         if ($status) {
             $logger->error('Error adding metadata info to DjVu file');
-            _thread_throw_error( $self, $options{uuid},
-                __('Error adding metadata to DjVu') );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file', __('Error adding metadata to DjVu') );
         }
     }
     return;
@@ -3721,7 +3805,8 @@ sub _thread_save_tiff {
             catch {
                 $logger->error("Error writing TIFF: $_");
                 _thread_throw_error( $self, $options{uuid},
-                    "Error writing TIFF: $_." );
+                    $options{page}{uuid},
+                    'Save file', "Error writing TIFF: $_." );
                 $error = TRUE;
             };
             if ($error) { return }
@@ -3745,7 +3830,8 @@ sub _thread_save_tiff {
             if ($status) {
                 $logger->error('Error writing TIFF');
                 _thread_throw_error( $self, $options{uuid},
-                    __('Error writing TIFF') );
+                    $options{page}{uuid},
+                    'Save file', __('Error writing TIFF') );
                 return;
             }
             $filename = $tif;
@@ -3771,8 +3857,8 @@ sub _thread_save_tiff {
 
     if ( $status or $error =~ /(?:usage|TIFFOpen):/xsm ) {
         $logger->info($error);
-        _thread_throw_error( $self, $options{uuid},
-            sprintf __('Error compressing image: %s'), $error );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', sprintf __('Error compressing image: %s'), $error );
         return;
     }
     if ( defined $options{options}->{ps} ) {
@@ -3786,7 +3872,8 @@ sub _thread_save_tiff {
         ( $status, undef, $error ) = exec_command( \@cmd, $options{pidfile} );
         if ( $status or $error ) {
             $logger->info($error);
-            _thread_throw_error( $self, $options{uuid},
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file',
                 sprintf __('Error converting TIFF to PS: %s'), $error );
             return;
         }
@@ -3823,7 +3910,8 @@ sub _thread_rotate {
     $e = $image->Rotate($angle);
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, "Error rotating: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid},
+            'Rotate', "Error rotating: $e." );
         return;
     }
     return if $_self->{cancel};
@@ -3841,7 +3929,8 @@ sub _thread_rotate {
     }
     catch {
         $logger->error("Error rotating: $_");
-        _thread_throw_error( $self, $uuid, "Error rotating: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid},
+            'Rotate', "Error rotating: $_." );
         $error = TRUE;
     };
     if ($error) { return }
@@ -3881,8 +3970,8 @@ sub _thread_save_image {
         );
         return if $_self->{cancel};
         if ($status) {
-            _thread_throw_error( $self, $options{uuid},
-                __('Error saving image') );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file', __('Error saving image') );
         }
         _post_save_hook( $options{list_of_pages}->[0]{filename},
             %{ $options{options} } );
@@ -3903,7 +3992,8 @@ sub _thread_save_image {
             return if $_self->{cancel};
             if ($status) {
                 _thread_throw_error( $self, $options{uuid},
-                    __('Error saving image') );
+                    $options{page}{uuid},
+                    'Save file', __('Error saving image') );
             }
             _post_save_hook( $_->{filename}, %{ $options{options} } );
         }
@@ -3928,13 +4018,13 @@ sub _thread_save_text {
         return if $_self->{cancel};
     }
     if ( not open $fh, '>', $path ) {
-        _thread_throw_error( $self, $uuid,
+        _thread_throw_error( $self, $uuid, undef, 'Save file',
             sprintf __("Can't open file: %s"), $path );
         return;
     }
     _write_file( $self, $fh, $path, $string, $uuid ) or return;
     if ( not close $fh ) {
-        _thread_throw_error( $self, $uuid,
+        _thread_throw_error( $self, $uuid, undef, 'Save file',
             sprintf __("Can't close file: %s"), $path );
     }
     _post_save_hook( $path, %{$options} );
@@ -3953,7 +4043,7 @@ sub _thread_save_hocr {
     my $fh;
 
     if ( not open $fh, '>', $path ) {    ## no critic (RequireBriefOpen)
-        _thread_throw_error( $self, $uuid,
+        _thread_throw_error( $self, $uuid, undef, 'Save file',
             sprintf __("Can't open file: %s"), $path );
         return;
     }
@@ -3976,7 +4066,7 @@ sub _thread_save_hocr {
     }
 
     if ( not close $fh ) {
-        _thread_throw_error( $self, $uuid,
+        _thread_throw_error( $self, $uuid, undef, 'Save file',
             sprintf __("Can't close file: %s"), $path );
     }
     _post_save_hook( $path, %{$options} );
@@ -3998,7 +4088,7 @@ sub _thread_analyse {
     my $e     = $image->Read( $page->{filename} );
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid,
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Analyse',
             "Error reading $page->{filename}: $e." );
         return;
     }
@@ -4055,14 +4145,16 @@ sub _thread_threshold {
     $e = $image->BlackThreshold( threshold => "$threshold%" );
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, "Error running threshold: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid},
+            'Threshold', "Error running threshold: $e." );
         return;
     }
     return if $_self->{cancel};
     $e = $image->WhiteThreshold( threshold => "$threshold%" );
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, "Error running threshold: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid},
+            'Threshold', "Error running threshold: $e." );
         return;
     }
     return if $_self->{cancel};
@@ -4077,7 +4169,8 @@ sub _thread_threshold {
     }
     catch {
         $logger->error("Error thesholding: $_");
-        _thread_throw_error( $self, $uuid, "Error running threshold: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid},
+            'Threshold', "Error running threshold: $_." );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4121,8 +4214,8 @@ sub _thread_brightness_contrast {
     );
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $options{uuid},
-            "Error running BrightnessContrast: $e." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Brightness-contrast', "Error running BrightnessContrast: $e." );
         return;
     }
     return if $_self->{cancel};
@@ -4142,7 +4235,8 @@ sub _thread_brightness_contrast {
     }
     catch {
         $logger->error("Error changing brightness / contrast: $_");
-        _thread_throw_error( $self, $options{uuid},
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Brightness-contrast',
             "Error changing brightness / contrast: $_." );
         $error = TRUE;
     };
@@ -4187,7 +4281,8 @@ sub _thread_negate {
     $e = $image->Negate;
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, "Error negating: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid},
+            'Negate', "Error negating: $e." );
         return;
     }
     return if $_self->{cancel};
@@ -4204,7 +4299,8 @@ sub _thread_negate {
     }
     catch {
         $logger->error("Error negating: $_");
-        _thread_throw_error( $self, $uuid, "Error negating: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid},
+            'Negate', "Error negating: $_." );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4263,8 +4359,8 @@ sub _thread_unsharp {
     }
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $options{uuid},
-            "Error running unsharp: $e." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Unsharp', "Error running unsharp: $e." );
         return;
     }
     return if $_self->{cancel};
@@ -4284,8 +4380,8 @@ sub _thread_unsharp {
     }
     catch {
         $logger->error("Error writing image with unsharp mask: $_");
-        _thread_throw_error( $self, $options{uuid},
-            "Error writing image with unsharp mask: $_." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Unsharp', "Error writing image with unsharp mask: $_." );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4752,22 +4848,31 @@ sub _thread_user_defined {
         else {
             if ( not copy( $in, $out ) ) {
                 _thread_throw_error( $self, $options{uuid},
-                    __('Error copying page') );
+                    $options{page}{uuid},
+                    'user-defined', __('Error copying page') );
                 return;
             }
             $options{command} =~ s/%i/$out/gxsm;
         }
         $options{command} =~ s/%r/$options{page}{resolution}/gxsm;
-        exec_command( [ $options{command} ], $options{pidfile} );
+        ( undef, my $info, my $error ) =
+          exec_command( [ $options{command} ], $options{pidfile} );
         return if $_self->{cancel};
+        $logger->info("stdout: $info");
+        $logger->info("stderr: $error");
+        if ( $error ne $EMPTY ) {
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'user-defined', $error );
+            return;
+        }
 
         # Get file type
         my $image = Image::Magick->new;
         my $e     = $image->Read($out);
         if ("$e") {
             $logger->error($e);
-            _thread_throw_error( $self, $options{uuid},
-                "Error reading $out: $e." );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'user-defined', "Error reading $out: $e." );
             return;
         }
 
@@ -4797,8 +4902,8 @@ sub _thread_user_defined {
     }
     catch {
         $logger->error("Error creating file in $options{dir}: $_");
-        _thread_throw_error( $self, $options{uuid},
-            "Error creating file in $options{dir}: $_." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'user-defined', "Error creating file in $options{dir}: $_." );
     };
     $self->{return}->enqueue(
         {

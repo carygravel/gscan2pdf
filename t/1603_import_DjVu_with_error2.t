@@ -47,7 +47,7 @@ EOS
 $slist->import_files(
     paths          => ['test.djvu'],
     error_callback => sub {
-        my ($message) = @_;
+        my ( $uuid, $process, $message ) = @_;
         ok( ( defined $message and $message ne '' ),
             'error callback has message' );
     },

@@ -7,6 +7,8 @@
   libimage-sane-perl and scanimage.
 * Fixed visibility of scan widgets when switching from libimage-sane-perl to
   scanimage.
+* Collect all warning and error messages in one dialog.
+  Closes bug #309 (stuck while closing error windows)
 
 
 2.1.7 (12.10.2018):

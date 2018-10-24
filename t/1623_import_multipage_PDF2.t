@@ -105,7 +105,7 @@ EOS
     $slist->import_files(
         paths          => ['test.pdf'],
         error_callback => sub {
-            my ($message) = @_;
+            my ( $uuid, $process, $message ) = @_;
             like $message, qr/one image per page/, 'one image per page warning';
         },
         finished_callback => sub {

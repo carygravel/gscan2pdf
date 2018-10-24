@@ -29,7 +29,7 @@ $slist->set_dir($dir);
 $slist->import_files(
     paths          => ['test.ppm'],
     error_callback => sub {
-        my ($text) = @_;
+        my ( $uuid, $process, $text ) = @_;
         is(
             $text,
             'test.ppm is not a recognised image type',
@@ -38,7 +38,7 @@ $slist->import_files(
         $slist->import_files(
             paths          => ['test.png'],
             error_callback => sub {
-                my ($text) = @_;
+                my ( $uuid, $process, $text ) = @_;
                 is(
                     $text,
                     'File test.png not found',
