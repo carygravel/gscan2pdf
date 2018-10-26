@@ -9,6 +9,8 @@
   scanimage.
 * Collect all warning and error messages in one dialog.
   Closes bug #309 (stuck while closing error windows)
+* Be more tolerant of errors whilst fetching options.  Closes bug #313
+  (Error retreiving scanner options: error getting option 5: invalid argument)
 
 
 2.1.7 (12.10.2018):

@@ -23,6 +23,7 @@ Readonly my $_8_BIT         => 8;
 Readonly my $MAXVAL_8_BIT   => 2**$_8_BIT - 1;
 Readonly my $_16_BIT        => 16;
 Readonly my $MAXVAL_16_BIT  => 2**$_16_BIT - 1;
+Readonly my $LARGE_STATUS   => 99;
 my $uuid_object = Data::UUID->new;
 my $EMPTY       = q{};
 
@@ -496,7 +497,13 @@ sub _thread_get_options {
         _thread_throw_error( $self, $uuid, 'get-options', $status,
             'unable to determine option count: ' . $_->error );
     };
+    $logger->debug("Backend reports $num_dev_options options");
+
     if ( $status == SANE_STATUS_GOOD ) {
+
+        # if we can retrieve at least one good option, then do so.
+        # otherwise return the error message
+        $status = $LARGE_STATUS;
         for my $i ( 1 .. $num_dev_options - 1 ) {
             my $opt;
             try {
@@ -518,14 +525,18 @@ sub _thread_get_options {
             {
                 try {
                     $opt->{val} = $self->{device_handle}->get_option($i);
+                    $status = SANE_STATUS_GOOD;
                 }
                 catch {
-                    $status = $_->status;
+                    if ( $_->status < $status ) { $status = $_->status }
+                    $opt->{cap} = 0;
                     $logger->warn( "Error getting option $i. ", Dumper($opt) );
-                    _thread_throw_error( $self, $uuid, 'get_option', $status,
-                        "error getting option $i: " . $_->error );
                 };
             }
+        }
+        if ( $status != SANE_STATUS_GOOD ) {
+            _thread_throw_error( $self, $uuid, 'get_option', $status,
+                'no options fetched: ' . $_->error );
         }
     }
     $self->{return}->enqueue(

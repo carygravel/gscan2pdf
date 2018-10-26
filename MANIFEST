@@ -167,6 +167,7 @@ t/0607_Dialog_Scan.t
 t/06081_Dialog_Scan.t
 t/06082_Dialog_Scan.t
 t/0608_Dialog_Scan.t
+t/06092_Dialog_Scan.t
 t/0609_Dialog_Scan.t
 t/0610_Dialog_Scan_Image_Sane.t
 t/0611_Dialog_Scan_Image_Sane.t
