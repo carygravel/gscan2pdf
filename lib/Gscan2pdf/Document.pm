@@ -4428,7 +4428,8 @@ sub _thread_crop {
     );
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $options{uuid}, "Error cropping: $e." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'crop', "Error cropping: $e." );
         return;
     }
     $image->Set( page => '0x0+0+0' );
@@ -4449,7 +4450,8 @@ sub _thread_crop {
     }
     catch {
         $logger->error("Error cropping: $_");
-        _thread_throw_error( $self, $options{uuid}, "Error cropping: $_." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'crop', "Error cropping: $_." );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4491,7 +4493,8 @@ sub _thread_to_png {
             $_ .= "\nPlease examine ImageMagick's policy.xml file and check";
             $_ .= ' that the memory limits are set high enough for this image.';
         }
-        _thread_throw_error( $self, $uuid, "Error converting to png: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'to-PNG',
+            "Error converting to png: $_." );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4529,15 +4532,15 @@ sub _thread_tesseract {
     }
     catch {
         $logger->error("Error processing with tesseract: $_");
-        _thread_throw_error( $self, $options{uuid},
-            "Error processing with tesseract: $_" );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'tesseract', "Error processing with tesseract: $_" );
         $error = TRUE;
     };
     if ($error) { return }
     return if $_self->{cancel};
     if ( defined $stderr and $stderr ne $EMPTY ) {
-        _thread_throw_error( $self, $options{uuid},
-            "Error processing with tesseract: $stderr" );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'tesseract', "Error processing with tesseract: $stderr" );
     }
     $options{page}{ocr_flag} = 1;    #FlagOCR
     $options{page}{ocr_time} =
@@ -4697,7 +4700,8 @@ sub _thread_unpaper {
             if ("$e") {
                 $logger->error($e);
                 _thread_throw_error( $self, $options{uuid},
-                    "Error reading $filename: $e." );
+                    $options{page}{uuid},
+                    'unpaper', "Error reading $filename: $e." );
                 return;
             }
             my $depth = $image->Get('depth');
@@ -4744,8 +4748,8 @@ sub _thread_unpaper {
         $logger->info($stdout);
         if ($stderr) {
             $logger->error($stderr);
-            _thread_throw_error( $self, $options{uuid},
-                "Error running unpaper: $stderr" );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'unpaper', "Error running unpaper: $stderr" );
             if ( not -s $out ) { return }
         }
         return if $_self->{cancel};
@@ -4753,8 +4757,8 @@ sub _thread_unpaper {
         $stdout =~ s/Processing[ ]sheet.*[.]pnm\n//xsm;
         if ($stdout) {
             $logger->warn($stdout);
-            _thread_throw_error( $self, $options{uuid},
-                "Warning running unpaper: $stdout" );
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'unpaper', "Warning running unpaper: $stdout" );
             if ( not -s $out ) { return }
         }
 
@@ -4815,8 +4819,8 @@ sub _thread_unpaper {
     }
     catch {
         $logger->error("Error creating file in $options{dir}: $_");
-        _thread_throw_error( $self, $options{uuid},
-            "Error creating file in $options{dir}: $_." );
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'unpaper', "Error creating file in $options{dir}: $_." );
     };
     $self->{return}->enqueue(
         {
