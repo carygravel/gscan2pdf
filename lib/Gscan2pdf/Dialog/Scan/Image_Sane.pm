@@ -206,8 +206,14 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
         if ( $opt->{type} == SANE_TYPE_GROUP or not defined $vbox ) {
             $vbox = Gtk3::VBox->new;
             $vbox->set_border_width( $self->style_get('content-area-border') );
-            my $text =
+            my $text = (
                 $opt->{type} == SANE_TYPE_GROUP
+
+                  # A brother scanner used an empty string as a group title,
+                  # which then results in a tab with no title, which is
+                  # confusing and can be missed, so set to the default.
+                  and $opt->{title} ne $EMPTY
+              )
               ? $d_sane->get( $opt->{title} )
               : __('Scan Options');
             my $scwin = Gtk3::ScrolledWindow->new;
