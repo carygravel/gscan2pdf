@@ -13,6 +13,7 @@
   (Error retreiving scanner options: error getting option 5: invalid argument)
 * Use default text if the title of a group of scan options is empty.
 * Update to German translation (thanks to Stephan Woidowski)
+* Update to Russian translation (thanks to Valerii)
 
 
 2.1.7 (12.10.2018):
