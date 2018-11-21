@@ -47,7 +47,7 @@ sub INIT_INSTANCE {
     );
 
     $vbox->pack_start( $self->{cb}, TRUE, TRUE, 0 );
-    $self->add_actions( 'close', \&close_callback );
+    $self->add_actions( 'gtk-close', \&close_callback );
     return $self;
 }
 
