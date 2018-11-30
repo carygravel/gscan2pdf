@@ -242,9 +242,9 @@ init_icons(
 # Define application-wide variables here so that they can be referenced
 # in the menu callbacks
 my (
-    $slist, $windowi, $windowe, $windows, $windowo, $windowrn, $windowu,
-    $windowudt, $save_button, $window, $scwin_buffer, $thbox,   $tpbar,
-    $tcbutton,  $spbar,       $shbox,  $scbutton,     $unpaper, $hpaned,
+    $slist,     $windowi,     $windowe, $windows, $windowo, $windowrn, $windowu,
+    $windowudt, $save_button, $window,  $thbox,   $tpbar,
+    $tcbutton, $spbar, $shbox, $scbutton, $unpaper, $hpaned,
     @undo_buffer,
     @redo_buffer,    @undo_selection, @redo_selection, %dependencies,
     $menubar,        $toolbar,
@@ -345,9 +345,26 @@ sub populate_main_window {
         }
     );
     $view->signal_connect( button_release_event => \&handle_clicks );
-    $view->signal_connect(
+    $view->{zoom_changed_signal} = $view->signal_connect(
         'zoom-changed' => sub {
-            if ( defined $canvas ) { $canvas->set_scale( $view->get_zoom ) }
+            if ( defined $canvas ) {
+                $canvas->signal_handler_block( $canvas->{zoom_changed_signal} );
+                $canvas->set_scale( $view->get_zoom );
+                $canvas->signal_handler_unblock(
+                    $canvas->{zoom_changed_signal} );
+            }
+        }
+    );
+    $view->{offset_changed_signal} = $view->signal_connect(
+        'offset-changed' => sub {
+            if ( defined $canvas ) {
+                my $offset = $view->get_offset;
+                $canvas->signal_handler_block(
+                    $canvas->{offset_changed_signal} );
+                $canvas->set_offset( $offset->{x}, $offset->{y} );
+                $canvas->signal_handler_unblock(
+                    $canvas->{offset_changed_signal} );
+            }
         }
     );
 
@@ -367,12 +384,24 @@ sub populate_main_window {
         }
     );
 
-    # ScrolledWindow for Goo::Canvas for OCR output
-    $scwin_buffer = Gtk3::ScrolledWindow->new;
-    $scwin_buffer->set_policy( 'automatic', 'automatic' );
-    $scwin_buffer->set_shadow_type('etched-in');
-    $vnotebook->append_page( $scwin_buffer,
-        Gtk3::Label->new( __('OCR Output') ) );
+    # Goo::Canvas for OCR output
+    $canvas = Gscan2pdf::Canvas->new;
+    $canvas->{zoom_changed_signal} = $canvas->signal_connect(
+        'zoom-changed' => sub {
+            $view->signal_handler_block( $view->{zoom_changed_signal} );
+            $view->set_zoom( $canvas->get_scale );
+            $view->signal_handler_unblock( $view->{zoom_changed_signal} );
+        }
+    );
+    $canvas->{offset_changed_signal} = $canvas->signal_connect(
+        'offset-changed' => sub {
+            $view->signal_handler_block( $view->{offset_changed_signal} );
+            my $offset = $canvas->get_offset;
+            $view->set_offset( $offset->{x}, $offset->{y} );
+            $view->signal_handler_unblock( $view->{offset_changed_signal} );
+        }
+    );
+    $vnotebook->append_page( $canvas, Gtk3::Label->new( __('OCR Output') ) );
 
     # Set up call back for list selection to update detail view
     $slist->{selection_changed_signal} = $slist->get_selection->signal_connect(
@@ -1406,7 +1435,7 @@ sub selection_changed_callback {
     my @page = $slist->get_selected_indices;
 
     # Display the new image
-    for ( $scwin_buffer->get_children ) { $scwin_buffer->remove($_) }
+    $canvas->clear_text;
     if (@page) {
         my $path = Gtk3::TreePath->new_from_indices( $page[0] );
         $slist->scroll_to_cell( $path, $slist->get_column(0),
@@ -1637,15 +1666,7 @@ sub display_image {
 
 sub create_canvas {
     my ($page) = @_;
-    $current_page = $page;
-
-    # Set up the canvas
-    $canvas = Gscan2pdf::Canvas->new( $page, \&edit_ocr_text );
-
-    # Remove the existing contents
-    for ( $scwin_buffer->get_children ) { $scwin_buffer->remove($_) }
-
-    $scwin_buffer->add($canvas);
+    $canvas->add_text( $page, \&edit_ocr_text );
     $canvas->set_scale( $view->get_zoom );
     $canvas->show;
     return;
@@ -4122,8 +4143,8 @@ sub clear_ocr {
     # Update undo/redo buffers
     take_snapshot();
 
-    # Remove the existing canvas
-    for ( $scwin_buffer->get_children ) { $scwin_buffer->remove($_) }
+    # Clear the existing canvas
+    $canvas->clear_text;
 
     my @selection = $slist->get_selected_indices;
     for (@selection) {

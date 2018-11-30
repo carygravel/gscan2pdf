@@ -14,25 +14,97 @@ Readonly my $FULLPAGE_OCR_SCALE => 0.8;
 my $SPACE = q{ };
 my $EMPTY = q{};
 
-BEGIN {
-    use Exporter ();
-    our ( $VERSION, @EXPORT_OK, %EXPORT_TAGS );
+our $VERSION = '2.1.7';
 
-    $VERSION = '2.1.7';
+use Glib::Object::Subclass GooCanvas2::Canvas::, signals => {
+    'zoom-changed' => {
+        param_types => ['Glib::Float'],    # new zoom
+    },
+    'offset-changed' => {
+        param_types => [ 'Glib::Int', 'Glib::Int' ],    # new offset
+    },
+  },
+  properties => [
+    Glib::ParamSpec->scalar(
+        'offset',                                       # name
+        'Image offset',                                 # nick
+        'Gdk::Rectangle hash of x, y',                  # blurb
+        [qw/readable writable/]                         # flags
+    ),
+  ];
 
-    use base qw(Exporter GooCanvas2::Canvas);
-    %EXPORT_TAGS = ();    # eg: TAG => [ qw!name1 name2! ],
-
-    # your exported package globals go here,
-    # as well as any optionally exported functions
-    @EXPORT_OK = qw();
-}
-
-sub new {
-    my ( $class, $page, $edit_callback ) = @_;
+sub INIT_INSTANCE {
+    my $self = shift;
 
     # Set up the canvas
-    my $self = GooCanvas2::Canvas->new;
+    $self->signal_connect( 'button-press-event'   => \&_button_pressed );
+    $self->signal_connect( 'button-release-event' => \&_button_released );
+    $self->signal_connect( 'motion-notify-event'  => \&_motion );
+    $self->signal_connect( 'scroll-event'         => \&_scroll );
+    if (
+        $Glib::Object::Introspection::VERSION <
+        0.043    ## no critic (ProhibitMagicNumbers)
+      )
+    {
+        $self->add_events(
+            ${ Gtk3::Gdk::EventMask->new(qw/exposure-mask/) } |
+              ${ Gtk3::Gdk::EventMask->new(qw/button-press-mask/) } |
+              ${ Gtk3::Gdk::EventMask->new(qw/button-release-mask/) } |
+              ${ Gtk3::Gdk::EventMask->new(qw/pointer-motion-mask/) } |
+              ${ Gtk3::Gdk::EventMask->new(qw/scroll-mask/) } );
+    }
+    else {
+        $self->add_events(
+            Glib::Object::Introspection->convert_sv_to_flags(
+                'Gtk3::Gdk::EventMask', 'exposure-mask' ) |
+              Glib::Object::Introspection->convert_sv_to_flags(
+                'Gtk3::Gdk::EventMask', 'button-press-mask' ) |
+              Glib::Object::Introspection->convert_sv_to_flags(
+                'Gtk3::Gdk::EventMask', 'button-release-mask' ) |
+              Glib::Object::Introspection->convert_sv_to_flags(
+                'Gtk3::Gdk::EventMask', 'pointer-motion-mask' ) |
+              Glib::Object::Introspection->convert_sv_to_flags(
+                'Gtk3::Gdk::EventMask', 'scroll-mask'
+              )
+        );
+    }
+    $self->{offset}{x} = 0;
+    $self->{offset}{y} = 0;
+
+    return $self;
+}
+
+sub SET_PROPERTY {
+    my ( $self, $pspec, $newval ) = @_;
+    my $name   = $pspec->get_name;
+    my $oldval = $self->get($name);
+    if (   ( defined $newval and defined $oldval and $newval ne $oldval )
+        or ( defined $newval xor defined $oldval ) )
+    {
+        given ($name) {
+            when ('offset') {
+                if (   ( defined $newval xor defined $oldval )
+                    or $oldval->{x} != $newval->{x}
+                    or $oldval->{y} != $newval->{y} )
+                {
+                    $self->{$name} = $newval;
+                    $self->scroll_to( -$newval->{x}, -$newval->{y} );
+                    $self->signal_emit( 'offset-changed', $newval->{x},
+                        $newval->{y} );
+                }
+            }
+            default {
+                $self->{$name} = $newval;
+
+                #                $self->SUPER::SET_PROPERTY( $pspec, $newval );
+            }
+        }
+    }
+    return;
+}
+
+sub add_text {
+    my ( $self, $page, $edit_callback ) = @_;
     my $root = $self->get_root_item;
     if ( not defined $page->{w} ) {
 
@@ -45,11 +117,62 @@ sub new {
 
     # Attach the text to the canvas
     for my $box ( @{ $page->boxes } ) {
-        boxed_text( $self->get_root_item, $box, [ 0, 0, 0 ], $edit_callback );
+        boxed_text( $root, $box, [ 0, 0, 0 ], $edit_callback );
     }
     $self->{page} = $page;
-    bless $self, $class;
-    return $self;
+    return;
+}
+
+sub get_pixbuf_size {
+    my ($self) = @_;
+    return { width => $self->{page}->{w}, height => $self->{page}->{h} };
+}
+
+sub clear_text {
+    my ($self) = @_;
+    my $root = $self->get_root_item;
+    if ( $root->get_n_children > 0 ) {
+        $root->remove_child(0);
+    }
+    return;
+}
+
+sub set_offset {
+    my ( $self, $offset_x, $offset_y ) = @_;
+    if ( not defined $self->{page}->{w} ) { return }
+
+    # Convert the widget size to image scale to make the comparisons easier
+    my $allocation = $self->get_allocation;
+    ( $allocation->{width}, $allocation->{height} ) =
+      $self->_to_image_distance( $allocation->{width}, $allocation->{height} );
+    my $pixbuf_size = $self->get_pixbuf_size;
+
+    $offset_x = _clamp_direction( $offset_x, $allocation->{width},
+        $pixbuf_size->{width} );
+    $offset_y = _clamp_direction( $offset_y, $allocation->{height},
+        $pixbuf_size->{height} );
+
+    my $min_x = 0;
+    my $min_y = 0;
+    if ( $offset_x > 0 ) {
+        $min_x = -$offset_x;
+    }
+    if ( $offset_y > 0 ) {
+        $min_y = -$offset_y;
+    }
+    $self->set_bounds(
+        $min_x, $min_y,
+        $pixbuf_size->{width} - $min_x,
+        $pixbuf_size->{height} - $min_y
+    );
+
+    $self->set( 'offset', { x => $offset_x, y => $offset_y } );
+    return;
+}
+
+sub get_offset {
+    my ($self) = @_;
+    return $self->get('offset');
 }
 
 # Draw text on the canvas with a box around it
@@ -132,6 +255,8 @@ sub boxed_text {
 
         # clicking text box produces a dialog to edit the text
         if ($edit_callback) {
+            $text->signal_connect( 'button-press-event' =>
+                  sub { $root->get_parent->{dragging} = FALSE } );
             $text->signal_connect( 'button-press-event' => $edit_callback );
         }
     }
@@ -317,6 +442,100 @@ sub _group2hocr {
         }
     }
     return $string;
+}
+
+# convert x, y in widget distance to image distance
+sub _to_image_distance {
+    my ( $self, $x, $y ) = @_;
+    my $zoom = $self->get_scale;
+    return $x / $zoom, $y / $zoom;
+}
+
+# set zoom with centre in image coordinates
+sub _set_zoom_with_center {
+    my ( $self, $zoom, $center_x, $center_y ) = @_;
+    my $allocation = $self->get_allocation;
+    my $offset_x   = $allocation->{width} / 2 / $zoom - $center_x;
+    my $offset_y   = $allocation->{height} / 2 / $zoom - $center_y;
+    $self->set_scale($zoom);
+    $self->signal_emit( 'zoom-changed', $zoom );
+    $self->set_offset( $offset_x, $offset_y );
+    return;
+}
+
+sub _clamp_direction {
+    my ( $offset, $allocation, $pixbuf_size ) = @_;
+
+    # Centre the image if it is smaller than the widget
+    if ( $allocation > $pixbuf_size ) {
+        $offset = ( $allocation - $pixbuf_size ) / 2;
+    }
+
+    # Otherwise don't allow the LH/top edge of the image to be visible
+    elsif ( $offset > 0 ) {
+        $offset = 0;
+    }
+
+    # Otherwise don't allow the RH/bottom edge of the image to be visible
+    elsif ( $offset < $allocation - $pixbuf_size ) {
+        $offset = $allocation - $pixbuf_size;
+    }
+    return $offset;
+}
+
+sub _button_pressed {
+    my ( $self, $event ) = @_;
+
+    # left mouse button
+    if ( $event->button != 1 ) { return FALSE }
+
+    $self->{drag_start} = { x => $event->x, y => $event->y };
+    $self->{dragging} = TRUE;
+
+    #    $self->update_cursor( $event->x, $event->y );
+
+    # allow the event to propagate in case the user was clicking on text to edit
+    return;
+}
+
+sub _button_released {
+    my ( $self, $event ) = @_;
+    $self->{dragging} = FALSE;
+
+    #    $self->update_cursor( $event->x, $event->y );
+    return;
+}
+
+sub _motion {
+    my ( $self, $event ) = @_;
+    if ( not $self->{dragging} ) { return FALSE }
+
+    my $offset = $self->get_offset;
+    my $zoom   = $self->get_scale;
+    my $offset_x =
+      $offset->{x} + ( $event->x - $self->{drag_start}{x} ) / $zoom;
+    my $offset_y =
+      $offset->{y} + ( $event->y - $self->{drag_start}{y} ) / $zoom;
+    ( $self->{drag_start}{x}, $self->{drag_start}{y} ) =
+      ( $event->x, $event->y );
+    $self->set_offset( $offset_x, $offset_y );
+    return;
+}
+
+sub _scroll {
+    my ( $self, $event ) = @_;
+    my ( $center_x, $center_y ) =
+      $self->convert_from_pixels( $event->x, $event->y );
+
+    my $zoom;
+    if ( $event->direction eq 'up' ) {
+        $zoom = $self->get_scale * 2;
+    }
+    else {
+        $zoom = $self->get_scale / 2;
+    }
+    $self->_set_zoom_with_center( $zoom, $center_x, $center_y );
+    return;
 }
 
 1;

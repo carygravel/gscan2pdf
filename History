@@ -1,4 +1,4 @@
-2.1.8 (12.11.2018):
+2.2.0 (30.11.2018):
 
 * Check validity of device blacklist regex when applying preferences
 * Modify preference "Force new scan job between pages" to only take effect when
@@ -12,6 +12,7 @@
 * Be more tolerant of errors whilst fetching options.  Closes bug #313
   (Error retreiving scanner options: error getting option 5: invalid argument)
 * Use default text if the title of a group of scan options is empty.
+* Lock panning of image and OCR output views
 * Update to German translation (thanks to Stephan Woidowski)
 * Update to Russian translation (thanks to Valerii)
 

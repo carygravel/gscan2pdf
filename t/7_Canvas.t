@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 11;
+use Test::More tests => 17;
 use Gscan2pdf::Page;
 use Gtk3 -init;
 
@@ -59,8 +59,9 @@ $page->{hocr} = <<'EOS';
 </html>
 EOS
 
-my $canvas = Gscan2pdf::Canvas->new($page);
-my $group  = $canvas->get_root_item;
+my $canvas = Gscan2pdf::Canvas->new;
+$canvas->add_text($page);
+my $group = $canvas->get_root_item;
 $group = $group->get_child(0);
 $group = $group->get_child(1);
 $group = $group->get_child(1);
@@ -95,6 +96,27 @@ my $expected = <<"EOS";
 EOS
 
 is( $page->{hocr}, $expected, 'updated hocr' );
+
+is_deeply( [ $canvas->get_bounds ], [ 0, 0, 70, 46 ], 'get_bounds' );
+is_deeply( $canvas->get_scale, 1, 'get_scale' );
+$canvas->_set_zoom_with_center( 2, 35, 26 );
+is_deeply( [ $canvas->get_bounds ], [ 0, 0, 70, 46 ], 'get_bounds after zoom' );
+is_deeply(
+    [ $canvas->convert_from_pixels( 0, 0 ) ],
+    [ 0, 0 ],
+    'convert_from_pixels'
+);
+$canvas->set_bounds( -10, -10, $page->{w} + 10, $page->{h} + 10 );
+is_deeply(
+    [ $canvas->get_bounds ],
+    [ -10, -10, 80, 56 ],
+    'get_bounds after set'
+);
+is_deeply(
+    [ $canvas->convert_from_pixels( 0, 0 ) ],
+    [ -10, -10 ],
+    'convert_from_pixels2'
+);
 
 #########################
 
@@ -173,13 +195,14 @@ $page->{hocr} = <<'EOS';
 </html>
 EOS
 
-$canvas = Gscan2pdf::Canvas->new($page);
-$group  = $canvas->get_root_item;
-$group  = $group->get_child(0);
-$group  = $group->get_child(1);
-$group  = $group->get_child(1);
-$group  = $group->get_child(2);
-$text   = $group->get_child(1);
+$canvas = Gscan2pdf::Canvas->new;
+$canvas->add_text($page);
+$group = $canvas->get_root_item;
+$group = $group->get_child(0);
+$group = $group->get_child(1);
+$group = $group->get_child(1);
+$group = $group->get_child(2);
+$text  = $group->get_child(1);
 
 SKIP: {
     skip 'GooCanvas2::Canvas::get_transform() returns undef', 6;
@@ -234,7 +257,8 @@ $page = Gscan2pdf::Page->new(
 
 $page->{hocr} = 'The quick brown fox';
 
-$canvas   = Gscan2pdf::Canvas->new($page);
+$canvas = Gscan2pdf::Canvas->new;
+$canvas->add_text($page);
 $expected = <<"EOS";
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
