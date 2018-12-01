@@ -77,8 +77,8 @@ SKIP: {
                     );
                 },
                 error_callback => sub {
-                    my ($msgs) = @_;
-                    for my $msg ( split "\n", $msgs ) {
+                    my ($uuid, $process, $message) = @_;
+                    for my $msg ( split "\n", $message ) {
 
                         # if we use unlike, we no longer
                         # know how many tests there will be
