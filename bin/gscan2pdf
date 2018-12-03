@@ -1435,7 +1435,6 @@ sub selection_changed_callback {
     my @page = $slist->get_selected_indices;
 
     # Display the new image
-    $canvas->clear_text;
     if (@page) {
         my $path = Gtk3::TreePath->new_from_indices( $page[0] );
         $slist->scroll_to_cell( $path, $slist->get_column(0),
@@ -1446,6 +1445,7 @@ sub selection_changed_callback {
     }
     else {
         $view->set_pixbuf(undef);
+        $canvas->clear_text;
         undef $current_page;
     }
     update_uimanager();
@@ -1666,6 +1666,7 @@ sub display_image {
 
 sub create_canvas {
     my ($page) = @_;
+    $canvas->clear_text;
     $canvas->add_text( $page, \&edit_ocr_text );
     $canvas->set_scale( $view->get_zoom );
     $canvas->show;
@@ -1689,6 +1690,7 @@ sub edit_ocr_text {
 
     if ( $dialog->run eq 'ok' ) {
         $canvas->set_box_text( $widget, $textbuffer->get('text') );
+        $current_page->{hocr} = $canvas->hocr;
     }
     $dialog->destroy;
     $canvas->pointer_ungrab( $widget, $ev->time );

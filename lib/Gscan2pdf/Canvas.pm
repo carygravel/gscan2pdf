@@ -113,19 +113,19 @@ sub add_text {
         $page->{w} = $pixbuf->get_width;
         $page->{h} = $pixbuf->get_height;
     }
+    $self->{pixbuf_size} = { width => $page->{w}, height => $page->{h} };
     $self->set_bounds( 0, 0, $page->{w}, $page->{h} );
 
     # Attach the text to the canvas
     for my $box ( @{ $page->boxes } ) {
         boxed_text( $root, $box, [ 0, 0, 0 ], $edit_callback );
     }
-    $self->{page} = $page;
     return;
 }
 
 sub get_pixbuf_size {
     my ($self) = @_;
-    return { width => $self->{page}->{w}, height => $self->{page}->{h} };
+    return $self->{pixbuf_size};
 }
 
 sub clear_text {
@@ -134,12 +134,13 @@ sub clear_text {
     if ( $root->get_n_children > 0 ) {
         $root->remove_child(0);
     }
+    delete $self->{pixbuf_size};
     return;
 }
 
 sub set_offset {
     my ( $self, $offset_x, $offset_y ) = @_;
-    if ( not defined $self->{page}->{w} ) { return }
+    if ( not defined $self->get_pixbuf_size ) { return }
 
     # Convert the widget size to image scale to make the comparisons easier
     my $allocation = $self->get_allocation;
@@ -327,7 +328,6 @@ sub set_box_text {
         $g->remove_child(0);
         $g->remove_child(1);
     }
-    $self->canvas2hocr();
     return;
 }
 
@@ -353,13 +353,13 @@ sub _transform_text {
 
 # Convert the canvas into hocr
 
-sub canvas2hocr {
+sub hocr {
     my ($self) = @_;
+    if ( not defined $self->get_pixbuf_size ) { return }
     my ( $x, $y, $w, $h ) = $self->get_bounds;
     my $root = $self->get_root_item;
     my $string = _group2hocr( $root, 2 );
-
-    $self->{page}{hocr} = <<"EOS";
+    return <<"EOS";
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -374,7 +374,6 @@ $string
  </body>
 </html>
 EOS
-    return;
 }
 
 sub _group2hocr {

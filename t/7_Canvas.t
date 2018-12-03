@@ -95,7 +95,7 @@ my $expected = <<"EOS";
 </html>
 EOS
 
-is( $page->{hocr}, $expected, 'updated hocr' );
+is( $canvas->hocr, $expected, 'updated hocr' );
 
 is_deeply( [ $canvas->get_bounds ], [ 0, 0, 70, 46 ], 'get_bounds' );
 is_deeply( $canvas->get_scale, 1, 'get_scale' );
@@ -147,7 +147,7 @@ $expected = <<"EOS";
 </html>
 EOS
 
-is( $page->{hocr}, $expected, 'updated hocr with HTML-escape characters' );
+is( $canvas->hocr, $expected, 'updated hocr with HTML-escape characters' );
 
 #########################
 
@@ -243,8 +243,7 @@ $expected = <<"EOS";
 </html>
 EOS
 
-$canvas->canvas2hocr;
-is( $page->{hocr}, $expected, 'updated hocr with extended hOCR properties' );
+is( $canvas->hocr, $expected, 'updated hocr with extended hOCR properties' );
 
 #########################
 
@@ -275,8 +274,7 @@ $expected = <<"EOS";
 </html>
 EOS
 
-$canvas->canvas2hocr;
-is( $canvas->{page}{hocr}, $expected, 'canvas2hocr from simple text' );
+is( $canvas->hocr, $expected, 'canvas2hocr from simple text' );
 
 #########################
 
