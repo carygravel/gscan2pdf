@@ -2,6 +2,7 @@
 
 * Clear OCR output canvas when switching pages
 * Ignore trailing whitespace in error messages when filtering them
+* Lock initial view of OCR output to image when switching pages
 
 
 2.2.0 (30.11.2018):

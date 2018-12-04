@@ -1669,6 +1669,8 @@ sub create_canvas {
     $canvas->clear_text;
     $canvas->add_text( $page, \&edit_ocr_text );
     $canvas->set_scale( $view->get_zoom );
+    my $offset = $view->get_offset;
+    $canvas->set_offset( $offset->{x}, $offset->{y} );
     $canvas->show;
     return;
 }
