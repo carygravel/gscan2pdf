@@ -130,6 +130,7 @@ sub dump_or_stringify {
 
 sub filter_message {
     my ($message) = @_;
+    $message =~ s/\s+$//xsm;
     while ( $message =~ /$HEXREGEX/xsmo ) {
         $message =~ s/$HEXREGEX/$1%%x$2/xsmo;
     }

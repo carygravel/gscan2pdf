@@ -6513,7 +6513,6 @@ sub show_message_dialog {
                 }
             }
             if ($filter) {
-                $logger->debug("ignoring '$text'");
                 $SETTING{message}{$text}{response} = $response;
             }
         }
@@ -6532,8 +6531,8 @@ sub show_message_dialog {
 
             for my $text ( $message_dialog->list_messages_to_ignore($response) )
             {
-                $logger->debug("ignoring '$text'");
-                $SETTING{message}{$text}{response} = $response;
+                $SETTING{message}{ Gscan2pdf::Dialog::filter_message($text) }
+                  {response} = $response;
             }
 
             $message_dialog->destroy;

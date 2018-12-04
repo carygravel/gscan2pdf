@@ -1,6 +1,7 @@
 2.2.1 (05.12.2018):
 
 * Clear OCR output canvas when switching pages
+* Ignore trailing whitespace in error messages when filtering them
 
 
 2.2.0 (30.11.2018):

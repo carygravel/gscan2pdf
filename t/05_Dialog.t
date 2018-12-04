@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 16;
+use Test::More tests => 17;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -93,6 +93,14 @@ is(
     ),
 'Error processing with tesseract: Warning. Invalid resolution %%d dpi. Using %%d instead.',
     'Filter out 1 and 2 digit integers from tesseract warning'
+);
+
+is(
+    Gscan2pdf::Dialog::filter_message(
+"[image2 @ 0x1338180] Encoder did not produce proper pts, making some up. \n "
+    ),
+    '[image2 @ %%x] Encoder did not produce proper pts, making some up.',
+    'Filter out trailing whitespace'
 );
 
 __END__

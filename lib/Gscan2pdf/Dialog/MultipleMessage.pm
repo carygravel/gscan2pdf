@@ -61,7 +61,7 @@ sub add_message {
         2, $self->{grid_rows}, 1, 1 );
     my $view   = Gtk3::TextView->new;
     my $buffer = $view->get_buffer;
-    $options{text} =~ s/\s$//xsm;
+    $options{text} =~ s/\s+$//xsm;
     $buffer->set_text( $options{text} );
     $view->set_editable(FALSE);
     $view->set_wrap_mode('word-char');
