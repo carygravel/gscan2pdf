@@ -14,7 +14,7 @@ Readonly my $FULLPAGE_OCR_SCALE => 0.8;
 my $SPACE = q{ };
 my $EMPTY = q{};
 
-our $VERSION = '2.2.0';
+our $VERSION = '2.2.1';
 
 use Glib::Object::Subclass GooCanvas2::Canvas::, signals => {
     'zoom-changed' => {

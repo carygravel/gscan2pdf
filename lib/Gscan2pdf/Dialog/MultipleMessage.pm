@@ -11,7 +11,7 @@ use Readonly;
 Readonly our $COL_MESSAGE  => 3;
 Readonly our $COL_CHECKBOX => 4;
 
-our $VERSION = '2.2.0';
+our $VERSION = '2.2.1';
 
 sub INIT_INSTANCE {
     my $self = shift;

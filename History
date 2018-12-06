@@ -1,9 +1,9 @@
-2.2.1 (05.12.2018):
+2.2.1 (06.12.2018):
 
 * Clear OCR output canvas when switching pages
 * Ignore trailing whitespace in error messages when filtering them
 * Lock initial view of OCR output to image when switching pages
-* Fix centering when zooming with mouse wheel
+* Fix centering of OCR output when zooming with mouse wheel
 
 
 2.2.0 (30.11.2018):
