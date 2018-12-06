@@ -534,7 +534,9 @@ sub _scroll {
         $zoom = $self->get_scale / 2;
     }
     $self->_set_zoom_with_center( $zoom, $center_x, $center_y );
-    return;
+
+    # don't allow the event to propagate, as this pans it in y
+    return TRUE;
 }
 
 1;
