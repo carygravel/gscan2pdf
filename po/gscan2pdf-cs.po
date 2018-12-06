@@ -7,462 +7,462 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gscan2pdf\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-07-28 15:19+0200\n"
-"PO-Revision-Date: 2018-08-07 07:25+0000\n"
+"POT-Creation-Date: 2018-11-30 20:23+0100\n"
+"PO-Revision-Date: 2018-12-05 09:23+0000\n"
 "Last-Translator: Pavel Borecki <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-09-11 14:36+0000\n"
-"X-Generator: Launchpad (build 18767)\n"
+"X-Launchpad-Export-Date: 2018-12-06 21:36+0000\n"
+"X-Generator: Launchpad (build 18831)\n"
 
-#: bin/gscan2pdf:336
+#: bin/gscan2pdf:339
 msgid "Image"
 msgstr "Obrázek"
 
-#: bin/gscan2pdf:372
+#: bin/gscan2pdf:404
 msgid "OCR Output"
 msgstr "Výstup z OCR"
 
-#: bin/gscan2pdf:485
+#: bin/gscan2pdf:517
 msgid "Error displaying help"
 msgstr "Nepodařilo se zobrazit nápovědu"
 
-#: bin/gscan2pdf:560 bin/gscan2pdf:581
+#: bin/gscan2pdf:592 bin/gscan2pdf:613
 #, perl-format
 msgid "Cannot read file: %s"
 msgstr "Nelze přečíst soubor: %s"
 
-#: bin/gscan2pdf:707
+#: bin/gscan2pdf:739
 msgid "GOCR"
 msgstr "GOCR"
 
-#: bin/gscan2pdf:707
+#: bin/gscan2pdf:739
 msgid "Process image with GOCR."
 msgstr "Zpracovat obrázek pomocí GOCR"
 
-#: bin/gscan2pdf:711
+#: bin/gscan2pdf:743
 msgid "Tesseract"
 msgstr "Tesseract"
 
-#: bin/gscan2pdf:711
+#: bin/gscan2pdf:743
 msgid "Process image with Tesseract."
 msgstr "Zpracovat obrázek pomocí Tesseract"
 
-#: bin/gscan2pdf:716
+#: bin/gscan2pdf:748
 msgid "Ocropus"
 msgstr "Ocropus"
 
-#: bin/gscan2pdf:716
+#: bin/gscan2pdf:748
 msgid "Process image with Ocropus."
 msgstr "Zpracovat obrázek pomocí Ocropus"
 
-#: bin/gscan2pdf:721
+#: bin/gscan2pdf:753
 msgid "Cuneiform"
 msgstr "Cuneiform"
 
-#: bin/gscan2pdf:721
+#: bin/gscan2pdf:753
 msgid "Process image with Cuneiform."
 msgstr "Zpracovat obrázk pomocí Cuneiform."
 
-#: bin/gscan2pdf:743
+#: bin/gscan2pdf:775
 msgid "_File"
 msgstr "_Soubor"
 
-#: bin/gscan2pdf:746
+#: bin/gscan2pdf:778
 msgid "_New"
 msgstr "_Nový"
 
-#: bin/gscan2pdf:747
+#: bin/gscan2pdf:779
 msgid "Clears all pages"
 msgstr "Smazat všechny stránky"
 
-#: bin/gscan2pdf:751
+#: bin/gscan2pdf:783
 msgid "_Open"
 msgstr "_Otevřít"
 
-#: bin/gscan2pdf:752
+#: bin/gscan2pdf:784
 msgid "Open image file(s)"
 msgstr "Otevřít soubor(y) s obrázkem"
 
-#: bin/gscan2pdf:756
+#: bin/gscan2pdf:788
 msgid "Open c_rashed session"
 msgstr "Otevřít neočekávaně ukončenou _relaci"
 
-#: bin/gscan2pdf:757 bin/gscan2pdf:1782
+#: bin/gscan2pdf:789 bin/gscan2pdf:1810
 msgid "Open crashed session"
 msgstr "Otevřít neočekávaně ukončenou relaci"
 
-#: bin/gscan2pdf:761
+#: bin/gscan2pdf:793
 msgid "S_can"
 msgstr "S_kenovat"
 
-#: bin/gscan2pdf:762
+#: bin/gscan2pdf:794
 msgid "Scan document"
 msgstr "Skenovat dokument"
 
-#: bin/gscan2pdf:765 bin/gscan2pdf:766 bin/gscan2pdf:2233
+#: bin/gscan2pdf:797 bin/gscan2pdf:798 bin/gscan2pdf:2155
 msgid "Save"
 msgstr "Uložit"
 
-#: bin/gscan2pdf:770
+#: bin/gscan2pdf:802
 msgid "_Email as PDF"
 msgstr "Zaslat _emailem jako PDF"
 
-#: bin/gscan2pdf:771
+#: bin/gscan2pdf:803
 msgid "Attach as PDF to a new email"
 msgstr "Připojit jako PDF k novému emailu"
 
-#: bin/gscan2pdf:774
+#: bin/gscan2pdf:806
 msgid "_Print"
 msgstr "_Tisk"
 
-#: bin/gscan2pdf:775
+#: bin/gscan2pdf:807
 msgid "Print"
 msgstr "Vytisknout"
 
-#: bin/gscan2pdf:779
+#: bin/gscan2pdf:811
 msgid "_Compress temporary files"
 msgstr "_Kompresovat dočasné soubory"
 
-#: bin/gscan2pdf:780
+#: bin/gscan2pdf:812
 msgid "Compress temporary files"
 msgstr "Kompresovat dočasné soubory"
 
-#: bin/gscan2pdf:785
+#: bin/gscan2pdf:817
 msgid "_Quit"
 msgstr "_Ukončit"
 
-#: bin/gscan2pdf:787
+#: bin/gscan2pdf:819
 msgid "Quit"
 msgstr "Konec"
 
-#: bin/gscan2pdf:794
+#: bin/gscan2pdf:826
 msgid "_Edit"
 msgstr "Ú_pravy"
 
-#: bin/gscan2pdf:795
+#: bin/gscan2pdf:827
 msgid "_Undo"
 msgstr "V_rátit"
 
-#: bin/gscan2pdf:795
+#: bin/gscan2pdf:827
 msgid "Undo"
 msgstr "Zpět"
 
-#: bin/gscan2pdf:798
+#: bin/gscan2pdf:830
 msgid "_Redo"
 msgstr "Zn_ovu"
 
-#: bin/gscan2pdf:799
+#: bin/gscan2pdf:831
 msgid "Redo"
 msgstr "Znovu"
 
-#: bin/gscan2pdf:803
+#: bin/gscan2pdf:835
 msgid "Cu_t"
 msgstr "_Vyjmout"
 
-#: bin/gscan2pdf:804
+#: bin/gscan2pdf:836
 msgid "Cut selection"
 msgstr "Vyjmout výběr"
 
-#: bin/gscan2pdf:808
+#: bin/gscan2pdf:840
 msgid "_Copy"
 msgstr "_Kopírovat"
 
-#: bin/gscan2pdf:809
+#: bin/gscan2pdf:841
 msgid "Copy selection"
 msgstr "Kopírovat výběr"
 
-#: bin/gscan2pdf:813
+#: bin/gscan2pdf:845
 msgid "_Paste"
 msgstr "_Vložit"
 
-#: bin/gscan2pdf:814
+#: bin/gscan2pdf:846
 msgid "Paste selection"
 msgstr "Vložit výběr"
 
-#: bin/gscan2pdf:818
+#: bin/gscan2pdf:850
 msgid "_Delete"
 msgstr "_Smazat"
 
-#: bin/gscan2pdf:819
+#: bin/gscan2pdf:851
 msgid "Delete selected pages"
 msgstr "Smazat vybrané stránky"
 
-#: bin/gscan2pdf:823
+#: bin/gscan2pdf:855
 msgid "_Renumber"
 msgstr "_Přečíslovat"
 
-#: bin/gscan2pdf:824
+#: bin/gscan2pdf:856
 msgid "Renumber pages"
 msgstr "Přečíslovat stránky"
 
-#: bin/gscan2pdf:826 bin/gscan2pdf:997
+#: bin/gscan2pdf:858 bin/gscan2pdf:1029
 msgid "_Select"
 msgstr "Vy_brat"
 
-#: bin/gscan2pdf:829
+#: bin/gscan2pdf:861
 msgid "_All"
 msgstr "_Vše"
 
-#: bin/gscan2pdf:830
+#: bin/gscan2pdf:862
 msgid "Select all pages"
 msgstr "Vybrat všechny stránky"
 
-#: bin/gscan2pdf:833
+#: bin/gscan2pdf:865
 msgid "_Odd"
 msgstr "_Liché"
 
-#: bin/gscan2pdf:834
+#: bin/gscan2pdf:866
 msgid "Select all odd-numbered pages"
 msgstr "Vybrat všechny stránky s lichým číslováním"
 
-#: bin/gscan2pdf:838
+#: bin/gscan2pdf:870
 msgid "_Even"
 msgstr "S_udé"
 
-#: bin/gscan2pdf:839
+#: bin/gscan2pdf:871
 msgid "Select all evenly-numbered pages"
 msgstr "Vybrat všechny stránky se sudým číslováním"
 
-#: bin/gscan2pdf:845
+#: bin/gscan2pdf:877
 msgid "_Blank"
 msgstr "_Čistý"
 
-#: bin/gscan2pdf:847
+#: bin/gscan2pdf:879
 msgid "Select pages with low standard deviation"
 msgstr "Vybrat stránky s malou standardní odchylkou"
 
-#: bin/gscan2pdf:852
+#: bin/gscan2pdf:884
 msgid "_Dark"
 msgstr "_Tmavé"
 
-#: bin/gscan2pdf:853
+#: bin/gscan2pdf:885
 msgid "Select dark pages"
 msgstr "Vybrat tmavé stránky"
 
-#: bin/gscan2pdf:858
+#: bin/gscan2pdf:890
 msgid "_Modified"
 msgstr "_Změněno"
 
-#: bin/gscan2pdf:860
+#: bin/gscan2pdf:892
 msgid "Select modified pages since last OCR"
 msgstr "Vybrat změněné stránky od posledního OCR"
 
-#: bin/gscan2pdf:865
+#: bin/gscan2pdf:897
 msgid "_No OCR"
 msgstr "_Bez OCR"
 
-#: bin/gscan2pdf:866
+#: bin/gscan2pdf:898
 msgid "Select pages with no OCR output"
 msgstr "Vybrat stránky bez výstupu OCR"
 
-#: bin/gscan2pdf:870
+#: bin/gscan2pdf:902
 msgid "_Clear OCR"
 msgstr "_Vyčistit OCR"
 
-#: bin/gscan2pdf:871
+#: bin/gscan2pdf:903
 msgid "Clear OCR output from selected pages"
 msgstr "Vyčistit výstup OCR ze zvolených stránek"
 
-#: bin/gscan2pdf:875
+#: bin/gscan2pdf:907
 msgid "Propert_ies"
 msgstr "_Vlastnosti"
 
-#: bin/gscan2pdf:876
+#: bin/gscan2pdf:908
 msgid "Edit image properties"
 msgstr "Upravit vlastnosti obrázku"
 
-#: bin/gscan2pdf:880
+#: bin/gscan2pdf:912
 msgid "Prefere_nces"
 msgstr "_Nastavení"
 
-#: bin/gscan2pdf:881
+#: bin/gscan2pdf:913
 msgid "Edit preferences"
 msgstr "Upravit nastavení"
 
-#: bin/gscan2pdf:885
+#: bin/gscan2pdf:917
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: bin/gscan2pdf:888
+#: bin/gscan2pdf:920
 msgid "Zoom _100%"
 msgstr "Velikost _100%"
 
-#: bin/gscan2pdf:889
+#: bin/gscan2pdf:921
 msgid "Zoom to 100%"
 msgstr "Zvětšit na 100%"
 
-#: bin/gscan2pdf:893
+#: bin/gscan2pdf:925
 msgid "Zoom to _fit"
 msgstr "Př_izpůsobit"
 
-#: bin/gscan2pdf:894
+#: bin/gscan2pdf:926
 msgid "Zoom to fit"
 msgstr "Přizpůsobit"
 
-#: bin/gscan2pdf:898
+#: bin/gscan2pdf:930
 msgid "Zoom _in"
 msgstr "Z_většit"
 
-#: bin/gscan2pdf:899
+#: bin/gscan2pdf:931
 msgid "Zoom in"
 msgstr "Zvětšit"
 
-#: bin/gscan2pdf:903
+#: bin/gscan2pdf:935
 msgid "Zoom _out"
 msgstr "Z_menšit"
 
-#: bin/gscan2pdf:904
+#: bin/gscan2pdf:936
 msgid "Zoom out"
 msgstr "Zmenšit"
 
-#: bin/gscan2pdf:909 bin/gscan2pdf:911
+#: bin/gscan2pdf:941 bin/gscan2pdf:943
 msgid "Rotate 90° clockwise"
 msgstr "Otočit o 90° doprava"
 
-#: bin/gscan2pdf:920 bin/gscan2pdf:922
+#: bin/gscan2pdf:952 bin/gscan2pdf:954
 msgid "Rotate 180°"
 msgstr "Otočit o 180°"
 
-#: bin/gscan2pdf:931 bin/gscan2pdf:933
+#: bin/gscan2pdf:963 bin/gscan2pdf:965
 msgid "Rotate 90° anticlockwise"
 msgstr "Otočit o 90° doleva"
 
-#: bin/gscan2pdf:941
+#: bin/gscan2pdf:973
 msgid "_Tools"
 msgstr "_Nástroje"
 
-#: bin/gscan2pdf:943
+#: bin/gscan2pdf:975
 msgid "_Threshold"
 msgstr "_Práh:"
 
-#: bin/gscan2pdf:944
+#: bin/gscan2pdf:976
 msgid "Change each pixel above this threshold to black"
 msgstr "Změnit každý pixel nad tento práh na černou"
 
-#: bin/gscan2pdf:949
+#: bin/gscan2pdf:981
 msgid "_Brightness / Contrast"
 msgstr "_Jas/kontrast"
 
-#: bin/gscan2pdf:950
+#: bin/gscan2pdf:982
 msgid "Change brightness & contrast"
 msgstr "Změnit jas a kontrast"
 
-#: bin/gscan2pdf:953
+#: bin/gscan2pdf:985
 msgid "_Negate"
 msgstr "N_egovat"
 
-#: bin/gscan2pdf:954
+#: bin/gscan2pdf:986
 msgid "Converts black to white and vice versa"
 msgstr "Konvertovat černou na bílou a obráceně"
 
-#: bin/gscan2pdf:958
+#: bin/gscan2pdf:990
 msgid "_Unsharp Mask"
 msgstr "_Maska rozostření"
 
-#: bin/gscan2pdf:959
+#: bin/gscan2pdf:991
 msgid "Apply an unsharp mask"
 msgstr "Aplikovat masku rozostření"
 
-#: bin/gscan2pdf:962
+#: bin/gscan2pdf:994
 msgid "_Crop"
 msgstr "_Oříznout"
 
-#: bin/gscan2pdf:963
+#: bin/gscan2pdf:995
 msgid "Crop pages"
 msgstr "Oříznout stránky"
 
-#: bin/gscan2pdf:966
+#: bin/gscan2pdf:998
 msgid "_Clean up"
 msgstr "_Vyčistit"
 
-#: bin/gscan2pdf:967 bin/gscan2pdf:4139
+#: bin/gscan2pdf:999 bin/gscan2pdf:3757
 msgid "Clean up scanned images with unpaper"
 msgstr "Vyčistit skenované stránky pomocí unpaper"
 
-#: bin/gscan2pdf:970
+#: bin/gscan2pdf:1002
 msgid "_OCR"
 msgstr "_OCR"
 
-#: bin/gscan2pdf:971
+#: bin/gscan2pdf:1003
 msgid "Optical Character Recognition"
 msgstr "Optické rozpoznávání znaků"
 
-#: bin/gscan2pdf:975
+#: bin/gscan2pdf:1007
 msgid "U_ser-defined"
 msgstr "Už_ivatelem určené"
 
-#: bin/gscan2pdf:976
+#: bin/gscan2pdf:1008
 msgid "Process images with user-defined tool"
 msgstr "Zpracovat obrázky uživatelem určeným nástrojem"
 
-#: bin/gscan2pdf:981 bin/gscan2pdf:983
+#: bin/gscan2pdf:1013 bin/gscan2pdf:1015
 msgid "_Help"
 msgstr "_Nápověda"
 
-#: bin/gscan2pdf:984
+#: bin/gscan2pdf:1016
 msgid "Help"
 msgstr "Nápověda"
 
-#: bin/gscan2pdf:986
+#: bin/gscan2pdf:1018
 msgid "_About"
 msgstr "_O programu"
 
-#: bin/gscan2pdf:992
+#: bin/gscan2pdf:1024
 msgid "_Drag"
 msgstr "Tá_hnout"
 
-#: bin/gscan2pdf:993
+#: bin/gscan2pdf:1025
 msgid "Use the hand tool"
 msgstr "Použít ruční nástroj"
 
-#: bin/gscan2pdf:998
+#: bin/gscan2pdf:1030
 msgid "Use the rectangular selection tool"
 msgstr "Použít nástroj obdélníkového výběru"
 
-#: bin/gscan2pdf:1002
+#: bin/gscan2pdf:1034
 msgid "_Paint"
 msgstr "_Kreslit"
 
-#: bin/gscan2pdf:1003
+#: bin/gscan2pdf:1035
 msgid "Use the painter tool"
 msgstr "Použít nástroj kreslení"
 
-#: bin/gscan2pdf:1180
+#: bin/gscan2pdf:1212
 msgid "Save image and Save as PDF both require imagemagick\n"
 msgstr "Uložení obráku a uložení jako PDF vyžadují imagemagick\n"
 
-#: bin/gscan2pdf:1185
+#: bin/gscan2pdf:1217
 msgid "Save image requires libtiff\n"
 msgstr "Uložení obrázku vyžaduje libtiff\n"
 
-#: bin/gscan2pdf:1190
+#: bin/gscan2pdf:1222
 msgid "Save as DjVu requires djvulibre-bin\n"
 msgstr "Ukládání do DjVu vyžaduje djvulibre-bin\n"
 
-#: bin/gscan2pdf:1195
+#: bin/gscan2pdf:1227
 msgid "Email as PDF requires xdg-email\n"
 msgstr "Zaslání emailem jako PDF vyžaduje xdg-email\n"
 
-#: bin/gscan2pdf:1226
+#: bin/gscan2pdf:1258
 msgid "The rotating options and unpaper support require perlmagick\n"
 msgstr "Volby otáčení a podpora unpaper vyžadují perlmagick\n"
 
-#: bin/gscan2pdf:1230
+#: bin/gscan2pdf:1262
 msgid "unpaper missing\n"
 msgstr "unpaper chybí\n"
 
-#: bin/gscan2pdf:1243
+#: bin/gscan2pdf:1275
 msgid "OCR requires gocr, tesseract, ocropus, or cuneiform\n"
 msgstr "OCR vyžaduje gocr, tesseract, ocropus, nebo cuneiform\n"
 
-#: bin/gscan2pdf:1248
+#: bin/gscan2pdf:1280
 msgid "Warning: missing packages"
 msgstr "Varování: chybí balíčky"
 
-#: bin/gscan2pdf:1478
+#: bin/gscan2pdf:1510
 #, perl-format
 msgid ""
 "Warning: unable to use %s for temporary storage. Defaulting to %s instead."
@@ -470,11 +470,11 @@ msgstr ""
 "Varování: nelze použít %s jako dočasné úložiště. Místo toho je použito "
 "standardní %s."
 
-#: bin/gscan2pdf:1537
+#: bin/gscan2pdf:1569
 msgid "Crashed sessions"
 msgstr "Neočekávaně ukončené relace"
 
-#: bin/gscan2pdf:1546
+#: bin/gscan2pdf:1578
 msgid ""
 "The following list of sessions cannot be restored. Please retrieve any "
 "images you require from them. Selected sessions will be deleted."
@@ -482,19 +482,19 @@ msgstr ""
 "Následující seznam sezení není možné obnovit. Získejte všechny obrázky, "
 "které jsou pro ně potřeba. Označené relace budou smazány."
 
-#: bin/gscan2pdf:1552 bin/gscan2pdf:1576 bin/gscan2pdf:2262
+#: bin/gscan2pdf:1584 bin/gscan2pdf:1608 lib/Gscan2pdf/Dialog/Save.pm:494
 msgid "Session"
 msgstr "Sezení"
 
-#: bin/gscan2pdf:1568 bin/gscan2pdf:1573
+#: bin/gscan2pdf:1600 bin/gscan2pdf:1605
 msgid "Pick crashed session to restore"
 msgstr "Vyberte spadlou relaci k obnově"
 
-#: bin/gscan2pdf:1654
+#: bin/gscan2pdf:1678
 msgid "Editing text"
 msgstr "Úprava textu"
 
-#: bin/gscan2pdf:1699
+#: bin/gscan2pdf:1723
 msgid ""
 "Some pages have not been saved.\n"
 "Do you really want to clear all pages?"
@@ -502,269 +502,46 @@ msgstr ""
 "Některé stránky nebyly uloženy.\n"
 "Chcete opravdu  vyčistit všechny stránky?"
 
-#: bin/gscan2pdf:1819 bin/gscan2pdf:1851
+#: bin/gscan2pdf:1847 bin/gscan2pdf:1879
 #, perl-format
 msgid "Process %i of %i (%s)"
 msgstr "Zpracování %i z %i (%s)"
 
-#: bin/gscan2pdf:1858
+#: bin/gscan2pdf:1886
 #, perl-format
 msgid "Process %i of %i"
 msgstr "Zpracování %i z %i"
 
-#: bin/gscan2pdf:1886
+#: bin/gscan2pdf:1914
 msgid "Open image"
 msgstr "Otevřít obrázek"
 
-#: bin/gscan2pdf:1894 bin/gscan2pdf:2739 bin/gscan2pdf:2974
+#: bin/gscan2pdf:1922 bin/gscan2pdf:2365 bin/gscan2pdf:2608
 msgid "Image files"
 msgstr "Obrázkové soubory"
 
-#: bin/gscan2pdf:1932
+#: bin/gscan2pdf:1960
 #, perl-format
 msgid "Enter user password for PDF %s"
 msgstr "Zadejte uživatelské heslo pro PDF %s"
 
-#: bin/gscan2pdf:1967
+#: bin/gscan2pdf:1995
 msgid "Pages to extract"
 msgstr "Stránky k rozbalení"
 
-#: bin/gscan2pdf:1975
+#: bin/gscan2pdf:2003
 msgid "First page to extract"
 msgstr "První stránka k rozbalení"
 
-#: bin/gscan2pdf:1982
+#: bin/gscan2pdf:2010
 msgid "Last page to extract"
 msgstr "Poslední stránka k rozbalení"
 
-#: bin/gscan2pdf:2017 lib/Gscan2pdf/Dialog/Renumber.pm:93
-msgid "Page Range"
-msgstr "Rozsah stránek"
-
-#: bin/gscan2pdf:2143
-msgid "JPEG Quality"
-msgstr "JPEG kvalita"
-
-#: bin/gscan2pdf:2157
-msgid "Downsample to"
-msgstr "Převzorkovat na"
-
-#: bin/gscan2pdf:2162
-msgid "PPI"
-msgstr "PPI"
-
-#: bin/gscan2pdf:2175
-msgid "Automatic"
-msgstr "Automaticky"
-
-#: bin/gscan2pdf:2176
-msgid "Let gscan2pdf which type of compression to use."
-msgstr "Gscan2pdf rozhodne jaký typ komprese použít."
-
-#: bin/gscan2pdf:2179 bin/gscan2pdf:2310
-msgid "LZW"
-msgstr "LZW"
-
-#: bin/gscan2pdf:2180 bin/gscan2pdf:2311
-msgid "Compress output with Lempel-Ziv & Welch encoding."
-msgstr "Kompresovat výstup kódováním Lempel-Ziv & Welch."
-
-#: bin/gscan2pdf:2182 bin/gscan2pdf:2313
-msgid "Zip"
-msgstr "Zip"
-
-#: bin/gscan2pdf:2182 bin/gscan2pdf:2313
-msgid "Compress output with deflate encoding."
-msgstr "Kompresovat výstup kódováním deflate."
-
-#: bin/gscan2pdf:2184 bin/gscan2pdf:2318
-msgid "Packbits"
-msgstr "Packbits"
-
-#: bin/gscan2pdf:2185 bin/gscan2pdf:2319
-msgid "Compress output with Packbits encoding."
-msgstr "Kompresovat výstup kódováním Packbits."
-
-#: bin/gscan2pdf:2191 bin/gscan2pdf:2256
-msgid "PNG"
-msgstr "PNG"
-
-#: bin/gscan2pdf:2191
-msgid "Compress output with PNG encoding."
-msgstr "Kompresovat výstup pomocí PNG kódování"
-
-#: bin/gscan2pdf:2192 bin/gscan2pdf:2253 bin/gscan2pdf:2316
-msgid "JPEG"
-msgstr "JPEG"
-
-#: bin/gscan2pdf:2192 bin/gscan2pdf:2316
-msgid "Compress output with JPEG encoding."
-msgstr "Kompresovat výstup kódováním JPEG."
-
-#: bin/gscan2pdf:2193 bin/gscan2pdf:2323
-msgid "None"
-msgstr "Žádné"
-
-#: bin/gscan2pdf:2193 bin/gscan2pdf:2323
-msgid "Use no compression algorithm on output."
-msgstr "Nekompresovat výstup."
-
-#: bin/gscan2pdf:2199 bin/gscan2pdf:2329
-msgid "Compression"
-msgstr "Komprese"
-
-#: bin/gscan2pdf:2246
-msgid "Image type"
-msgstr "Typ obrázku"
-
-#: bin/gscan2pdf:2250
-msgid "PDF"
-msgstr "PDF"
-
-#: bin/gscan2pdf:2250
-msgid "Portable Document Format"
-msgstr "Přenosný formát dokumentu"
-
-#: bin/gscan2pdf:2251
-msgid "GIF"
-msgstr "GIF"
-
-#: bin/gscan2pdf:2251
-msgid "CompuServe graphics interchange format"
-msgstr "CompuServe graphics interchange format"
-
-#: bin/gscan2pdf:2254
-msgid "Joint Photographic Experts Group JFIF format"
-msgstr "Joint Photographic Experts Group JFIF format"
-
-#: bin/gscan2pdf:2256
-msgid "Portable Network Graphics"
-msgstr "Portable Network Graphics"
-
-#: bin/gscan2pdf:2257
-msgid "PNM"
-msgstr "PNM"
-
-#: bin/gscan2pdf:2257
-msgid "Portable anymap"
-msgstr "Portable anymap"
-
-#: bin/gscan2pdf:2258
-msgid "PS"
-msgstr "PS"
-
-#: bin/gscan2pdf:2258
-msgid "Postscript"
-msgstr "Postskript"
-
-#: bin/gscan2pdf:2259
-msgid "TIFF"
-msgstr "TIFF"
-
-#: bin/gscan2pdf:2259
-msgid "Tagged Image File Format"
-msgstr "Tagged Image File Format"
-
-#: bin/gscan2pdf:2260
-msgid "Text"
-msgstr "Text"
-
-#: bin/gscan2pdf:2260
-msgid "Plain text"
-msgstr "Prostý text"
-
-#: bin/gscan2pdf:2261
-msgid "hOCR"
-msgstr "hOCR"
-
-#: bin/gscan2pdf:2261
-msgid "hOCR markup language"
-msgstr "hOCR značkovací jazyk"
-
-#: bin/gscan2pdf:2262
-msgid "gscan2pdf session file"
-msgstr "soubor sezení gscan2pdf"
-
-#: bin/gscan2pdf:2267
-msgid "Prepend to PDF"
-msgstr "Předřadit PDF"
-
-#: bin/gscan2pdf:2268
-msgid "Prepend to an existing PDF"
-msgstr "Předřadit existujícímu PDF"
-
-#: bin/gscan2pdf:2271
-msgid "Append to PDF"
-msgstr "Připojit k PDF"
-
-#: bin/gscan2pdf:2271
-msgid "Append to an existing PDF"
-msgstr "Připojit k existujícímu PDF souboru"
-
-#: bin/gscan2pdf:2274
-msgid "DjVu"
-msgstr "DjVu"
-
-#: bin/gscan2pdf:2274
-msgid "Deja Vu"
-msgstr "Deja Vu"
-
-#: bin/gscan2pdf:2280
-msgid "Postscript backend"
-msgstr "Podpůrná vrstva (backend) pro Postscript"
-
-#: bin/gscan2pdf:2285
-msgid "LibTIFF"
-msgstr "LibTIFF"
-
-#: bin/gscan2pdf:2286
-msgid "Use LibTIFF (tiff2ps) to create Postscript files from TIFF."
-msgstr ""
-"Použít pro vytváření Postscript souborů z TIFF knihovnu LibTIFF (tiff2ps)."
-
-#: bin/gscan2pdf:2290
-msgid "Ghostscript"
-msgstr "Ghostscript"
-
-#: bin/gscan2pdf:2291
-msgid "Use Ghostscript (pdf2ps) to create Postscript files from PDF."
-msgstr ""
-"Použít pro vytváření Postcript souborů z PDF nástroj Ghostscript (pdf2ps)."
-
-#: bin/gscan2pdf:2294
-msgid "Poppler"
-msgstr "Poppler"
-
-#: bin/gscan2pdf:2295
-msgid "Use Poppler (pdftops) to create Postscript files from PDF."
-msgstr ""
-"Použít pro vytváření Postcript souborů z PDF nástroj Poppler (pdftops)."
-
-#: bin/gscan2pdf:2321
-msgid "G3"
-msgstr "G3"
-
-#: bin/gscan2pdf:2321
-msgid "Compress output with CCITT Group 3 encoding."
-msgstr "Kompresovat výstup pomocí kódování CCITT Skupiny 3."
-
-#: bin/gscan2pdf:2322
-msgid "G4"
-msgstr "G4"
-
-#: bin/gscan2pdf:2322
-msgid "Compress output with CCITT Group 4 encoding."
-msgstr "Kompresovat výstup poocí kódovaní CCITT Skupiny 4."
-
-#: bin/gscan2pdf:2400
-msgid "Font for non-ASCII text"
-msgstr "Písmo pro text mimo ASCII"
-
-#: bin/gscan2pdf:2441
+#: bin/gscan2pdf:2186
 msgid "Post-save hook"
 msgstr "Háček po uložení"
 
-#: bin/gscan2pdf:2444
+#: bin/gscan2pdf:2189
 #, perl-format
 msgid ""
 "Run command on saved file. The available commands are those user-defined "
@@ -773,77 +550,77 @@ msgstr ""
 "Spustit na uloženém souboru příkaz. Dostupné příkazy jsou ty uživatelem "
 "určené nástroje, které neurčují %o"
 
-#: bin/gscan2pdf:2458 bin/gscan2pdf:2459
+#: bin/gscan2pdf:2204 bin/gscan2pdf:2205
 msgid "Close dialog on save"
 msgstr "Po uložení zavřít dialog"
 
-#: bin/gscan2pdf:2644 bin/gscan2pdf:2665
+#: bin/gscan2pdf:2269 bin/gscan2pdf:2291
 msgid "PDF filename"
 msgstr "Jméno PDF souboru"
 
-#: bin/gscan2pdf:2671
+#: bin/gscan2pdf:2297
 msgid "PDF files"
 msgstr "Soubory PDF"
 
-#: bin/gscan2pdf:2692
+#: bin/gscan2pdf:2318
 msgid "DjVu filename"
 msgstr "Jméno souboru DjVu"
 
-#: bin/gscan2pdf:2711
+#: bin/gscan2pdf:2338
 msgid "DjVu files"
 msgstr "Soubory DjVu"
 
-#: bin/gscan2pdf:2732
+#: bin/gscan2pdf:2358
 msgid "TIFF filename"
 msgstr "Jméno TIFF souboru"
 
-#: bin/gscan2pdf:2758
+#: bin/gscan2pdf:2384
 msgid "Text filename"
 msgstr "Jméno textového souboru"
 
-#: bin/gscan2pdf:2766
+#: bin/gscan2pdf:2392
 msgid "Text files"
 msgstr "Textové soubory"
 
-#: bin/gscan2pdf:2783
+#: bin/gscan2pdf:2409
 msgid "hOCR filename"
 msgstr "název hOCR souboru"
 
-#: bin/gscan2pdf:2791
+#: bin/gscan2pdf:2417
 msgid "hOCR files"
 msgstr "hOCR soubory"
 
-#: bin/gscan2pdf:2809
+#: bin/gscan2pdf:2435
 msgid "PS filename"
 msgstr "PS jméno souboru"
 
-#: bin/gscan2pdf:2816
+#: bin/gscan2pdf:2442
 msgid "Postscript files"
 msgstr "Soubory Postscript"
 
-#: bin/gscan2pdf:2834
+#: bin/gscan2pdf:2460
 msgid "gscan2pdf session filename"
 msgstr "jméno souboru sezení gscan2pdf"
 
-#: bin/gscan2pdf:2841
+#: bin/gscan2pdf:2467
 msgid "gscan2pdf session files"
 msgstr "soubory relací gscan2pdf"
 
-#: bin/gscan2pdf:2937
+#: bin/gscan2pdf:2571
 #, perl-format
 msgid "Directory %s is read-only"
 msgstr "Složka %s je pouze pro čtení"
 
-#: bin/gscan2pdf:2947
+#: bin/gscan2pdf:2581
 #, perl-format
 msgid "File %s is read-only"
 msgstr "Soubor %s je jen pro čtení"
 
-#: bin/gscan2pdf:2967
+#: bin/gscan2pdf:2601
 msgid "Image filename"
 msgstr "Jméno souboru s obrázkem"
 
-#: bin/gscan2pdf:3270
+#: bin/gscan2pdf:2904
 msgid ""
 "You seem to be using Gnome or XFCE, but do not have gconftool installed. "
 "Unable to determine email client."
@@ -851,109 +628,109 @@ msgstr ""
 "Zdá se, že používáte prostředí GNOME nebo XFCE, ale není nainstalovaný "
 "nástroj gconftool. Nedaří se zjistit e-mailového klienta."
 
-#: bin/gscan2pdf:3289
+#: bin/gscan2pdf:2923
 msgid ""
 "Unable to determine your desktop enviroment, and therefore your email client."
 msgstr ""
 "Nedaří se rozpoznat vaše desktopové prostředí a proto i e-mailového klienta."
 
-#: bin/gscan2pdf:3312
+#: bin/gscan2pdf:2946
 msgid "Email as PDF"
 msgstr "Zaslat emailem jako PDF"
 
-#: bin/gscan2pdf:3439
+#: bin/gscan2pdf:3060
 msgid "Error creating email"
 msgstr "Chyba při vytváření emailu"
 
-#: bin/gscan2pdf:3482
+#: bin/gscan2pdf:3098
 msgid "Scan Document"
 msgstr "Skenovat dokument"
 
-#: bin/gscan2pdf:3891 bin/gscan2pdf:3916
+#: bin/gscan2pdf:3508 bin/gscan2pdf:3533
 msgid "Rotate"
 msgstr "Otočit"
 
-#: bin/gscan2pdf:3892 bin/gscan2pdf:3917
+#: bin/gscan2pdf:3509 bin/gscan2pdf:3534
 msgid "Rotate image after scanning"
 msgstr "Otočit obrázek po skenování"
 
-#: bin/gscan2pdf:3895
+#: bin/gscan2pdf:3512
 msgid "Both sides"
 msgstr "Obě strany"
 
-#: bin/gscan2pdf:3895
+#: bin/gscan2pdf:3512
 msgid "Both sides."
 msgstr "Obě strany."
 
-#: bin/gscan2pdf:3896
+#: bin/gscan2pdf:3513
 msgid "Facing side"
 msgstr "Přední strana"
 
-#: bin/gscan2pdf:3896
+#: bin/gscan2pdf:3513
 msgid "Facing side."
 msgstr "Přední strana."
 
-#: bin/gscan2pdf:3897
+#: bin/gscan2pdf:3514
 msgid "Reverse side"
 msgstr "Zadní strana"
 
-#: bin/gscan2pdf:3897
+#: bin/gscan2pdf:3514
 msgid "Reverse side."
 msgstr "Zadní strana."
 
-#: bin/gscan2pdf:3900 bin/gscan2pdf:3921
+#: bin/gscan2pdf:3517 bin/gscan2pdf:3538
 msgid "Select side to rotate"
 msgstr "Vyberte stranu pro otočení"
 
-#: bin/gscan2pdf:3903
+#: bin/gscan2pdf:3520
 msgid "90"
 msgstr "90"
 
-#: bin/gscan2pdf:3903
+#: bin/gscan2pdf:3520
 msgid "Rotate image 90 degrees clockwise."
 msgstr "Otočit obrázek o 90 stupnů vpravo"
 
-#: bin/gscan2pdf:3904
+#: bin/gscan2pdf:3521
 msgid "180"
 msgstr "180"
 
-#: bin/gscan2pdf:3904
+#: bin/gscan2pdf:3521
 msgid "Rotate image 180 degrees clockwise."
 msgstr "Otočit obrázek o 180 stupnů"
 
-#: bin/gscan2pdf:3906
+#: bin/gscan2pdf:3523
 msgid "270"
 msgstr "270"
 
-#: bin/gscan2pdf:3907
+#: bin/gscan2pdf:3524
 msgid "Rotate image 90 degrees anticlockwise."
 msgstr "Otočit obrázek o 90 stupňů vlevo"
 
-#: bin/gscan2pdf:3911 bin/gscan2pdf:3924
+#: bin/gscan2pdf:3528 bin/gscan2pdf:3541
 msgid "Select direction of rotation"
 msgstr "Vybrat směr rotace"
 
-#: bin/gscan2pdf:4001
+#: bin/gscan2pdf:3617
 msgid "Process with user-defined tool"
 msgstr "Zpracovat pomocí uživatelem určeného nástroje"
 
-#: bin/gscan2pdf:4003
+#: bin/gscan2pdf:3619
 msgid "Process scanned images with user-defined tool"
 msgstr "Zpracovat naskenované obrázky pomocí uživatelem určeného nástroje"
 
-#: bin/gscan2pdf:4031 bin/gscan2pdf:4032
+#: bin/gscan2pdf:3647 bin/gscan2pdf:3648
 msgid "OCR scanned pages"
 msgstr "OCR na oskenované stránky"
 
-#: bin/gscan2pdf:4042
+#: bin/gscan2pdf:3658
 msgid "Select OCR engine"
 msgstr "Vybrat OCR engine"
 
-#: bin/gscan2pdf:4087 bin/gscan2pdf:5787
+#: bin/gscan2pdf:3703 bin/gscan2pdf:5334
 msgid "Threshold before OCR"
 msgstr "Práh před OCR"
 
-#: bin/gscan2pdf:4090 bin/gscan2pdf:5790
+#: bin/gscan2pdf:3706 bin/gscan2pdf:5337
 msgid ""
 "Threshold the image before performing OCR. This only affects the image "
 "passed to the OCR engine, and not the image stored."
@@ -961,87 +738,87 @@ msgstr ""
 "Práh obrázku před provedením rozpoznávání znaků. Toto se týká pouze obrázků, "
 "předaných OCR engine a ne uložených obrázků."
 
-#: bin/gscan2pdf:4100 bin/gscan2pdf:4883 bin/gscan2pdf:4894 bin/gscan2pdf:5152
-#: bin/gscan2pdf:5803
+#: bin/gscan2pdf:3716 bin/gscan2pdf:4481 bin/gscan2pdf:4491 bin/gscan2pdf:4750
+#: bin/gscan2pdf:5350
 msgid "Threshold"
 msgstr "Práh"
 
-#: bin/gscan2pdf:4125
+#: bin/gscan2pdf:3743
 msgid "Post-processing"
 msgstr "Následné zpracování"
 
-#: bin/gscan2pdf:4138
+#: bin/gscan2pdf:3756
 msgid "Clean up images"
 msgstr "Vyčistit obrázky"
 
-#: bin/gscan2pdf:4148
+#: bin/gscan2pdf:3766
 msgid "Options"
 msgstr "Volby"
 
-#: bin/gscan2pdf:4149
+#: bin/gscan2pdf:3767
 msgid "Set unpaper options"
 msgstr "Nastavit vlastnosti unpaper"
 
-#: bin/gscan2pdf:4155
+#: bin/gscan2pdf:3773
 msgid "unpaper options"
 msgstr "volby unpaperu"
 
-#: bin/gscan2pdf:4653
+#: bin/gscan2pdf:4249
 msgid "To aid the scan-to-PDF process"
 msgstr "Pomáhá skenovat dokumenty do PDF"
 
-#: bin/gscan2pdf:4654
+#: bin/gscan2pdf:4250
 msgid "Copyright 2006--2018 Jeffrey Ratcliffe"
 msgstr "Autorské právo 2006-2018 Jeffrey Ratcliffe"
 
-#: bin/gscan2pdf:4961
+#: bin/gscan2pdf:4560
 msgid "Brightness / Contrast"
 msgstr "Jas/kontrast"
 
-#: bin/gscan2pdf:4973
+#: bin/gscan2pdf:4571
 msgid "Brightness"
 msgstr "Světlost"
 
-#: bin/gscan2pdf:4984
+#: bin/gscan2pdf:4582
 msgid "Contrast"
 msgstr "Kontrast"
 
-#: bin/gscan2pdf:5051
+#: bin/gscan2pdf:4651
 msgid "Negate"
 msgstr "Negovat"
 
-#: bin/gscan2pdf:5113
+#: bin/gscan2pdf:4713
 msgid "Unsharp mask"
 msgstr "Maska rozostření"
 
-#: bin/gscan2pdf:5129
+#: bin/gscan2pdf:4727
 msgid "Radius"
 msgstr "Poloměr"
 
-#: bin/gscan2pdf:5131 bin/gscan2pdf:5138 bin/gscan2pdf:5324
+#: bin/gscan2pdf:4729 bin/gscan2pdf:4736 bin/gscan2pdf:4924
 msgid "pixels"
 msgstr "pixelů"
 
-#: bin/gscan2pdf:5134
+#: bin/gscan2pdf:4732
 msgid ""
 "The radius of the Gaussian, in pixels, not counting the center pixel (0 = "
 "automatic)."
 msgstr ""
 "Rádius Gaussianu, v pixelech bez středového pixelu (0 = automaticky)."
 
-#: bin/gscan2pdf:5138
+#: bin/gscan2pdf:4736
 msgid "Sigma"
 msgstr "Sigma"
 
-#: bin/gscan2pdf:5140
+#: bin/gscan2pdf:4738
 msgid "The standard deviation of the Gaussian."
 msgstr "Standardní odchylka Gaussianu."
 
-#: bin/gscan2pdf:5143
+#: bin/gscan2pdf:4741
 msgid "Gain"
 msgstr "Zesílení"
 
-#: bin/gscan2pdf:5148
+#: bin/gscan2pdf:4746
 msgid ""
 "The percentage of the difference between the original and the blur image "
 "that is added back into the original."
@@ -1049,81 +826,81 @@ msgstr ""
 "Procento rozdílu mezi původním a rozmazaným obrázkem, který je přidán zpátky "
 "do původního."
 
-#: bin/gscan2pdf:5157
+#: bin/gscan2pdf:4755
 msgid ""
 "The threshold, as a fraction of QuantumRange, needed to apply the difference "
 "amount."
 msgstr "Práh, zlomek kvantového rozsahu, potřebný k použití výše rozdílu."
 
-#: bin/gscan2pdf:5278
+#: bin/gscan2pdf:4879
 msgid "Crop"
 msgstr "Oříznout"
 
-#: bin/gscan2pdf:5297
+#: bin/gscan2pdf:4896
 msgid "x"
 msgstr "x"
 
-#: bin/gscan2pdf:5299
+#: bin/gscan2pdf:4898
 msgid "The x-position of the left hand edge of the crop."
 msgstr "Umístění x na levé straně hrany výřezu."
 
-#: bin/gscan2pdf:5302
+#: bin/gscan2pdf:4901
 msgid "y"
 msgstr "y"
 
-#: bin/gscan2pdf:5303
+#: bin/gscan2pdf:4902
 msgid "The y-position of the top edge of the crop."
 msgstr "Umístění y na horní hraně výřezu."
 
-#: bin/gscan2pdf:5305 lib/Gscan2pdf/Dialog/Scan.pm:1500
+#: bin/gscan2pdf:4904 lib/Gscan2pdf/Dialog/Scan.pm:1474
 msgid "Width"
 msgstr "Šířka"
 
-#: bin/gscan2pdf:5305
+#: bin/gscan2pdf:4904
 msgid "The width of the crop."
 msgstr "Šířka výřezu."
 
-#: bin/gscan2pdf:5306 lib/Gscan2pdf/Dialog/Scan.pm:1501
+#: bin/gscan2pdf:4905 lib/Gscan2pdf/Dialog/Scan.pm:1475
 msgid "Height"
 msgstr "Výška"
 
-#: bin/gscan2pdf:5306
+#: bin/gscan2pdf:4905
 msgid "The height of the crop."
 msgstr "Výška výřezu."
 
-#: bin/gscan2pdf:5450
+#: bin/gscan2pdf:5051
 msgid "User-defined tools"
 msgstr "Nástroje určené uživatelem"
 
-#: bin/gscan2pdf:5461
+#: bin/gscan2pdf:5061
 msgid "Selected tool"
 msgstr "Vybraný nástroj"
 
-#: bin/gscan2pdf:5591
+#: bin/gscan2pdf:5182
 msgid "unpaper"
 msgstr "unpaper"
 
-#: bin/gscan2pdf:5685 bin/gscan2pdf:5713
+#: bin/gscan2pdf:5233 bin/gscan2pdf:5261
 msgid "Language to recognise"
 msgstr "Jazyk pro rozpoznávání"
 
-#: bin/gscan2pdf:5696
+#: bin/gscan2pdf:5244
 msgid "English"
 msgstr "Anglický"
 
-#: bin/gscan2pdf:5739
+#: bin/gscan2pdf:5287
 msgid "OCR"
 msgstr "OCR"
 
-#: bin/gscan2pdf:5751
+#: bin/gscan2pdf:5298
 msgid "OCR Engine"
 msgstr "OCR program"
 
-#: bin/gscan2pdf:5821
+#: bin/gscan2pdf:5364
 msgid "Start OCR"
 msgstr "Spustit OCR"
 
-#: bin/gscan2pdf:5921
+#: bin/gscan2pdf:5459
 msgid ""
 "Some pages have not been saved.\n"
 "Do you really want to quit?"
@@ -1131,39 +908,45 @@ msgstr ""
 "Některé stránky nebyly uloženy.\n"
 "Opravdu chcete odejít?"
 
-#: bin/gscan2pdf:5992
+#: bin/gscan2pdf:5530
 #, perl-format
 msgid "%dMb free in %s."
 msgstr "%dMB volných v %s."
 
-#: bin/gscan2pdf:6125
+#: bin/gscan2pdf:5666
 msgid "This operation cannot be undone. Are you sure?"
 msgstr "Tato operace nelze vzít zpět. Jste si jist?"
 
-#: bin/gscan2pdf:6182
+#: bin/gscan2pdf:5723
 msgid "Preferences"
 msgstr "Předvolby"
 
-#: bin/gscan2pdf:6195
+#: bin/gscan2pdf:5735
 msgid "Scan options"
 msgstr "Možnosti skenování"
 
-#: bin/gscan2pdf:6203
+#: bin/gscan2pdf:5745
 msgid "General options"
 msgstr "Obecná nastavení"
 
-#: bin/gscan2pdf:6288
+#: bin/gscan2pdf:5795
+msgid "Invalid regex. Try without special characters such as '*'"
+msgstr ""
+"Neplatný regulární výraz. Zkuste to bez speciálních znaků jako např. „*“ "
+"(hvězdička)"
+
+#: bin/gscan2pdf:5850
 msgid ""
 "You will have to restart gscanp2df for changes to the temporary directory to "
 "take effect."
 msgstr ""
 "Bude třeba restartovat gscan2pdf pro provedení změn v dočasném adresáři."
 
-#: bin/gscan2pdf:6314
+#: bin/gscan2pdf:5877
 msgid "Open scanner at program start"
 msgstr "Otevřít skener při spouštění aplikace"
 
-#: bin/gscan2pdf:6317
+#: bin/gscan2pdf:5880
 msgid ""
 "Automatically open the scan dialog in the background at program start. This "
 "saves time clicking the scan button and waiting for the program to find the "
@@ -1173,71 +956,71 @@ msgstr ""
 "Ušetří čekání při kliknutí na skenovací tlačítko - nečeká se na hledání "
 "skenerů."
 
-#: bin/gscan2pdf:6330
+#: bin/gscan2pdf:5893
 msgid "Frontend"
 msgstr "Rozhraní"
 
-#: bin/gscan2pdf:6335
+#: bin/gscan2pdf:5898
 msgid "libimage-sane-perl"
 msgstr "libimage-sane-perl"
 
-#: bin/gscan2pdf:6336
+#: bin/gscan2pdf:5899
 msgid "Scan using the Perl bindings for SANE."
 msgstr "Skenovat pomocí Perl můstků pro SANE."
 
-#: bin/gscan2pdf:6339
+#: bin/gscan2pdf:5902
 msgid "scanimage"
 msgstr "scanimage"
 
-#: bin/gscan2pdf:6340
+#: bin/gscan2pdf:5903
 msgid "Scan using the scanimage frontend."
 msgstr "Skenovat pomocí rozhraní scanimage"
 
-#: bin/gscan2pdf:6345
+#: bin/gscan2pdf:5908
 msgid "scanadf"
 msgstr "scanadf"
 
-#: bin/gscan2pdf:6345
+#: bin/gscan2pdf:5908
 msgid "Scan using the scanadf frontend."
 msgstr "Skenovat pomocí rozhraní scanadf"
 
-#: bin/gscan2pdf:6348
+#: bin/gscan2pdf:5911
 msgid "Interface used for scanner access"
 msgstr "Rozhraní pro přístup ke skeneru"
 
-#: bin/gscan2pdf:6354
+#: bin/gscan2pdf:5917
 msgid "Device blacklist"
 msgstr "Seznam zařízení, vyloučených z používání"
 
-#: bin/gscan2pdf:6358
+#: bin/gscan2pdf:5921
 msgid "Device blacklist (regular expression)"
 msgstr "Seznam zařízení, vyloučených z používání (regulární výraz)"
 
-#: bin/gscan2pdf:6366
+#: bin/gscan2pdf:5929
 msgid "Cycle SANE handle after scan"
 msgstr "Kroužit obslužnou rutinou SANE po skenování"
 
-#: bin/gscan2pdf:6368
+#: bin/gscan2pdf:5931
 msgid "Some ADFs do not feed out the last page if this is not enabled"
 msgstr ""
 "Když je toto zapnuto, některé automatické podavače dokumentů nevyjedou "
 "poslední stránku"
 
-#: bin/gscan2pdf:6377
+#: bin/gscan2pdf:5940
 msgid "Allow batch scanning from flatbed"
 msgstr "Umožnit dávkové skenování z osvitové desky"
 
-#: bin/gscan2pdf:6380
+#: bin/gscan2pdf:5943
 msgid "If not set, switching to a flatbed scanner will force # pages to 1."
 msgstr ""
 "Pokud není nastaveno, přepnutí na skenování z desky vynutí číslo stránek na "
 "1."
 
-#: bin/gscan2pdf:6389
+#: bin/gscan2pdf:5952
 msgid "Force new scan job between pages"
 msgstr "Vynutit novou skenovací úlohu mezi stránkami"
 
-#: bin/gscan2pdf:6392
+#: bin/gscan2pdf:5955
 msgid ""
 "Otherwise, some Brother scanners report out of documents, despite scanning "
 "from flatbed."
@@ -1245,12 +1028,12 @@ msgstr ""
 "Jinak některé skenery Brother hlásí, že došly dokumenty – i když se skenuje "
 "z desky."
 
-#: bin/gscan2pdf:6408
+#: bin/gscan2pdf:5971
 msgid "Select # pages = all on selecting ADF"
 msgstr ""
 "Vybrat počet stránek = vše pokud je vybrán automatický podavač dokumentů"
 
-#: bin/gscan2pdf:6411
+#: bin/gscan2pdf:5974
 msgid ""
 "If this option is enabled, when switching to source=ADF, # pages = all is "
 "selected"
@@ -1258,171 +1041,172 @@ msgstr ""
 "Když je tato volba zapnutá, pak při přepnutí zdroje na automatický podavač "
 "dokumentů je vybrán počet stránek vše."
 
-#: bin/gscan2pdf:6420
+#: bin/gscan2pdf:5983
 msgid "Scan command prefix"
 msgstr "Prefix příkazu skenování"
 
-#: bin/gscan2pdf:6430
+#: bin/gscan2pdf:5993
 msgid "Cache device-dependent options"
 msgstr "Volby mezipaměti závislé na zařízení"
 
-#: bin/gscan2pdf:6436
+#: bin/gscan2pdf:5999
 msgid "Clear device-dependent options cache"
 msgstr "Vyčistit mezipaměť volb závislých na zařízení"
 
-#: bin/gscan2pdf:6446
+#: bin/gscan2pdf:6009
 msgid "Option visibility & control"
 msgstr "Viditelnost předvoleb a jejich ovládání"
 
-#: bin/gscan2pdf:6455 lib/Gscan2pdf/Dialog/Save.pm:228
+#: bin/gscan2pdf:6018 lib/Gscan2pdf/Dialog/Save.pm:421
 msgid "Title"
 msgstr "Název"
 
-#: bin/gscan2pdf:6456
+#: bin/gscan2pdf:6019
 msgid "Type"
 msgstr "Druh"
 
-#: bin/gscan2pdf:6457 bin/gscan2pdf:6464
+#: bin/gscan2pdf:6020 bin/gscan2pdf:6027
 msgid "Show"
 msgstr "Zobrazit"
 
-#: bin/gscan2pdf:6458
+#: bin/gscan2pdf:6021
 msgid "Reload"
 msgstr "Znovu načíst"
 
-#: bin/gscan2pdf:6474
+#: bin/gscan2pdf:6037
 msgid "Hide"
 msgstr "Skrýt"
 
-#: bin/gscan2pdf:6483
+#: bin/gscan2pdf:6046
 msgid "List current options"
 msgstr "Senam stávajícíh předvoleb"
 
-#: bin/gscan2pdf:6503
+#: bin/gscan2pdf:6066
 msgid "No scanner currently open with command line frontend."
 msgstr ""
 "Nadstavbou pro příkazový řádek v tuto chvíli není otevřen žádný skener."
 
-#: bin/gscan2pdf:6511
+#: bin/gscan2pdf:6074
 msgid "Show options not listed"
 msgstr "Zobrazit nevypsané předvolby"
 
-#: bin/gscan2pdf:6555
+#: bin/gscan2pdf:6119
 msgid "Restore window settings on startup"
 msgstr "Obnovit nastavení okna při spuštění"
 
-#: bin/gscan2pdf:6560
+#: bin/gscan2pdf:6124
 msgid "View files on saving"
 msgstr "Zobrazit soubory při ukládaní"
 
-#: bin/gscan2pdf:6569
+#: bin/gscan2pdf:6133
 msgid "Default PDF & DjVu filename"
 msgstr "Výchozí název souboru PDF a DjVu"
 
-#: bin/gscan2pdf:6574
+#: bin/gscan2pdf:6138
 msgid ""
 "strftime codes, e.g.:\n"
 "%Y\tcurrent year\n"
 "\n"
 "with the following additions:\n"
-"%Da\t author\n"
-"%Dt\t title\n"
+"%Da\tauthor\n"
+"%De\tfilename extension\n"
+"%Dt\ttitle\n"
 "\n"
 "All document date codes use strftime codes with a leading D, e.g.:\n"
-"%DY\t document year\n"
-"%Dm\t document month\n"
-"%Dd\t document day"
+"%DY\tdocument year\n"
+"%Dm\tdocument month\n"
+"%Dd\tdocument day\n"
 msgstr ""
 
-#: bin/gscan2pdf:6585
+#: bin/gscan2pdf:6160
 msgid "Replace whitespace in filenames with underscores"
 msgstr "Nahradit prázdné znaky v názvech souborů podtržítky"
 
-#: bin/gscan2pdf:6593
+#: bin/gscan2pdf:6168
 msgid "Use timezone from locale"
 msgstr "Použít časovou zónu z místních a jazykových nastavení"
 
-#: bin/gscan2pdf:6599
+#: bin/gscan2pdf:6174
 msgid "Specify time as well as date"
 msgstr "Zadat čas i datum"
 
-#: bin/gscan2pdf:6605
+#: bin/gscan2pdf:6180
 msgid "Set access and modification times to metadata date"
 msgstr "Nastavit časy přístupu a změny do data metadat"
 
-#: bin/gscan2pdf:6612
+#: bin/gscan2pdf:6187
 msgid "Temporary directory"
 msgstr "Dočasný adresář"
 
-#: bin/gscan2pdf:6617
+#: bin/gscan2pdf:6192
 msgid "Browse"
 msgstr "Procházet"
 
-#: bin/gscan2pdf:6621
+#: bin/gscan2pdf:6196
 msgid "Select temporary directory"
 msgstr "Vybrat dočasný adresář"
 
-#: bin/gscan2pdf:6638
+#: bin/gscan2pdf:6213
 msgid "Warn if available space less than (Mb)"
 msgstr "Varovat, pokud zbývá volného méně než (MB)"
 
-#: bin/gscan2pdf:6644
+#: bin/gscan2pdf:6219
 msgid ""
 "Warn if the available space in the temporary directory is less than this "
 "value"
 msgstr ""
 "Varovat pokud dostupné místo v dočasné složce poklesne pod tuto hodnotu"
 
-#: bin/gscan2pdf:6652
+#: bin/gscan2pdf:6227
 msgid "Blank threshold"
 msgstr "Práh prázdnoty"
 
-#: bin/gscan2pdf:6658
+#: bin/gscan2pdf:6233
 msgid "Threshold used for selecting blank pages"
 msgstr "Práh, který je použit pro vybrání prázdných stránek"
 
-#: bin/gscan2pdf:6664
+#: bin/gscan2pdf:6239
 msgid "Dark threshold"
 msgstr "Práh temnoty"
 
-#: bin/gscan2pdf:6670
+#: bin/gscan2pdf:6245
 msgid "Threshold used for selecting dark pages"
 msgstr "Práh, který je použit pro výběr temných stránek"
 
-#: bin/gscan2pdf:6676
+#: bin/gscan2pdf:6251
 msgid "OCR output"
 msgstr "Výstup OCR"
 
-#: bin/gscan2pdf:6681
+#: bin/gscan2pdf:6256
 msgid "Replace"
 msgstr "Nahradit"
 
-#: bin/gscan2pdf:6683
+#: bin/gscan2pdf:6258
 msgid ""
 "Replace the contents of the text buffer with that from the OCR output."
 msgstr "Nahradit obsah textové vyrovnávací paměti obsahem výstupu OCR."
 
-#: bin/gscan2pdf:6687
+#: bin/gscan2pdf:6262
 msgid "Prepend"
 msgstr "Předřadit"
 
-#: bin/gscan2pdf:6688
+#: bin/gscan2pdf:6263
 msgid "Prepend the OCR output to the text buffer."
 msgstr "Předřadit výstup OCR do textové vyrovnávací paměti."
 
-#: bin/gscan2pdf:6691
+#: bin/gscan2pdf:6266
 msgid "Append"
 msgstr "Připojit"
 
-#: bin/gscan2pdf:6692
+#: bin/gscan2pdf:6267
 msgid "Append the OCR output to the text buffer."
 msgstr "Připojit výstup OCR do textové vyrovnávací paměti."
 
-#: bin/gscan2pdf:6700
+#: bin/gscan2pdf:6275
 msgid "Manage user-defined tools"
 msgstr "Spravovat uživatelem určené nástroje"
 
-#: bin/gscan2pdf:6810
+#: bin/gscan2pdf:6362
 msgid ""
 "Use %i and %o for the input and output filenames respectively, or a single "
 "%i if the image is to be modified in-place.\n"
@@ -1438,21 +1222,25 @@ msgstr ""
 "\n"
 "%r rozměr"
 
-#: bin/gscan2pdf:6870
+#: bin/gscan2pdf:6414
 msgid "Properties"
 msgstr "Vlastnosti"
 
-#: bin/gscan2pdf:6878
+#: bin/gscan2pdf:6421
 msgid "Resolution"
 msgstr "Rozlišení"
 
-#: bin/gscan2pdf:6890
+#: bin/gscan2pdf:6433
 msgid "dpi"
 msgstr "bodů na palec (dpi)"
 
-#: bin/gscan2pdf:6959
+#: bin/gscan2pdf:6496 lib/Gscan2pdf/Dialog/MultipleMessage.pm:37
 msgid "Don't show this message again"
 msgstr "Tuto zprávu znovu nezobrazovat"
+
+#: bin/gscan2pdf:6522
+msgid "Messages"
+msgstr "Zprávy"
 
 #: lib/Gscan2pdf/Config.pm:309
 msgid "A3"
@@ -1470,7 +1258,31 @@ msgstr "US Letter"
 msgid "US Legal"
 msgstr "US Legal"
 
-#: lib/Gscan2pdf/Dialog/Renumber.pm:88 lib/Gscan2pdf/Dialog/Renumber.pm:191
+#: lib/Gscan2pdf/Dialog.pm:80 lib/Gscan2pdf/Dialog/Renumber.pm:93
+msgid "Page Range"
+msgstr "Rozsah stránek"
+
+#: lib/Gscan2pdf/Dialog/MultipleMessage.pm:24
+msgid "Page"
+msgstr "Strana"
+
+#: lib/Gscan2pdf/Dialog/MultipleMessage.pm:26
+msgid "Process"
+msgstr "Zpracovat"
+
+#: lib/Gscan2pdf/Dialog/MultipleMessage.pm:28
+msgid "Message type"
+msgstr "Typ zprávy"
+
+#: lib/Gscan2pdf/Dialog/MultipleMessage.pm:31
+msgid "Message"
+msgstr "Zpráva"
+
+#: lib/Gscan2pdf/Dialog/MultipleMessage.pm:81
+msgid "Don't show these messages again"
+msgstr "Tuto zprávu už příště nezobrazovat"
+
+#: lib/Gscan2pdf/Dialog/Renumber.pm:88 lib/Gscan2pdf/Dialog/Renumber.pm:187
 msgid "Renumber"
 msgstr "Přečíslování"
 
@@ -1478,15 +1290,15 @@ msgstr "Přečíslování"
 msgid "Page numbering"
 msgstr "Číslování stran"
 
-#: lib/Gscan2pdf/Dialog/Renumber.pm:121 lib/Gscan2pdf/Dialog/Scan.pm:392
+#: lib/Gscan2pdf/Dialog/Renumber.pm:121 lib/Gscan2pdf/Dialog/Scan.pm:391
 msgid "Start"
 msgstr "Začátek"
 
-#: lib/Gscan2pdf/Dialog/Renumber.pm:142 lib/Gscan2pdf/Dialog/Scan.pm:411
+#: lib/Gscan2pdf/Dialog/Renumber.pm:142 lib/Gscan2pdf/Dialog/Scan.pm:410
 msgid "Increment"
 msgstr "Přírůstek"
 
-#: lib/Gscan2pdf/Dialog/Renumber.pm:341
+#: lib/Gscan2pdf/Dialog/Renumber.pm:332
 msgid ""
 "The current settings would result in duplicate page numbers. Please select "
 "new start and increment values."
@@ -1494,63 +1306,283 @@ msgstr ""
 "Současné nastavení by vedlo k duplicitním číslům stran. Zvolte jiný počátek "
 "a přírůstek."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:49 lib/Gscan2pdf/Dialog/Save.pm:108
+#: lib/Gscan2pdf/Dialog/Save.pm:241 lib/Gscan2pdf/Dialog/Save.pm:291
 msgid "Now"
 msgstr "Nyní"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:51 lib/Gscan2pdf/Dialog/Save.pm:109
+#: lib/Gscan2pdf/Dialog/Save.pm:243 lib/Gscan2pdf/Dialog/Save.pm:293
 msgid "Use current date and time"
 msgstr "Použít stávající datum a čas"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:57 lib/Gscan2pdf/Dialog/Save.pm:193
+#: lib/Gscan2pdf/Dialog/Save.pm:250 lib/Gscan2pdf/Dialog/Save.pm:386
 msgid "Today"
 msgstr "dnes"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:59
+#: lib/Gscan2pdf/Dialog/Save.pm:252
 msgid "Use today's date"
 msgstr "Použít dnešní datum"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:86
+#: lib/Gscan2pdf/Dialog/Save.pm:268
 msgid "Document Metadata"
 msgstr "Metadata dokumentu"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:98
+#: lib/Gscan2pdf/Dialog/Save.pm:280
 msgid "Date/Time"
 msgstr "Datum/čas"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:114
+#: lib/Gscan2pdf/Dialog/Save.pm:299
 msgid "Specify"
 msgstr "Zadejte"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:115
+#: lib/Gscan2pdf/Dialog/Save.pm:300
 msgid "Specify date and time"
 msgstr "Zadejte datum a čas"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:131
+#: lib/Gscan2pdf/Dialog/Save.pm:323
 msgid "Year-Month-Day"
 msgstr "Rok-Měsíc-Den"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:153
+#: lib/Gscan2pdf/Dialog/Save.pm:346
 msgid "Select Date"
 msgstr "Vybrat datum"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:216
+#: lib/Gscan2pdf/Dialog/Save.pm:409
 msgid "Select date with calendar"
 msgstr "Vyberte datum v kalendáři"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:229
+#: lib/Gscan2pdf/Dialog/Save.pm:422
 msgid "Author"
 msgstr "Autor"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:230
+#: lib/Gscan2pdf/Dialog/Save.pm:423
 msgid "Subject"
 msgstr "Předmět"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:231
+#: lib/Gscan2pdf/Dialog/Save.pm:424
 msgid "Keywords"
 msgstr "Klíčová slova"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:298
+#: lib/Gscan2pdf/Dialog/Save.pm:478
+msgid "Image type"
+msgstr "Typ obrázku"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:482
+msgid "PDF"
+msgstr "PDF"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:482
+msgid "Portable Document Format"
+msgstr "Přenosný formát dokumentu"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:483
+msgid "GIF"
+msgstr "GIF"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:483
+msgid "CompuServe graphics interchange format"
+msgstr "CompuServe graphics interchange format"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:485 lib/Gscan2pdf/Dialog/Save.pm:542
+#: lib/Gscan2pdf/Dialog/Save.pm:745
+msgid "JPEG"
+msgstr "JPEG"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:486
+msgid "Joint Photographic Experts Group JFIF format"
+msgstr "Joint Photographic Experts Group JFIF format"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:488 lib/Gscan2pdf/Dialog/Save.pm:744
+msgid "PNG"
+msgstr "PNG"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:488
+msgid "Portable Network Graphics"
+msgstr "Portable Network Graphics"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:489
+msgid "PNM"
+msgstr "PNM"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:489
+msgid "Portable anymap"
+msgstr "Portable anymap"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:490
+msgid "PS"
+msgstr "PS"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:490
+msgid "Postscript"
+msgstr "Postskript"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:491
+msgid "TIFF"
+msgstr "TIFF"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:491
+msgid "Tagged Image File Format"
+msgstr "Tagged Image File Format"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:492
+msgid "Text"
+msgstr "Text"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:492
+msgid "Plain text"
+msgstr "Prostý text"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:493
+msgid "hOCR"
+msgstr "hOCR"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:493
+msgid "hOCR markup language"
+msgstr "hOCR značkovací jazyk"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:494
+msgid "gscan2pdf session file"
+msgstr "soubor sezení gscan2pdf"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:496
+msgid "Prepend to PDF"
+msgstr "Předřadit PDF"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:496
+msgid "Prepend to an existing PDF"
+msgstr "Předřadit existujícímu PDF"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:498
+msgid "Append to PDF"
+msgstr "Připojit k PDF"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:498
+msgid "Append to an existing PDF"
+msgstr "Připojit k existujícímu PDF souboru"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:499
+msgid "DjVu"
+msgstr "DjVu"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:499
+msgid "Deja Vu"
+msgstr "Deja Vu"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:511
+msgid "Postscript backend"
+msgstr "Podpůrná vrstva (backend) pro Postscript"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:515
+msgid "LibTIFF"
+msgstr "LibTIFF"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:516
+msgid "Use LibTIFF (tiff2ps) to create Postscript files from TIFF."
+msgstr ""
+"Použít pro vytváření Postscript souborů z TIFF knihovnu LibTIFF (tiff2ps)."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:520
+msgid "Ghostscript"
+msgstr "Ghostscript"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:521
+msgid "Use Ghostscript (pdf2ps) to create Postscript files from PDF."
+msgstr ""
+"Použít pro vytváření Postcript souborů z PDF nástroj Ghostscript (pdf2ps)."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:524
+msgid "Poppler"
+msgstr "Poppler"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:525
+msgid "Use Poppler (pdftops) to create Postscript files from PDF."
+msgstr ""
+"Použít pro vytváření Postcript souborů z PDF nástroj Poppler (pdftops)."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:536 lib/Gscan2pdf/Dialog/Save.pm:732
+msgid "LZW"
+msgstr "LZW"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:537 lib/Gscan2pdf/Dialog/Save.pm:733
+msgid "Compress output with Lempel-Ziv & Welch encoding."
+msgstr "Kompresovat výstup kódováním Lempel-Ziv & Welch."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:539 lib/Gscan2pdf/Dialog/Save.pm:735
+msgid "Zip"
+msgstr "Zip"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:539 lib/Gscan2pdf/Dialog/Save.pm:735
+msgid "Compress output with deflate encoding."
+msgstr "Kompresovat výstup kódováním deflate."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:542 lib/Gscan2pdf/Dialog/Save.pm:745
+msgid "Compress output with JPEG encoding."
+msgstr "Kompresovat výstup kódováním JPEG."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:544 lib/Gscan2pdf/Dialog/Save.pm:737
+msgid "Packbits"
+msgstr "Packbits"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:545 lib/Gscan2pdf/Dialog/Save.pm:738
+msgid "Compress output with Packbits encoding."
+msgstr "Kompresovat výstup kódováním Packbits."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:547
+msgid "G3"
+msgstr "G3"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:547
+msgid "Compress output with CCITT Group 3 encoding."
+msgstr "Kompresovat výstup pomocí kódování CCITT Skupiny 3."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:548
+msgid "G4"
+msgstr "G4"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:548
+msgid "Compress output with CCITT Group 4 encoding."
+msgstr "Kompresovat výstup poocí kódovaní CCITT Skupiny 4."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:549 lib/Gscan2pdf/Dialog/Save.pm:746
+msgid "None"
+msgstr "Žádné"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:549 lib/Gscan2pdf/Dialog/Save.pm:746
+msgid "Use no compression algorithm on output."
+msgstr "Nekompresovat výstup."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:555 lib/Gscan2pdf/Dialog/Save.pm:752
+msgid "Compression"
+msgstr "Komprese"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:684
+msgid "JPEG Quality"
+msgstr "JPEG kvalita"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:703
+msgid "Downsample to"
+msgstr "Převzorkovat na"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:707
+msgid "PPI"
+msgstr "PPI"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:728
+msgid "Automatic"
+msgstr "Automaticky"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:729
+msgid "Let gscan2pdf which type of compression to use."
+msgstr "Gscan2pdf rozhodne jaký typ komprese použít."
+
+#: lib/Gscan2pdf/Dialog/Save.pm:744
+msgid "Compress output with PNG encoding."
+msgstr "Kompresovat výstup pomocí PNG kódování"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:786
+msgid "Font for non-ASCII text"
+msgstr "Písmo pro text mimo ASCII"
+
+#: lib/Gscan2pdf/Dialog/Scan.pm:297
 msgid "Page Options"
 msgstr "Vlastnosti stránky"
 
@@ -1558,172 +1590,172 @@ msgstr "Vlastnosti stránky"
 msgid "# Pages"
 msgstr "# stránek"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:317 lib/Gscan2pdf/PageRange.pm:39
+#: lib/Gscan2pdf/Dialog/Scan.pm:316 lib/Gscan2pdf/PageRange.pm:39
 msgid "All"
 msgstr "Všechny"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:318
+#: lib/Gscan2pdf/Dialog/Scan.pm:317
 msgid "Scan all pages"
 msgstr "Skenovat všechny stránky"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:331 lib/Gscan2pdf/Dialog/Scan.pm:336
+#: lib/Gscan2pdf/Dialog/Scan.pm:330 lib/Gscan2pdf/Dialog/Scan.pm:335
 msgid "Set number of pages to scan"
 msgstr "Nastavit počet stránek pro skenování"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:376
+#: lib/Gscan2pdf/Dialog/Scan.pm:375
 msgid "Extended page numbering"
 msgstr "Rozšířené číslování stránek"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:383
+#: lib/Gscan2pdf/Dialog/Scan.pm:382
 msgid "Page number"
 msgstr "Číslo stránky"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:444
+#: lib/Gscan2pdf/Dialog/Scan.pm:443
 msgid "Source document"
 msgstr "Zdrojový dokument"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:452
+#: lib/Gscan2pdf/Dialog/Scan.pm:451
 msgid "Single sided"
 msgstr "jednostranný"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:453
+#: lib/Gscan2pdf/Dialog/Scan.pm:452
 msgid "Source document is single-sided"
 msgstr "Zdrojový dokument je jednostranný"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:466
+#: lib/Gscan2pdf/Dialog/Scan.pm:465
 msgid "Double sided"
 msgstr "oboustranný"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:467
+#: lib/Gscan2pdf/Dialog/Scan.pm:466
 msgid "Source document is double-sided"
 msgstr "Zdrojový dokument je oboustranný"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:473
+#: lib/Gscan2pdf/Dialog/Scan.pm:472
 msgid "Side to scan"
 msgstr "Strana na snímání"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:477
+#: lib/Gscan2pdf/Dialog/Scan.pm:476
 msgid "Facing"
 msgstr "Přední"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:477
+#: lib/Gscan2pdf/Dialog/Scan.pm:476
 msgid "Reverse"
 msgstr "Zadní"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:495
+#: lib/Gscan2pdf/Dialog/Scan.pm:494
 msgid "Sets which side of a double-sided document is scanned"
 msgstr "Nastaví jaká strana oboustranného dokumentu je skenována"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:522
+#: lib/Gscan2pdf/Dialog/Scan.pm:521
 msgid "Scan profiles"
 msgstr "Profily skenování"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:557
+#: lib/Gscan2pdf/Dialog/Scan.pm:552
 msgid "Scan"
 msgstr "Skenovat"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:584
+#: lib/Gscan2pdf/Dialog/Scan.pm:573
 msgid "Device"
 msgstr "Zařízení"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:587
+#: lib/Gscan2pdf/Dialog/Scan.pm:576
 msgid "Rescan for devices"
 msgstr "Opakovat hledání zařízení"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:625
+#: lib/Gscan2pdf/Dialog/Scan.pm:613
 msgid "Sets the device to be used for the scan"
 msgstr "Nastaví zařízení pro skenování"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:634 lib/Gscan2pdf/Dialog/Scan.pm:640
+#: lib/Gscan2pdf/Dialog/Scan.pm:622 lib/Gscan2pdf/Dialog/Scan.pm:628
 msgid "Name of scan profile"
 msgstr "Jméno profilu skenování"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:656
+#: lib/Gscan2pdf/Dialog/Scan.pm:644
 #, perl-format
 msgid "Profile '%s' exists. Overwrite?"
 msgstr "Profil „%s“ už existuje. Přepsat?"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:773 lib/Gscan2pdf/Dialog/Scan.pm:940
-#: lib/Gscan2pdf/Dialog/Scan.pm:1114 lib/Gscan2pdf/Dialog/Scan.pm:1127
-#: lib/Gscan2pdf/Dialog/Scan.pm:1389
+#: lib/Gscan2pdf/Dialog/Scan.pm:761 lib/Gscan2pdf/Dialog/Scan.pm:915
+#: lib/Gscan2pdf/Dialog/Scan.pm:1089 lib/Gscan2pdf/Dialog/Scan.pm:1102
+#: lib/Gscan2pdf/Dialog/Scan.pm:1364
 msgid "Manual"
 msgstr "Ručně"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:967
+#: lib/Gscan2pdf/Dialog/Scan.pm:942
 #, perl-format
 msgid "Error: unknown device: %s"
 msgstr "Chyba: neznámé zařízení: %s"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1110
+#: lib/Gscan2pdf/Dialog/Scan.pm:1085
 msgid "Paper size"
 msgstr "Rozměr papíru"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1115 lib/Gscan2pdf/Dialog/Scan.pm:1124
+#: lib/Gscan2pdf/Dialog/Scan.pm:1090 lib/Gscan2pdf/Dialog/Scan.pm:1099
 msgid "Edit"
 msgstr "Editovat"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1117
+#: lib/Gscan2pdf/Dialog/Scan.pm:1092
 msgid "Selects or edits the paper size"
 msgstr "Vybírá nebo upravuje rozměry stránek"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1228
+#: lib/Gscan2pdf/Dialog/Scan.pm:1203
 #, perl-format
 msgid ""
 "Reload recursion limit (%d) exceeded. Please file a bug, attaching a log "
 "file reproducing the problem."
 msgstr ""
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1482
+#: lib/Gscan2pdf/Dialog/Scan.pm:1457
 msgid "Edit paper size"
 msgstr "Upravit velikost papíru"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1499
+#: lib/Gscan2pdf/Dialog/Scan.pm:1473
 msgid "Name"
 msgstr "Jméno"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1502 lib/Gscan2pdf/Unpaper.pm:153
-#: lib/Gscan2pdf/Unpaper.pm:183
+#: lib/Gscan2pdf/Dialog/Scan.pm:1476 lib/Gscan2pdf/Unpaper.pm:151
+#: lib/Gscan2pdf/Unpaper.pm:181
 msgid "Left"
 msgstr "Vlevo"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1503 lib/Gscan2pdf/Unpaper.pm:159
-#: lib/Gscan2pdf/Unpaper.pm:188
+#: lib/Gscan2pdf/Dialog/Scan.pm:1477 lib/Gscan2pdf/Unpaper.pm:157
+#: lib/Gscan2pdf/Unpaper.pm:186
 msgid "Top"
 msgstr "Horní"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1504
+#: lib/Gscan2pdf/Dialog/Scan.pm:1478
 msgid "Units"
 msgstr "Jednotky"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1556
+#: lib/Gscan2pdf/Dialog/Scan.pm:1530
 msgid "Cannot delete all paper sizes"
 msgstr "Nelze smazat všechny rozměry stránek"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1624
+#: lib/Gscan2pdf/Dialog/Scan.pm:1598
 msgid ""
 "The following paper sizes are too big to be scanned by the selected device:"
 msgstr ""
 "Následující velikosti stránek jsou příliš velké pro skenování s vybraným "
 "zařízením:"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1845
+#: lib/Gscan2pdf/Dialog/Scan.pm:1753
 msgid ""
 "Multiple unconstrained values are not currently supported. Please file a bug."
 msgstr ""
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1859
+#: lib/Gscan2pdf/Dialog/Scan.pm:1767
 msgid ""
 "Multiple non-numerical values are not currently supported. Please file a bug."
 msgstr ""
 "Vícero nečíselných hodnot není v tuto chvíli podporováno. Tuto chybu "
 "nahlaste."
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:2289
+#: lib/Gscan2pdf/Dialog/Scan.pm:2196
 #, perl-format
 msgid "Scanning page %d of %d"
 msgstr "Probíhá skenování strany %d z %d"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:2291
+#: lib/Gscan2pdf/Dialog/Scan.pm:2198
 #, perl-format
 msgid "Scanning page %d"
 msgstr "Probíhá skenování strany %d"
@@ -1738,12 +1770,16 @@ msgstr "Stahuje se seznam zařízení"
 msgid "No devices found"
 msgstr "Nenalezeno žádné zařízení"
 
-#: lib/Gscan2pdf/Dialog/Scan/CLI.pm:259 lib/Gscan2pdf/Dialog/Scan/CLI.pm:659
+#: lib/Gscan2pdf/Dialog/Scan/CLI.pm:259 lib/Gscan2pdf/Dialog/Scan/CLI.pm:665
 msgid "Updating options"
 msgstr "Aktualizuji volby"
 
-#: lib/Gscan2pdf/Dialog/Scan/CLI.pm:834
-#: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:456
+#: lib/Gscan2pdf/Dialog/Scan/CLI.pm:355
+#: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:218
+msgid "Scan Options"
+msgstr "Možnosti skenování"
+
+#: lib/Gscan2pdf/Dialog/Scan/CLI.pm:840
 msgid "Must scan facing pages first"
 msgstr "Nutno nejdříve skenovat přední stránky"
 
@@ -1763,77 +1799,78 @@ msgstr "Chyba při získávání předvoleb skeneru: "
 msgid "Error opening device: "
 msgstr "Chyba při otevírání zařízení: "
 
-#: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:439
-msgid "Error setting option: "
-msgstr "Chyba při nastavování předvolby: "
+#: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:395
+#, perl-format
+msgid "Setting option %s"
+msgstr "Nastavování volby %s"
 
-#: lib/Gscan2pdf/Document.pm:123
+#: lib/Gscan2pdf/Document.pm:124
 msgid "Thumbnails"
 msgstr "Miniatury"
 
-#: lib/Gscan2pdf/Document.pm:357
+#: lib/Gscan2pdf/Document.pm:373
 msgid "Error: cannot open a session file at the same time as another file."
-msgstr ""
+msgstr "Chyba: nelze otevřít soubor relace souběžně s jiným souborem."
 
-#: lib/Gscan2pdf/Document.pm:370
+#: lib/Gscan2pdf/Document.pm:388
 msgid "Error: import a multipage file at the same time as another file."
 msgstr "Chyba: import vícestránkového souboru naráz s jiným souborem."
 
-#: lib/Gscan2pdf/Document.pm:624
+#: lib/Gscan2pdf/Document.pm:643
 msgid "Unable to load image"
 msgstr "Nelze načíst obrázek"
 
-#: lib/Gscan2pdf/Document.pm:1786
+#: lib/Gscan2pdf/Document.pm:1794
 #, perl-format
 msgid "Error importing page %d. Ignoring."
 msgstr "Chyba při importu strany %d. Bude ignorováno."
 
-#: lib/Gscan2pdf/Document.pm:1898
+#: lib/Gscan2pdf/Document.pm:1906
 msgid "No pages to process"
 msgstr "Žádné stránky ke zpracování"
 
-#: lib/Gscan2pdf/Document.pm:1905
+#: lib/Gscan2pdf/Document.pm:1913
 msgid "No pages selected"
 msgstr "Nejsou vybrány žádné stránky"
 
-#: lib/Gscan2pdf/Document.pm:2508
+#: lib/Gscan2pdf/Document.pm:2554
 #, perl-format
 msgid "File %s not found"
 msgstr "Soubor %s nebyl nalezen"
 
-#: lib/Gscan2pdf/Document.pm:2522
+#: lib/Gscan2pdf/Document.pm:2573
 #, perl-format
 msgid "Error importing zero-length file %s."
 msgstr "Chyba při importu prázdného souboru %s."
 
-#: lib/Gscan2pdf/Document.pm:2565
+#: lib/Gscan2pdf/Document.pm:2619
 msgid "Unknown DjVu file structure. Please contact the author."
 msgstr "Neznámá struktura souboru DjVu. Prosím kontaktujte autora."
 
-#: lib/Gscan2pdf/Document.pm:2638 lib/Gscan2pdf/Document.pm:2646
+#: lib/Gscan2pdf/Document.pm:2696 lib/Gscan2pdf/Document.pm:2709
 #, perl-format
 msgid "%s is not a recognised image type"
 msgstr "%s není rozpoznávaný typ obrázku"
 
-#: lib/Gscan2pdf/Document.pm:2678 lib/Gscan2pdf/Document.pm:2753
-#: lib/Gscan2pdf/Document.pm:2776
+#: lib/Gscan2pdf/Document.pm:2742 lib/Gscan2pdf/Document.pm:2828
+#: lib/Gscan2pdf/Document.pm:2851
 #, perl-format
 msgid "Importing page %i of %i"
 msgstr "Importování stránky %i z %i"
 
-#: lib/Gscan2pdf/Document.pm:2906
+#: lib/Gscan2pdf/Document.pm:2998
 msgid "Error extracting images from PDF"
 msgstr "Chyba při xtrahování obrázků z PDF"
 
-#: lib/Gscan2pdf/Document.pm:2928
+#: lib/Gscan2pdf/Document.pm:3021
 msgid "Error extracting text layer from PDF"
 msgstr "Chyba při získávání textové vrstvy z PDF"
 
-#: lib/Gscan2pdf/Document.pm:2956
+#: lib/Gscan2pdf/Document.pm:3050
 msgid "Error importing PDF"
 msgstr "Chyba při importu PDF"
 
-#: lib/Gscan2pdf/Document.pm:2963
+#: lib/Gscan2pdf/Document.pm:3058
 msgid ""
 "Warning: gscan2pdf expects one image per page, but this was not satisfied. "
 "It is probable that the PDF has not been correctly imported.\n"
@@ -1847,156 +1884,161 @@ msgstr ""
 "Pokud si přejete přidat skeny k existujícím PDF, použijte volbu připojit "
 "před/za v dialogu ukládání.\n"
 
-#: lib/Gscan2pdf/Document.pm:2979
+#: lib/Gscan2pdf/Document.pm:3074
 msgid "Setting up PDF"
 msgstr "Nastavování PDF"
 
-#: lib/Gscan2pdf/Document.pm:3003
+#: lib/Gscan2pdf/Document.pm:3089
+#, perl-format
+msgid "Caught error creating PDF %s: %s"
+msgstr "Zachycena chyba při vytváření PDF %s: %s"
+
+#: lib/Gscan2pdf/Document.pm:3110
 #, perl-format
 msgid "Saving page %i of %i"
 msgstr "Ukládání stránky %i z %i"
 
-#: lib/Gscan2pdf/Document.pm:3011
+#: lib/Gscan2pdf/Document.pm:3118
 msgid "Closing PDF"
 msgstr "Uzavírání PDF"
 
-#: lib/Gscan2pdf/Document.pm:3029 lib/Gscan2pdf/Document.pm:3736
+#: lib/Gscan2pdf/Document.pm:3136 lib/Gscan2pdf/Document.pm:3865
 msgid "Converting to PS"
 msgstr "Převod do PS"
 
-#: lib/Gscan2pdf/Document.pm:3038
+#: lib/Gscan2pdf/Document.pm:3146
 #, perl-format
 msgid "Error converting PDF to PS: %s"
 msgstr "Chyba při převodu PDF na PS. %s."
 
-#: lib/Gscan2pdf/Document.pm:3065
+#: lib/Gscan2pdf/Document.pm:3173
 #, perl-format
 msgid "Error prepending PDF: %s"
 msgstr "Chyba při připojování na začátek PDF: %s"
 
-#: lib/Gscan2pdf/Document.pm:3073
+#: lib/Gscan2pdf/Document.pm:3181
 #, perl-format
 msgid "Error appending PDF: %s"
 msgstr "Chyba při přidávání k PDF: %s"
 
-#: lib/Gscan2pdf/Document.pm:3079
+#: lib/Gscan2pdf/Document.pm:3187
 msgid "Error creating backup of PDF"
 msgstr "Chyba při pořizování zálohy PDF"
 
-#: lib/Gscan2pdf/Document.pm:3101
+#: lib/Gscan2pdf/Document.pm:3212
 msgid "Unable to set file timestamp for dates prior to 1970"
 msgstr "Není možné nastavit časovou značku na datum před rokem 1970"
 
-#: lib/Gscan2pdf/Document.pm:3204
+#: lib/Gscan2pdf/Document.pm:3317
 #, perl-format
 msgid "Error creating PDF image object: %s"
 msgstr "Chyba při vytváření objektu obrázku PDF: %s"
 
-#: lib/Gscan2pdf/Document.pm:3218
+#: lib/Gscan2pdf/Document.pm:3333
 #, perl-format
 msgid "Error embedding file image in %s format to PDF: %s"
 msgstr "Chyba při vnořování souboru obrázku ve formátu %s do PDF: %s"
 
-#: lib/Gscan2pdf/Document.pm:3295 lib/Gscan2pdf/Document.pm:3732
+#: lib/Gscan2pdf/Document.pm:3419 lib/Gscan2pdf/Document.pm:3861
 #, perl-format
 msgid "Error compressing image: %s"
 msgstr "Chyba při komprimaci obrázku: %s"
 
-#: lib/Gscan2pdf/Document.pm:3430
+#: lib/Gscan2pdf/Document.pm:3554
 #, perl-format
 msgid "Writing page %i of %i"
 msgstr "Zápis stránky %i z %i"
 
-#: lib/Gscan2pdf/Document.pm:3523
+#: lib/Gscan2pdf/Document.pm:3649
 msgid "Error writing DjVu"
 msgstr "Chyba při zápisu DjVu"
 
-#: lib/Gscan2pdf/Document.pm:3531
+#: lib/Gscan2pdf/Document.pm:3657
 msgid "Merging DjVu"
 msgstr "Spojování DjVu"
 
-#: lib/Gscan2pdf/Document.pm:3538
+#: lib/Gscan2pdf/Document.pm:3665
 msgid "Error merging DjVu"
 msgstr "Chyba při spojování DjVu"
 
-#: lib/Gscan2pdf/Document.pm:3565
+#: lib/Gscan2pdf/Document.pm:3692
 #, perl-format
 msgid "Can't write to file: %s"
 msgstr "Nedaří se zapsat do souboru: %s"
 
-#: lib/Gscan2pdf/Document.pm:3584 lib/Gscan2pdf/Document.pm:3615
-#: lib/Gscan2pdf/Document.pm:3889 lib/Gscan2pdf/Document.pm:3914
+#: lib/Gscan2pdf/Document.pm:3711 lib/Gscan2pdf/Document.pm:3742
+#: lib/Gscan2pdf/Document.pm:4022 lib/Gscan2pdf/Document.pm:4047
 #, perl-format
 msgid "Can't open file: %s"
 msgstr "Nelze otevřít soubor: %s"
 
-#: lib/Gscan2pdf/Document.pm:3588 lib/Gscan2pdf/Document.pm:3635
-#: lib/Gscan2pdf/Document.pm:3895 lib/Gscan2pdf/Document.pm:3937
+#: lib/Gscan2pdf/Document.pm:3715 lib/Gscan2pdf/Document.pm:3762
+#: lib/Gscan2pdf/Document.pm:4028 lib/Gscan2pdf/Document.pm:4070
 #, perl-format
 msgid "Can't close file: %s"
 msgstr "Soubor se nedaří zavřít: %s"
 
-#: lib/Gscan2pdf/Document.pm:3600
+#: lib/Gscan2pdf/Document.pm:3727
 msgid "Error adding text layer to DjVu"
 msgstr "Chyba při přidávání textové vrstvy do DjVu"
 
-#: lib/Gscan2pdf/Document.pm:3646
+#: lib/Gscan2pdf/Document.pm:3773
 msgid "Error adding metadata to DjVu"
 msgstr "Chyba při přidávání metadat do DjVu"
 
-#: lib/Gscan2pdf/Document.pm:3663
+#: lib/Gscan2pdf/Document.pm:3790
 #, perl-format
 msgid "Converting image %i of %i to TIFF"
 msgstr "Převod obrázku %i z %i do TIFF"
 
-#: lib/Gscan2pdf/Document.pm:3705
+#: lib/Gscan2pdf/Document.pm:3834
 msgid "Error writing TIFF"
 msgstr "Chyba při zápisu TIFF"
 
-#: lib/Gscan2pdf/Document.pm:3724
+#: lib/Gscan2pdf/Document.pm:3853
 msgid "Concatenating TIFFs"
 msgstr "Zřetězení TIFF"
 
-#: lib/Gscan2pdf/Document.pm:3747
+#: lib/Gscan2pdf/Document.pm:3877
 #, perl-format
 msgid "Error converting TIFF to PS: %s"
 msgstr "Chyba při převádění TIFF na PS: %s"
 
-#: lib/Gscan2pdf/Document.pm:3842 lib/Gscan2pdf/Document.pm:3863
+#: lib/Gscan2pdf/Document.pm:3974 lib/Gscan2pdf/Document.pm:3996
 msgid "Error saving image"
 msgstr "Chyba při ukládání obrázku"
 
-#: lib/Gscan2pdf/Document.pm:4708
+#: lib/Gscan2pdf/Document.pm:4856
 msgid "Error copying page"
 msgstr "Chyba při kopírování stránky"
 
-#: lib/Gscan2pdf/Frontend/CLI.pm:171
+#: lib/Gscan2pdf/Frontend/CLI.pm:170
 #, perl-format
 msgid "Scanning %i pages..."
 msgstr "Probíhá skenování %i stránek..."
 
-#: lib/Gscan2pdf/Frontend/CLI.pm:177
+#: lib/Gscan2pdf/Frontend/CLI.pm:176
 #, perl-format
 msgid "Scanning page %i..."
 msgstr "Skenuje se stránka %i..."
 
-#: lib/Gscan2pdf/Frontend/CLI.pm:205 lib/Gscan2pdf/Frontend/CLI.pm:416
+#: lib/Gscan2pdf/Frontend/CLI.pm:204 lib/Gscan2pdf/Frontend/CLI.pm:415
 msgid "Scanner warming up"
 msgstr "Zahřívání skeneru"
 
-#: lib/Gscan2pdf/Frontend/CLI.pm:216
+#: lib/Gscan2pdf/Frontend/CLI.pm:215
 msgid "Document feeder out of documents"
 msgstr "Podavač dokumentů je prázdný"
 
-#: lib/Gscan2pdf/Frontend/CLI.pm:241 lib/Gscan2pdf/Frontend/CLI.pm:454
+#: lib/Gscan2pdf/Frontend/CLI.pm:240 lib/Gscan2pdf/Frontend/CLI.pm:453
 msgid "Device busy"
 msgstr "Zařízení zaneprázdněno"
 
-#: lib/Gscan2pdf/Frontend/CLI.pm:249 lib/Gscan2pdf/Frontend/CLI.pm:463
+#: lib/Gscan2pdf/Frontend/CLI.pm:248 lib/Gscan2pdf/Frontend/CLI.pm:462
 msgid "Operation cancelled"
 msgstr "Operace zrušena"
 
-#: lib/Gscan2pdf/Frontend/CLI.pm:255 lib/Gscan2pdf/Frontend/CLI.pm:470
+#: lib/Gscan2pdf/Frontend/CLI.pm:254 lib/Gscan2pdf/Frontend/CLI.pm:469
 msgid "Unknown message: "
 msgstr "Neznámá zpráva: "
 
@@ -2014,23 +2056,23 @@ msgstr "Chyba při kopírování obrázku %s: %s"
 msgid "Selected"
 msgstr "Vybrané"
 
-#: lib/Gscan2pdf/Unpaper.pm:45
+#: lib/Gscan2pdf/Unpaper.pm:43
 msgid "Layout"
 msgstr "Formát"
 
-#: lib/Gscan2pdf/Unpaper.pm:48
+#: lib/Gscan2pdf/Unpaper.pm:46
 msgid "Single"
 msgstr "Jednotlivé"
 
-#: lib/Gscan2pdf/Unpaper.pm:50
+#: lib/Gscan2pdf/Unpaper.pm:48
 msgid "One page per sheet, oriented upwards without rotation."
 msgstr "Jedna stránka na list, orientovaná na výšku bez rotace."
 
-#: lib/Gscan2pdf/Unpaper.pm:54
+#: lib/Gscan2pdf/Unpaper.pm:52
 msgid "Double"
 msgstr "Dvojité"
 
-#: lib/Gscan2pdf/Unpaper.pm:56
+#: lib/Gscan2pdf/Unpaper.pm:54
 msgid ""
 "Two pages per sheet, landscape orientation (one page on the left half, one "
 "page on the right half)."
@@ -2038,111 +2080,111 @@ msgstr ""
 "Dvě stránky na list, orientovaná na šířku (jedna stránka na levé půlce, "
 "druhá na pravé)"
 
-#: lib/Gscan2pdf/Unpaper.pm:64
+#: lib/Gscan2pdf/Unpaper.pm:62
 msgid "# Output pages"
 msgstr "# Výstupní stránky"
 
-#: lib/Gscan2pdf/Unpaper.pm:65
+#: lib/Gscan2pdf/Unpaper.pm:63
 msgid "Number of pages to output."
 msgstr "Počet stránek k výstupu"
 
-#: lib/Gscan2pdf/Unpaper.pm:73
+#: lib/Gscan2pdf/Unpaper.pm:71
 msgid "Writing system"
 msgstr "systém zápisu"
 
-#: lib/Gscan2pdf/Unpaper.pm:76
+#: lib/Gscan2pdf/Unpaper.pm:74
 msgid "Left-to-right"
 msgstr "Zleva doprava"
 
-#: lib/Gscan2pdf/Unpaper.pm:78
+#: lib/Gscan2pdf/Unpaper.pm:76
 msgid "Most writings systems, e.g. Latin, Greek, Cyrillic."
 msgstr "Většina písem, např. latinka, řečtina, cyrilice."
 
-#: lib/Gscan2pdf/Unpaper.pm:82
+#: lib/Gscan2pdf/Unpaper.pm:80
 msgid "Right-to-left"
 msgstr "Zprava doleva"
 
-#: lib/Gscan2pdf/Unpaper.pm:83
+#: lib/Gscan2pdf/Unpaper.pm:81
 msgid "Scripts like Arabic or Hebrew."
 msgstr "Písma jako arabština nebo hebrejština"
 
-#: lib/Gscan2pdf/Unpaper.pm:91
+#: lib/Gscan2pdf/Unpaper.pm:89
 msgid "No deskew"
 msgstr "Bez deskew"
 
-#: lib/Gscan2pdf/Unpaper.pm:92
+#: lib/Gscan2pdf/Unpaper.pm:90
 msgid "Disable deskewing."
 msgstr "Zakázat deskew"
 
-#: lib/Gscan2pdf/Unpaper.pm:97
+#: lib/Gscan2pdf/Unpaper.pm:95
 msgid "No mask scan"
 msgstr "Bez skenování masky"
 
-#: lib/Gscan2pdf/Unpaper.pm:98
+#: lib/Gscan2pdf/Unpaper.pm:96
 msgid "Disable mask detection."
 msgstr "Zakázat detekci masky"
 
-#: lib/Gscan2pdf/Unpaper.pm:103
+#: lib/Gscan2pdf/Unpaper.pm:101
 msgid "No mask centering"
 msgstr "Nevystřeďovat masku"
 
-#: lib/Gscan2pdf/Unpaper.pm:104
+#: lib/Gscan2pdf/Unpaper.pm:102
 msgid "Disable mask centering."
 msgstr "Nevystřeďovat masku."
 
-#: lib/Gscan2pdf/Unpaper.pm:109
+#: lib/Gscan2pdf/Unpaper.pm:107
 msgid "No black filter"
 msgstr "Bez filtru černé"
 
-#: lib/Gscan2pdf/Unpaper.pm:110
+#: lib/Gscan2pdf/Unpaper.pm:108
 msgid "Disable black area scan."
 msgstr "Zakázat skenování černé oblasti"
 
-#: lib/Gscan2pdf/Unpaper.pm:115
+#: lib/Gscan2pdf/Unpaper.pm:113
 msgid "No gray filter"
 msgstr "Bez filtru šedé"
 
-#: lib/Gscan2pdf/Unpaper.pm:116
+#: lib/Gscan2pdf/Unpaper.pm:114
 msgid "Disable gray area scan."
 msgstr "Zakázat skenování šedé oblasti"
 
-#: lib/Gscan2pdf/Unpaper.pm:121
+#: lib/Gscan2pdf/Unpaper.pm:119
 msgid "No noise filter"
 msgstr "Bez filtru šumu"
 
-#: lib/Gscan2pdf/Unpaper.pm:122
+#: lib/Gscan2pdf/Unpaper.pm:120
 msgid "Disable noise filter."
 msgstr "Zakázat filtr šumu."
 
-#: lib/Gscan2pdf/Unpaper.pm:127
+#: lib/Gscan2pdf/Unpaper.pm:125
 msgid "No blur filter"
 msgstr "Bez filtru rozmazání"
 
-#: lib/Gscan2pdf/Unpaper.pm:128
+#: lib/Gscan2pdf/Unpaper.pm:126
 msgid "Disable blur filter."
 msgstr "Zakázat filtr rozmazání"
 
-#: lib/Gscan2pdf/Unpaper.pm:133
+#: lib/Gscan2pdf/Unpaper.pm:131
 msgid "No border scan"
 msgstr "Bez skenování ohraničení"
 
-#: lib/Gscan2pdf/Unpaper.pm:134
+#: lib/Gscan2pdf/Unpaper.pm:132
 msgid "Disable border scanning."
 msgstr "Zakázat skenování ohraničení"
 
-#: lib/Gscan2pdf/Unpaper.pm:139
+#: lib/Gscan2pdf/Unpaper.pm:137
 msgid "No border align"
 msgstr "Bez zarovnání kraje"
 
-#: lib/Gscan2pdf/Unpaper.pm:141
+#: lib/Gscan2pdf/Unpaper.pm:139
 msgid "Disable aligning of the area detected by border scanning."
 msgstr "Zakázat zarovnání oblasti detekované skenováním okrajů."
 
-#: lib/Gscan2pdf/Unpaper.pm:146
+#: lib/Gscan2pdf/Unpaper.pm:144
 msgid "Deskew to edge"
 msgstr "Deskew k okraji"
 
-#: lib/Gscan2pdf/Unpaper.pm:148
+#: lib/Gscan2pdf/Unpaper.pm:146
 msgid ""
 "Edges from which to scan for rotation. Each edge of a mask can be used to "
 "detect the mask's rotation. If multiple edges are specified, the average "
@@ -2153,92 +2195,92 @@ msgstr ""
 "detekci rotace masky. Při zadání více okrajů je použita průměrná hodnota "
 "dokud není překročena statistická deviace --deskew-scan-deviation."
 
-#: lib/Gscan2pdf/Unpaper.pm:155
+#: lib/Gscan2pdf/Unpaper.pm:153
 msgid "Use 'left' for scanning from the left edge."
 msgstr "Použijte \"vlevo\" pro snímání od levého okraje."
 
-#: lib/Gscan2pdf/Unpaper.pm:160
+#: lib/Gscan2pdf/Unpaper.pm:158
 msgid "Use 'top' for scanning from the top edge."
 msgstr "Použijte \"horní\" pro snímání od horního okraje."
 
-#: lib/Gscan2pdf/Unpaper.pm:164 lib/Gscan2pdf/Unpaper.pm:193
+#: lib/Gscan2pdf/Unpaper.pm:162 lib/Gscan2pdf/Unpaper.pm:191
 msgid "Right"
 msgstr "Vpravo"
 
-#: lib/Gscan2pdf/Unpaper.pm:166
+#: lib/Gscan2pdf/Unpaper.pm:164
 msgid "Use 'right' for scanning from the right edge."
 msgstr "Použijte \"vpravo\" pro snímání od pravého okraje."
 
-#: lib/Gscan2pdf/Unpaper.pm:170 lib/Gscan2pdf/Unpaper.pm:198
+#: lib/Gscan2pdf/Unpaper.pm:168 lib/Gscan2pdf/Unpaper.pm:196
 msgid "Bottom"
 msgstr "Spodní"
 
-#: lib/Gscan2pdf/Unpaper.pm:171
+#: lib/Gscan2pdf/Unpaper.pm:169
 msgid "Use 'bottom' for scanning from the bottom."
 msgstr "Použijte \"spodní\" pro snímání od spodního okraje."
 
-#: lib/Gscan2pdf/Unpaper.pm:178
+#: lib/Gscan2pdf/Unpaper.pm:176
 msgid "Align to edge"
 msgstr "Zarovnat k okraji"
 
-#: lib/Gscan2pdf/Unpaper.pm:179
+#: lib/Gscan2pdf/Unpaper.pm:177
 msgid "Edge to which to align the page."
 msgstr "Okraj pro zarovnání stránky."
 
-#: lib/Gscan2pdf/Unpaper.pm:184
+#: lib/Gscan2pdf/Unpaper.pm:182
 msgid "Use 'left' to align to the left edge."
 msgstr "Použijte \"vlevo\" pro zarovnání stránky k levému okraji."
 
-#: lib/Gscan2pdf/Unpaper.pm:189
+#: lib/Gscan2pdf/Unpaper.pm:187
 msgid "Use 'top' to align to the top edge."
 msgstr "Použijte \"nahoru\" pro zarovní stránky k hornímu okraji."
 
-#: lib/Gscan2pdf/Unpaper.pm:194
+#: lib/Gscan2pdf/Unpaper.pm:192
 msgid "Use 'right' to align to the right edge."
 msgstr "Použijte \"vpravo\" pro zarovní stránky k pravému okraji."
 
-#: lib/Gscan2pdf/Unpaper.pm:199
+#: lib/Gscan2pdf/Unpaper.pm:197
 msgid "Use 'bottom' to align to the bottom."
 msgstr "Použijte \"dolů\" pro zarovní stránky ke spodnímu okraji."
 
-#: lib/Gscan2pdf/Unpaper.pm:205
+#: lib/Gscan2pdf/Unpaper.pm:203
 msgid "Border margin"
 msgstr "Mez okraje"
 
-#: lib/Gscan2pdf/Unpaper.pm:209
+#: lib/Gscan2pdf/Unpaper.pm:207
 msgid "Vertical margin"
 msgstr "Svislý okraj"
 
-#: lib/Gscan2pdf/Unpaper.pm:211
+#: lib/Gscan2pdf/Unpaper.pm:209
 msgid ""
 "Vertical distance to keep from the sheet edge when aligning a border area."
 msgstr ""
 "Svislá vzdálenost pro zachování  kraje listu při zarovnávání okraje oblasti."
 
-#: lib/Gscan2pdf/Unpaper.pm:220
+#: lib/Gscan2pdf/Unpaper.pm:218
 msgid "Horizontal margin"
 msgstr "Vodorovný okraj"
 
-#: lib/Gscan2pdf/Unpaper.pm:222
+#: lib/Gscan2pdf/Unpaper.pm:220
 msgid ""
 "Horizontal distance to keep from the sheet edge when aligning a border area."
 msgstr ""
 "Vodorovná vzdálenost pro zachování  kraje listu při zarovnávání okraje "
 "oblasti."
 
-#: lib/Gscan2pdf/Unpaper.pm:233
+#: lib/Gscan2pdf/Unpaper.pm:231
 msgid "White threshold"
 msgstr "Práh bílé"
 
-#: lib/Gscan2pdf/Unpaper.pm:235
+#: lib/Gscan2pdf/Unpaper.pm:233
 msgid "Brightness ratio above which a pixel is considered white."
 msgstr "Poměr jasu, nad který je pixel považován za bílý."
 
-#: lib/Gscan2pdf/Unpaper.pm:243
+#: lib/Gscan2pdf/Unpaper.pm:241
 msgid "Black threshold"
 msgstr "Práh černé"
 
-#: lib/Gscan2pdf/Unpaper.pm:245
+#: lib/Gscan2pdf/Unpaper.pm:243
 msgid ""
 "Brightness ratio below which a pixel is considered black (non-gray). This is "
 "used by the gray-filter. This value is also used when converting a grayscale "
@@ -2248,14 +2290,14 @@ msgstr ""
 "filtrem šedé. Tato hodnota je také používána při konverzi šedého obrázku do "
 "černobílé."
 
-#: lib/Gscan2pdf/Unpaper.pm:289
+#: lib/Gscan2pdf/Unpaper.pm:287
 msgid "Deskew"
 msgstr "Deskew"
 
-#: lib/Gscan2pdf/Unpaper.pm:322
+#: lib/Gscan2pdf/Unpaper.pm:320
 msgid "Border"
 msgstr "Ohraničení"
 
-#: lib/Gscan2pdf/Unpaper.pm:382
+#: lib/Gscan2pdf/Unpaper.pm:380
 msgid "Filters"
 msgstr "Filtry"

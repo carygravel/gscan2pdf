@@ -5,6 +5,7 @@
 * Lock initial view of OCR output to image when switching pages
 * Fix centering of OCR output when zooming with mouse wheel
 * Update to German translation (thanks to Tobias Bannert)
+* Update to Czech translation (thanks to Pavel Borecki)
 
 
 2.2.0 (30.11.2018):
