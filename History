@@ -24,8 +24,8 @@
   libimage-sane-perl and scanimage.
 * Fixed visibility of scan widgets when switching from libimage-sane-perl to
   scanimage.
-* Collect all warning and error messages in one dialog.
-  Closes bug #309 (stuck while closing error windows)
+* Collect all warning and error messages in one dialog.  Closes bugs #309
+  (stuck while closing error windows) and #300 (gscan2pdf produces)
 * Be more tolerant of errors whilst fetching options.  Closes bug #313
   (Error retreiving scanner options: error getting option 5: invalid argument)
 * Use default text if the title of a group of scan options is empty.
