@@ -1,3 +1,10 @@
+2.2.2 (06.01.2019):
+
+* Improved the error message when ImageMagick exceeds its resources.
+  Closes bug #303 (I import djvu. . . when exporting to djvu - failed due to
+  black and white images)
+
+
 2.2.1 (06.12.2018):
 
 * Clear OCR output canvas when switching pages
