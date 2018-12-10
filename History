@@ -3,6 +3,7 @@
 * Improved the error message when ImageMagick exceeds its resources.
   Closes bug #303 (I import djvu. . . when exporting to djvu - failed due to
   black and white images)
+* Allow foreground colour of text of OCR output to be themed
 
 
 2.2.1 (06.12.2018):

@@ -71,6 +71,8 @@ sub INIT_INSTANCE {
     $self->{offset}{x} = 0;
     $self->{offset}{y} = 0;
 
+    # allow the widget to accessed via CSS
+    $self->set_name('gscan2pdf-ocr-output');
     return $self;
 }
 
@@ -116,9 +118,16 @@ sub add_text {
     $self->{pixbuf_size} = { width => $page->{w}, height => $page->{h} };
     $self->set_bounds( 0, 0, $page->{w}, $page->{h} );
 
+    my $style        = $self->get_style_context;
+    my $color_string = $style->get_color('normal')->to_string;
+    my $color_hex    = 'black';
+    if ( $color_string =~ /^rgb[(](\d+),(\d+),(\d+)[)]$/smx ) {
+        $color_hex = sprintf '#%02x%02x%02x', ( $1, $2, $3 );
+    }
+
     # Attach the text to the canvas
     for my $box ( @{ $page->boxes } ) {
-        boxed_text( $root, $box, [ 0, 0, 0 ], $edit_callback );
+        _boxed_text( $root, $box, [ 0, 0, 0 ], $edit_callback, $color_hex );
     }
     return;
 }
@@ -178,8 +187,8 @@ sub get_offset {
 
 # Draw text on the canvas with a box around it
 
-sub boxed_text {
-    my ( $root, $box, $transformation, $edit_callback ) = @_;
+sub _boxed_text {
+    my ( $root, $box, $transformation, $edit_callback, $text_color ) = @_;
     my ( $rotation, $x0, $y0 ) = @{$transformation};
     my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
     my $x_size = abs $x2 - $x1;
@@ -234,13 +243,14 @@ sub boxed_text {
 
         # create text and then scale, shift & rotate it into the bounding box
         my $text = GooCanvas2::CanvasText->new(
-            parent => $g,
-            text   => $box->{text},
-            x      => ( $x_size / 2 ),
-            y      => ( $y_size / 2 ),
-            width  => -1,
-            anchor => 'center',
-            'font' => 'Sans'
+            parent       => $g,
+            text         => $box->{text},
+            x            => ( $x_size / 2 ),
+            y            => ( $y_size / 2 ),
+            width        => -1,
+            anchor       => 'center',
+            'font'       => 'Sans',
+            'fill-color' => $text_color,
         );
         my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
         my $bounds = $text->get_bounds;
@@ -263,8 +273,8 @@ sub boxed_text {
     }
     if ( $box->{contents} ) {
         for my $box ( @{ $box->{contents} } ) {
-            boxed_text( $g, $box, [ $textangle + $rotation, $x1, $y1 ],
-                $edit_callback );
+            _boxed_text( $g, $box, [ $textangle + $rotation, $x1, $y1 ],
+                $edit_callback, $text_color );
         }
     }
 

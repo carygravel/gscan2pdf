@@ -7257,6 +7257,14 @@ Create a file called C<~/.config/gtk-3.0/gtk.css> with the following content:
    border: 1px solid #2a76c6;
    background-color: rgba(42, 118, 198, 0.2); }
 
+=head2 How can I change the colour of the OCR output
+
+Create a file called C<~/.config/gtk-3.0/gtk.css> with the following content:
+
+#gscan2pdf-ocr-output {
+  color: black;
+}
+
 =head1 See Also
 
 XSane (L<http://xsane.org/>)
