@@ -649,7 +649,7 @@ sub _save_profile_callback {
                         'gtk-cancel' => 'cancel'
                     );
                     $label = Gtk3::Label->new($warning);
-                    $dialog2->vbox->add($label);
+                    $dialog2->get_content_area->add($label);
                     $label->show;
                     if ( $dialog2->run eq 'ok' ) {
                         $parent->save_current_profile( $entry->get_text );
@@ -1787,11 +1787,10 @@ sub set_options {
         title           => $d_sane->get( $opt->{title} ),
         destroy         => TRUE,
     );
-    my $vbox   = $window->vbox;
     my $canvas = Goo::Canvas->new;
     $canvas->set_size_request( $CANVAS_SIZE, $CANVAS_SIZE );
     $canvas->{border} = $CANVAS_BORDER;
-    $vbox->add($canvas);
+    $window->get_content_area->add($canvas);
     my $root = $canvas->get_root_item;
 
     $canvas->signal_connect(
@@ -1849,13 +1848,9 @@ sub set_options {
           sort { $a <=> $b } @{ $opt->{constraint} };
     }
 
-    # HBox for buttons
-    my $hbox = Gtk3::HBox->new;
-    $vbox->pack_start( $hbox, FALSE, TRUE, 0 );
-
     # Apply button
     my $abutton = Gtk3::Button->new_from_stock('gtk-apply');
-    $hbox->pack_start( $abutton, TRUE, TRUE, 0 );
+    $window->add_button($abutton);
     $abutton->signal_connect(
         clicked => sub {
             $self->set_option( $opt, $canvas->{val} );
@@ -1869,7 +1864,7 @@ sub set_options {
 
     # Cancel button
     my $cbutton = Gtk3::Button->new_from_stock('gtk-cancel');
-    $hbox->pack_end( $cbutton, FALSE, FALSE, 0 );
+    $window->add_button($cbutton);
     $cbutton->signal_connect( clicked => sub { $window->destroy } );
 
 # Have to show the window before updating it otherwise is doesn't know how big it is

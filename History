@@ -4,6 +4,8 @@
   Closes bug #303 (I import djvu. . . when exporting to djvu - failed due to
   black and white images)
 * Allow foreground colour of text of OCR output to be themed
+* Correct some more vbox() calls left over from gtk+-2
+  Closes Debian bug #916011 (Blank dialog - Can't locate object method "vbox")
 
 
 2.2.1 (06.12.2018):

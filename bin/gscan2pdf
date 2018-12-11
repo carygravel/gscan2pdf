@@ -1580,10 +1580,10 @@ sub find_crashed_sessions {
                   . ' Selected sessions will be deleted.'
             )
         );
-        $dialog->vbox->add($text);
+        $dialog->get_content_area->add($text);
         my $sessionlist = Gtk3::SimpleList->new( __('Session') => 'text', );
         push @{ $sessionlist->{data} }, @missing;
-        $dialog->vbox->add($sessionlist);
+        $dialog->get_content_area->add($sessionlist);
         $dialog->show_all;
 
         if ( $dialog->run eq 'ok' ) {
