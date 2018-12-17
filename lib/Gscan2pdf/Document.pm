@@ -660,6 +660,7 @@ sub import_scan {
 sub _throw_error {
     my ( $uuid, $page_uuid, $process, $message ) = @_;
     if ( defined $callback{$uuid}{error} ) {
+        $message =~ s/\s+$//;    # strip trailing whitespace
         $callback{$uuid}{error}->( $page_uuid, $process, $message );
         delete $callback{$uuid}{error};
     }
@@ -4864,10 +4865,12 @@ sub _thread_user_defined {
         return if $_self->{cancel};
         $logger->info("stdout: $info");
         $logger->info("stderr: $error");
+
+        # don't return in here, just in case we can ignore the error -
+        # e.g. theming errors from gimp
         if ( $error ne $EMPTY ) {
             _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
                 'user-defined', $error );
-            return;
         }
 
         # Get file type

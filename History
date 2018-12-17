@@ -6,6 +6,7 @@
 * Allow foreground colour of text of OCR output to be themed
 * Correct some more vbox() calls left over from gtk+-2
   Closes Debian bug #916011 (Blank dialog - Can't locate object method "vbox")
+* Use output image from user-defined tool even if it throws an error.
 
 
 2.2.1 (06.12.2018):
