@@ -877,7 +877,7 @@ sub add_page {
             $new = $page->thaw;
         }
         catch {
-            _throw_error( $process_uuid,
+            _throw_error( $process_uuid, $page->{uuid}, $EMPTY,
                 "Caught error writing to $self->{dir}: $_" );
         };
         if ( not defined $new ) { return }
