@@ -1231,6 +1231,22 @@ sub update_options {
     # so don't set this until we have finished
     $self->set( 'available-scan-options', $new_options );
 
+    # Remove buttons from $current_scan_options to prevent buttons which cause
+    # reloads from setting off infinite loops
+    my @buttons = ();
+    my $iter    = $current_scan_options->each_backend_option;
+    while ( my $i = $iter->() ) {
+        my ( $name, $val ) =
+          $current_scan_options->get_backend_option_by_index($i);
+        my $opt = $options->by_name($name);
+        if ( defined( $opt->{type} ) and $opt->{type} == SANE_TYPE_BUTTON ) {
+            push @buttons, $name;
+        }
+    }
+    for my $button (@buttons) {
+        $current_scan_options->remove_backend_option_by_name($button);
+    }
+
     # Reapply current options to ensure the same values are still set.
     $self->set_current_scan_options($current_scan_options);
 
