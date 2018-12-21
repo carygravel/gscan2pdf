@@ -660,7 +660,7 @@ sub import_scan {
 sub _throw_error {
     my ( $uuid, $page_uuid, $process, $message ) = @_;
     if ( defined $callback{$uuid}{error} ) {
-        $message =~ s/\s+$//;    # strip trailing whitespace
+        $message =~ s/\s+$//xsm;    # strip trailing whitespace
         $callback{$uuid}{error}->( $page_uuid, $process, $message );
         delete $callback{$uuid}{error};
     }
