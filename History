@@ -9,6 +9,7 @@
 * Use output image from user-defined tool even if it throws an error.
 * Don't reapply buttons after reloading options.
   Closes bug #315 (Software Despeck setting - reload-recursion-limit)
+* Update to Spanish translation (thanks to rodroes)
 
 
 2.2.1 (06.12.2018):
