@@ -4299,6 +4299,7 @@ Ettore Atalan
 Eric Brandwein
 Mikhail Novosyolov
 rodroes
+morodan
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
