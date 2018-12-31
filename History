@@ -1,4 +1,4 @@
-2.2.2 (06.01.2019):
+2.2.2 (31.12.2018):
 
 * Improved the error message when ImageMagick exceeds its resources.
   Closes bug #303 (I import djvu. . . when exporting to djvu - failed due to

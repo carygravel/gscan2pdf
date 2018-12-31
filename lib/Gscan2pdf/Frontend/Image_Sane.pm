@@ -27,7 +27,7 @@ Readonly my $LARGE_STATUS   => 99;
 my $uuid_object = Data::UUID->new;
 my $EMPTY       = q{};
 
-our $VERSION = '2.2.1';
+our $VERSION = '2.2.2';
 
 my ( $prog_name, $logger, %callback, $_self );
 
