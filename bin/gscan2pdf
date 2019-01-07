@@ -474,11 +474,11 @@ sub parse_arguments {
         'help'         => \$help,
         'log=s'        => \$log,
         'debug'        => sub { $log_level = 'DEBUG'; $debug = TRUE },
-        'info'         => sub { $log_level = 'INFO' },
-        'warn'         => sub { $log_level = 'WARN' },
-        'error'        => sub { $log_level = 'ERROR' },
-        'fatal'        => sub { $log_level = 'FATAL' },
-        'version'      => sub { warn "$prog_name $VERSION\n"; exit 0 },
+        'info'  => sub { $log_level = 'INFO' },
+        'warn'  => sub { $log_level = 'WARN' },
+        'error' => sub { $log_level = 'ERROR' },
+        'fatal' => sub { $log_level = 'FATAL' },
+        'version' => sub { warn "$prog_name $VERSION\n"; exit 0 },
     );
     if ( not GetOptions(@args) ) { exit 1 }
     $Image::Sane::DEBUG = $debug;
