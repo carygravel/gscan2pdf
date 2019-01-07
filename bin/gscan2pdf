@@ -93,7 +93,7 @@ use English qw( -no_match_vars )
 
 # To sort out LC_NUMERIC and $SIG{CHLD}
 use POSIX qw(locale_h :signal_h :errno_h :sys_wait_h);
-use Date::Calc qw(Delta_Days Add_Delta_Days Today Now Today_and_Now Timezone);
+use Date::Calc qw(Delta_DHMS Add_Delta_DHMS Today_and_Now Timezone);
 
 # to deal with utf8 in filenames
 use Encode qw(_utf8_off _utf8_on);
@@ -2052,7 +2052,8 @@ sub update_metadata_settings {
         $SETTING{"$name-suggestions"} = $dialog->get("meta-$name-suggestions");
     }
     my $datetime = $dialog->get('meta-datetime');
-    $SETTING{'date offset'} = Delta_Days( Today(), @{$datetime}[ 0 .. 2 ] );
+    $SETTING{'datetime offset'} =
+      [ Delta_DHMS( Today_and_Now(), @{$datetime} ) ];
 
     return;
 }
@@ -2095,7 +2096,7 @@ sub save_pdf {
         list_of_pages => $list_of_pages,
         metadata => Gscan2pdf::Document::collate_metadata(
             \%SETTING,
-            [ Today() ],
+            [ Today_and_Now() ],
             [ Timezone() ]
         ),
         options         => \%options,
@@ -2160,9 +2161,13 @@ sub save_dialog {
         'hide-on-delete' => TRUE,
         'page-range'     => $SETTING{'Page range'},
         'include-time'   => $SETTING{use_time},
-        'meta-datetime' =>
-          [ Add_Delta_Days( Today(), $SETTING{'date offset'} ), Now() ],
-        'select-datetime'           => ( $SETTING{'date offset'} != 0 ),
+        'meta-datetime'  => [
+            Add_Delta_DHMS( Today_and_Now(), @{ $SETTING{'datetime offset'} } )
+        ],
+
+        # TRUE if any value is non-zero
+        'select-datetime' =>
+          scalar( grep { !/^0$/xsm } @{ $SETTING{'datetime offset'} } ),
         'meta-title'                => $SETTING{'title'},
         'meta-title-suggestions'    => $SETTING{'title-suggestions'},
         'meta-author'               => $SETTING{'author'},
@@ -2750,7 +2755,7 @@ sub save_djvu {
         options       => \%options,
         metadata      => Gscan2pdf::Document::collate_metadata(
             \%SETTING,
-            [ Today() ],
+            [ Today_and_Now() ],
             [ Timezone() ]
         ),
         queued_callback => sub {
@@ -2951,9 +2956,13 @@ sub email {
         'hide-on-delete' => TRUE,
         'page-range'     => $SETTING{'Page range'},
         'include-time'   => $SETTING{use_time},
-        'meta-datetime' =>
-          [ Add_Delta_Days( Today(), $SETTING{'date offset'} ), Now() ],
-        'select-datetime'           => ( $SETTING{'date offset'} != 0 ),
+        'meta-datetime'  => [
+            Add_Delta_DHMS( Today_and_Now(), @{ $SETTING{'datetime offset'} } )
+        ],
+
+        # TRUE if any value is non-zero
+        'select-datetime' =>
+          scalar( grep { !/^0$/xsm } @{ $SETTING{'datetime offset'} } ),
         'meta-title'                => $SETTING{'title'},
         'meta-title-suggestions'    => $SETTING{'title-suggestions'},
         'meta-author'               => $SETTING{'author'},
@@ -3026,7 +3035,7 @@ sub email {
                 list_of_pages => $list_of_pages,
                 metadata      => Gscan2pdf::Document::collate_metadata(
                     \%SETTING,
-                    [ Today() ],
+                    [ Today_and_Now() ],
                     [ Timezone() ]
                 ),
                 options         => \%options,

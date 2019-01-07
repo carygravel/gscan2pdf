@@ -171,7 +171,7 @@ is_deeply(
     Gscan2pdf::Document::prepare_output_metadata(
         'PDF',
         {
-            date       => [ 2016, 2, 10 ],
+            datetime   => [ 2016, 2, 10, 0, 0, 0 ],
             author     => 'a.n.other',
             title      => 'title',
             'subject'  => 'subject',
@@ -194,8 +194,8 @@ is_deeply(
     Gscan2pdf::Document::prepare_output_metadata(
         'PDF',
         {
-            date => [ 2016, 2, 10 ],
-            tz   => [ 0,    0, 0, 1, 0, 0, 0 ],
+            datetime => [ 2016, 2, 10, 0, 0, 0 ],
+            tz       => [ 0,    0, 0,  1, 0, 0, 0 ],
             author     => 'a.n.other',
             title      => 'title',
             'subject'  => 'subject',
@@ -218,9 +218,8 @@ is_deeply(
     Gscan2pdf::Document::prepare_output_metadata(
         'PDF',
         {
-            date => [ 2016, 2,  10 ],
-            time => [ 19,   59, 5 ],
-            tz   => [ 0,    0,  0, 1, 0, 0, 0 ],
+            datetime => [ 2016, 2, 10, 19, 59, 5 ],
+            tz       => [ 0,    0, 0,  1,  0,  0, 0 ],
             author     => 'a.n.other',
             title      => 'title',
             'subject'  => 'subject',
@@ -242,21 +241,21 @@ is_deeply(
 #########################
 
 my %settings = (
-    author        => 'a.n.other',
-    title         => 'title',
-    subject       => 'subject',
-    keywords      => 'keywords',
-    'date offset' => 2
+    author            => 'a.n.other',
+    title             => 'title',
+    subject           => 'subject',
+    keywords          => 'keywords',
+    'datetime offset' => [ 2, 0, 59, 59 ],
 );
-my @today    = ( 2016, 2,  10 );
-my @timezone = ( 0,    0,  0, 1, 0, 0, 0 );
-my @time     = ( 19,   59, 5 );
+my @today_and_now = ( 2016, 2, 10, 1, 2, 3 );
+my @timezone = ( 0, 0, 0, 1, 0, 0, 0 );
+my @time = ( 19, 59, 5 );
 is_deeply(
     Gscan2pdf::Document::collate_metadata(
-        \%settings, \@today, \@timezone, \@time
+        \%settings, \@today_and_now, \@timezone
     ),
     {
-        date       => [ 2016, 2, 12 ],
+        datetime   => [ 2016, 2, 12, 0, 0, 0 ],
         author     => 'a.n.other',
         title      => 'title',
         'subject'  => 'subject',
@@ -268,11 +267,11 @@ is_deeply(
 $settings{'use_timezone'} = TRUE;
 is_deeply(
     Gscan2pdf::Document::collate_metadata(
-        \%settings, \@today, \@timezone, \@time
+        \%settings, \@today_and_now, \@timezone
     ),
     {
-        date => [ 2016, 2, 12 ],
-        tz   => [ 0,    0, 0, 1, 0, 0, 0 ],
+        datetime => [ 2016, 2, 12, 0, 0, 0 ],
+        tz       => [ 0,    0, 0,  1, 0, 0, 0 ],
         author     => 'a.n.other',
         title      => 'title',
         'subject'  => 'subject',
@@ -284,12 +283,11 @@ is_deeply(
 $settings{'use_time'} = TRUE;
 is_deeply(
     Gscan2pdf::Document::collate_metadata(
-        \%settings, \@today, \@timezone, \@time
+        \%settings, \@today_and_now, \@timezone
     ),
     {
-        date => [ 2016, 2,  12 ],
-        time => [ 19,   59, 5 ],
-        tz   => [ 0,    0,  0, 1, 0, 0, 0 ],
+        datetime => [ 2016, 2, 12, 2, 2, 2 ],
+        tz       => [ 0,    0, 0,  1, 0, 0, 0 ],
         author     => 'a.n.other',
         title      => 'title',
         'subject'  => 'subject',

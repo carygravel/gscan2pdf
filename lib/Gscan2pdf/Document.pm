@@ -36,7 +36,7 @@ use English qw( -no_match_vars );    # for $PROCESS_ID, $INPUT_RECORD_SEPARATOR
                                      # $CHILD_ERROR
 use POSIX qw(:sys_wait_h strftime);
 use Data::UUID;
-use Date::Calc qw(Add_Delta_Days Date_to_Time Today);
+use Date::Calc qw(Add_Delta_DHMS Date_to_Time Today_and_Now);
 use version;
 use Readonly;
 Readonly our $POINTS_PER_INCH             => 72;
@@ -2097,20 +2097,27 @@ sub expand_metadata_pattern {
 # run unit tests on the sub, it has been moved here.
 
 sub collate_metadata {
-    my ( $settings, $today, $timezone, $time ) = @_;
+    my ( $settings, $today_and_now, $timezone ) = @_;
     my %metadata;
     for my $key (qw/author title subject keywords/) {
         if ( defined $settings->{$key} ) {
             $metadata{$key} = $settings->{$key};
         }
     }
-    $metadata{date} =
-      [ Add_Delta_Days( @{$today}, $settings->{'date offset'} ) ];
+    $metadata{datetime} = [
+        Add_Delta_DHMS(
+            @{$today_and_now}, @{ $settings->{'datetime offset'} }
+        )
+    ];
+    if ( not $settings->{use_time} ) {
+
+        # Set time to zero
+        my @time = ( 0, 0, 0 );
+        splice @{ $metadata{datetime} }, @{ $metadata{datetime} } - @time,
+          @time, @time;
+    }
     if ( defined $settings->{use_timezone} ) {
         $metadata{tz} = $timezone;
-    }
-    if ( defined $settings->{use_time} ) {
-        $metadata{time} = $time;
     }
     return \%metadata;
 }
@@ -2124,17 +2131,15 @@ sub prepare_output_metadata {
           $type eq 'PDF'
           ? "D:%4i%02i%02i%02i%02i%02i%1s%02i'%02i'"
           : '%4i-%02i-%02i %02i:%02i:%02i%1s%02i:%02i';
-        my ( $year, $month, $day ) = @{ $metadata->{date} };
-        my ( $hour, $min, $sec, $sign, $dh, $dm ) = ( 0, 0, 0, q{+}, 0, 0 );
+        my ( $year, $month, $day, $hour, $min, $sec ) =
+          @{ $metadata->{datetime} };
+        my ( $sign, $dh, $dm ) = ( q{+}, 0, 0 );
         if ( defined $metadata->{tz} ) {
             ( undef, undef, undef, $dh, $dm, undef, undef ) =
               @{ $metadata->{tz} };
             if ( $dh * $MINUTES_PER_HOUR + $dm < 0 ) { $sign = q{-} }
             $dh = abs $dh;
             $dm = abs $dm;
-        }
-        if ( defined $metadata->{time} ) {
-            ( $hour, $min, $sec ) = @{ $metadata->{time} };
         }
         $h{CreationDate} = sprintf $dateformat, $year, $month, $day, $hour,
           $min, $sec, $sign,
@@ -3130,7 +3135,7 @@ sub _thread_save_pdf {
         and $options{options}{set_timestamp} )
     {
         _set_timestamp( $self, $filename, $options{uuid},
-            @{ $options{metadata}{date} } );
+            @{ $options{metadata}{datetime} } );
     }
 
     if ( defined $options{options}->{ps} ) {
@@ -3200,9 +3205,9 @@ sub _append_pdf {
 }
 
 sub _set_timestamp {
-    my ( $self, $filename, $uuid, @date ) = @_;
+    my ( $self, $filename, $uuid, @datetime ) = @_;
     try {
-        my $time = Date_to_Time( @date, 0, 0, 0 );
+        my $time = Date_to_Time(@datetime);
         utime $time, $time, $filename;
     }
     catch {
@@ -3671,7 +3676,7 @@ sub _thread_save_djvu {
         and $options{options}{set_timestamp} )
     {
         _set_timestamp( $self, $options{path}, $options{uuid},
-            @{ $options{metadata}{date} } );
+            @{ $options{metadata}{datetime} } );
     }
 
     _post_save_hook( $options{path}, %{ $options{options} } );

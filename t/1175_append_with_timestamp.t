@@ -27,7 +27,8 @@ my $slist = Gscan2pdf::Document->new;
 my $dir = File::Temp->newdir;
 $slist->set_dir($dir);
 
-my %metadata = ( date => [ 2016, 2, 10 ], title => 'metadata title' );
+my %metadata =
+  ( datetime => [ 2016, 2, 10, 0, 0, 0 ], title => 'metadata title' );
 $slist->import_files(
     paths             => ['test.pnm'],
     finished_callback => sub {

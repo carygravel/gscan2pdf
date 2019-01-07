@@ -2,7 +2,7 @@ use warnings;
 use strict;
 use Gscan2pdf::Document;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 BEGIN {
     use_ok('Gscan2pdf::Config');
@@ -106,7 +106,7 @@ Gscan2pdf::Config::add_defaults( \%output );
     'cache options'                     => TRUE,
     cache                               => undef,
     'restore window'                    => TRUE,
-    'date offset'                       => 0,
+    'datetime offset'                   => [ 0, 0, 0, 0 ],
     set_timestamp                       => TRUE,
     use_timezone                        => TRUE,
     use_time                            => FALSE,
@@ -503,6 +503,26 @@ close $fh or die "Error: cannot close $rc\n";
 %output = Gscan2pdf::Config::read_config( $rc, $logger );
 
 is_deeply( \%output, \%example, 'convert pre-2.0.0 selection' );
+
+#########################
+
+$config = <<'EOS';
+{
+   "date offset" :  2,
+   "version" : "2.2.2"
+}
+EOS
+open $fh, '>', $rc or die "Error: cannot open $rc\n";
+print $fh $config;
+close $fh or die "Error: cannot close $rc\n";
+
+%example = (
+    "datetime offset" => [ 2, 0, 0, 0 ],
+    "version"         => "2.2.2"
+);
+%output = Gscan2pdf::Config::read_config( $rc, $logger );
+
+is_deeply( \%output, \%example, 'convert pre-2.2.3 datetime offset' );
 
 #########################
 

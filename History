@@ -1,3 +1,9 @@
+2.2.3 (31.01.2019):
+
+* Optionally also include time information in metadata of PDF or DjVU.
+  Closes feature request #102 (always sets the time to 0 UTC) (again)
+
+
 2.2.2 (31.12.2018):
 
 * Improved the error message when ImageMagick exceeds its resources.

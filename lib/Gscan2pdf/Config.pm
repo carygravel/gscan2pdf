@@ -128,6 +128,18 @@ sub _pre_200 {
     return;
 }
 
+sub _pre_223 {
+    my ( $version, $SETTING ) = @_;
+    if ( version->parse($version) < version->parse('2.2.3') ) {
+        if ( defined $SETTING->{'date offset'} ) {
+            $SETTING->{'datetime offset'} =
+              [ $SETTING->{'date offset'}, 0, 0, 0 ];
+            delete $SETTING->{'date offset'};
+        }
+    }
+    return;
+}
+
 sub read_config {
     my ( $filename, $logger ) = @_;
     my ( %SETTING, $conf );
@@ -201,6 +213,8 @@ sub read_config {
 
     _pre_200( $version, \%SETTING );
 
+    _pre_223( $version, \%SETTING );
+
     $logger->debug( Dumper( \%SETTING ) );
     return %SETTING;
 }
@@ -257,7 +271,7 @@ sub add_defaults {
         set_timestamp                       => TRUE,
         use_time                            => FALSE,
         use_timezone                        => TRUE,
-        'date offset'                       => 0,
+        'datetime offset'                   => [ 0, 0, 0, 0 ],
         'pdf compression'                   => 'auto',
         'tiff compression'                  => undef,
         'pdf font'                          => undef,
