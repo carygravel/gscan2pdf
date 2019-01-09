@@ -13,6 +13,7 @@ Readonly my $_360_DEGREES       => 360;
 Readonly my $FULLPAGE_OCR_SCALE => 0.8;
 my $SPACE = q{ };
 my $EMPTY = q{};
+my $device;
 
 our $VERSION = '2.2.2';
 
@@ -35,6 +36,10 @@ use Glib::Object::Subclass GooCanvas2::Canvas::, signals => {
 
 sub INIT_INSTANCE {
     my $self = shift;
+
+    my $display = Gtk3::Gdk::Display::get_default;
+    my $manager = $display->get_device_manager;
+    $device = $manager->get_client_pointer;
 
     # Set up the canvas
     $self->signal_connect( 'button-press-event'   => \&_button_pressed );
@@ -498,7 +503,11 @@ sub _button_pressed {
     # left mouse button
     if ( $event->button != 1 ) { return FALSE }
 
-    $self->{drag_start} = { x => $event->x, y => $event->y };
+    # Using the root window x,y position for dragging the canvas, as the
+    # values returned by $event->x and y cause a bouncing effect, and
+    # only the value since the last event is required.
+    my ( $screen, $x, $y ) = $device->get_position;
+    $self->{drag_start} = { x => $x, y => $y };
     $self->{dragging} = TRUE;
 
     #    $self->update_cursor( $event->x, $event->y );
@@ -521,12 +530,10 @@ sub _motion {
 
     my $offset = $self->get_offset;
     my $zoom   = $self->get_scale;
-    my $offset_x =
-      $offset->{x} + ( $event->x - $self->{drag_start}{x} ) / $zoom;
-    my $offset_y =
-      $offset->{y} + ( $event->y - $self->{drag_start}{y} ) / $zoom;
-    ( $self->{drag_start}{x}, $self->{drag_start}{y} ) =
-      ( $event->x, $event->y );
+    my ( $screen, $x, $y ) = $device->get_position;
+    my $offset_x = $offset->{x} + ( $x - $self->{drag_start}{x} ) / $zoom;
+    my $offset_y = $offset->{y} + ( $y - $self->{drag_start}{y} ) / $zoom;
+    ( $self->{drag_start}{x}, $self->{drag_start}{y} ) = ( $x, $y );
     $self->set_offset( $offset_x, $offset_y );
     return;
 }
