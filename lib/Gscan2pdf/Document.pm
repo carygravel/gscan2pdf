@@ -1132,7 +1132,8 @@ sub delete_selection {
     my ( $self, $context ) = @_;
 
     # The drag-data-delete callback seems to be fired twice. Therefore, create
-    # a hash of the context hashes and ignore the second drop.
+    # a hash of the context hashes and ignore the second drop. There must be a
+    # less hacky way of solving this. FIXME
     if ( defined $context ) {
         if ( defined $self->{context}{$context} ) {
             delete $self->{context};
@@ -1181,16 +1182,16 @@ sub delete_selection_extra {
         }
         $self->select(@page);
 
-        # If the index hasn't changed, the signal won't have emitted,
-        # so do it manually
-        if ( $old_selection == $page[0] ) {
+        # If the index hasn't changed, the signal won't have emitted, so do it
+        # manually. Even if the index has changed, if it has the focus, the
+        # signal is still not fired (is this a bug in gtk+-3?), so do it here.
+        if ( $old_selection == $page[0] or $self->has_focus ) {
             $self->get_selection->signal_emit('changed');
         }
     }
 
-    # Select nothing
     elsif ( @{ $self->{data} } ) {
-        $self->select;
+        $self->get_selection->unselect_all;
     }
 
     # No pages left, and having blocked the selection_changed_signal,

@@ -3,6 +3,7 @@
 * Optionally also include time information in metadata of PDF or DjVU.
   Closes feature request #102 (always sets the time to 0 UTC) (again)
 * Reduced "bouncing" effect when dragging OCR output
+* Fix update of image viewer/OCR output after deleting a page
 
 
 2.2.2 (31.12.2018):
