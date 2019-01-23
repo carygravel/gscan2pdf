@@ -631,11 +631,12 @@ sub import_scan {
                     $logger->info("Padded $pad bytes");
                 }
                 my $page = Gscan2pdf::Page->new(
-                    filename   => $options{filename},
-                    resolution => $options{resolution},
-                    format     => 'Portable anymap',
-                    delete     => $options{delete},
-                    dir        => $options{dir},
+                    filename    => $options{filename},
+                    xresolution => $options{xresolution},
+                    yresolution => $options{yresolution},
+                    format      => 'Portable anymap',
+                    delete      => $options{delete},
+                    dir         => $options{dir},
                 );
                 my $index = $self->add_page( 'none', $page, $options{page} );
                 if ( $index == $NOT_FOUND and $options{error_callback} ) {
@@ -889,13 +890,13 @@ sub add_page {
     }
     my $thumb =
       get_pixbuf( $new->{filename}, $self->{heightt}, $self->{widtht} );
-    my $resolution = $new->resolution($paper_sizes);
+    my ( $xresolution, $yresolution ) = $new->resolution($paper_sizes);
 
     if ( defined $i ) {
         if ( defined $ref->{replace} ) {
             $pagenum = $self->{data}[$i][0];
             $logger->info(
-"Replaced $self->{data}[$i][2]->{filename} ($self->{data}[$i][2]->{uuid}) at page $pagenum with $new->{filename} ($new->{uuid}), resolution $resolution"
+"Replaced $self->{data}[$i][2]->{filename} ($self->{data}[$i][2]->{uuid}) at page $pagenum with $new->{filename} ($new->{uuid}), resolution $xresolution,$yresolution"
             );
             $self->{data}[$i][1] = $thumb;
             $self->{data}[$i][2] = $new;
@@ -904,7 +905,7 @@ sub add_page {
             $pagenum = $self->{data}[$i][0] + 1;
             splice @{ $self->{data} }, $i + 1, 0, [ $pagenum, $thumb, $new ];
             $logger->info(
-"Inserted $new->{filename} ($new->{uuid}) at page $pagenum with resolution $resolution"
+"Inserted $new->{filename} ($new->{uuid}) at page $pagenum with resolution $xresolution,$yresolution"
             );
         }
     }
@@ -913,7 +914,7 @@ sub add_page {
         if ( not defined $pagenum ) { $pagenum = $#{ $self->{data} } + 2 }
         push @{ $self->{data} }, [ $pagenum, $thumb, $new ];
         $logger->info(
-"Added $page->{filename} ($new->{uuid}) at page $pagenum with resolution $resolution"
+"Added $page->{filename} ($new->{uuid}) at page $pagenum with resolution $xresolution,$yresolution"
         );
     }
 
@@ -2608,7 +2609,7 @@ sub _thread_get_file_info {
                 $pages = $1;
             }
 
-            # Dig out and the resolution of each page
+            # Dig out the resolution of each page
             my (@ppi);
             $options{info}{format} = 'DJVU';
             while ( $info =~ /\s(\d+)\s+dpi(.*)/xsm ) {
@@ -2798,11 +2799,12 @@ sub _thread_import_file {
                     };
                     return if ( $_self->{cancel} or $error );
                     my $page = Gscan2pdf::Page->new(
-                        filename   => $tif,
-                        dir        => $options{dir},
-                        delete     => TRUE,
-                        format     => 'Tagged Image File Format',
-                        resolution => $options{info}->{ppi}[ $i - 1 ],
+                        filename    => $tif,
+                        dir         => $options{dir},
+                        delete      => TRUE,
+                        format      => 'Tagged Image File Format',
+                        xresolution => $options{info}->{ppi}[ $i - 1 ],
+                        yresolution => $options{info}->{ppi}[ $i - 1 ],
                     );
                     try {
                         $page->import_djvutext($txt);
@@ -3075,7 +3077,7 @@ sub _thread_save_pdf {
     my ( $self, %options ) = @_;
 
     my $pagenr = 0;
-    my ( $cache, $resolution, $pdf, $error );
+    my ( $cache, $pdf, $error );
 
     # Create PDF with PDF::API2
     $self->{message} = __('Setting up PDF');
@@ -3118,7 +3120,6 @@ sub _thread_save_pdf {
           $pagenr, $#{ $options{list_of_pages} } + 1;
         my $status =
           _add_page_to_pdf( $self, $pdf, $pagedata, $cache, %options );
-        if ( not defined $resolution ) { $resolution = $pagedata->resolution }
         return if ( $status or $_self->{cancel} );
     }
 
@@ -3232,8 +3233,8 @@ sub _add_page_to_pdf {
 
     # Get the size and resolution. Resolution is dots per inch, width
     # and height are in inches.
-    my $w = $image->Get('width') / $pagedata->{resolution};
-    my $h = $image->Get('height') / $pagedata->{resolution};
+    my $w = $image->Get('width') / $pagedata->{xresolution};
+    my $h = $image->Get('height') / $pagedata->{yresolution};
     $pagedata->{w} = $w;
     $pagedata->{h} = $h;
 
@@ -3362,7 +3363,8 @@ sub _convert_image_for_pdf {
 
     # The output resolution is normally the same as the input
     # resolution.
-    my $output_resolution = $pagedata->{resolution};
+    my $output_xresolution = $pagedata->{xresolution};
+    my $output_yresolution = $pagedata->{yresolution};
 
     if (   ( $compression ne 'none' and $compression ne $format )
         or $options{options}->{downsample}
@@ -3390,9 +3392,10 @@ sub _convert_image_for_pdf {
         }
 
         if ( $options{options}->{downsample} ) {
-            $output_resolution = $options{options}->{'downsample dpi'};
-            my $w_pixels = $pagedata->{w} * $output_resolution;
-            my $h_pixels = $pagedata->{h} * $output_resolution;
+            $output_xresolution = $options{options}->{'downsample dpi'};
+            $output_yresolution = $options{options}->{'downsample dpi'};
+            my $w_pixels = $pagedata->{w} * $output_xresolution;
+            my $h_pixels = $pagedata->{h} * $output_yresolution;
 
             $logger->info("Resizing $filename to $w_pixels x $h_pixels");
             my $status =
@@ -3429,7 +3432,7 @@ sub _convert_image_for_pdf {
             $filename = $filename2;
         }
     }
-    return $filename, $format, $output_resolution;
+    return $filename, $format, $output_xresolution, $output_yresolution;
 }
 
 sub _write_image_object {
@@ -3458,12 +3461,14 @@ sub _write_image_object {
 
 sub _add_text_to_pdf {
     my ( $pdf_page, $gs_page, $boxes, $ttfcache, $corecache ) = @_;
-    my $h          = $gs_page->{h};
-    my $w          = $gs_page->{w};
-    my $resolution = $gs_page->{resolution};
+    my $h           = $gs_page->{h};
+    my $w           = $gs_page->{w};
+    my $xresolution = $gs_page->{xresolution};
+    my $yresolution = $gs_page->{yresolution};
     my $font;
     my $text = $pdf_page->text;
     for my $box ( @{$boxes} ) {
+
         if ( defined $box->{contents} ) {
             _add_text_to_pdf( $pdf_page, $gs_page, $box->{contents}, $ttfcache,
                 $corecache );
@@ -3481,10 +3486,10 @@ sub _add_text_to_pdf {
             $font = $corecache;
         }
         if ( $x1 == 0 and $y1 == 0 and not defined $x2 ) {
-            ( $x2, $y2 ) = ( $w * $resolution, $h * $resolution );
+            ( $x2, $y2 ) = ( $w * $xresolution, $h * $yresolution );
         }
-        if (    abs( $h * $resolution - $y2 + $y1 ) > $BOX_TOLERANCE
-            and abs( $w * $resolution - $x2 + $x1 ) > $BOX_TOLERANCE )
+        if (    abs( $h * $yresolution - $y2 + $y1 ) > $BOX_TOLERANCE
+            and abs( $w * $xresolution - $x2 + $x1 ) > $BOX_TOLERANCE )
         {
 
             # Box is smaller than the page. We know the text position.
@@ -3493,10 +3498,10 @@ sub _add_text_to_pdf {
             # y coordinate (since the PDF coordinates are bottom to top
             # instead of top to bottom) and subtract $size, since the text
             # will end up above the given point instead of below.
-            my $size = ( $y2 - $y1 ) / $resolution * $POINTS_PER_INCH;
+            my $size = ( $y2 - $y1 ) / $yresolution * $POINTS_PER_INCH;
             $text->font( $font, $size );
-            $text->translate( $x1 / $resolution * $POINTS_PER_INCH,
-                ( $h - ( $y1 / $resolution ) ) * $POINTS_PER_INCH - $size );
+            $text->translate( $x1 / $xresolution * $POINTS_PER_INCH,
+                ( $h - ( $y1 / $yresolution ) ) * $POINTS_PER_INCH - $size );
             $text->text( $txt, utf8 => 1 );
         }
         else {
@@ -3561,8 +3566,6 @@ sub _thread_save_djvu {
         $self->{message} = sprintf __('Writing page %i of %i'),
           $page, $#{ $options{list_of_pages} } + 1;
 
-        my $filename = $pagedata->{filename};
-
         my ( $djvu, $error );
         try {
             $djvu = File::Temp->new( DIR => $options{dir}, SUFFIX => '.djvu' );
@@ -3575,76 +3578,13 @@ sub _thread_save_djvu {
         };
         if ($error) { return }
 
-        # Check the image depth to decide what sort of compression to use
-        my $image = Image::Magick->new;
-        my $e     = $image->Read($filename);
-        if ("$e") {
-            $logger->error($e);
-            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-                'Save file', "Error reading $filename: $e." );
-            return;
-        }
-        my $depth = $image->Get('depth');
-        my $class = $image->Get('class');
-        my $compression;
-
-        # Get the size
-        $pagedata->{w}           = $image->Get('width');
-        $pagedata->{h}           = $image->Get('height');
-        $pagedata->{pidfile}     = $options{pidfile};
-        $pagedata->{page_number} = $page;
-
-        # c44 can only use pnm and jpg
-        my $format;
-        if ( $filename =~ /[.](\w*)$/xsm ) {
-            $format = $1;
-        }
-        if ( $depth > 1 ) {
-            $compression = 'c44';
-            if ( $format !~ /(?:pnm|jpg)/xsm ) {
-                my $pnm =
-                  File::Temp->new( DIR => $options{dir}, SUFFIX => '.pnm' );
-                $e = $image->Write( filename => $pnm );
-                if ("$e") {
-                    $logger->error($e);
-                    _thread_throw_error( $self, $options{uuid},
-                        $options{page}{uuid},
-                        'Save file', "Error writing $pnm: $e." );
-                    return;
-                }
-                $filename = $pnm;
-            }
-        }
-
-        # cjb2 can only use pnm and tif
-        else {
-            $compression = 'cjb2';
-            if ( $format !~ /(?:pnm|tif)/xsm
-                or ( $format eq 'pnm' and $class ne 'PseudoClass' ) )
-            {
-                my $pbm =
-                  File::Temp->new( DIR => $options{dir}, SUFFIX => '.pbm' );
-                $e = $image->Write( filename => $pbm );
-                if ("$e") {
-                    $logger->error($e);
-                    _thread_throw_error( $self, $options{uuid},
-                        $options{page}{uuid},
-                        'Save file', "Error writing $pbm: $e." );
-                    return;
-                }
-                $filename = $pbm;
-            }
-        }
+        my ( $compression, $filename, $resolution ) =
+          _convert_image_for_djvu( $self, $pagedata, $page, %options );
 
         # Create the djvu
         my ($status) = exec_command(
-            [
-                $compression,                   '-dpi',
-                int( $pagedata->{resolution} ), $filename,
-                $djvu
-            ],
-            $options{pidfile}
-        );
+            [ $compression, '-dpi', int($resolution), $filename, $djvu ],
+            $options{pidfile} );
         my $size =
           -s "$djvu"; # quotes needed to prevent -s clobbering File::Temp object
         return if $_self->{cancel};
@@ -3690,6 +3630,90 @@ sub _thread_save_djvu {
         }
     );
     return;
+}
+
+sub _convert_image_for_djvu {
+    my ( $self, $pagedata, $page, %options ) = @_;
+    my $filename = $pagedata->{filename};
+
+    # Check the image depth to decide what sort of compression to use
+    my $image = Image::Magick->new;
+    my $e     = $image->Read($filename);
+    if ("$e") {
+        $logger->error($e);
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', "Error reading $filename: $e." );
+        return;
+    }
+    my $depth = $image->Get('depth');
+    my $class = $image->Get('class');
+    my ( $compression, $resolution, $upsample );
+
+    # Get the size
+    $pagedata->{w}           = $image->Get('width');
+    $pagedata->{h}           = $image->Get('height');
+    $pagedata->{pidfile}     = $options{pidfile};
+    $pagedata->{page_number} = $page;
+
+    # c44 and cjb2 do not support different resolutions in the x and y
+    # directions, so resample
+    if ( $pagedata->{xresolution} != $pagedata->{yresolution} ) {
+        $resolution =
+            $pagedata->{xresolution} > $pagedata->{yresolution}
+          ? $pagedata->{xresolution}
+          : $pagedata->{yresolution};
+        $pagedata->{w} *= $resolution / $pagedata->{xresolution};
+        $pagedata->{h} *= $resolution / $pagedata->{yresolution};
+        $logger->info( "Upsampling to $resolution" . "x$resolution" );
+        $image->Sample( width => $pagedata->{w}, height => $pagedata->{h} );
+        $upsample = TRUE;
+    }
+    else {
+        $resolution = $pagedata->{xresolution};
+    }
+
+    # c44 can only use pnm and jpg
+    my $format;
+    if ( $filename =~ /[.](\w*)$/xsm ) {
+        $format = $1;
+    }
+    if ( $depth > 1 ) {
+        $compression = 'c44';
+        if ( $format !~ /(?:pnm|jpg)/xsm or $upsample ) {
+            my $pnm = File::Temp->new( DIR => $options{dir}, SUFFIX => '.pnm' );
+            $e = $image->Write( filename => $pnm );
+            if ("$e") {
+                $logger->error($e);
+                _thread_throw_error( $self, $options{uuid},
+                    $options{page}{uuid},
+                    'Save file', "Error writing $pnm: $e." );
+                return;
+            }
+            $filename = $pnm;
+        }
+    }
+
+    # cjb2 can only use pnm and tif
+    else {
+        $compression = 'cjb2';
+        if (   $format !~ /(?:pnm|tif)/xsm
+            or ( $format eq 'pnm' and $class ne 'PseudoClass' )
+            or $upsample )
+        {
+            my $pbm = File::Temp->new( DIR => $options{dir}, SUFFIX => '.pbm' );
+            $e = $image->Write( filename => $pbm );
+            if ("$e") {
+                $logger->error($e);
+                _thread_throw_error( $self, $options{uuid},
+                    $options{page}{uuid},
+                    'Save file', "Error writing $pbm: $e." );
+                return;
+            }
+            $filename = $pbm;
+        }
+    }
+
+    return $compression, $filename, $resolution;
 }
 
 sub _write_file {
@@ -3817,7 +3841,8 @@ sub _thread_save_tiff {
                 $error = TRUE;
             };
             if ($error) { return }
-            my $resolution = $pagedata->{resolution};
+            my $xresolution = $pagedata->{xresolution};
+            my $yresolution = $pagedata->{yresolution};
 
             # Convert to tiff
             my @depth;
@@ -3828,7 +3853,8 @@ sub _thread_save_tiff {
             }
 
             my @cmd = (
-                'convert', '-units', 'PixelsPerInch', '-density', $resolution,
+                'convert', '-units', 'PixelsPerInch', '-density',
+                $xresolution . 'x' . $yresolution,
                 @depth, $filename, $tif,
             );
             my ($status) = exec_command( \@cmd, $options{pidfile} );
@@ -3969,8 +3995,11 @@ sub _thread_save_image {
     if ( @{ $options{list_of_pages} } == 1 ) {
         my $status = exec_command(
             [
-                'convert',  $options{list_of_pages}->[0]{filename},
-                '-density', $options{list_of_pages}->[0]{resolution},
+                'convert',
+                $options{list_of_pages}->[0]{filename},
+                '-density',
+                $options{list_of_pages}->[0]{xresolution} . 'x'
+                  . $options{list_of_pages}->[0]{yresolution},
                 $options{path}
             ],
             $options{pidfile}
@@ -3990,8 +4019,8 @@ sub _thread_save_image {
             $current_filename = sprintf $options{path}, $i++;
             my $status = exec_command(
                 [
-                    'convert',  $_->{filename},
-                    '-density', $_->{resolution},
+                    'convert', $_->{filename},
+                    '-density', $_->{xresolution} . 'x' . $_->{yresolution},
                     $current_filename
                 ],
                 $options{pidfile}
@@ -4784,8 +4813,9 @@ sub _thread_unpaper {
         );
 
         # unpaper doesn't change the resolution, so we can safely copy it
-        if ( defined $options{page}{resolution} ) {
-            $new->{resolution} = $options{page}{resolution};
+        if ( defined $options{page}{xresolution} ) {
+            $new->{xresolution} = $options{page}{xresolution};
+            $new->{yresolution} = $options{page}{yresolution};
         }
 
         # reuse uuid so that the process chain can find it again
@@ -4809,8 +4839,9 @@ sub _thread_unpaper {
             );
 
             # unpaper doesn't change the resolution, so we can safely copy it
-            if ( defined $options{page}{resolution} ) {
-                $new2->{resolution} = $options{page}{resolution};
+            if ( defined $options{page}{xresolution} ) {
+                $new2->{xresolution} = $options{page}{xresolution};
+                $new2->{yresolution} = $options{page}{yresolution};
             }
 
             $new2->{dirty_time} = timestamp();    #flag as dirty
@@ -4865,7 +4896,7 @@ sub _thread_user_defined {
             }
             $options{command} =~ s/%i/$out/gxsm;
         }
-        $options{command} =~ s/%r/$options{page}{resolution}/gxsm;
+        $options{command} =~ s/%r/$options{page}{xresolution}/gxsm;
         ( undef, my $info, my $error ) =
           exec_command( [ $options{command} ], $options{pidfile} );
         return if $_self->{cancel};
@@ -4899,7 +4930,8 @@ sub _thread_user_defined {
         # No way to tell what resolution a pnm is,
         # so assume it hasn't changed
         if ( $new->{format} =~ /Portable\s(:?any|bit|gray|pix)map/xsm ) {
-            $new->{resolution} = $options{page}{resolution};
+            $new->{xresolution} = $options{page}{xresolution};
+            $new->{yresolution} = $options{page}{yresolution};
         }
 
         # reuse uuid so that the process chain can find it again

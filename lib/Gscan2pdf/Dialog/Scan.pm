@@ -43,10 +43,12 @@ BEGIN {
 # from http://gtk2-perl.sourceforge.net/doc/subclassing_widgets_in_perl.html
 use Glib::Object::Subclass Gscan2pdf::Dialog::, signals => {
     'new-scan' => {
-        param_types => [ 'Glib::String', 'Glib::UInt' ], # filename, page number
+        param_types =>
+          [ 'Glib::String', 'Glib::UInt', 'Glib::Float', 'Glib::Float' ]
+        ,    # filename, page number, x-resolution, y-resolution
     },
     'changed-device' => {
-        param_types => ['Glib::String'],                 # device name
+        param_types => ['Glib::String'],    # device name
     },
     'changed-device-list' => {
         param_types => ['Glib::Scalar'],    # array of hashes with device info
@@ -2207,6 +2209,54 @@ sub make_progress_string {
     return sprintf __('Scanning page %d of %d'), $i, $npages
       if ( $npages > 0 );
     return sprintf __('Scanning page %d'), $i;
+}
+
+sub get_xy_resolution {
+    my ($self) = @_;
+    my $options = $self->get('available-scan-options');
+    if ( not defined $options ) { return }
+    my $resolution = $options->by_name(SANE_NAME_SCAN_RESOLUTION);
+    my $x          = $options->by_name('x-resolution');
+    my $y          = $options->by_name('y-resolution');
+    if ( defined $resolution ) { $resolution = $resolution->{val} }
+    if ( defined $x )          { $x          = $x->{val} }
+    if ( defined $y )          { $y          = $y->{val} }
+
+    # Potentially, a scanner could offer all three options, but then unset
+    # resolution once the other two have been set.
+    if ( defined $resolution ) {
+
+        # The resolution option, plus one of the other two, is defined.
+        # Most sensibly, we should look at the order they were set.
+        # However, if none of them are in current-scan-options, they still have
+        # their default setting, and which of those gets priority is certainly
+        # scanner specific.
+        if ( defined $x or defined $y ) {
+            my $current_scan_options = $self->get('current-scan-options');
+            my $iter = $current_scan_options->each_backend_option;
+            while ( my $i = $iter->() ) {
+                my ( $name, $val ) =
+                  $current_scan_options->get_backend_option_by_index($i);
+                if ( $name eq SANE_NAME_SCAN_RESOLUTION ) {
+                    $x = $val;
+                    $y = $val;
+                }
+                elsif ( $name eq 'x-resolution' ) {
+                    $x = $val;
+                }
+                elsif ( $name eq 'y-resolution' ) {
+                    $y = $val;
+                }
+            }
+        }
+        else {
+            return $resolution, $resolution;
+        }
+    }
+
+    if ( not defined $x ) { $x = $Gscan2pdf::Document::POINTS_PER_INCH }
+    if ( not defined $y ) { $y = $Gscan2pdf::Document::POINTS_PER_INCH }
+    return $x, $y;
 }
 
 1;

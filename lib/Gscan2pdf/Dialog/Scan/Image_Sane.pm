@@ -462,6 +462,8 @@ sub scan {
         return TRUE;
     }
 
+    my ( $xresolution, $yresolution ) = $self->get_xy_resolution;
+
     my $i = 1;
     Gscan2pdf::Frontend::Image_Sane->scan_pages(
         dir                  => $self->get('dir'),
@@ -501,7 +503,8 @@ sub scan {
         },
         new_page_callback => sub {
             my ( $status, $path, $n ) = @_;
-            $self->signal_emit( 'new-scan', $path, $n );
+            $self->signal_emit( 'new-scan', $path, $n, $xresolution,
+                $yresolution );
             $self->signal_emit( 'changed-progress', 0,
                 Gscan2pdf::Dialog::Scan::make_progress_string( ++$i, $npages )
             );

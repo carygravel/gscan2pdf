@@ -1,9 +1,10 @@
-2.2.3 (31.01.2019):
+2.3.0 (31.01.2019):
 
 * Optionally also include time information in metadata of PDF or DjVU.
   Closes feature request #102 (always sets the time to 0 UTC) (again)
 * Reduced "bouncing" effect when dragging OCR output
 * Fix update of image viewer/OCR output after deleting a page
+* Support different resolutions in x and y directions.
 
 
 2.2.2 (31.12.2018):

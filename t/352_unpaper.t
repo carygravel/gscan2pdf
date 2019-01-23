@@ -58,17 +58,17 @@ SKIP: {
     $slist->import_files(
         paths             => ['test.pnm'],
         finished_callback => sub {
-            is( $slist->{data}[0][2]{resolution},
+            is( $slist->{data}[0][2]{xresolution},
                 72, 'non-standard size pnm imports with 72 PPI' );
-            $slist->{data}[0][2]{resolution} = 300;
-            is( $slist->{data}[0][2]{resolution},
+            $slist->{data}[0][2]{xresolution} = 300;
+            is( $slist->{data}[0][2]{xresolution},
                 300,
                 'simulated having imported non-standard pnm with 300 PPI' );
             $slist->unpaper(
                 page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },
                 finished_callback => sub {
-                    is( $slist->{data}[0][2]{resolution},
+                    is( $slist->{data}[0][2]{xresolution},
                         300, 'Resolution of processed image' );
                     Gtk3->main_quit;
                 }

@@ -648,7 +648,8 @@ $expected = <<"EOS";
 </html>
 EOS
 
-$page->{resolution} = 300;
+$page->{xresolution} = 300;
+$page->{yresolution} = 300;
 $page->import_pdftotext($pdftext);
 is( $page->{hocr}, $expected, 'import_pdftotext() with resolution' );
 

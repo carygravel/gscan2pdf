@@ -101,9 +101,10 @@ sub new {
         my $image = $self->im_object;
         my $units = $image->Get('units');
         if ( $units =~ /undefined/xsm ) {
+            my ( $xresolution, $yresolution ) = $self->resolution;
             $image->Write(
                 units    => 'PixelsPerInch',
-                density  => $self->resolution,
+                density  => $xresolution . 'x' . $yresolution,
                 filename => $self->{filename}
             );
         }
@@ -345,6 +346,7 @@ sub _prune_empty_branches {
 sub _pdftotext2boxes {
     my ( $self, $html ) = @_;
     my $p = HTML::TokeParser->new( \$html );
+    my ( $xresolution, $yresolution ) = $self->resolution;
     my ( $data, @stack, $boxes );
     while ( my $token = $p->get_token ) {
         given ( $token->[0] ) {
@@ -359,8 +361,8 @@ sub _pdftotext2boxes {
                     if ( defined $attrs{width} and defined $attrs{height} ) {
                         $data->{bbox} = [
                             0, 0,
-                            scale( $attrs{width},  $self->resolution ),
-                            scale( $attrs{height}, $self->resolution )
+                            scale( $attrs{width},  $xresolution ),
+                            scale( $attrs{height}, $yresolution )
                         ];
                     }
                     push @{$boxes}, $data;
@@ -373,10 +375,10 @@ sub _pdftotext2boxes {
                         and defined $attrs{ymax} )
                     {
                         $data->{bbox} = [
-                            scale( $attrs{xmin}, $self->resolution ),
-                            scale( $attrs{ymin}, $self->resolution ),
-                            scale( $attrs{xmax}, $self->resolution ),
-                            scale( $attrs{ymax}, $self->resolution )
+                            scale( $attrs{xmin}, $xresolution ),
+                            scale( $attrs{ymin}, $yresolution ),
+                            scale( $attrs{xmax}, $xresolution ),
+                            scale( $attrs{ymax}, $yresolution )
                         ];
                     }
                 }
@@ -604,16 +606,18 @@ sub to_png {
     # Write the png
     my $png =
       File::Temp->new( DIR => $self->{dir}, SUFFIX => '.png', UNLINK => FALSE );
+    my ( $xresolution, $yresolution ) = $self->resolution($page_sizes);
     $self->im_object->Write(
         units    => 'PixelsPerInch',
-        density  => $self->resolution($page_sizes),
+        density  => $xresolution . 'x' . $yresolution,
         filename => $png
     );
     my $new = Gscan2pdf::Page->new(
-        filename   => $png,
-        format     => 'Portable Network Graphics',
-        dir        => $self->{dir},
-        resolution => $self->resolution($page_sizes),
+        filename    => $png,
+        format      => 'Portable Network Graphics',
+        dir         => $self->{dir},
+        xresolution => $xresolution,
+        yresolution => $yresolution,
     );
     if ( defined $self->{hocr} ) { $new->{hocr} = $self->{hocr} }
     return $new;
@@ -621,7 +625,9 @@ sub to_png {
 
 sub resolution {
     my ( $self, $paper_sizes ) = @_;
-    return $self->{resolution} if defined $self->{resolution};
+    if ( defined $self->{xresolution} and defined $self->{yresolution} ) {
+        return $self->{xresolution}, $self->{yresolution};
+    }
     my $image  = $self->im_object;
     my $format = $image->Get('format');
     setlocale( LC_NUMERIC, 'C' );
@@ -639,8 +645,9 @@ sub resolution {
         my $yres = $height / $self->{size}[1] * $scale;
         $logger->debug("resolution $xres $yres");
         if ( abs( $xres - $yres ) / $yres < $PAGE_TOLERANCE ) {
-            $self->{resolution} = ( $xres + $yres ) / 2;
-            return $self->{resolution};
+            $self->{xresolution} = ( $xres + $yres ) / 2;
+            $self->{yresolution} = $self->{xresolution};
+            return $self->{xresolution}, $self->{yresolution};
         }
     }
 
@@ -648,16 +655,14 @@ sub resolution {
     # Some versions of imagemagick report colour PNM as Portable pixmap (PPM)
     # B&W are Portable anymap
     if ( $format !~ /^Portable[ ]...map/xsm ) {
-        $self->{resolution} = $image->Get('x-resolution');
+        $self->{xresolution} = $image->Get('x-resolution');
+        $self->{yresolution} = $image->Get('y-resolution');
 
-        if ( not defined $self->{resolution} ) {
-            $self->{resolution} = $image->Get('y-resolution');
-        }
-
-        if ( $self->{resolution} ) {
+        if ( $self->{xresolution} ) {
             my $units = $image->Get('units');
             if ( $units eq 'pixels / centimeter' ) {
-                $self->{resolution} *= $CM_PER_INCH;
+                $self->{xresolution} *= $CM_PER_INCH;
+                $self->{yresolution} *= $CM_PER_INCH;
             }
             elsif ( $units =~ /undefined/xsm ) {
                 $logger->warn('Undefined units.');
@@ -670,19 +675,21 @@ sub resolution {
                 $logger->warn(
                     'The resolution and page size will probably be wrong.');
             }
-            return $self->{resolution};
+            return $self->{xresolution}, $self->{yresolution};
         }
     }
 
     # Return the first match based on the format
     for ( values %{ $self->matching_paper_sizes($paper_sizes) } ) {
-        $self->{resolution} = $_;
-        return $self->{resolution};
+        $self->{xresolution} = $_;
+        $self->{yresolution} = $_;
+        return $self->{xresolution}, $self->{yresolution};
     }
 
     # Default to 72
-    $self->{resolution} = $Gscan2pdf::Document::POINTS_PER_INCH;
-    return $self->{resolution};
+    $self->{xresolution} = $Gscan2pdf::Document::POINTS_PER_INCH;
+    $self->{yresolution} = $Gscan2pdf::Document::POINTS_PER_INCH;
+    return $self->{xresolution}, $self->{yresolution};
 }
 
 # Given paper width and height (mm), and hash of paper sizes,
@@ -697,7 +704,7 @@ sub matching_paper_sizes {
         $self->{height} = $image->Get('height');
         if ( not( defined $self->{height} and defined $self->{width} ) ) {
             $logger->warn(
-"ImageMagick returns undef for image size - resolution cannot be guessed"
+'ImageMagick returns undef for image size - resolution cannot be guessed'
             );
             return \%matching;
         }

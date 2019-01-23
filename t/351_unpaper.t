@@ -58,13 +58,13 @@ SKIP: {
     $slist->import_files(
         paths             => ['test.pnm'],
         finished_callback => sub {
-            is( int( abs( $slist->{data}[0][2]{resolution} - 254 ) ),
+            is( int( abs( $slist->{data}[0][2]{xresolution} - 254 ) ),
                 0, 'Resolution of imported image' );
             $slist->unpaper(
                 page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },
                 finished_callback => sub {
-                    is( int( abs( $slist->{data}[0][2]{resolution} - 254 ) ),
+                    is( int( abs( $slist->{data}[0][2]{xresolution} - 254 ) ),
                         0, 'Resolution of processed image' );
                     is( system("identify $slist->{data}[0][2]{filename}"),
                         0, 'valid image created' );

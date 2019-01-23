@@ -47,13 +47,13 @@ $slist->set_paper_sizes( \%paper_sizes );
 $slist->import_files(
     paths             => ['white.pnm'],
     finished_callback => sub {
-        is( int( abs( $slist->{data}[0][2]{resolution} - 25.4 ) ),
+        is( int( abs( $slist->{data}[0][2]{xresolution} - 25.4 ) ),
             0, 'Resolution of imported image' );
         $slist->user_defined(
             page              => $slist->{data}[0][2]{uuid},
             command           => 'convert %i tmp.ppm;mv tmp.ppm %i',
             finished_callback => sub {
-                is( int( abs( $slist->{data}[0][2]{resolution} - 25.4 ) ),
+                is( int( abs( $slist->{data}[0][2]{xresolution} - 25.4 ) ),
                     0, 'Resolution of converted image' );
                 my ( $dir, $base, $suffix ) =
                   fileparse( "$slist->{data}[0][2]{filename}", qr/\.[^.]*/ );

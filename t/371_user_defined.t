@@ -47,7 +47,7 @@ $slist->set_paper_sizes( \%paper_sizes );
 $slist->import_files(
     paths             => ['white.pnm'],
     finished_callback => sub {
-        is( int( abs( $slist->{data}[0][2]{resolution} - 25.4 ) ),
+        is( int( abs( $slist->{data}[0][2]{xresolution} - 25.4 ) ),
             0, 'Resolution of imported image' );
         $slist->user_defined(
             page              => $slist->{data}[0][2]{uuid},
@@ -60,7 +60,7 @@ $slist->import_files(
                             0, 'User-defined with %i and %o' );
                         is(
                             int(
-                                abs( $slist->{data}[0][2]{resolution} - 25.4 )
+                                abs( $slist->{data}[0][2]{xresolution} - 25.4 )
                             ),
                             0,
                             'Resolution of converted image'

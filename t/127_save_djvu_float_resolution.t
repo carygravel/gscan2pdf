@@ -17,7 +17,6 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system('convert rose: test.png');
-$logger->debug("created test.png");
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -28,7 +27,8 @@ $slist->set_dir($dir);
 $slist->import_files(
     paths             => ['test.png'],
     finished_callback => sub {
-        $slist->{data}[0][2]{resolution} = 299.72;
+        $slist->{data}[0][2]{xresolution} = 299.72;
+        $slist->{data}[0][2]{yresolution} = 299.72;
         $slist->save_djvu(
             path              => 'test.djvu',
             list_of_pages     => [ $slist->{data}[0][2]{uuid} ],

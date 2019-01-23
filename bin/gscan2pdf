@@ -3402,7 +3402,7 @@ sub changed_progress_callback {
 }
 
 sub new_scan_callback {
-    my ( $widget, $path, $page_number ) = @_;
+    my ( $widget, $path, $page_number, $xresolution, $yresolution ) = @_;
 
     # Update undo/redo buffers
     take_snapshot();
@@ -3450,16 +3450,12 @@ sub new_scan_callback {
         $options{delete}   = FALSE;
     }
     else {
-        my $options = $windows->get('available-scan-options');
-        my $opt     = $options->by_name(SANE_NAME_SCAN_RESOLUTION);
-        my $resolution =
-          ( defined $opt and defined $opt->{val} )
-          ? $opt->{val}
-          : $Gscan2pdf::Document::POINTS_PER_INCH;
-        $logger->info("Importing scan with resolution=$resolution");
-        $options{filename}   = $path;
-        $options{resolution} = $resolution;
-        $options{delete}     = TRUE;
+        $logger->info(
+            "Importing scan with resolution=$xresolution,$yresolution");
+        $options{filename}    = $path;
+        $options{xresolution} = $xresolution;
+        $options{yresolution} = $yresolution;
+        $options{delete}      = TRUE;
     }
     $slist->import_scan(%options);
     return;
@@ -6434,33 +6430,46 @@ sub properties {
 
     my $hbox = Gtk3::HBox->new;
     $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
-    my $label = Gtk3::Label->new( __('Resolution') );
+    my $label = Gtk3::Label->new( __('X-Resolution') );
     $hbox->pack_start( $label, FALSE, FALSE, 0 );
-    my $spinbutton = Gtk3::SpinButton->new_with_range( 0, $MAX_DPI, 1 );
-    $spinbutton->set_digits(1);
-    $spinbutton->set_value( get_selected_properties() );
-    $slist->get_selection->signal_connect(
-        changed => sub {
-            $spinbutton->set_value( get_selected_properties() );
-        }
-    );
-    $hbox->pack_start( $spinbutton, TRUE, TRUE, 0 );
-
+    my $xspinbutton = Gtk3::SpinButton->new_with_range( 0, $MAX_DPI, 1 );
+    $xspinbutton->set_digits(1);
+    $hbox->pack_start( $xspinbutton, TRUE, TRUE, 0 );
     $label = Gtk3::Label->new( __('dpi') );
     $hbox->pack_end( $label, FALSE, FALSE, 0 );
 
     $hbox = Gtk3::HBox->new;
-    $vbox->pack_end( $hbox, FALSE, FALSE, 0 );
+    $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
+    $label = Gtk3::Label->new( __('Y-Resolution') );
+    $hbox->pack_start( $label, FALSE, FALSE, 0 );
+    my $yspinbutton = Gtk3::SpinButton->new_with_range( 0, $MAX_DPI, 1 );
+    $yspinbutton->set_digits(1);
+    $hbox->pack_start( $yspinbutton, TRUE, TRUE, 0 );
+    $label = Gtk3::Label->new( __('dpi') );
+    $hbox->pack_end( $label, FALSE, FALSE, 0 );
+
+    my ( $xresolution, $yresolution ) = get_selected_properties();
+    $xspinbutton->set_value($xresolution);
+    $yspinbutton->set_value($yresolution);
+    $slist->get_selection->signal_connect(
+        changed => sub {
+            ( $xresolution, $yresolution ) = get_selected_properties();
+            $xspinbutton->set_value($xresolution);
+            $yspinbutton->set_value($yresolution);
+        }
+    );
 
     $windowp->add_actions(
         'gtk-apply',
         sub {
             $windowp->hide;
-            my $resolution = $spinbutton->get_value;
+            $xresolution = $xspinbutton->get_value;
+            $yresolution = $yspinbutton->get_value;
             $slist->get_model->signal_handler_block(
                 $slist->{row_changed_signal} );
             for ( $slist->get_selected_indices ) {
-                $slist->{data}[$_][2]{resolution} = $resolution;
+                $slist->{data}[$_][2]{xresolution} = $xresolution;
+                $slist->{data}[$_][2]{yresolution} = $yresolution;
             }
             $slist->get_model->signal_handler_unblock(
                 $slist->{row_changed_signal} );
@@ -6476,20 +6485,30 @@ sub properties {
 
 # Helper function for properties()
 sub get_selected_properties {
-    my @page       = $slist->get_selected_indices;
-    my $resolution = $EMPTY;
+    my @page        = $slist->get_selected_indices;
+    my $xresolution = $EMPTY;
+    my $yresolution = $EMPTY;
     if ( @page > 0 ) {
-        $resolution = $slist->{data}[ shift @page ][2]{resolution};
+        my $page = shift @page;
+        $xresolution = $slist->{data}[$page][2]{xresolution};
+        $yresolution = $slist->{data}[$page][2]{yresolution};
     }
     for (@page) {
-        if ( $slist->{data}[$_][2]{resolution} != $resolution ) {
-            $resolution = $EMPTY;
+        if ( $slist->{data}[$_][2]{xresolution} != $xresolution ) {
+            $xresolution = $EMPTY;
+            last;
+        }
+    }
+    for (@page) {
+        if ( $slist->{data}[$_][2]{yresolution} != $yresolution ) {
+            $yresolution = $EMPTY;
             last;
         }
     }
 
     # round the value to a sensible number of significant figures
-    return $resolution eq $EMPTY ? 0 : sprintf '%.1g', $resolution;
+    return $xresolution eq $EMPTY ? 0 : sprintf( '%.1g', $xresolution ),
+      $yresolution eq $EMPTY ? 0 : sprintf '%.1g', $yresolution;
 }
 
 # Helper function to display a message dialog, wait for a response, and return it
