@@ -3413,6 +3413,7 @@ sub new_scan_callback {
     my %options = (
         page            => $page_number,
         dir             => $session,
+        to_png          => $SETTING{to_png},
         rotate          => $rotate,
         ocr             => $SETTING{'OCR on scan'},
         engine          => $SETTING{'ocr engine'},
@@ -5747,10 +5748,10 @@ sub preferences {
     $notebook->append_page( $vbox1, Gtk3::Label->new( __('Scan options') ) );
 
     my (
-        $vbox2,       $fileentry,   $cbw,          $cbtz,
-        $cbtm,        $cbts,        $tmpentry,     $spinbuttonw,
-        $spinbuttonb, $spinbuttond, $ocr_function, $comboo,
-        $cbv,         $cbb
+        $vbox2,       $fileentry,   $cbw,         $cbtz,
+        $cbtm,        $cbts,        $cbtp,        $tmpentry,
+        $spinbuttonw, $spinbuttonb, $spinbuttond, $ocr_function,
+        $comboo,      $cbv,         $cbb
       )
       = _preferences_general_options(
         $windowr->style_get('content-area-border') );
@@ -5826,6 +5827,7 @@ sub preferences {
             $SETTING{use_timezone}           = $cbtz->get_active;
             $SETTING{use_time}               = $cbtm->get_active;
             $SETTING{set_timestamp}          = $cbts->get_active;
+            $SETTING{to_png}                 = $cbtp->get_active;
             $SETTING{'convert whitespace to underscores'} = $cbb->get_active;
 
             if ( defined $windows ) {
@@ -6129,14 +6131,12 @@ sub _preferences_general_options {
     # Restore window setting
     my $cbw = Gtk3::CheckButton->new_with_label(
         __('Restore window settings on startup') );
-    if ( $SETTING{'restore window'} ) { $cbw->set_active(TRUE) }
+    $cbw->set_active( $SETTING{'restore window'} );
     $vbox->pack_start( $cbw, TRUE, TRUE, 0 );
 
     # View saved files
     my $cbv = Gtk3::CheckButton->new_with_label( __('View files on saving') );
-    if ( defined $SETTING{'view files toggle'} ) {
-        $cbv->set_active( $SETTING{'view files toggle'} );
-    }
+    $cbv->set_active( $SETTING{'view files toggle'} );
     $vbox->pack_start( $cbv, TRUE, TRUE, 0 );
 
     # Default filename
@@ -6162,36 +6162,37 @@ All document date codes use strftime codes with a leading D, e.g.:
 EOS
     );
     $hbox->add($fileentry);
-
-    if ( defined $SETTING{'default filename'} ) {
-        $fileentry->set_text( $SETTING{'default filename'} );
-    }
+    $fileentry->set_text( $SETTING{'default filename'} );
 
     # Replace whitespace in filenames with underscores
     my $cbb = Gtk3::CheckButton->new_with_label(
         __('Replace whitespace in filenames with underscores') );
-    if ( $SETTING{'convert whitespace to underscores'} ) {
-        $cbb->set_active(TRUE);
-    }
+    $cbb->set_active( $SETTING{'convert whitespace to underscores'} );
     $vbox->pack_start( $cbb, TRUE, TRUE, 0 );
 
     # Timezone
     my $cbtz =
       Gtk3::CheckButton->new_with_label( __('Use timezone from locale') );
-    if ( $SETTING{use_timezone} ) { $cbtz->set_active(TRUE) }
+    $cbtz->set_active( $SETTING{use_timezone} );
     $vbox->pack_start( $cbtz, TRUE, TRUE, 0 );
 
     # Time
     my $cbtm =
       Gtk3::CheckButton->new_with_label( __('Specify time as well as date') );
-    if ( $SETTING{use_time} ) { $cbtm->set_active(TRUE) }
+    $cbtm->set_active( $SETTING{use_time} );
     $vbox->pack_start( $cbtm, TRUE, TRUE, 0 );
 
     # Set file timestamp with metadata
     my $cbts = Gtk3::CheckButton->new_with_label(
         __('Set access and modification times to metadata date') );
-    if ( $SETTING{set_timestamp} ) { $cbts->set_active(TRUE) }
+    $cbts->set_active( $SETTING{set_timestamp} );
     $vbox->pack_start( $cbts, TRUE, TRUE, 0 );
+
+    # Convert scans from PNM to PNG
+    my $cbtp = Gtk3::CheckButton->new_with_label(
+        __('Convert scanned images to PNG before further processing') );
+    $cbtp->set_active( $SETTING{to_png} );
+    $vbox->pack_start( $cbtp, TRUE, TRUE, 0 );
 
     # Temporary directory settings
     $hbox = Gtk3::HBox->new;
@@ -6307,7 +6308,7 @@ EOS
                 [ $comboboxudt, $windows->{comboboxudt} ] );
         }
     );
-    return $vbox, $fileentry, $cbw, $cbtz, $cbtm, $cbts, $tmpentry,
+    return $vbox, $fileentry, $cbw, $cbtz, $cbtm, $cbts, $cbtp, $tmpentry,
       $spinbuttonw,
       $spinbuttonb, $spinbuttond, \@ocr_function, $comboo, $cbv, $cbb;
 }

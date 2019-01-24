@@ -39,6 +39,7 @@ SKIP: {
     $slist->import_scan(
         filename          => 'test.pnm',
         page              => 1,
+        to_png            => 1,
         rotate            => 90,
         unpaper           => $unpaper,
         ocr               => 1,
@@ -49,7 +50,7 @@ SKIP: {
         language          => 'eng',
         finished_callback => sub {
             like( $slist->{data}[0][2]{filename},
-                qr/pnm$/, 'no conversion PNM to PNG' );
+                qr/png$/, 'convert PNM to PNG' );
             like( $slist->{data}[0][2]{hocr},
                 qr/The/, 'Tesseract returned "The"' );
             like( $slist->{data}[0][2]{hocr},

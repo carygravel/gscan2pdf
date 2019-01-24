@@ -494,8 +494,9 @@ sub _post_process_scan {
     my ( $self, $page, %options ) = @_;
 
     # tesseract can't extract resolution from pnm, so convert to png
-    if ( defined $page
-        and $page->{format} =~ /Portable[ ](any|pix|gray|bit)map/xsm )
+    if (    defined $page
+        and $page->{format} =~ /Portable[ ](any|pix|gray|bit)map/xsm
+        and $options{to_png} )
     {
         $self->to_png(
             page              => $page->{uuid},

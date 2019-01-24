@@ -305,6 +305,7 @@ sub add_defaults {
         'threshold tool'                    => 80,
         'Blank threshold' => 0.005,    # Blank page standard deviation threshold
         'Dark threshold'  => 0.12,     # Dark page mean threshold
+        to_png            => TRUE,
         'OCR on scan'     => TRUE,
         'ocr engine'   => 'tesseract',
         'ocr language' => undef,

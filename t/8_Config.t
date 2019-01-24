@@ -117,6 +117,7 @@ Gscan2pdf::Config::add_defaults( \%output );
     'image type'                        => undef,
     'unpaper on scan'                   => FALSE,
     'unpaper options'                   => undef,
+    to_png                              => TRUE,
     'OCR on scan'                       => TRUE,
     'frontend'                          => 'libimage-sane-perl',
     'rotate facing'                     => 0,

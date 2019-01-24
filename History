@@ -5,6 +5,7 @@
 * Reduced "bouncing" effect when dragging OCR output
 * Fix update of image viewer/OCR output after deleting a page
 * Support different resolutions in x and y directions.
+* Make post-scan PNG conversion optional
 
 
 2.2.2 (31.12.2018):
