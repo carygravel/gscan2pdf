@@ -6557,6 +6557,10 @@ sub show_message_dialog {
                 title           => __('Messages'),
                 'transient-for' => $options{parent}
             );
+            $message_dialog->set_default_size(
+                $SETTING{message_window_width},
+                $SETTING{message_window_height}
+            );
         }
         if ( $options{text} =~
             /Exception[ ]400:[ ]memory[ ]allocation[ ]failed/xsm )
@@ -6580,6 +6584,8 @@ sub show_message_dialog {
                   {response} = $response;
             }
 
+            ( $SETTING{message_window_width}, $SETTING{message_window_height} )
+              = $message_dialog->get_size;
             $message_dialog->destroy;
             undef $message_dialog;
         }

@@ -248,6 +248,8 @@ sub add_defaults {
         'thumb panel'                       => 100,
         scan_window_width                   => undef,
         scan_window_height                  => undef,
+        message_window_width                => 600,
+        message_window_height               => 200,
         TMPDIR                              => undef,
         'Page range'                        => 'all',
         version                             => undef,
