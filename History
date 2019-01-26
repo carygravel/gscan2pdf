@@ -7,6 +7,7 @@
 * Support different resolutions in x and y directions.
 * Make post-scan PNG conversion optional
 * Remember size of multiple message window
+* Update to German translation (thanks to Stephan Woidowski)
 
 
 2.2.2 (31.12.2018):
