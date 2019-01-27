@@ -1,6 +1,8 @@
 gscan2pdf (2.3.0-1) unstable; urgency=low
 
   * New upstream release
+  * Corrected dates in debian/copyright
+  * Corrected licence of gscan2pdf.appdata.xml in debian/copyright
 
  -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 26 Jan 2019 19:48:49 +0100
 
