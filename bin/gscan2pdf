@@ -3216,6 +3216,31 @@ sub scan_dialog {
                 $scbutton->signal_handler_disconnect($button_signal);
             }
             $shbox->hide;
+            if ( $windows->get('sided') eq 'double' ) {
+                my ( $message, $next );
+                if ( $windows->get('side-to-scan') eq 'facing' ) {
+                    $message =
+                      __('Finished scanning facing pages. Scan reverse pages?');
+                    $next = 'reverse';
+                }
+                else {
+                    $message =
+                      __('Finished scanning reverse pages. Scan facing pages?');
+                    $next = 'facing';
+                }
+                my $response = show_message_dialog(
+                    parent             => $windows,
+                    type               => 'question',
+                    buttons            => 'ok-cancel',
+                    text               => $message,
+                    'default-response' => 'ok',
+                    'store-response'   => TRUE,
+                    'stored-responses' => ['ok']
+                );
+                if ( $response eq 'ok' ) {
+                    $windows->set( 'side-to-scan', $next );
+                }
+            }
         }
     );
 
@@ -6531,6 +6556,9 @@ sub show_message_dialog {
             $cb = Gtk3::CheckButton->new_with_label(
                 __("Don't show this message again") );
             $dialog->get_message_area->add($cb);
+        }
+        if ( defined $options{'default-response'} ) {
+            $dialog->set_default_response( $options{'default-response'} );
         }
         $dialog->show_all;
         $response = $dialog->run;

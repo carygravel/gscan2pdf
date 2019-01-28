@@ -1,4 +1,10 @@
-2.3.0 (31.01.2019):
+2.3.1 (26.02.2019):
+
+* Offer to switch from Facing to Reverse after scanning double-sided pages.
+  Closes feature request #100
+
+
+2.3.0 (26.01.2019):
 
 * Optionally also include time information in metadata of PDF or DjVU.
   Closes feature request #102 (always sets the time to 0 UTC) (again)
