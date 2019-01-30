@@ -144,7 +144,7 @@ sub add_frontend_option {
 
 # an iterator for frontend options
 # option name returned by iterator
-# my $iter = $self->each_backend_option;
+# my $iter = $self->each_frontend_option;
 # while (my $name = $iter->()) {}
 
 sub each_frontend_option {
