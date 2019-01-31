@@ -541,6 +541,11 @@ sub INIT_INSTANCE {
     $vbutton->signal_connect( clicked => \&_save_profile_callback, $self );
     $hboxsp->pack_start( $vbutton, TRUE, TRUE, 0 );
 
+    # Edit button
+    my $ebutton = Gtk3::Button->new_from_stock('gtk-edit');
+    $ebutton->signal_connect( clicked => \&_edit_profile_callback, $self );
+    $hboxsp->pack_start( $ebutton, FALSE, FALSE, 0 );
+
     # Delete button
     my $dbutton = Gtk3::Button->new_from_stock('gtk-delete');
     $dbutton->signal_connect(
@@ -670,6 +675,84 @@ sub _save_profile_callback {
         }
     }
     $dialog->destroy;
+    return;
+}
+
+# Clone current profile, display list of options, allowing user to delete those
+# not required, and then to cancel or accept the changes.
+
+sub _edit_profile_callback {
+    my ( $widget, $parent ) = @_;
+    my $name = $parent->get('profile');
+    if ( not defined $name or $name eq $EMPTY ) { return }
+    my $dialog = Gtk3::Dialog->new(
+        sprintf( __('Editing scan profile "%s"'), $name ), $parent,
+        'destroy-with-parent',
+        'gtk-ok'     => 'ok',
+        'gtk-cancel' => 'cancel'
+    );
+    my $label = Gtk3::Label->new( sprintf __('Scan profile "%s"'), $name );
+    $dialog->get_content_area->pack_start( $label, TRUE, TRUE, 0 );
+
+    # Clone so that we can cancel the changes, if necessary
+    my $profile = dclone( $parent->{profiles}{$name} );
+    _build_profile_table( $profile, $parent->get('available-scan-options'),
+        $dialog->get_content_area );
+    $dialog->set_default_response('ok');
+    $dialog->show_all;
+
+    # save the profile and reload
+    if ( $dialog->run eq 'ok' ) {
+        $parent->{profiles}{$name} = $profile;
+
+        # unset profile to allow us to set it again on reload
+        $parent->{profile} = undef;
+
+        # emit signal to update settings
+        $parent->signal_emit( 'added-profile', $name,
+            $parent->{profiles}{$name} );
+        my $signal;
+        $signal = $parent->signal_connect(
+            'reloaded-scan-options' => sub {
+                $parent->signal_handler_disconnect($signal);
+                $parent->set_profile($name);
+            }
+        );
+        $parent->scan_options( $parent->get('device') );
+    }
+    $dialog->destroy;
+    return;
+}
+
+sub _build_profile_table {
+    my ( $profile, $options, $vbox ) = @_;
+
+    # listbox to align widgets
+    my $listbox = Gtk3::ListBox->new;
+    $listbox->set_selection_mode('none');
+    $vbox->pack_start( $listbox, TRUE, TRUE, 0 );
+    my $iter = $profile->each_backend_option;
+    while ( my $i = $iter->() ) {
+        my ( $name, $val ) = $profile->get_backend_option_by_index($i);
+        my $opt   = $options->by_name($name);
+        my $row   = Gtk3::ListBoxRow->new;
+        my $hbox  = Gtk3::HBox->new;
+        my $label = Gtk3::Label->new( $d_sane->get( $opt->{title} ) );
+        $hbox->pack_start( $label, FALSE, TRUE, 0 );
+        my $button = Gtk3::Button->new_from_stock('gtk-delete');
+        $hbox->pack_end( $button, FALSE, FALSE, 0 );
+        $button->signal_connect(
+            clicked => sub {
+                $logger->debug("removing option '$name' from profile");
+                $profile->remove_backend_option_by_index($i);
+                $listbox->destroy;
+                _build_profile_table( $profile, $options, $vbox );
+            }
+        );
+        $row->add($hbox);
+        $listbox->add($row);
+    }
+    $vbox->show_all;
     return;
 }
 
