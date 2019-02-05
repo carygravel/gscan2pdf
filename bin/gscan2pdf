@@ -121,6 +121,8 @@ Readonly my $_270_DEGREES            => 270;
 Readonly my $DRAGGER_TOOL            => 10;
 Readonly my $SELECTOR_TOOL           => 20;
 Readonly my $PAINTER_TOOL            => 30;
+Readonly my $TABBED_VIEW             => 100;
+Readonly my $SPLIT_VIEW              => 101;
 Readonly my $EMPTY_LIST              => -1;
 Readonly my $_100_PERCENT            => 100;
 Readonly my $MAX_DPI                 => 2400;
@@ -260,6 +262,9 @@ my (
     # Goo::Canvas for OCR output
     $canvas,
 
+    # Notebook, split panes for detail view and OCR output
+    $vnotebook, $hpanei,
+
     # Spinbuttons for selector on crop dialog
     $sb_selector_x, $sb_selector_y, $sb_selector_w, $sb_selector_h,
 
@@ -332,8 +337,10 @@ sub populate_main_window {
 
     $scwin_thumbs->add($slist);
 
-    # Notebook for detail view and OCR output
-    my $vnotebook = Gtk3::Notebook->new;
+    # Notebook, split panes for detail view and OCR output
+    $vnotebook = Gtk3::Notebook->new;
+    $hpanei    = Gtk3::HPaned->new;
+    $hpanei->show;
     $hpaned->pack2( $vnotebook, TRUE, TRUE );
 
     # ImageView for detail view
@@ -1038,6 +1045,17 @@ sub create_menu_bar {
         ],
     );
 
+    my @viewer_tools = (
+        [
+            'Tabbed', undef, __('_Tabbed'), undef,
+            __('Arrange image and OCR viewers in tabs'), $TABBED_VIEW
+        ],
+        [
+            'Split', undef, __('_Split'), undef,
+            __('Arrange image and OCR viewers in split screen'), $SPLIT_VIEW
+        ],
+    );
+
     my $ui = <<'EOS';
 <ui>
  <menubar name='MenuBar'>
@@ -1080,8 +1098,11 @@ sub create_menu_bar {
    <menuitem action='Preferences'/>
   </menu>
   <menu action='View'>
-   <menuitem action = 'DraggerTool'/>
-   <menuitem action = 'SelectorTool'/>
+   <menuitem action='DraggerTool'/>
+   <menuitem action='SelectorTool'/>
+   <separator/>
+   <menuitem action='Tabbed'/>
+   <menuitem action='Split'/>
    <separator/>
    <menuitem action='Zoom 100'/>
    <menuitem action='Zoom to fit'/>
@@ -1128,8 +1149,8 @@ sub create_menu_bar {
   <toolitem action='Renumber'/>
   <toolitem action='Select All'/>
   <separator/>
-  <toolitem action = 'DraggerTool'/>
-  <toolitem action = 'SelectorTool'/>
+  <toolitem action='DraggerTool'/>
+  <toolitem action='SelectorTool'/>
   <separator/>
   <toolitem action='Zoom 100'/>
   <toolitem action='Zoom to fit'/>
@@ -1144,8 +1165,8 @@ sub create_menu_bar {
   <toolitem action='Quit'/>
  </toolbar>
  <popup name='Detail_Popup'>
-  <menuitem action = 'DraggerTool'/>
-  <menuitem action = 'SelectorTool'/>
+  <menuitem action='DraggerTool'/>
+  <menuitem action='SelectorTool'/>
   <separator/>
   <menuitem action='Zoom 100'/>
   <menuitem action='Zoom to fit'/>
@@ -1195,6 +1216,8 @@ EOS
     $actions_basic->add_actions( \@action_items, undef );
     $actions_basic->add_radio_actions( \@image_tools, $DRAGGER_TOOL,
         \&change_image_tool_cb );
+    $actions_basic->add_radio_actions( \@viewer_tools, $TABBED_VIEW,
+        \&change_view_cb );
 
     # Add the actiongroup to the uimanager
     $uimanager->insert_action_group( $actions_basic, 0 );
@@ -1305,6 +1328,8 @@ sub update_uimanager {
     my @widgets = (
         '/MenuBar/View/DraggerTool',
         '/MenuBar/View/SelectorTool',
+        '/MenuBar/View/Tabbed',
+        '/MenuBar/View/Split',
         '/MenuBar/View/Zoom 100',
         '/MenuBar/View/Zoom to fit',
         '/MenuBar/View/Zoom in',
@@ -4901,6 +4926,31 @@ sub change_image_tool_cb {
         $view->signal_handler_block( $view->{selection_changed_signal} );
         $view->set_selection( $SETTING{selection} );
         $view->signal_handler_unblock( $view->{selection_changed_signal} );
+    }
+    return;
+}
+
+# Callback to switch between tabbed and split views
+
+sub change_view_cb {
+    my ( $action, $current ) = @_;
+    my $value = $current->get_current_value();
+    if ( $value == $TABBED_VIEW ) {
+        $hpaned->remove($hpanei);
+        $hpanei->remove($view);
+        $hpanei->remove($canvas);
+        $vnotebook->append_page( $view, Gtk3::Label->new( __('Image') ) );
+        $vnotebook->append_page( $canvas,
+            Gtk3::Label->new( __('OCR Output') ) );
+        $hpaned->pack2( $vnotebook, TRUE, TRUE );
+    }
+    else {    # $SPLIT_VIEW
+        $hpaned->remove($vnotebook);
+        $vnotebook->remove($view);
+        $vnotebook->remove($canvas);
+        $hpanei->pack1( $view, TRUE, TRUE );
+        $hpanei->pack2( $canvas, TRUE, TRUE );
+        $hpaned->pack2( $hpanei, TRUE, TRUE );
     }
     return;
 }
