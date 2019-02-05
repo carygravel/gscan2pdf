@@ -72,7 +72,7 @@ use Glib::Object::Subclass Gtk3::DrawingArea::, signals => {
         'zoom',                             # name
         'zoom',                             # nick
         'zoom level',                       # blurb
-        0.001,                              # minimum
+        0.0001,                             # minimum
         1000.0,                             # maximum
         1.0,                                # default_value
         [qw/readable writable/]             # flags
