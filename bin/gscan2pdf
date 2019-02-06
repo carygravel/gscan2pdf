@@ -6508,7 +6508,7 @@ sub properties {
 
     my $hbox = Gtk3::HBox->new;
     $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
-    my $label = Gtk3::Label->new( $d_sane->get('X-Resolution') );
+    my $label = Gtk3::Label->new( $d_sane->get('X Resolution') );
     $hbox->pack_start( $label, FALSE, FALSE, 0 );
     my $xspinbutton = Gtk3::SpinButton->new_with_range( 0, $MAX_DPI, 1 );
     $xspinbutton->set_digits(1);
@@ -6518,7 +6518,7 @@ sub properties {
 
     $hbox = Gtk3::HBox->new;
     $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
-    $label = Gtk3::Label->new( $d_sane->get('Y-Resolution') );
+    $label = Gtk3::Label->new( $d_sane->get('Y Resolution') );
     $hbox->pack_start( $label, FALSE, FALSE, 0 );
     my $yspinbutton = Gtk3::SpinButton->new_with_range( 0, $MAX_DPI, 1 );
     $yspinbutton->set_digits(1);
