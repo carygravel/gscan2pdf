@@ -234,11 +234,22 @@ sub _button_pressed {
     my ( $self, $event ) = @_;
 
     # left mouse button
-    if ( $event->button != 1 ) { return FALSE }
+    if ( $event->button == 1 ) {
+        $self->set_tool('selector');
+    }
+    elsif ( $event->button == 2 ) {    # middle mouse button
+        $self->set_tool('dragger');
+    }
+    else {
+        return FALSE;
+    }
 
     $self->{drag_start} = { x => $event->x, y => $event->y };
     $self->{dragging} = TRUE;
     $self->update_cursor( $event->x, $event->y );
+    if ( $self->get_tool eq 'selector' ) {
+        $self->_update_selection($event);
+    }
     return TRUE;
 }
 
@@ -246,6 +257,9 @@ sub _button_released {
     my ( $self, $event ) = @_;
     $self->{dragging} = FALSE;
     $self->update_cursor( $event->x, $event->y );
+    if ( $self->get_tool eq 'selector' ) {
+        $self->_update_selection($event);
+    }
     return;
 }
 
@@ -266,60 +280,67 @@ sub _motion {
         $self->set_offset( $offset_x, $offset_y );
     }
     elsif ( $self->get_tool eq 'selector' ) {
-        my ( $x, $y, $x2, $y2, $x_old, $y_old, $x2_old, $y2_old );
-        if ( $self->{h_edge} eq 'left' ) {
-            $x = $event->x;
-        }
-        elsif ( $self->{h_edge} eq 'right' ) {
-            $x2 = $event->x;
-        }
-        if ( $self->{v_edge} eq 'top' ) {
-            $y = $event->y;
-        }
-        elsif ( $self->{v_edge} eq 'bottom' ) {
-            $y2 = $event->y;
-        }
-        if ( $self->{h_edge} eq 'mid' and $self->{v_edge} eq 'mid' ) {
-            $x  = $self->{drag_start}{x};
-            $x2 = $event->x;
-            $y  = $self->{drag_start}{y};
-            $y2 = $event->y;
-        }
-        else {
-            my $selection = $self->get_selection;
-            if ( not defined $x or not defined $y ) {
-                ( $x_old, $y_old ) =
-                  $self->_to_widget_coords( $selection->{x}, $selection->{y} );
-            }
-            if ( not defined $x2 or not defined $y2 ) {
-                ( $x2_old, $y2_old ) = $self->_to_widget_coords(
-                    $selection->{x} + $selection->{width},
-                    $selection->{y} + $selection->{height}
-                );
-            }
-            if ( not defined $x ) {
-                $x = $x_old;
-            }
-            if ( not defined $x2 ) {
-                $x2 = $x2_old;
-            }
-            if ( not defined $y ) {
-                $y = $y_old;
-            }
-            if ( not defined $y2 ) {
-                $y2 = $y2_old;
-            }
-        }
-        my ( $w, $h ) = $self->_to_image_distance( abs $x2 - $x, abs $y2 - $y );
-        ( $x, $y ) = $self->_to_image_coords( min( $x, $x2 ), min( $y, $y2 ) );
-        $self->set_selection( { x => $x, y => $y, width => $w, height => $h } );
+        $self->_update_selection($event);
     }
+    return;
+}
+
+sub _update_selection {
+    my ( $self, $event ) = @_;
+    my ( $x, $y, $x2, $y2, $x_old, $y_old, $x2_old, $y2_old );
+    if ( not defined $self->{h_edge} ) { $self->{h_edge} = 'mid' }
+    if ( not defined $self->{v_edge} ) { $self->{v_edge} = 'mid' }
+    if ( $self->{h_edge} eq 'left' ) {
+        $x = $event->x;
+    }
+    elsif ( $self->{h_edge} eq 'right' ) {
+        $x2 = $event->x;
+    }
+    if ( $self->{v_edge} eq 'top' ) {
+        $y = $event->y;
+    }
+    elsif ( $self->{v_edge} eq 'bottom' ) {
+        $y2 = $event->y;
+    }
+    if ( $self->{h_edge} eq 'mid' and $self->{v_edge} eq 'mid' ) {
+        $x  = $self->{drag_start}{x};
+        $y  = $self->{drag_start}{y};
+        $x2 = $event->x;
+        $y2 = $event->y;
+    }
+    else {
+        my $selection = $self->get_selection;
+        if ( not defined $x or not defined $y ) {
+            ( $x_old, $y_old ) =
+              $self->_to_widget_coords( $selection->{x}, $selection->{y} );
+        }
+        if ( not defined $x2 or not defined $y2 ) {
+            ( $x2_old, $y2_old ) = $self->_to_widget_coords(
+                $selection->{x} + $selection->{width},
+                $selection->{y} + $selection->{height}
+            );
+        }
+        if ( not defined $x ) {
+            $x = $x_old;
+        }
+        if ( not defined $x2 ) {
+            $x2 = $x2_old;
+        }
+        if ( not defined $y ) {
+            $y = $y_old;
+        }
+        if ( not defined $y2 ) {
+            $y2 = $y2_old;
+        }
+    }
+    my ( $w, $h ) = $self->_to_image_distance( abs $x2 - $x, abs $y2 - $y );
+    ( $x, $y ) = $self->_to_image_coords( min( $x, $x2 ), min( $y, $y2 ) );
+    $self->set_selection( { x => $x, y => $y, width => $w, height => $h } );
     return;
 }
 
 sub _scroll {
     my ( $self, $event ) = @_;
-    if ( $self->get_tool ne 'dragger' ) { return }
     my ( $center_x, $center_y ) =
       $self->_to_image_coords( $event->x, $event->y );
     my $zoom;
@@ -360,21 +381,19 @@ sub _draw {
     }
     $context->paint;
 
-    if ( defined $pixbuf and $self->get_tool eq 'selector' ) {
-        my $selection = $self->get_selection;
-        if ( defined $selection ) {
-            my ( $x, $y, $w, $h, ) = (
-                $selection->{x},     $selection->{y},
-                $selection->{width}, $selection->{height},
-            );
-            if ( $w <= 0 or $h <= 0 ) { return TRUE }
+    my $selection = $self->get_selection;
+    if ( defined $pixbuf and defined $selection ) {
+        my ( $x, $y, $w, $h, ) = (
+            $selection->{x},     $selection->{y},
+            $selection->{width}, $selection->{height},
+        );
+        if ( $w <= 0 or $h <= 0 ) { return TRUE }
 
-            $style->save;
-            $style->add_class(Gtk3::STYLE_CLASS_RUBBERBAND);
-            Gtk3::render_background( $style, $context, $x, $y, $w, $h );
-            Gtk3::render_frame( $style, $context, $x, $y, $w, $h );
-            $style->restore;
-        }
+        $style->save;
+        $style->add_class(Gtk3::STYLE_CLASS_RUBBERBAND);
+        Gtk3::render_background( $style, $context, $x, $y, $w, $h );
+        Gtk3::render_frame( $style, $context, $x, $y, $w, $h );
+        $style->restore;
     }
     return TRUE;
 }
@@ -627,26 +646,37 @@ sub update_cursor {
         }
     }
     elsif ( $tool eq 'selector' ) {
+
+        # If we are dragging, don't change the cursor, as we want to continue
+        # to drag the corner or edge or mid element we started dragging.
         if ( $self->{dragging} ) { return }
-        my $selection = $self->get_selection;
-        my ( $sx1, $sy1 ) =
-          $self->_to_widget_coords( $selection->{x}, $selection->{y} );
-        my ( $sx2, $sy2 ) = $self->_to_widget_coords(
-            $selection->{x} + $selection->{width},
-            $selection->{y} + $selection->{height}
-        );
         ( $self->{h_edge}, $self->{v_edge} ) = qw( mid mid );
-        if ( _between( $x, $sx1 - $CURSOR_PIXELS, $sx1 + $CURSOR_PIXELS ) ) {
-            $self->{h_edge} = 'left';
-        }
-        elsif ( _between( $x, $sx2 - $CURSOR_PIXELS, $sx2 + $CURSOR_PIXELS ) ) {
-            $self->{h_edge} = 'right';
-        }
-        if ( _between( $y, $sy1 - $CURSOR_PIXELS, $sy1 + $CURSOR_PIXELS ) ) {
-            $self->{v_edge} = 'top';
-        }
-        elsif ( _between( $y, $sy2 - $CURSOR_PIXELS, $sy2 + $CURSOR_PIXELS ) ) {
-            $self->{v_edge} = 'bottom';
+        my $selection = $self->get_selection;
+        if ( defined $selection ) {
+            my ( $sx1, $sy1 ) =
+              $self->_to_widget_coords( $selection->{x}, $selection->{y} );
+            my ( $sx2, $sy2 ) = $self->_to_widget_coords(
+                $selection->{x} + $selection->{width},
+                $selection->{y} + $selection->{height}
+            );
+            if ( _between( $x, $sx1 - $CURSOR_PIXELS, $sx1 + $CURSOR_PIXELS ) )
+            {
+                $self->{h_edge} = 'left';
+            }
+            elsif (
+                _between( $x, $sx2 - $CURSOR_PIXELS, $sx2 + $CURSOR_PIXELS ) )
+            {
+                $self->{h_edge} = 'right';
+            }
+            if ( _between( $y, $sy1 - $CURSOR_PIXELS, $sy1 + $CURSOR_PIXELS ) )
+            {
+                $self->{v_edge} = 'top';
+            }
+            elsif (
+                _between( $y, $sy2 - $CURSOR_PIXELS, $sy2 + $CURSOR_PIXELS ) )
+            {
+                $self->{v_edge} = 'bottom';
+            }
         }
         $cursor = Gtk3::Gdk::Cursor->new(
             $cursorhash{ $self->{h_edge} }{ $self->{v_edge} } );

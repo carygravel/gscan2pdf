@@ -271,9 +271,15 @@ sub _boxed_text {
 
         # clicking text box produces a dialog to edit the text
         if ($edit_callback) {
-            $text->signal_connect( 'button-press-event' =>
-                  sub { $root->get_parent->{dragging} = FALSE } );
-            $text->signal_connect( 'button-press-event' => $edit_callback );
+            $text->signal_connect(
+                'button-press-event' => sub {
+                    my ( $widget, $target, $event ) = @_;
+                    if ( $event->button == 1 ) {
+                        $root->get_parent->{dragging} = FALSE;
+                        $edit_callback->( $widget, $target, $event );
+                    }
+                }
+            );
         }
     }
     if ( $box->{contents} ) {
@@ -500,17 +506,18 @@ sub _clamp_direction {
 sub _button_pressed {
     my ( $self, $event ) = @_;
 
-    # left mouse button
-    if ( $event->button != 1 ) { return FALSE }
+    # middle mouse button
+    if ( $event->button == 2 ) {
 
-    # Using the root window x,y position for dragging the canvas, as the
-    # values returned by $event->x and y cause a bouncing effect, and
-    # only the value since the last event is required.
-    my ( $screen, $x, $y ) = $device->get_position;
-    $self->{drag_start} = { x => $x, y => $y };
-    $self->{dragging} = TRUE;
+        # Using the root window x,y position for dragging the canvas, as the
+        # values returned by $event->x and y cause a bouncing effect, and
+        # only the value since the last event is required.
+        my ( $screen, $x, $y ) = $device->get_position;
+        $self->{drag_start} = { x => $x, y => $y };
+        $self->{dragging} = TRUE;
 
-    #    $self->update_cursor( $event->x, $event->y );
+        #    $self->update_cursor( $event->x, $event->y );
+    }
 
     # allow the event to propagate in case the user was clicking on text to edit
     return;
@@ -518,7 +525,7 @@ sub _button_pressed {
 
 sub _button_released {
     my ( $self, $event ) = @_;
-    $self->{dragging} = FALSE;
+    if ( $event->button == 2 ) { $self->{dragging} = FALSE }
 
     #    $self->update_cursor( $event->x, $event->y );
     return;

@@ -4,6 +4,7 @@
   Closes feature request #100
 * + Edit profile functionality to scan dialog.
 * + Split screen view for image and OCR output.
+* Switched to GIMP-like controls - LMB for selecting and MMB for panning.
 
 
 2.3.0 (26.01.2019):
