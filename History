@@ -6,6 +6,7 @@
 * + Split screen view for image and OCR output.
   Closes feature request #57 (Ability to view OCR output and Image at same time)
 * Switched to GIMP-like controls - LMB for selecting and MMB for panning.
+* + crop to toolbar and RMB menus
 
 
 2.3.0 (26.01.2019):

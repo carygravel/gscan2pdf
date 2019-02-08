@@ -1000,8 +1000,14 @@ sub create_menu_bar {
             __('Apply an unsharp mask'), \&unsharp
         ],
         [
-            'Crop', 'GTK_STOCK_LEAVE_FULLSCREEN', __('_Crop'), undef,
-            __('Crop pages'), \&crop
+            'CropDialog',     'GTK_STOCK_LEAVE_FULLSCREEN',
+            __('_Crop'),      undef,
+            __('Crop pages'), \&crop_dialog
+        ],
+        [
+            'CropSelection',      'selection',
+            __('_Crop'),          undef,
+            __('Crop selection'), \&crop_selection
         ],
         [
             'unpaper', undef, __('_Clean up'), undef,
@@ -1025,24 +1031,6 @@ sub create_menu_bar {
             __('Help'), \&view_html
         ],
         [ 'About', 'gtk-about', __('_About'), undef, __('_About'), \&about ],
-    );
-
-    my @image_tools = (
-        [
-            'DraggerTool',           'hand-tool',
-            __('_Drag'),             undef,
-            __('Use the hand tool'), $DRAGGER_TOOL
-        ],
-        [
-            'SelectorTool',                           'selection',
-            __('_Select'),                            undef,
-            __('Use the rectangular selection tool'), $SELECTOR_TOOL
-        ],
-        [
-            'PainterTool',              'gtk-media-play',
-            __('_Paint'),               undef,
-            __('Use the painter tool'), $PAINTER_TOOL
-        ],
     );
 
     my @viewer_tools = (
@@ -1098,9 +1086,6 @@ sub create_menu_bar {
    <menuitem action='Preferences'/>
   </menu>
   <menu action='View'>
-   <menuitem action='DraggerTool'/>
-   <menuitem action='SelectorTool'/>
-   <separator/>
    <menuitem action='Tabbed'/>
    <menuitem action='Split'/>
    <separator/>
@@ -1118,7 +1103,7 @@ sub create_menu_bar {
    <menuitem action='BrightnessContrast'/>
    <menuitem action='Negate'/>
    <menuitem action='Unsharp'/>
-   <menuitem action='Crop'/>
+   <menuitem action='CropDialog'/>
    <separator/>
    <menuitem action='unpaper'/>
    <menuitem action='OCR'/>
@@ -1149,9 +1134,6 @@ sub create_menu_bar {
   <toolitem action='Renumber'/>
   <toolitem action='Select All'/>
   <separator/>
-  <toolitem action='DraggerTool'/>
-  <toolitem action='SelectorTool'/>
-  <separator/>
   <toolitem action='Zoom 100'/>
   <toolitem action='Zoom to fit'/>
   <toolitem action='Zoom in'/>
@@ -1161,13 +1143,12 @@ sub create_menu_bar {
   <toolitem action='Rotate 180'/>
   <toolitem action='Rotate 270'/>
   <separator/>
+  <toolitem action='CropSelection'/>
+  <separator/>
   <toolitem action='Help'/>
   <toolitem action='Quit'/>
  </toolbar>
  <popup name='Detail_Popup'>
-  <menuitem action='DraggerTool'/>
-  <menuitem action='SelectorTool'/>
-  <separator/>
   <menuitem action='Zoom 100'/>
   <menuitem action='Zoom to fit'/>
   <menuitem action='Zoom in'/>
@@ -1176,6 +1157,8 @@ sub create_menu_bar {
   <menuitem action='Rotate 90'/>
   <menuitem action='Rotate 180'/>
   <menuitem action='Rotate 270'/>
+  <separator/>
+  <menuitem action='CropSelection'/>
   <separator/>
   <menuitem action='Cut'/>
   <menuitem action='Copy'/>
@@ -1198,6 +1181,8 @@ sub create_menu_bar {
   <menuitem action='Rotate 180'/>
   <menuitem action='Rotate 270'/>
   <separator/>
+  <menuitem action='CropSelection'/>
+  <separator/>
   <menuitem action='Cut'/>
   <menuitem action='Copy'/>
   <menuitem action='Paste'/>
@@ -1214,8 +1199,6 @@ EOS
     # and fill it with Gtk3::Action instances
     my $actions_basic = Gtk3::ActionGroup->new('actions_basic');
     $actions_basic->add_actions( \@action_items, undef );
-    $actions_basic->add_radio_actions( \@image_tools, $DRAGGER_TOOL,
-        \&change_image_tool_cb );
     $actions_basic->add_radio_actions( \@viewer_tools, $TABBED_VIEW,
         \&change_view_cb );
 
@@ -1274,7 +1257,7 @@ EOS
       ->set_sensitive(FALSE);
     $uimanager->get_widget('/MenuBar/Tools/Negate')->set_sensitive(FALSE);
     $uimanager->get_widget('/MenuBar/Tools/Unsharp')->set_sensitive(FALSE);
-    $uimanager->get_widget('/MenuBar/Tools/Crop')->set_sensitive(FALSE);
+    $uimanager->get_widget('/MenuBar/Tools/CropDialog')->set_sensitive(FALSE);
     $uimanager->get_widget('/MenuBar/Tools/User-defined')->set_sensitive(FALSE);
 
     # Ghost rotations and unpaper if perlmagick not available
@@ -1326,8 +1309,6 @@ EOS
 
 sub update_uimanager {
     my @widgets = (
-        '/MenuBar/View/DraggerTool',
-        '/MenuBar/View/SelectorTool',
         '/MenuBar/View/Tabbed',
         '/MenuBar/View/Split',
         '/MenuBar/View/Zoom 100',
@@ -1341,13 +1322,11 @@ sub update_uimanager {
         '/MenuBar/Tools/BrightnessContrast',
         '/MenuBar/Tools/Negate',
         '/MenuBar/Tools/Unsharp',
-        '/MenuBar/Tools/Crop',
+        '/MenuBar/Tools/CropDialog',
         '/MenuBar/Tools/unpaper',
         '/MenuBar/Tools/OCR',
         '/MenuBar/Tools/User-defined',
 
-        '/ToolBar/DraggerTool',
-        '/ToolBar/SelectorTool',
         '/ToolBar/Zoom 100',
         '/ToolBar/Zoom to fit',
         '/ToolBar/Zoom in',
@@ -1355,9 +1334,8 @@ sub update_uimanager {
         '/ToolBar/Rotate 90',
         '/ToolBar/Rotate 180',
         '/ToolBar/Rotate 270',
+        '/ToolBar/CropSelection',
 
-        '/Detail_Popup/DraggerTool',
-        '/Detail_Popup/SelectorTool',
         '/Detail_Popup/Zoom 100',
         '/Detail_Popup/Zoom to fit',
         '/Detail_Popup/Zoom in',
@@ -1365,10 +1343,12 @@ sub update_uimanager {
         '/Detail_Popup/Rotate 90',
         '/Detail_Popup/Rotate 180',
         '/Detail_Popup/Rotate 270',
+        '/Detail_Popup/CropSelection',
 
         '/Thumb_Popup/Rotate 90',
         '/Thumb_Popup/Rotate 180',
         '/Thumb_Popup/Rotate 270',
+        '/Thumb_Popup/CropSelection',
     );
 
     if ( $slist->get_selected_indices ) {
@@ -4908,28 +4888,6 @@ sub unsharp {
     return;
 }
 
-# Callback for tool-changed signal Gscan2pdf::ImageView
-
-sub change_image_tool_cb {
-    my ( $action, $current ) = @_;
-    my $value = $current->get_current_value();
-
-    my $tool = 'selector';
-    if ( $value == $DRAGGER_TOOL ) {
-        $tool = 'dragger';
-    }
-    elsif ( $value == $PAINTER_TOOL ) {
-        $tool = 'painter';
-    }
-    $view->set_tool($tool);
-    if ( $value == $SELECTOR_TOOL and defined $SETTING{selection} ) {
-        $view->signal_handler_block( $view->{selection_changed_signal} );
-        $view->set_selection( $SETTING{selection} );
-        $view->signal_handler_unblock( $view->{selection_changed_signal} );
-    }
-    return;
-}
-
 # Callback to switch between tabbed and split views
 
 sub change_view_cb {
@@ -4957,8 +4915,8 @@ sub change_view_cb {
 
 # Display page selector and on apply crop accordingly
 
-sub crop {
-
+sub crop_dialog {
+    my ($action) = @_;
     if ( defined $windowc ) {
         $windowc->present;
         return;
@@ -5066,51 +5024,13 @@ sub crop {
     $windowc->add_actions(
         'gtk-apply',
         sub {
-
-            if ( not %{ $SETTING{selection} } ) { return }
-
-            # Update undo/redo buffers
-            take_snapshot();
-
             $SETTING{'Page range'} = $windowc->get('page-range');
-            my @pagelist =
-              $slist->get_page_index( $SETTING{'Page range'},
-                \&error_callback );
-            if ( not @pagelist ) { return }
-            for my $i (@pagelist) {
-                my ( $signal, $pid );
-                $pid = $slist->crop(
-                    page            => $slist->{data}[$i][2]->{uuid},
-                    x               => $SETTING{selection}{x},
-                    y               => $SETTING{selection}{y},
-                    w               => $SETTING{selection}{width},
-                    h               => $SETTING{selection}{height},
-                    queued_callback => sub {
-                        return update_tpbar(@_);
-                    },
-                    started_callback => sub {
-                        my ( $thread, $process, $completed, $total ) = @_;
-                        $signal =
-                          setup_tpbar( $thread, $process, $completed, $total,
-                            $pid );
-                        return TRUE if ( defined $signal );
-                    },
-                    finished_callback => sub {
-                        my ( $new_page, $pending ) = @_;
-                        if ( not $pending ) { $thbox->hide }
-                        if ( defined $signal ) {
-                            $tcbutton->signal_handler_disconnect($signal);
-                        }
-                        $slist->save_session;
-                    },
-                    error_callback   => \&error_callback,
-                    display_callback => sub {
-                        my ($new_page) = @_;
-                        display_image($new_page);
-                    },
-                );
-            }
-
+            crop_selection(
+                $action,
+                $slist->get_page_index(
+                    $SETTING{'Page range'}, \&error_callback
+                )
+            );
         },
         'gtk-cancel',
         sub { $windowc->hide }
@@ -5126,6 +5046,52 @@ sub update_selector {
         $view->set_selection( $SETTING{selection} );
     }
     $view->signal_handler_unblock( $view->{selection_changed_signal} );
+    return;
+}
+
+sub crop_selection {
+    my ( $action, @pagelist ) = @_;
+    if ( not %{ $SETTING{selection} } ) { return }
+
+    # Update undo/redo buffers
+    take_snapshot();
+
+    if ( not @pagelist ) {
+        @pagelist = $slist->get_selected_indices;
+    }
+    if ( not @pagelist ) { return }
+    for my $i (@pagelist) {
+        my ( $signal, $pid );
+        $pid = $slist->crop(
+            page            => $slist->{data}[$i][2]->{uuid},
+            x               => $SETTING{selection}{x},
+            y               => $SETTING{selection}{y},
+            w               => $SETTING{selection}{width},
+            h               => $SETTING{selection}{height},
+            queued_callback => sub {
+                return update_tpbar(@_);
+            },
+            started_callback => sub {
+                my ( $thread, $process, $completed, $total ) = @_;
+                $signal =
+                  setup_tpbar( $thread, $process, $completed, $total, $pid );
+                return TRUE if ( defined $signal );
+            },
+            finished_callback => sub {
+                my ( $new_page, $pending ) = @_;
+                if ( not $pending ) { $thbox->hide }
+                if ( defined $signal ) {
+                    $tcbutton->signal_handler_disconnect($signal);
+                }
+                $slist->save_session;
+            },
+            error_callback   => \&error_callback,
+            display_callback => sub {
+                my ($new_page) = @_;
+                display_image($new_page);
+            },
+        );
+    }
     return;
 }
 
