@@ -4,6 +4,7 @@
   Closes feature request #100
 * + Edit profile functionality to scan dialog.
 * + Split screen view for image and OCR output.
+  Closes feature request #57 (Ability to view OCR output and Image at same time)
 * Switched to GIMP-like controls - LMB for selecting and MMB for panning.
 
 
