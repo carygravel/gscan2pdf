@@ -248,6 +248,7 @@ t/132_cancel_save_tiff.t
 t/133_save_tiff_with_error.t
 t/134_save_tiff_alpha.t
 t/135_save_tiff_as_ps_with_space.t
+t/136_save_tiff_g4.t
 t/141_save_image.t
 t/142_save_image_with_quote.t
 t/143_save_image_with_ampersand.t

@@ -2191,6 +2191,7 @@ sub save_dialog {
         downsample                  => $SETTING{downsample},
         'pdf-compression'           => $SETTING{'pdf compression'},
         'pdf-font'                  => $SETTING{'pdf font'},
+        'tiff-compression'          => $SETTING{'tiff compression'},
     );
 
     # Frame for page range

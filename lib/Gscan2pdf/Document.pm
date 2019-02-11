@@ -3847,16 +3847,19 @@ sub _thread_save_tiff {
 
             # Convert to tiff
             my @depth;
-            if ( defined( $options{options}->{compression} )
-                and $options{options}->{compression} eq 'jpeg' )
-            {
-                @depth = qw(-depth 8);
+            if ( defined $options{options}->{compression} ) {
+                if ( $options{options}->{compression} eq 'jpeg' ) {
+                    @depth = qw(-depth 8);
+                }
+                elsif ( $options{options}->{compression} =~ /g[34]/xsm ) {
+                    @depth = qw(-threshold 40% -depth 1);
+                }
             }
 
             my @cmd = (
-                'convert', '-units', 'PixelsPerInch', '-density',
+                'convert', $filename, '-units', 'PixelsPerInch', '-density',
                 $xresolution . 'x' . $yresolution,
-                @depth, $filename, $tif,
+                @depth, $tif,
             );
             my ($status) = exec_command( \@cmd, $options{pidfile} );
             return if $_self->{cancel};
@@ -3889,7 +3892,7 @@ sub _thread_save_tiff {
     my ( $status, undef, $error ) = exec_command( \@cmd, $options{pidfile} );
     return if $_self->{cancel};
 
-    if ( $status or $error =~ /(?:usage|TIFFOpen):/xsm ) {
+    if ( $status or $error ne $EMPTY ) {
         $logger->info($error);
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
             'Save file', sprintf __('Error compressing image: %s'), $error );
