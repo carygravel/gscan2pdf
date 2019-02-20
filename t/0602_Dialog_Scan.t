@@ -113,20 +113,6 @@ $signal = $dialog->signal_connect(
 
         $dialog->save_current_profile('profile 2');
         is_deeply(
-            $dialog->{profiles}{'profile 1'}->get_data,
-            {
-                backend => [
-                    {
-                        'tl-x' => '10'
-                    },
-                    {
-                        'tl-y' => '10'
-                    },
-                ]
-            },
-            'applied 2nd profile'
-        );
-        is_deeply(
             $dialog->{profiles}{'profile 2'}->get_data,
             {
                 backend => [
@@ -135,6 +121,20 @@ $signal = $dialog->signal_connect(
                     },
                     {
                         'tl-y' => '20'
+                    },
+                ]
+            },
+            'applied 2nd profile'
+        );
+        is_deeply(
+            $dialog->{profiles}{'profile 1'}->get_data,
+            {
+                backend => [
+                    {
+                        'tl-x' => '10'
+                    },
+                    {
+                        'tl-y' => '10'
                     },
                 ]
             },

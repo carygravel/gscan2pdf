@@ -152,8 +152,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { $resolution => 52 }, { mode => 'Color' } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { $resolution => 52 }, { mode => 'Color' } ]
 
                     },
                     'current-scan-options with profile'
@@ -207,8 +206,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { mode => 'Color' }, { $resolution => 51 } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { mode => 'Color' }, { $resolution => 51 } ]
                     },
                     'current-scan-options without profile'
                 );
@@ -244,8 +242,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { mode => 'Color' }, { $resolution => 52 } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { $resolution => 52 }, { mode => 'Color' } ]
                     },
                     'current-scan-options after reset to profile my profile'
                 );
@@ -272,8 +269,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { mode => 'Color' }, { $resolution => 51 } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { mode => 'Color' }, { $resolution => 51 } ]
                     },
                     'current-scan-options without profile (again)'
                 );
@@ -301,8 +297,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { mode => 'Color' }, { $resolution => 51 } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { mode => 'Color' }, { $resolution => 51 } ]
                     },
                     'current-scan-options unchanged if invalid option requested'
                 );
@@ -347,11 +342,8 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
             'changed-profile' => sub {
                 my ( $widget, $profile ) = @_;
                 $dialog->signal_handler_disconnect( $dialog->{signal} );
-                my $options  = $dialog->get('available-scan-options');
-                my $expected = {
-                    backend    => [             { mode => 'Color' } ],
-                    'frontend' => { 'num_pages' => 0 }
-                };
+                my $options = $dialog->get('available-scan-options');
+                my $expected = { backend => [] };
                 push @{ $expected->{backend} },
                   { scalar(SANE_NAME_PAGE_HEIGHT) => 52 }
                   if ( defined $options->by_name(SANE_NAME_PAGE_HEIGHT) );
@@ -362,8 +354,11 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                   { scalar(SANE_NAME_SCAN_TL_X) => 1 },
                   { scalar(SANE_NAME_SCAN_BR_Y) => 52 },
                   { scalar(SANE_NAME_SCAN_BR_X) => 51 },
-                  { scalar(SANE_NAME_SCAN_TL_Y) => 2 },
-                  { $resolution                 => 50 };
+                  { scalar(SANE_NAME_SCAN_TL_Y) => 2 };
+
+                # resolution=50 is the default,
+                # so doesn't appear in current-scan-options
+                # { $resolution                 => 50 };
                 is_deeply( $dialog->get('current-scan-options')->get_data,
                     $expected, 'CLI geometry option names' );
                 $flag = TRUE;

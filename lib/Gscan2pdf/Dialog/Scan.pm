@@ -525,8 +525,8 @@ sub INIT_INSTANCE {
     my $vboxsp = Gtk3::VBox->new;
     $vboxsp->set_border_width($border_width);
     $framesp->add($vboxsp);
-    $self->{combobsp} = Gscan2pdf::ComboBoxText->new;
-    $self->{combobsp}->signal_connect(
+    $self->{combobsp}                = Gscan2pdf::ComboBoxText->new;
+    $self->{combobsp_changed_signal} = $self->{combobsp}->signal_connect(
         changed => sub {
             $self->{num_reloads} = 0;    # num-reloads is read-only
             $self->set( 'profile', $self->{combobsp}->get_active_text );
@@ -1333,7 +1333,7 @@ sub update_options {
     }
 
     # Reapply current options to ensure the same values are still set.
-    $self->set_current_scan_options($current_scan_options);
+    $self->add_current_scan_options($current_scan_options);
 
     # In case the geometry values have changed,
     # update the available paper formats
@@ -1541,7 +1541,7 @@ sub set_paper {
 
     # Don't trigger the changed-paper signal
     # until we have finished setting the profile
-    $self->set_current_scan_options($paper_profile);
+    $self->add_current_scan_options($paper_profile);
     return;
 }
 
@@ -1727,7 +1727,12 @@ sub edit_paper {
 sub save_current_profile {
     my ( $self, $name ) = @_;
     $self->add_profile( $name, $self->{current_scan_options} );
+
+    # Block signal or else we fire another round of profile loads
+    $self->{combobsp}->signal_handler_block( $self->{combobsp_changed_signal} );
     $self->{combobsp}->set_active( $self->{combobsp}->get_num_rows - 1 );
+    $self->{combobsp}
+      ->signal_handler_unblock( $self->{combobsp_changed_signal} );
     return;
 }
 
@@ -2157,6 +2162,34 @@ sub set_current_scan_options {
         return;
     }
 
+    # reload to get defaults before applying profile
+    my $signal;
+    $self->{current_scan_options} =
+      Gscan2pdf::Scanner::Profile->new_from_data( dclone($profile) );
+    $signal = $self->signal_connect(
+        'reloaded-scan-options' => sub {
+            $self->signal_handler_disconnect($signal);
+            $self->add_current_scan_options($profile);
+        }
+    );
+    $self->scan_options( $self->get('device') );
+    return;
+}
+
+# Apply options referenced by hashref without resetting existing options
+
+sub add_current_scan_options {
+    my ( $self, $profile ) = @_;
+    if ( not defined $profile ) {
+        $logger->error('Cannot add undefined profile');
+        return;
+    }
+    elsif ( ref($profile) ne 'Gscan2pdf::Scanner::Profile' ) {
+        $logger->error(
+            ref($profile) . ' is not a Gscan2pdf::Scanner::Profile object' );
+        return;
+    }
+
     # First clone the profile, as otherwise it would be self-modifying
     my $clone = dclone($profile);
 
@@ -2229,6 +2262,10 @@ sub _set_option_profile {
     else {
 
         # Having set all backend options, set the frontend options
+        # Set paper formats first to make sure that any paper required is
+        # available
+        $self->set_paper_formats( $self->{paper_formats} );
+
         my $iter = $profile->each_frontend_option;
         while ( my $key = $iter->() ) {
             $self->set( $key, $profile->get_frontend_option($key) );

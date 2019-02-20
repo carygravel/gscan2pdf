@@ -156,12 +156,12 @@ $signal = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { $resolution => 52 }, { mode => 'Color' } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { $resolution => 52 }, { mode => 'Color' } ]
                     },
                     'current-scan-options with profile'
                 );
-                is( $reloads, 1, 'reloaded-scan-options not called' );
+                is( $reloads, 2,
+                    'reloaded-scan-options called once to set profile' );
                 $dialog->signal_handler_disconnect($signal);
                 $flag = TRUE;
                 $loop->quit;
@@ -212,8 +212,7 @@ $signal = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { mode => 'Color' }, { $resolution => 51 } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { mode => 'Color' }, { $resolution => 51 } ]
                     },
                     'current-scan-options without profile'
                 );
@@ -247,8 +246,7 @@ $signal = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { mode => 'Color' }, { $resolution => 52 } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { $resolution => 52 }, { mode => 'Color' } ]
                     },
                     'reset profile options'
                 );
@@ -282,9 +280,7 @@ $signal = $dialog->signal_connect(
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
                     {
-                        backend =>
-                          [ { $resolution => 52 }, { mode => 'Gray' } ],
-                        'frontend' => { 'num_pages' => 0 }
+                        backend => [ { $resolution => 52 }, { mode => 'Gray' } ]
                     },
                     'current-scan-options without profile (again)'
                 );
@@ -313,8 +309,7 @@ $signal = $dialog->signal_connect(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend =>
-                          [ { $resolution => 52 }, { mode => 'Color' } ],
-                        'frontend' => { 'num_pages' => 0 }
+                          [ { $resolution => 52 }, { mode => 'Color' } ]
                     },
 'setting a option with a reload trigger to a non-default value stays set'
                 );
@@ -336,14 +331,7 @@ $signal = $dialog->signal_connect(
                 my ( $widget, $option, $value ) = @_;
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
-                    {
-                        backend => [
-                            { $resolution => 52 },
-                            { mode        => 'Color' },
-                            { $brx        => 11 },
-                        ],
-                        'frontend' => { 'num_pages' => 0 }
-                    },
+                    { backend => [ { $brx => 11 } ] },
                     'map option names'
                 );
                 $dialog->signal_handler_disconnect($signal);
@@ -381,21 +369,18 @@ $signal = $dialog->signal_connect(
         $signal = $dialog->signal_connect(
             'changed-profile' => sub {
                 my ( $widget, $profile ) = @_;
-                my $options = $dialog->get('available-scan-options');
-                my $expected = [ { mode => 'Color' } ];
+                my $options  = $dialog->get('available-scan-options');
+                my $expected = [];
                 push @$expected, { scalar(SANE_NAME_PAGE_HEIGHT) => 52 }
                   if ( defined $options->by_name(SANE_NAME_PAGE_HEIGHT) );
                 push @$expected, { scalar(SANE_NAME_PAGE_WIDTH) => 51 }
                   if ( defined $options->by_name(SANE_NAME_PAGE_WIDTH) );
                 push @$expected, { $tlx => 1 },
-                  { $bry => 52 }, { $brx        => 51 },
-                  { $tly => 2 },  { $resolution => 50 };
+                  { $bry => 52 }, { $brx => 51 },
+                  { $tly => 2 };
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
-                    {
-                        backend    => $expected,
-                        'frontend' => { 'num_pages' => 0 }
-                    },
+                    { backend => $expected },
                     'CLI geometry option names'
                 );
                 $dialog->signal_handler_disconnect($signal);
@@ -431,8 +416,8 @@ $signal = $dialog->signal_connect(
                 my ( $widget, $paper ) = @_;
                 is( $paper, 'new2', 'changed-paper' );
 
-                my $options = $dialog->get('available-scan-options');
-                my $expected = [ { mode => 'Color' }, { $resolution => 50 } ];
+                my $options  = $dialog->get('available-scan-options');
+                my $expected = [];
                 push @$expected, { scalar(SANE_NAME_PAGE_HEIGHT) => 10 }
                   if ( defined $options->by_name(SANE_NAME_PAGE_HEIGHT) );
                 push @$expected, { scalar(SANE_NAME_PAGE_WIDTH) => 10 }
@@ -441,10 +426,7 @@ $signal = $dialog->signal_connect(
                   { $bry => 10 };
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
-                    {
-                        backend    => $expected,
-                        'frontend' => { 'num_pages' => 0 }
-                    },
+                    { backend => $expected },
                     'CLI geometry option names after setting paper'
                 );
             }
@@ -490,9 +472,11 @@ $signal = $dialog->signal_connect(
 );
 Gtk3->main;
 
-is( $reloads, 3, 'Final number of calls reloaded-scan-options' );
-is( $dialog->get('available-scan-options')->by_name('mode')->{val},
-    'Color', 'reloaded option still set to non-default value' );
+is( $reloads, 8, 'Final number of calls reloaded-scan-options' );
+is(
+    $dialog->get('available-scan-options')->by_name(SANE_NAME_SCAN_BR_X)->{val},
+    10, 'reloaded option still set to non-default value'
+);
 unlink 'out2.pnm';
 
 __END__

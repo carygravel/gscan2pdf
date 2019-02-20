@@ -158,6 +158,7 @@ t/053_Dialog_MultipleMessage.t
 t/05_Dialog.t
 t/0601_Dialog_Scan.t
 t/06022_Dialog_Scan.t
+t/06023_Dialog_Scan.t
 t/0602_Dialog_Scan.t
 t/0603_Dialog_Scan.t
 t/0604_Dialog_Scan.t

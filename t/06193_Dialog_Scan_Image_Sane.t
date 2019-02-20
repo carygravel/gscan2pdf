@@ -58,10 +58,12 @@ $dialog->{signal} = $dialog->signal_connect(
         # and then that options are still the same.
         $loop = Glib::MainLoop->new;
         $flag = FALSE;
-        $dialog->signal_connect(
+        my $open_signal;
+        $open_signal = $dialog->signal_connect(
             'finished-process' => sub {
                 my ( $widget, $process ) = @_;
                 if ( $process eq 'open_device' ) {
+                    $dialog->signal_handler_disconnect($open_signal);
                     pass 'open_device emitted';
                 }
             }

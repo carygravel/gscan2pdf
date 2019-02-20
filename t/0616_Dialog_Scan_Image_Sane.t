@@ -102,16 +102,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 $dialog->signal_handler_disconnect( $dialog->{profile_signal} );
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
-                    {
-                        backend => [
-                            {
-                                'br-y' => '200'
-                            },
-                            {
-                                'resolution' => '50'
-                            },
-                        ]
-                    },
+                    { backend => [ { 'br-y' => '200' } ] },
                     'fired signal and set profile'
                 );
                 $flag = TRUE;

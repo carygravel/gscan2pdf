@@ -101,16 +101,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 $dialog->signal_handler_disconnect( $dialog->{profile_signal} );
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
-                    {
-                        backend => [
-                            {
-                                $bry => '297'
-                            },
-                            {
-                                'resolution' => '50'
-                            },
-                        ]
-                    },
+                    { backend => [ { $bry => '297' } ] },
                     'fired signal and set profile'
                 );
                 $flag = TRUE;
@@ -145,18 +136,12 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
             'changed-scan-option' => sub {
                 my ( $widget, $option, $value ) = @_;
                 $dialog->signal_handler_disconnect( $dialog->{option_signal} );
-                use Data::Dumper;
-                $logger->debug(
-                    Dumper( $dialog->get('current-scan-options')->get_data ) );
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
                     {
                         backend => [
                             {
                                 $bry => '297'
-                            },
-                            {
-                                'resolution' => '50'
                             },
                             { 'enable-test-options' => 1 },
                             { 'button'              => undef }
