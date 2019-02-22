@@ -9,6 +9,7 @@
 * Switched to GIMP-like controls - LMB for selecting and MMB for panning.
 * + crop to toolbar and RMB menus
 * Fix saving as TIFF G3/4 if image not depth 1
+* Update to German translation (thanks to Stephan Woidowski)
 
 
 2.3.0 (26.01.2019):
