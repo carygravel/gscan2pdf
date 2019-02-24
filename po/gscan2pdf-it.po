@@ -1033,7 +1033,7 @@ msgstr ""
 
 #: bin/gscan2pdf:5975
 msgid "Select # pages = all on selecting ADF"
-msgstr "Seleziona # pagine = tutto quando si seleziona ADF\n"
+msgstr "Seleziona # pagine = tutto quando si seleziona ADF"
 
 #: bin/gscan2pdf:5978
 msgid ""
@@ -1129,7 +1129,7 @@ msgstr ""
 "\n"
 "Tutti i codici data del documento utilizzano i codici strftime con una D "
 "iniziale, ad esempio:\n"
-"% Anno di documento DY"
+"% Anno di documento DY\n"
 
 #: bin/gscan2pdf:6164
 msgid "Replace whitespace in filenames with underscores"
@@ -1320,7 +1320,7 @@ msgid ""
 "new start and increment values."
 msgstr ""
 "Le impostazioni correnti comporterebbero numeri di pagina duplicati. Si "
-"prega di selezionare nuovi valori di avvio e incremento.\n"
+"prega di selezionare nuovi valori di avvio e incremento."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:241 lib/Gscan2pdf/Dialog/Save.pm:291
 msgid "Now"
@@ -1493,7 +1493,7 @@ msgstr "LibTIFF"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:516
 msgid "Use LibTIFF (tiff2ps) to create Postscript files from TIFF."
-msgstr "Usa LibTIFF (tiff2ps) per creare file Postscript da TIFF.\n"
+msgstr "Usa LibTIFF (tiff2ps) per creare file Postscript da TIFF."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:520
 msgid "Ghostscript"
@@ -1501,7 +1501,7 @@ msgstr "Ghostscript"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:521
 msgid "Use Ghostscript (pdf2ps) to create Postscript files from PDF."
-msgstr "Usa Ghostscript (pdf2ps) per creare file Postscript da PDF.\n"
+msgstr "Usa Ghostscript (pdf2ps) per creare file Postscript da PDF."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:524
 msgid "Poppler"
@@ -1509,7 +1509,7 @@ msgstr ""
 
 #: lib/Gscan2pdf/Dialog/Save.pm:525
 msgid "Use Poppler (pdftops) to create Postscript files from PDF."
-msgstr "Usa Poppler (pdftops) per creare file Postscript da PDF.\n"
+msgstr "Usa Poppler (pdftops) per creare file Postscript da PDF."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:536 lib/Gscan2pdf/Dialog/Save.pm:732
 msgid "LZW"
@@ -1861,7 +1861,7 @@ msgstr "File% s non trovato"
 #: lib/Gscan2pdf/Document.pm:2573
 #, perl-format
 msgid "Error importing zero-length file %s."
-msgstr "Errore durante l'importazione del file a lunghezza zero% s.\n"
+msgstr "Errore durante l'importazione del file a lunghezza zero% s."
 
 #: lib/Gscan2pdf/Document.pm:2619
 msgid "Unknown DjVu file structure. Please contact the author."
@@ -1903,7 +1903,7 @@ msgstr ""
 "correttamente.\n"
 "\n"
 "Se si desidera aggiungere scansioni a un PDF esistente, utilizzare le "
-"opzioni anteporre / aggiungere a PDF nella finestra di dialogo Salva."
+"opzioni anteporre / aggiungere a PDF nella finestra di dialogo Salva.\n"
 
 #: lib/Gscan2pdf/Document.pm:3074
 msgid "Setting up PDF"
