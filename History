@@ -1,4 +1,4 @@
-2.4.0 (26.02.2019):
+2.4.0 (24.02.2019):
 
 * Offer to switch from Facing to Reverse after scanning double-sided pages.
   Closes feature request #100
@@ -11,6 +11,8 @@
 * Fix saving as TIFF G3/4 if image not depth 1
 * Update to German translation (thanks to Stephan Woidowski)
 * Update to Ukranian translation (thanks to Yuri Chornoivan)
+* Update to Italian translation (thanks to batman)
+  Closes feature request #105 and patch #20 (update italian translation)
 
 
 2.3.0 (26.01.2019):
