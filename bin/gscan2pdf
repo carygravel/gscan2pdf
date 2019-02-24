@@ -6661,8 +6661,8 @@ __END__
 gscan2pdf - A GUI to produce PDFs or DjVus from scanned documents
 
 =for html <p align="center">
- <img src="https://sourceforge.net/dbimage.php?id=249848" border="1" width="632"
- height="480" alt="Screenshot" /><br/>Screenshot: Main page v0.9.30</p>
+ <img src="https://a.fsdn.com/con/app/proj/gscan2pdf/screenshots/Screenshot.png/max/max/1" border="1" width="632"
+ height="480" alt="Screenshot" /><br/>Screenshot: Main page v2.4.0</p>
 
 =head1 USAGE
 
