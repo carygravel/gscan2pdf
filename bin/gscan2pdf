@@ -3224,7 +3224,9 @@ sub scan_dialog {
                 $scbutton->signal_handler_disconnect($button_signal);
             }
             $shbox->hide;
-            if ( $windows->get('sided') eq 'double' ) {
+            if (    $process eq 'scan_pages'
+                and $windows->get('sided') eq 'double' )
+            {
                 my ( $message, $next );
                 if ( $windows->get('side-to-scan') eq 'facing' ) {
                     $message =
