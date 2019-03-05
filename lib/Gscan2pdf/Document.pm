@@ -4376,7 +4376,7 @@ sub _thread_negate {
     my $depth = $image->Get('depth');
 
     # Negate the image
-    $e = $image->Negate;
+    $e = $image->Negate( channel => 'RGB' );
     if ("$e") {
         $logger->error($e);
         _thread_throw_error( $self, $uuid, $page->{uuid}, 'Negate', $e );
