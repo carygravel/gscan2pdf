@@ -2753,7 +2753,12 @@ sub save_djvu {
 
     # Create the DjVu
     $logger->debug("Started saving $filename");
-    my ( $signal, $pid, %options );
+    my ( $signal, $pid );
+    my %options = (
+        set_timestamp => $SETTING{set_timestamp},
+        'convert whitespace to underscores' =>
+          $SETTING{'convert whitespace to underscores'},
+    );
     if ( $SETTING{post_save_hook} ) {
         $options{post_save_hook} = $SETTING{current_psh};
     }
