@@ -1986,8 +1986,7 @@ sub exec_command {
 
 sub program_version {
     my ( $stream, $regex, $cmd ) = @_;
-    return _program_version( $stream, $regex,
-        Gscan2pdf::Document::exec_command($cmd) );
+    return _program_version( $stream, $regex, exec_command($cmd) );
 }
 
 # Check exec_command output for version number
@@ -2739,7 +2738,7 @@ sub _thread_import_file {
     my $JPG = qr/Joint[ ]Photographic[ ]Experts[ ]Group[ ]JFIF[ ]format/xsm;
     my $GIF = qr/CompuServe[ ]graphics[ ]interchange[ ]format/xsm;
 
-    given ( $options{info}->{format} ) {
+    given ( $options{info}{format} ) {
         when ('DJVU') {
 
             # Extract images from DjVu
@@ -2761,14 +2760,14 @@ sub _thread_import_file {
                         exec_command(
                             [
                                 'ddjvu',    '-format=tiff',
-                                "-page=$i", $options{info}->{path},
+                                "-page=$i", $options{info}{path},
                                 $tif
                             ],
                             $options{pidfile}
                         );
                         ( undef, $txt ) = exec_command(
                             [
-                                'djvused', $options{info}->{path},
+                                'djvused', $options{info}{path},
                                 '-e',      "select $i; print-txt"
                             ],
                             $options{pidfile}
@@ -2804,8 +2803,8 @@ sub _thread_import_file {
                         dir         => $options{dir},
                         delete      => TRUE,
                         format      => 'Tagged Image File Format',
-                        xresolution => $options{info}->{ppi}[ $i - 1 ],
-                        yresolution => $options{info}->{ppi}[ $i - 1 ],
+                        xresolution => $options{info}{ppi}[ $i - 1 ],
+                        yresolution => $options{info}{ppi}[ $i - 1 ],
                     );
                     try {
                         $page->import_djvutext($txt);
@@ -2837,10 +2836,10 @@ sub _thread_import_file {
                 $self->{progress} = 1;
                 $self->{message} = sprintf __('Importing page %i of %i'), 1, 1;
                 my $page = Gscan2pdf::Page->new(
-                    filename => $options{info}->{path},
+                    filename => $options{info}{path},
                     dir      => $options{dir},
                     delete   => FALSE,
-                    format   => $options{info}->{format},
+                    format   => $options{info}{format},
                 );
                 $self->{return}->enqueue(
                     {
@@ -2870,18 +2869,18 @@ sub _thread_import_file {
                         );
                         my ( $status, $out, $err ) =
                           exec_command(
-                            [ 'tiffcp', "$options{info}->{path},$i", $tif ],
+                            [ 'tiffcp', "$options{info}{path},$i", $tif ],
                             $options{pidfile} );
                         if ( defined $err and $err ne $EMPTY ) {
                             $logger->error(
-"Caught error extracting page $i from $options{info}->{path}: $err"
+"Caught error extracting page $i from $options{info}{path}: $err"
                             );
                             _thread_throw_error(
                                 $self,
                                 $options{uuid},
                                 $options{page}{uuid},
                                 'Open file',
-"Caught error extracting page $i from $options{info}->{path}: $err"
+"Caught error extracting page $i from $options{info}{path}: $err"
                             );
                         }
                     }
@@ -2914,7 +2913,7 @@ sub _thread_import_file {
                         filename => $tif,
                         dir      => $options{dir},
                         delete   => TRUE,
-                        format   => $options{info}->{format},
+                        format   => $options{info}{format},
                     );
                     $self->{return}->enqueue(
                         {
@@ -2929,9 +2928,9 @@ sub _thread_import_file {
         when (/(?:$PNG|$JPG|$GIF)/xsm) {
             try {
                 my $page = Gscan2pdf::Page->new(
-                    filename => $options{info}->{path},
+                    filename => $options{info}{path},
                     dir      => $options{dir},
-                    format   => $options{info}->{format},
+                    format   => $options{info}{format},
                 );
                 $self->{return}->enqueue(
                     {
@@ -2954,9 +2953,9 @@ sub _thread_import_file {
         default {
             try {
                 my $page = Gscan2pdf::Page->new(
-                    filename => $options{info}->{path},
+                    filename => $options{info}{path},
                     dir      => $options{dir},
-                    format   => $options{info}->{format},
+                    format   => $options{info}{format},
                 );
                 $self->{return}->enqueue(
                     {
@@ -2992,11 +2991,11 @@ sub _thread_import_pdf {
     if ( $options{last} >= $options{first} and $options{first} > 0 ) {
         for my $i ( $options{first} .. $options{last} ) {
             my $args =
-              [ 'pdfimages', '-f', $i, '-l', $i, $options{info}->{path}, 'x' ];
+              [ 'pdfimages', '-f', $i, '-l', $i, $options{info}{path}, 'x' ];
             if ( defined $options{password} ) {
                 $args = [
                     'pdfimages', '-upw', $options{password}, '-f', $i, '-l',
-                    $i, $options{info}->{path}, 'x'
+                    $i, $options{info}{path}, 'x'
                 ];
             }
             my ( $status, $out, $err ) =
@@ -3012,15 +3011,15 @@ sub _thread_import_pdf {
               File::Temp->new( DIR => $options{dir}, SUFFIX => '.html' );
             $args = [
                 'pdftotext', '-bbox', '-f', $i, '-l', $i,
-                $options{info}->{path}, $html
+                $options{info}{path}, $html
             ];
             if ( defined $options{password} ) {
                 $args = [
-                    'pdftotext',            '-upw',
-                    $options{password},     '-bbox',
-                    '-f',                   $i,
-                    '-l',                   $i,
-                    $options{info}->{path}, $html
+                    'pdftotext',          '-upw',
+                    $options{password},   '-bbox',
+                    '-f',                 $i,
+                    '-l',                 $i,
+                    $options{info}{path}, $html
                 ];
             }
             ( $status, $out, $err ) = exec_command( $args, $options{pidfile} );
@@ -3105,10 +3104,10 @@ sub _thread_save_pdf {
         $pdf->info( %{$metadata} );
     }
     $cache->{core} = $pdf->corefont('Times-Roman');
-    if ( defined $options{options}->{font} ) {
+    if ( defined $options{options}{font} ) {
         $cache->{ttf} =
-          $pdf->ttfont( $options{options}->{font}, -unicodemap => 1 );
-        $logger->info("Using $options{options}->{font} for non-ASCII text");
+          $pdf->ttfont( $options{options}{font}, -unicodemap => 1 );
+        $logger->info("Using $options{options}{font} for non-ASCII text");
     }
 
     for my $pagedata ( @{ $options{list_of_pages} } ) {
@@ -3145,11 +3144,11 @@ sub _thread_save_pdf {
             @{ $options{metadata}{datetime} } );
     }
 
-    if ( defined $options{options}->{ps} ) {
+    if ( defined $options{options}{ps} ) {
         $self->{message} = __('Converting to PS');
 
         my @cmd =
-          ( $options{options}->{pstool}, $filename, $options{options}->{ps} );
+          ( $options{options}{pstool}, $filename, $options{options}{ps} );
         ( my $status, undef, $error ) =
           exec_command( \@cmd, $options{pidfile} );
         if ( $status or $error ) {
@@ -3159,7 +3158,7 @@ sub _thread_save_pdf {
                 sprintf __('Error converting PDF to PS: %s'), $error );
             return;
         }
-        _post_save_hook( $options{options}->{ps}, %{ $options{options} } );
+        _post_save_hook( $options{options}{ps}, %{ $options{options} } );
     }
     else {
         _post_save_hook( $filename, %{ $options{options} } );
@@ -3275,8 +3274,8 @@ sub _add_page_to_pdf {
 
     # Automatic mode
     my $type;
-    if ( not defined( $options{options}->{compression} )
-        or $options{options}->{compression} eq 'auto' )
+    if ( not defined $options{options}{compression}
+        or $options{options}{compression} eq 'auto' )
     {
         $pagedata->{depth} = $image->Get('depth');
         $logger->info("Depth of $filename is $pagedata->{depth}");
@@ -3296,7 +3295,7 @@ sub _add_page_to_pdf {
         $logger->info("Selecting $pagedata->{compression} compression");
     }
     else {
-        $pagedata->{compression} = $options{options}->{compression};
+        $pagedata->{compression} = $options{options}{compression};
     }
 
     my ( $format, $output_resolution, $error );
@@ -3402,7 +3401,7 @@ sub _convert_image_for_pdf {
     my $output_yresolution = $pagedata->{yresolution};
 
     if (   ( $compression ne 'none' and $compression ne $format )
-        or $options{options}->{downsample}
+        or $options{options}{downsample}
         or $compression eq 'jpg' )
     {
         if ( $compression !~ /(?:jpg|png)/xsm and $format ne 'tif' ) {
@@ -3418,17 +3417,17 @@ sub _convert_image_for_pdf {
                 SUFFIX => ".$compression"
             );
             my $msg = "Converting $ofn to $filename";
-            if ( defined( $options{options}->{quality} )
+            if ( defined $options{options}{quality}
                 and $compression eq 'jpg' )
             {
-                $msg .= " with quality=$options{options}->{quality}";
+                $msg .= " with quality=$options{options}{quality}";
             }
             $logger->info($msg);
         }
 
-        if ( $options{options}->{downsample} ) {
-            $output_xresolution = $options{options}->{'downsample dpi'};
-            $output_yresolution = $options{options}->{'downsample dpi'};
+        if ( $options{options}{downsample} ) {
+            $output_xresolution = $options{options}{'downsample dpi'};
+            $output_yresolution = $options{options}{'downsample dpi'};
             my $w_pixels = $pagedata->{w} * $output_xresolution;
             my $h_pixels = $pagedata->{h} * $output_yresolution;
 
@@ -3437,15 +3436,14 @@ sub _convert_image_for_pdf {
               $image->Sample( width => $w_pixels, height => $h_pixels );
             if ("$status") { $logger->warn($status) }
         }
-        if ( defined( $options{options}->{quality} ) and $compression eq 'jpg' )
-        {
-            my $status = $image->Set( quality => $options{options}->{quality} );
+        if ( defined $options{options}{quality} and $compression eq 'jpg' ) {
+            my $status = $image->Set( quality => $options{options}{quality} );
             if ("$status") { $logger->warn($status) }
         }
 
         $format =
           _write_image_object( $image, $filename, $format, $pagedata,
-            $options{options}->{downsample} );
+            $options{options}{downsample} );
 
         if ( $compression !~ /(?:jpg|png)/xsm ) {
             my $filename2 =
@@ -3859,8 +3857,8 @@ sub _thread_save_tiff {
         my $filename = $pagedata->{filename};
         if (
             $filename !~ /[.]tif/xsm
-            or ( defined( $options{options}->{compression} )
-                and $options{options}->{compression} eq 'jpeg' )
+            or ( defined $options{options}{compression}
+                and $options{options}{compression} eq 'jpeg' )
           )
         {
             my ( $tif, $error );
@@ -3881,11 +3879,11 @@ sub _thread_save_tiff {
 
             # Convert to tiff
             my @depth;
-            if ( defined $options{options}->{compression} ) {
-                if ( $options{options}->{compression} eq 'jpeg' ) {
+            if ( defined $options{options}{compression} ) {
+                if ( $options{options}{compression} eq 'jpeg' ) {
                     @depth = qw(-depth 8);
                 }
-                elsif ( $options{options}->{compression} =~ /g[34]/xsm ) {
+                elsif ( $options{options}{compression} =~ /g[34]/xsm ) {
                     @depth = qw(-threshold 40% -depth 1);
                 }
             }
@@ -3911,10 +3909,10 @@ sub _thread_save_tiff {
     }
 
     my @compression;
-    if ( defined $options{options}->{compression} ) {
-        @compression = ( '-c', "$options{options}->{compression}" );
-        if ( $options{options}->{compression} eq 'jpeg' ) {
-            $compression[1] .= ":$options{options}->{quality}";
+    if ( defined $options{options}{compression} ) {
+        @compression = ( '-c', "$options{options}{compression}" );
+        if ( $options{options}{compression} eq 'jpeg' ) {
+            $compression[1] .= ":$options{options}{quality}";
             push @compression, qw(-r 16);
         }
     }
@@ -3932,14 +3930,14 @@ sub _thread_save_tiff {
             'Save file', sprintf __('Error compressing image: %s'), $error );
         return;
     }
-    if ( defined $options{options}->{ps} ) {
+    if ( defined $options{options}{ps} ) {
         $self->{message} = __('Converting to PS');
 
         # Note: -a option causes tiff2ps to generate multiple output
         # pages, one for each page in the input TIFF file.  Without it, it
         # only generates output for the first page.
         @cmd =
-          ( 'tiff2ps', '-a', $options{path}, '-O', $options{options}->{ps} );
+          ( 'tiff2ps', '-a', $options{path}, '-O', $options{options}{ps} );
         ( $status, undef, $error ) = exec_command( \@cmd, $options{pidfile} );
         if ( $status or $error ) {
             $logger->info($error);
@@ -3948,7 +3946,7 @@ sub _thread_save_tiff {
                 sprintf __('Error converting TIFF to PS: %s'), $error );
             return;
         }
-        _post_save_hook( $options{options}->{ps}, %{ $options{options} } );
+        _post_save_hook( $options{options}{ps}, %{ $options{options} } );
     }
     else {
         _post_save_hook( $options{path}, %{ $options{options} } );
@@ -4403,7 +4401,7 @@ sub _thread_negate {
 
 sub _thread_unsharp {
     my ( $self, %options ) = @_;
-    my $filename = $options{page}->{filename};
+    my $filename = $options{page}{filename};
     my $version;
     my $image = Image::Magick->new;
     if ( $image->Get('version') =~ /ImageMagick\s([\d.]+)/xsm ) {
@@ -4486,7 +4484,7 @@ sub _thread_unsharp {
 
 sub _thread_crop {
     my ( $self, %options ) = @_;
-    my $filename = $options{page}->{filename};
+    my $filename = $options{page}{filename};
 
     my $image = Image::Magick->new;
     my $e     = $image->Read($filename);
