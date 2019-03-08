@@ -217,6 +217,7 @@ t/1111_save_pdf.t
 t/1112_save_pdf_with_locale.t
 t/1113_save_pdf_with_error.t
 t/1114_save_pdf_different_resolutions.t
+t/1115_save_pdf_encrypted.t
 t/1121_save_pdf_with_text.t
 t/1122_save_pdf_with_hocr.t
 t/1123_save_pdf_with_utf8.t

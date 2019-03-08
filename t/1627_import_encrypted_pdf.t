@@ -75,7 +75,7 @@ SKIP: {
 
 #########################
 
-    #unlink 'input.pdf', 'output.pdf', 'test.png', <$dir/*>;
+    unlink 'input.pdf', 'output.pdf', 'test.png', <$dir/*>;
     rmdir $dir;
     Gscan2pdf::Document->quit();
 }

@@ -3083,10 +3083,7 @@ sub _thread_save_pdf {
     # Create PDF with PDF::API2
     $self->{message} = __('Setting up PDF');
     my $filename = $options{path};
-    if (   defined $options{options}{prepend}
-        or defined $options{options}{append}
-        or defined $options{options}{ps} )
-    {
+    if ( _need_temp_pdf(%options) ) {
         $filename = File::Temp->new( DIR => $options{dir}, SUFFIX => '.pdf' );
     }
     try {
@@ -3134,7 +3131,14 @@ sub _thread_save_pdf {
     {
         return if _append_pdf( $self, $filename, %options );
     }
-    elsif ( defined $options{options}{set_timestamp}
+
+    if (   defined $options{options}{'user-password'}
+        or defined $options{options}{'owner-password'} )
+    {
+        return if _encrypt_pdf( $self, $filename, %options );
+    }
+
+    if ( defined $options{options}{set_timestamp}
         and $options{options}{set_timestamp} )
     {
         _set_timestamp( $self, $filename, $options{uuid},
@@ -3171,6 +3175,17 @@ sub _thread_save_pdf {
     return;
 }
 
+sub _need_temp_pdf {
+    my (%options) = @_;
+    return (
+             defined $options{options}{prepend}
+          or defined $options{options}{append}
+          or defined $options{options}{ps}
+          or defined $options{options}{'user-password'}
+          or defined $options{options}{'owner-password'}
+    );
+}
+
 sub _append_pdf {
     my ( $self, $filename, %options ) = @_;
     my ( $bak, $file1, $file2, $out, $message );
@@ -3203,6 +3218,25 @@ sub _append_pdf {
         $logger->info($error);
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
             'Save file', sprintf $message, $error );
+        return $status;
+    }
+}
+
+sub _encrypt_pdf {
+    my ( $self, $filename, %options ) = @_;
+    my @cmd = ( 'pdftk', $filename, 'output', $options{path} );
+    if ( defined $options{options}{'user-password'} ) {
+        push @cmd, 'user_pw', $options{options}{'user-password'};
+    }
+    if ( defined $options{options}{'owner-password'} ) {
+        push @cmd, 'owner_pw', $options{options}{'owner-password'};
+    }
+    ( my $status, undef, my $error ) =
+      exec_command( \@cmd, $options{pidfile} );
+    if ( $status or $error ) {
+        $logger->info($error);
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', sprintf __('Error encrypting PDF: %s'), $error );
         return $status;
     }
 }

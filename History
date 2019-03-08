@@ -1,7 +1,8 @@
-2.4.1 (24.03.2019):
+2.5.0 (24.03.2019):
 
 * Really optionally change the djvu access and modification times to the
   metadata date.
+* Optionally encrypt PDFs.
 * Update to Hungarian translation (thanks to csola)
 
 

@@ -731,7 +731,8 @@ sub check_dependencies {
             'pdfunite', 'stderr',
             qr/pdfunite\sversion\s([\d.]+)/xsm, [ 'pdfunite', '-v' ]
         ],
-        [ 'pdf2ps', 'stdout', qr/([\d.]+)/xsm, [ 'gs', '--version' ] ],
+        [ 'pdf2ps', 'stdout', qr/([\d.]+)/xsm, [ 'gs',    '--version' ] ],
+        [ 'pdftk',  'stdout', qr/([\d.]+)/xsm, [ 'pdftk', '--version' ] ],
     );
     for (@dependencies) {
         my ( $name, $stream, $regex, $cmd ) = @{$_};
@@ -739,6 +740,36 @@ sub check_dependencies {
           Gscan2pdf::Document::program_version( $stream, $regex, $cmd );
         if ( $dependencies{$name} ) {
             $logger->info("Found $name $dependencies{$name}");
+            if ( $name eq 'pdftk' ) {
+                my $temppdf =
+                  File::Temp->new( DIR => $session, SUFFIX => '.pdf' );
+                Gscan2pdf::Document::exec_command(
+                    [ 'convert', 'rose:', $temppdf ] );
+                ( undef, my $out ) = Gscan2pdf::Document::exec_command(
+                    [ $name, $temppdf, 'dump_data' ] );
+                if ( $out !~ /NumberOfPages/xsm ) {
+                    delete $dependencies{$name};
+                    my $msg = __(
+'pdftk is installed, but cannot access the directory used for temporary files.'
+                      )
+                      . __(
+'One reason for this might be that pdftk was installed via snap.'
+                      )
+                      . __(
+'In this case, removing pdftk, and reinstalling without using snap would allow gscan2pdf to use pdftk.'
+                      )
+                      . __(
+'Another workaround would be to select a temporary directory under your home directory in Edit/Preferences.'
+                      );
+                    show_message_dialog(
+                        parent           => $window,
+                        type             => 'warning',
+                        buttons          => 'ok',
+                        text             => $msg,
+                        'store-response' => TRUE
+                    );
+                }
+            }
         }
     }
 
@@ -2077,6 +2108,8 @@ sub save_pdf {
         'downsample dpi' => $SETTING{'downsample dpi'},
         quality          => $SETTING{quality},
         font             => $SETTING{'pdf font'},
+        'user-password'  => $windowi->get('pdf-user-password'),
+        'owner-password' => $windowi->get('pdf-owner-password'),
         set_timestamp    => $SETTING{set_timestamp},
         'convert whitespace to underscores' =>
           $SETTING{'convert whitespace to underscores'},
@@ -2159,7 +2192,6 @@ sub save_dialog {
     if ( $dependencies{djvu} ) { push @image_types, 'djvu' }
     my @ps_backends;
     for my $backend (qw(libtiff pdf2ps pdftops)) {
-        $logger->debug("checking $backend");
         if ( $dependencies{$backend} ) { push @ps_backends, $backend }
     }
     $windowi = Gscan2pdf::Dialog::Save->new(
@@ -2191,6 +2223,7 @@ sub save_dialog {
         downsample                  => $SETTING{downsample},
         'pdf-compression'           => $SETTING{'pdf compression'},
         'pdf-font'                  => $SETTING{'pdf font'},
+        'can-encrypt-pdf'           => defined $dependencies{pdftk},
         'tiff-compression'          => $SETTING{'tiff compression'},
     );
 
@@ -2989,6 +3022,7 @@ sub email {
         downsample                  => $SETTING{downsample},
         'pdf-compression'           => $SETTING{'pdf compression'},
         'pdf-font'                  => $SETTING{'pdf font'},
+        'can-encrypt-pdf'           => defined $dependencies{pdftk},
     );
 
     # Frame for page range
@@ -3024,6 +3058,8 @@ sub email {
                 'downsample dpi' => $SETTING{'downsample dpi'},
                 quality          => $SETTING{quality},
                 font             => $SETTING{'pdf font'},
+                'user-password'  => $windowe->get('pdf-user-password'),
+                'owner-password' => $windowe->get('pdf-owner-password'),
             );
 
             my $filename = Gscan2pdf::Document::expand_metadata_pattern(
