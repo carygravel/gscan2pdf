@@ -7688,7 +7688,7 @@ gscan2pdf - A GUI to produce PDFs or DjVus from scanned documents
 
 =head1 USAGE
 
-=over
+=over 4
 
 =item 1. Scan one or several pages in with File/Scan
 
@@ -7704,29 +7704,36 @@ None
 
 gscan2pdf has the following command-line options:
 
-=over
+=over 4
 
-=item --device=<device>
+=item B<--device>=F<device>
+
 Specifies the device to use, instead of getting the list of devices from via the SANE API.
 This can be useful if the scanner is on a remote computer which is not broadcasting its existence.
 
-=item --help
+=item B<--help>
+
 Displays this help page and exits.
 
-=item --log=<log file>
+=item B<--log>=F<log-file>
+
 Specifies a file to store logging messages.
 
-=item --(debug|info|warn|error|fatal)
-Defines the log level. If a log file is specified, this defaults to 'debug', otherwise 'warn'.
+=item B<--debug>, B<--info>, B<--warn>, B<--error>, B<--fatal>
 
-=item --import=<PDF|DjVu|images>
+Defines the log level.
+If a log file is specified, this defaults to B<--debug>, otherwise B<--error>.
+
+=item B<--import>=F<PDF|DjVu|images>
+
 Imports the specified file(s). If the document has more than one page, a window is
 displayed to select the required pages.
 
-=item --import-all=<PDF|DjVu|images>
+=item B<--import-all>=F<PDF|DjVu|images>
 Imports all pages of the specified file(s).
 
-=item --version
+=item B<--version>
+
 Displays the program version and exits.
 
 =back
@@ -7742,7 +7749,7 @@ To diagnose a possible error, start gscan2pdf from the command line with logging
 
 C<gscan2pdf --log=file.log>
 
-and check file.log.
+and check F<file.log>.
 
 =head1 EXIT STATUS
 
@@ -7750,7 +7757,7 @@ None
 
 =head1 CONFIGURATION
 
-gscan2pdf creates a text resource file in ~/.config/gscan2pdfrc. The directory
+gscan2pdf creates a text resource file in F<~/.config/gscan2pdfrc>. The directory
 can be changed by setting the $XDG_CONFIG_HOME variable. Generally, however,
 preferences should be changed via the Edit/Preferences menu, or are captured
 automatically during normal usage of the program.
@@ -7771,8 +7778,8 @@ gscan2pdf is available on Sourceforge
 
 =head2 Debian-based
 
-If you are using Debian, you should find that sid has the latest version already
-packaged.
+If you are using Debian, you should find that L<sid|https://www.debian.org/releases/sid/>
+has the latest version already packaged.
 
 If you are using a Ubuntu-based system, you can automatically keep up to date
 with the latest version via the ppa:
@@ -7828,11 +7835,11 @@ install them under I<Recommends>. Note also that the library names given below
 are the Debian/Ubuntu ones. Those distributions using RPM typically use
 perl(module) where Debian has libmodule-perl.
 
-=over
+=over 4
 
 =item Required
 
-=over
+=over 4
 
 =item libgtk3-perl >= 0.028
 
@@ -7884,7 +7891,7 @@ API library for scanners -- utilities.
 
 =item Optional
 
-=over
+=over 4
 
 =item sane
 
@@ -7927,7 +7934,7 @@ A command line OCR. See L<http://launchpad.net/cuneiform-linux>
 
 There are two mailing lists for gscan2pdf:
 
-=over
+=over 4
 
 =item gscan2pdf-announce
 
@@ -7949,7 +7956,7 @@ Please report any bugs found, preferably against the Debian package[1][2].
 You do not need to be a Debian user, or set up an account to do this.
 The Debian tool "reportbug" provides a convenient GUI for doing so.
 
-=over
+=over 4
 
 =item 1. https://packages.debian.org/sid/gscan2pdf
 
@@ -8023,7 +8030,7 @@ whether the page number is incremented or decremented by 2.
 
 To scan both sides of three pages, i.e. 6 sides:
 
-=over
+=over 4
 
 =item 1. Select:
 
@@ -8057,7 +8064,7 @@ correct order.
 These, naturally, depend on your scanner.
 They can include
 
-=over
+=over 4
 
 =item Page size.
 
@@ -8190,15 +8197,39 @@ name as listed in the scan window, e.g. Noname Integrated_Webcam_HD.
 All strftime codes (e.g. %Y for the current year) are available as variables,
 with the following additions:
 
- %Da	author
- %De	filename extension
- %Dt	title
+=over 4
+
+=item B<%Da>
+
+author
+
+=item B<%De>
+
+filename extension
+
+=item B<%Dt>
+
+title
+
+=back
 
 All document date codes use strftime codes with a leading D, e.g.:
 
- %DY	document year
- %Dm	document month
- %Dd	document day
+=over 4
+
+=item B<%DY>
+
+document year
+
+=item B<%Dm>
+
+document month
+
+=item B<%Dd>
+
+document day
+
+=back
 
 =head2 View
 
@@ -8263,7 +8294,7 @@ Up to v2.04, the only way to tell which languages were available to tesseract
 was to look for the language files. Therefore, gscan2pdf checks the path
 returned by:
 
- tesseract '' '' -l ''
+C<tesseract '' '' -l ''>
 
 If there are no language files in the above location, then gscan2pdf
 assumes that tesseract v1.0 is installed, which had no language files.
@@ -8272,11 +8303,23 @@ assumes that tesseract v1.0 is installed, which had no language files.
 
 The following variables are available:
 
- %i	input filename
- %o	output filename
- %r	resolution
+=over 4
 
-An image can be modified in-place by just specifying %i.
+=item B<%i>
+
+input filename
+
+=item B<%o>
+
+output filename
+
+=item B<%r>
+
+resolution
+
+=back
+
+An image can be modified in-place by just specifying B<%i>.
 
 
 =head1 FAQs
@@ -8343,24 +8386,30 @@ function will typically find the page with the requested text and highlight it.
 
 There are various tools for searching or indexing files, including PDF and DJVU:
 
-=over
+=over 4
 
 =item *
+
 (meta) Tracker (L<https://projects.gnome.org/tracker/>)
 
 =item *
+
 plone (L<http://plone.org/>)
 
 =item *
+
 pdfgrep (L<http://pdfgrep.sourceforge.net/>
 
 =item *
+
 swish-e (L<http://www.swish-e.org/>)
 
 =item *
+
 recoll (L<http://www.lesbonscomptes.com/recoll/>)
 
 =item *
+
 terrier (L<http://www.lesbonscomptes.com/recoll/>)
 
 =back
@@ -8382,9 +8431,9 @@ Create a file called C<~/.config/gtk-3.0/gtk.css> with the following content:
 
 Create a file called C<~/.config/gtk-3.0/gtk.css> with the following content:
 
-#gscan2pdf-ocr-output {
-  color: black;
-}
+ #gscan2pdf-ocr-output {
+   color: black;
+ }
 
 =head1 See Also
 
@@ -8398,7 +8447,7 @@ Jeffrey Ratcliffe (jffry at posteo dot net)
 
 =head1 Thanks to
 
-=over
+=over 4
 
 =item *
 all the people who have sent patches, translations, bugs and feedback.
