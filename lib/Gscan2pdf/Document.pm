@@ -225,6 +225,8 @@ sub quit {
 
 sub cancel {
     my ( $self, $cancel_callback, $process_callback ) = @_;
+    lock( $_self->{requests} );    # unlocks automatically when out of scope
+    lock( $_self->{pages} );       # unlocks automatically when out of scope
 
     # Empty process queue first to stop any new process from starting
     $logger->info('Emptying process queue');
@@ -252,8 +254,8 @@ sub cancel {
                 $process_callback->($pid);
             }
             $logger->info("Killing PID $pid");
-            local $SIG{HUP} = 'IGNORE';
-            killfam 'HUP', ($pid);
+            local $SIG{CHLD} = 'IGNORE';
+            killfam 'KILL', ($pid);
             delete $self->{running_pids}{$pidfile};
         }
     }
@@ -671,6 +673,7 @@ sub _throw_error {
 
 sub check_return_queue {
     my ($self) = @_;
+    lock( $_self->{return} );       # unlocks automatically when out of scope
     while ( defined( my $data = $_self->{return}->dequeue_nb() ) ) {
         if ( not defined $data->{type} ) {
             $logger->error("Bad data bundle $data in return queue.");
@@ -2311,6 +2314,8 @@ sub _thread_main {
             }
 
             when ('cancel') {
+                lock( $_self->{pages} )
+                  ;    # unlocks automatically when out of scope
 
                 # Empty pages queue
                 while ( $_self->{pages}->pending ) {

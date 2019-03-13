@@ -3,6 +3,8 @@
 * Really optionally change the djvu access and modification times to the
   metadata date.
 * Optionally encrypt PDFs.
+* Fix race condition when cancelling job.
+  Closes bug #317 (cancel tests randomly hang)
 * Update to Hungarian translation (thanks to csola)
 
 
