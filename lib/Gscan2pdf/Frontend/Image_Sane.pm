@@ -211,6 +211,7 @@ sub scan_page_finished_callback {
             and $status != SANE_STATUS_EOF )
       )
     {
+        if ( $_self->{abort_scan} ) { unlink $path }
         _enqueue_request( 'cancel', { uuid => $uuid_object->create_str } );
         if ( _scanned_enough_pages( $status, $options{npages}, $n_scanned ) ) {
             if ( defined $options{finished_callback} ) {
@@ -739,6 +740,7 @@ sub _thread_scan_page {
         $status = $_->status;
         _thread_throw_error( $self, $uuid, 'scan-page', $status,
             "$prog_name: sane_start: " . $_->error );
+        unlink $path;
     };
     if ( $status != SANE_STATUS_GOOD ) { return }
 

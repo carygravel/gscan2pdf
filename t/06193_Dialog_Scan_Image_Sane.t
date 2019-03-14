@@ -86,6 +86,14 @@ $dialog->{signal} = $dialog->signal_connect(
                 $loop->quit;
             }
         );
+
+        # clear up after ourselves
+        $dialog->signal_connect(
+            'new-scan' => sub {
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
+            }
+        );
         $dialog->scan;
         $loop->run unless ($flag);
 

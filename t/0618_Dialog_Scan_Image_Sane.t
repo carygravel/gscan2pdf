@@ -29,6 +29,14 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
     'reloaded-scan-options' => sub {
         $dialog->signal_handler_disconnect( $dialog->{reloaded_signal} );
 
+        # clean up after ourselves
+        $dialog->signal_connect(
+            'new-scan' => sub {
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
+            }
+        );
+
         $dialog->signal_connect(
             'changed-scan-option' => sub {
                 $dialog->set( 'num-pages',             0 );
@@ -58,7 +66,6 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 }
             }
         );
-        $dialog->scan;
         $loop->run unless ($flag);
 
         $dialog->set( 'side-to-scan',      'reverse' );

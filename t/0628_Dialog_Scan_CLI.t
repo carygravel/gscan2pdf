@@ -161,7 +161,8 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
 
         $dialog->signal_connect(
             'new-scan' => sub {
-                my ( $widget, $path, $n ) = @_;
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
                 pass 'new_scan';
                 Gtk3->main_quit;
             }

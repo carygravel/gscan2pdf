@@ -458,8 +458,9 @@ $signal = $dialog->signal_connect(
         #     );
         $dialog->signal_connect(
             'new-scan' => sub {
-                my ( $widget, $path, $n ) = @_;
-                is( $n, 2, 'new_scan' );
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
+                is( $page_number, 2, 'new_scan' );
                 $flag = TRUE;
                 Gtk3->main_quit;
             }

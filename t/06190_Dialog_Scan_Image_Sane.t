@@ -50,6 +50,8 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         );
         $dialog->{new_signal} = $dialog->signal_connect(
             'new-scan' => sub {
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
                 ++$n;
             }
         );
@@ -79,6 +81,8 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
             TRUE, 'flatbed selected' );
         $dialog->{new_signal} = $dialog->signal_connect(
             'new-scan' => sub {
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
                 $dialog->signal_handler_disconnect( $dialog->{new_signal} );
                 ok 1, 'Successfully scanned after cancel';
             }

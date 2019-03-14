@@ -334,11 +334,11 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         my $loop = Glib::MainLoop->new;
         $dialog->{new_signal} = $dialog->signal_connect(
             'new-scan' => sub {
-                my ( $widget, $path, $page_number, $x_resolution,
-                    $y_resolution ) = @_;
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
                 $dialog->signal_handler_disconnect( $dialog->{new_signal} );
-                is $x_resolution, 300, 'x-resolution defaults';
-                is $y_resolution, 300, 'y-resolution defaults';
+                is $xres, 300, 'x-resolution defaults';
+                is $yres, 300, 'y-resolution defaults';
             }
         );
         $dialog->signal_connect(
@@ -364,11 +364,11 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         $loop = Glib::MainLoop->new;
         $dialog->{new_signal} = $dialog->signal_connect(
             'new-scan' => sub {
-                my ( $widget, $path, $page_number, $x_resolution,
-                    $y_resolution ) = @_;
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
                 $dialog->signal_handler_disconnect( $dialog->{new_signal} );
-                is $x_resolution, 600, 'x from resolution';
-                is $y_resolution, 600, 'y from resolution';
+                is $xres, 600, 'x from resolution';
+                is $yres, 600, 'y from resolution';
             }
         );
         $dialog->signal_connect(
@@ -393,11 +393,11 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         $loop = Glib::MainLoop->new;
         $dialog->{new_signal} = $dialog->signal_connect(
             'new-scan' => sub {
-                my ( $widget, $path, $page_number, $x_resolution,
-                    $y_resolution ) = @_;
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
                 $dialog->signal_handler_disconnect( $dialog->{new_signal} );
-                is $x_resolution, 150, 'x-resolution from profile';
-                is $y_resolution, 600, 'y-resolution from resolution';
+                is $xres, 150, 'x-resolution from profile';
+                is $yres, 600, 'y-resolution from resolution';
             }
         );
         $dialog->signal_connect(

@@ -32,9 +32,10 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         my $n = 0;
         $dialog->signal_connect(
             'new-scan' => sub {
-                my ( $widget, $path, $num ) = @_;
+                my ( $widget, $path, $page_number, $xres, $yres ) = @_;
+                unlink $path;
                 ++$n;
-                if ( $num == 10 ) { pass 'new-scan emitted with n=10' }
+                if ( $page_number == 10 ) { pass 'new-scan emitted with n=10' }
                 if ( $n > 10 ) {
                     fail 'new-scan emitted 10 times';
                     Gtk3->main_quit;

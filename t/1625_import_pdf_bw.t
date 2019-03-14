@@ -27,6 +27,10 @@ my $old = `identify -format '%m %G %g %z-bit %r' test.png`;
 
 my $slist = Gscan2pdf::Document->new;
 
+# dir for temporary files
+my $dir = File::Temp->newdir;
+$slist->set_dir($dir);
+
 $slist->import_files(
     paths             => ['test.pdf'],
     finished_callback => sub {
