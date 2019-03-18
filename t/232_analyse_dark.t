@@ -1,10 +1,10 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
-use Test::More tests => 3;
+use Test::More tests => 2;
 
 BEGIN {
-    use_ok('Gscan2pdf::Document');
+    use Gscan2pdf::Document;
     use Gtk3 -init;    # Could just call init separately
 }
 
@@ -29,7 +29,7 @@ $slist->import_files(
     paths             => ['black.pnm'],
     finished_callback => sub {
         $slist->analyse(
-            page              => $slist->{data}[0][2]{uuid},
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub {
                 is( $slist->{data}[0][2]{mean}, 0, 'Found dark page' );
                 is( dirname("$slist->{data}[0][2]{filename}"),

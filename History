@@ -5,6 +5,7 @@
 * Optionally encrypt PDFs.
 * Fix race condition when cancelling job.
   Closes bug #317 (cancel tests randomly hang)
+* Fix bug causing Edit/Select/Blank only to work on second attempt
 * Update to Hungarian translation (thanks to csola)
 
 

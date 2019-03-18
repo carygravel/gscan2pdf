@@ -4249,23 +4249,24 @@ sub analyse_select_blank {
 
 # Select blank pages
 
-sub select_blank_page {
-    my ($page) = @_;
-    $logger->info("smp page: $page");
+sub select_blank_pages {
+    for my $page ( 0 .. $#{ $slist->{data} } ) {
 
-    #compare Std Dev to threshold
-    if ( $slist->{data}[$page][2]{std_dev} <= $SETTING{'Blank threshold'} ) {
-        $slist->select($page);
-        $logger->info('Selecting blank page');
+        #compare Std Dev to threshold
+        if ( $slist->{data}[$page][2]{std_dev} <= $SETTING{'Blank threshold'} )
+        {
+            $slist->select($page);
+            $logger->info('Selecting blank page');
+        }
+        else {
+            $slist->unselect($page);
+            $logger->info('Unselecting non-blank page');
+        }
+        $logger->info( 'StdDev: '
+              . $slist->{data}[$page][2]{std_dev}
+              . ' threshold: '
+              . $SETTING{'Blank threshold'} );
     }
-    else {
-        $slist->unselect($page);
-        $logger->info('Unselecting non-blank page');
-    }
-    $logger->info( 'StdDev: '
-          . $slist->{data}[$page][2]{std_dev}
-          . ' threshold: '
-          . $SETTING{'Blank threshold'} );
     return;
 }
 
@@ -4278,23 +4279,23 @@ sub analyse_select_dark {
 
 # Select dark pages
 
-sub select_dark_page {
-    my ($page) = @_;
-    $logger->info("smp page: $page");
+sub select_dark_pages {
+    for my $page ( 0 .. $#{ $slist->{data} } ) {
 
-    #compare Mean to threshold
-    if ( $slist->{data}[$page][2]{mean} <= $SETTING{'Dark threshold'} ) {
-        $slist->select($page);
-        $logger->info('Selecting dark page');
+        #compare Mean to threshold
+        if ( $slist->{data}[$page][2]{mean} <= $SETTING{'Dark threshold'} ) {
+            $slist->select($page);
+            $logger->info('Selecting dark page');
+        }
+        else {
+            $slist->unselect($page);
+            $logger->info('Unselecting non-dark page');
+        }
+        $logger->info( 'mean: '
+              . $slist->{data}[$page][2]{mean}
+              . ' threshold: '
+              . $SETTING{'Dark threshold'} );
     }
-    else {
-        $slist->unselect($page);
-        $logger->info('Unselecting non-dark page');
-    }
-    $logger->info( 'mean: '
-          . $slist->{data}[$page][2]{mean}
-          . ' threshold: '
-          . $SETTING{'Dark threshold'} );
     return;
 }
 
@@ -4492,6 +4493,7 @@ sub analyse {
     # Update undo/redo buffers
     take_snapshot();
 
+    my @pages_to_analyse;
     for my $i ( 0 .. $#{ $slist->{data} } ) {
         my $dirty_time   = $slist->{data}[$i][2]{dirty_time};
         my $analyse_time = $slist->{data}[$i][2]{analyse_time};
@@ -4501,36 +4503,38 @@ sub analyse {
             $logger->info(
 "Updating: $slist->{data}[$i][0] analyse_time: $analyse_time dirty_time: $dirty_time"
             );
-            my ( $signal, $pid );
-            $pid = $slist->analyse(
-                page            => $slist->{data}[$i][2]->{uuid},
-                queued_callback => sub {
-                    return update_tpbar(@_);
-                },
-                started_callback => sub {
-                    my ( $thread, $process, $completed, $total ) = @_;
-                    $signal =
-                      setup_tpbar( $thread, $process, $completed, $total,
-                        $pid );
-                    return TRUE if ( defined $signal );
-                },
-                finished_callback => sub {
-                    my ( $new_page, $pending ) = @_;
-                    if ( not $pending ) { $thbox->hide }
-                    if ( defined $signal ) {
-                        $tcbutton->signal_handler_disconnect($signal);
-                    }
-                    if ($select_blank) { select_blank_page($i) }
-                    if ($select_dark)  { select_dark_page($i) }
-                    $slist->save_session;
-                },
-                error_callback => \&error_callback,
-            );
+            push @pages_to_analyse, $slist->{data}[$i][2]->{uuid};
         }
-        else {
-            if ($select_blank) { select_blank_page($i) }
-            if ($select_dark)  { select_dark_page($i) }
-        }
+    }
+    if ( @pages_to_analyse > 0 ) {
+        my ( $signal, $pid );
+        $pid = $slist->analyse(
+            list_of_pages   => \@pages_to_analyse,
+            queued_callback => sub {
+                return update_tpbar(@_);
+            },
+            started_callback => sub {
+                my ( $thread, $process, $completed, $total ) = @_;
+                $signal =
+                  setup_tpbar( $thread, $process, $completed, $total, $pid );
+                return TRUE if ( defined $signal );
+            },
+            finished_callback => sub {
+                my ( $new_page, $pending ) = @_;
+                if ( not $pending ) { $thbox->hide }
+                if ( defined $signal ) {
+                    $tcbutton->signal_handler_disconnect($signal);
+                }
+                if ($select_blank) { select_blank_pages() }
+                if ($select_dark)  { select_dark_pages() }
+                $slist->save_session;
+            },
+            error_callback => \&error_callback,
+        );
+    }
+    else {
+        if ($select_blank) { select_blank_pages() }
+        if ($select_dark)  { select_dark_pages() }
     }
     return;
 }

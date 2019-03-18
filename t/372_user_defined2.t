@@ -31,7 +31,7 @@ $slist->import_files(
             command           => 'convert %i -negate %i',
             finished_callback => sub {
                 $slist->analyse(
-                    page              => $slist->{data}[0][2]{uuid},
+                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                     finished_callback => sub { Gtk3->main_quit }
                 );
             }

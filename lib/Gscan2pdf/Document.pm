@@ -1395,8 +1395,8 @@ sub analyse {
     my $sentinel = _enqueue_request(
         'analyse',
         {
-            page => $options{page},
-            uuid => $uuid
+            list_of_pages => $options{list_of_pages},
+            uuid          => $uuid
         }
     );
     return $self->_monitor_process(
@@ -2299,7 +2299,8 @@ sub _thread_main {
 
         given ( $request->{action} ) {
             when ('analyse') {
-                _thread_analyse( $self, $request->{page}, $request->{uuid} );
+                _thread_analyse( $self, $request->{list_of_pages},
+                    $request->{uuid} );
             }
 
             when ('brightness-contrast') {
@@ -4158,26 +4159,30 @@ sub _thread_save_hocr {
 }
 
 sub _thread_analyse {
-    my ( $self, $page, $uuid ) = @_;
+    my ( $self, $list_of_pages, $uuid ) = @_;
 
-    # Identify with imagemagick
-    my $image = Image::Magick->new;
-    my $e     = $image->Read( $page->{filename} );
-    if ("$e") {
-        $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Analyse',
-            "Error reading $page->{filename}: $e." );
-        return;
-    }
-    return if $_self->{cancel};
+    for my $page ( @{$list_of_pages} ) {
 
-    my ( $depth, $min, $max, $mean, $stddev ) = $image->Statistics();
-    if ( not defined $depth ) { $logger->warn('image->Statistics() failed') }
-    $logger->info("std dev: $stddev mean: $mean");
-    return if $_self->{cancel};
-    my $maxq = ( 1 << $depth ) - 1;
-    $mean = $maxq ? $mean / $maxq : 0;
-    if ( $stddev eq 'nan' ) { $stddev = 0 }
+        # Identify with imagemagick
+        my $image = Image::Magick->new;
+        my $e     = $image->Read( $page->{filename} );
+        if ("$e") {
+            $logger->error($e);
+            _thread_throw_error( $self, $uuid, $page->{uuid}, 'Analyse',
+                "Error reading $page->{filename}: $e." );
+            return;
+        }
+        return if $_self->{cancel};
+
+        my ( $depth, $min, $max, $mean, $stddev ) = $image->Statistics();
+        if ( not defined $depth ) {
+            $logger->warn('image->Statistics() failed');
+        }
+        $logger->info("std dev: $stddev mean: $mean");
+        return if $_self->{cancel};
+        my $maxq = ( 1 << $depth ) - 1;
+        $mean = $maxq ? $mean / $maxq : 0;
+        if ( $stddev =~ /^[-]nan$/xsm ) { $stddev = 0 }
 
 # my $quantum_depth = $image->QuantumDepth;
 # warn "image->QuantumDepth failed" unless defined $quantum_depth;
@@ -4188,17 +4193,18 @@ sub _thread_analyse {
 #   if most of the Std Dev are high, then it might be portrait
 # TODO may need to send quantumdepth
 
-    $page->{mean}         = $mean;
-    $page->{std_dev}      = $stddev;
-    $page->{analyse_time} = timestamp();
-    $self->{return}->enqueue(
-        {
-            type => 'page',
-            uuid => $uuid,
-            page => $page,
-            info => { replace => $page->{uuid} }
-        }
-    );
+        $page->{mean}         = $mean;
+        $page->{std_dev}      = $stddev;
+        $page->{analyse_time} = timestamp();
+        $self->{return}->enqueue(
+            {
+                type => 'page',
+                uuid => $uuid,
+                page => $page,
+                info => { replace => $page->{uuid} }
+            }
+        );
+    }
     $self->{return}->enqueue(
         {
             type    => 'finished',
