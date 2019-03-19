@@ -331,8 +331,8 @@ Gscan2pdf::Frontend::CLI->find_scan_options(
     device            => 'test',
     finished_callback => sub {
         my ($options) = @_;
-        is( $options->by_name('source')->{name}, 'source', 'by_name' );
-        is( $options->by_name('button')->{name}, 'button', 'by_name' );
+        is( $options->by_name('source')->{name}, 'source', 'by_name source' );
+        is( $options->by_name('button')->{name}, 'button', 'by_name button' );
         is( $options->by_name('mode')->{val},
             'Gray', 'find_scan_options default option' );
         $loop->quit;
@@ -385,25 +385,29 @@ $loop->run;
 
 #########################
 
-$loop = Glib::MainLoop->new;
-Gscan2pdf::Frontend::CLI->scan_pages(
-    frontend         => 'scanadf',
-    device           => 'test',
-    npages           => 1,
-    started_callback => sub {
-        pass('scanadf starts');
-    },
-    new_page_callback => sub {
-        my ( $path, $n ) = @_;
-        ok( -e $path, 'scanadf scans' );
-        unlink $path;
-    },
-    finished_callback => sub {
-        pass('scanadf finishes');
-        $loop->quit;
-    },
-);
-$loop->run;
+SKIP: {
+    skip 'scanadf not installed', 3
+      unless ( system("which scanadf > /dev/null 2> /dev/null") == 0 );
+    $loop = Glib::MainLoop->new;
+    Gscan2pdf::Frontend::CLI->scan_pages(
+        frontend         => 'scanadf',
+        device           => 'test',
+        npages           => 1,
+        started_callback => sub {
+            pass('scanadf starts');
+        },
+        new_page_callback => sub {
+            my ( $path, $n ) = @_;
+            ok( -e $path, 'scanadf scans' );
+            unlink $path;
+        },
+        finished_callback => sub {
+            pass('scanadf finishes');
+            $loop->quit;
+        },
+    );
+    $loop->run;
+}
 
 #########################
 
