@@ -5104,7 +5104,7 @@ sub crop_selection {
     # Update undo/redo buffers
     take_snapshot();
 
-    if ( not @pagelist ) {
+    if ( not @pagelist or not defined $pagelist[0] ) {
         @pagelist = $slist->get_selected_indices;
     }
     if ( not @pagelist ) { return }

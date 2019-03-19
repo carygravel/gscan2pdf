@@ -6,6 +6,7 @@
 * Fix race condition when cancelling job.
   Closes bug #317 (cancel tests randomly hang)
 * Fix bug causing Edit/Select/Blank only to work on second attempt
+* Fix bug where toolbar crop always operates on first page
 * Update to Hungarian translation (thanks to csola)
 
 
