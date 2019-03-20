@@ -43,7 +43,7 @@ SKIP: {
                 },
                 finished_callback => sub {
                     like( $slist->{data}[0][2]{hocr},
-                        qr/The/, 'Tesseract returned "The"' );
+                        qr/T[hn]e/, 'Tesseract returned "The"' );
                     like( $slist->{data}[0][2]{hocr},
                         qr/quick/, 'Tesseract returned "quick"' );
                     like( $slist->{data}[0][2]{hocr},

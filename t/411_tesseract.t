@@ -90,7 +90,7 @@ SKIP: {
         logger   => $logger
     );
 
-    like( $got, qr/The/,     'Tesseract returned "The"' );
+    like( $got, qr/T[hn]e/,  'Tesseract returned "The"' );
     like( $got, qr/quick/,   'Tesseract returned "quick"' );
     like( $got, qr/brown/,   'Tesseract returned "brown"' );
     like( $got, qr/f(o|0)x/, 'Tesseract returned "fox"' );

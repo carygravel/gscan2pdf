@@ -51,7 +51,7 @@ SKIP: {
             like( $slist->{data}[0][2]{filename},
                 qr/pnm$/, 'no conversion PNM to PNG' );
             like( $slist->{data}[0][2]{hocr},
-                qr/The/, 'Tesseract returned "The"' );
+                qr/T[hn]e/, 'Tesseract returned "The"' );
             like( $slist->{data}[0][2]{hocr},
                 qr/quick/, 'Tesseract returned "quick"' );
             like( $slist->{data}[0][2]{hocr},
