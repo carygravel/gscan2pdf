@@ -118,7 +118,7 @@ SKIP: {
 
     # Create b&w test image
     system(
-"convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:'öÖäÄüÜß' test.png"
+"convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:'süß tränenüberströmt' test.png"
     );
 
     ( $got, $messages ) = Gscan2pdf::Tesseract->hocr(
