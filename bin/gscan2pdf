@@ -14,7 +14,7 @@
 #    Update translators in credits (https://launchpad.net/gscan2pdf/+topcontributors)
 #    Check a locale with LC_ALL=de_DE LC_MESSAGES=de_DE LC_CTYPE=de_DE LANG=de_DE LANGUAGE=de_DE bin/gscan2pdf --log=log --locale=<wherever the locale directory is>
 #    Check $VERSION. If necessary bump with something like
-#     xargs sed -i "s/\(\$VERSION *= \)'2\.3\.0'/\1'2.4.0'/" < MANIFEST
+#     xargs sed -i "s/\(\$VERSION *= \)'2\.4\.0'/\1'2.5.0'/" < MANIFEST
 #    Make appropriate updates to ../debian/changelog
 # 2.  perl Makefile.PL
 #     Upload .pot
@@ -137,7 +137,7 @@ Readonly my $_100_000MB              => 100_000;
 
 Glib::set_application_name('gscan2pdf');
 my $prog_name = Glib::get_application_name;
-my $VERSION   = '2.4.0';
+my $VERSION   = '2.5.0';
 
 # Image border to ensure that a scaled to fit image gets no scrollbars
 my $border = 1;
@@ -483,11 +483,11 @@ sub parse_arguments {
         'help'         => \$help,
         'log=s'        => \$log,
         'debug'        => sub { $log_level = 'DEBUG'; $debug = TRUE },
-        'info'  => sub { $log_level = 'INFO' },
-        'warn'  => sub { $log_level = 'WARN' },
-        'error' => sub { $log_level = 'ERROR' },
-        'fatal' => sub { $log_level = 'FATAL' },
-        'version' => sub { warn "$prog_name $VERSION\n"; exit 0 },
+        'info'         => sub { $log_level = 'INFO' },
+        'warn'         => sub { $log_level = 'WARN' },
+        'error'        => sub { $log_level = 'ERROR' },
+        'fatal'        => sub { $log_level = 'FATAL' },
+        'version'      => sub { warn "$prog_name $VERSION\n"; exit 0 },
     );
     if ( not GetOptions(@args) ) { exit 1 }
     $Image::Sane::DEBUG = $debug;
