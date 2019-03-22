@@ -343,7 +343,8 @@ msgstr "_Küszöbérték"
 
 #: bin/gscan2pdf:985
 msgid "Change each pixel above this threshold to black"
-msgstr "Minden képpont módosítása feketére, amely ezen küszöb érték felett van"
+msgstr ""
+"Minden képpont módosítása feketére, amely ezen küszöb érték felett van"
 
 #: bin/gscan2pdf:990
 msgid "_Brightness / Contrast"
@@ -1206,7 +1207,8 @@ msgid "Replace"
 msgstr "Csere"
 
 #: bin/gscan2pdf:6317
-msgid "Replace the contents of the text buffer with that from the OCR output."
+msgid ""
+"Replace the contents of the text buffer with that from the OCR output."
 msgstr "A szöveg puffer tartalmának cseréje az OCR kimenetével"
 
 #: bin/gscan2pdf:6321
@@ -1267,8 +1269,8 @@ msgid ""
 "\n"
 "This error is normally due to ImageMagick exceeding its resource limits. "
 "These can be extended by editing its policy file, which on my system is "
-"found at /etc/ImageMagick-6/policy.xml Please see https://imagemagick.org/"
-"script/resources.php for more information"
+"found at /etc/ImageMagick-6/policy.xml Please see "
+"https://imagemagick.org/script/resources.php for more information"
 msgstr ""
 "\n"
 "\n"
