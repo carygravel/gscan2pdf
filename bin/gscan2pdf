@@ -4385,6 +4385,7 @@ rodroes
 morodan
 Hugues Drolet
 Martin Butter
+Albano Battistella
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
