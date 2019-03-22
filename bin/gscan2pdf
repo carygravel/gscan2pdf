@@ -4384,6 +4384,7 @@ Mikhail Novosyolov
 rodroes
 morodan
 Hugues Drolet
+Martin Butter
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );

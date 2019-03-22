@@ -8,6 +8,7 @@
 * Fix bug causing Edit/Select/Blank only to work on second attempt
 * Fix bug where toolbar crop always operates on first page
 * Update to Hungarian translation (thanks to csola)
+* Update to German translation (thanks to Martin Butter)
 
 
 2.4.0 (24.02.2019):
