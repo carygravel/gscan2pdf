@@ -1,3 +1,10 @@
+gscan2pdf (2.5.1-1) experimental; urgency=low
+
+  * New upstream release
+  * + recommends: pdftk
+
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 23 Mar 2019 18:52:38 +0100
+
 gscan2pdf (2.5.0-1) experimental; urgency=low
 
   * New upstream release
