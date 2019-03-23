@@ -738,6 +738,9 @@ sub check_dependencies {
         my ( $name, $stream, $regex, $cmd ) = @{$_};
         $dependencies{$name} =
           Gscan2pdf::Document::program_version( $stream, $regex, $cmd );
+        if ( $dependencies{$name} and $dependencies{$name} eq '-1' ) {
+            delete $dependencies{$name};
+        }
         if ( $dependencies{$name} ) {
             $logger->info("Found $name $dependencies{$name}");
             if ( $name eq 'pdftk' ) {
@@ -1312,6 +1315,10 @@ EOS
     );
     if ( not $dependencies{ocr} ) {
         $msg .= __("OCR requires gocr, tesseract, ocropus, or cuneiform\n");
+    }
+
+    if ( not $dependencies{pdftk} ) {
+        $msg .= __("PDF encryption requires pdftk\n");
     }
 
     # Put up warning if needed
