@@ -13,57 +13,61 @@ BEGIN {
 
 #########################
 
-Gscan2pdf::Translation::set_domain('gscan2pdf');
-use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($FATAL);
-my $logger = Log::Log4perl::get_logger;
+SKIP: {
+    skip 'DjVuLibre not installed', 2
+      unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
+    Gscan2pdf::Translation::set_domain('gscan2pdf');
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($FATAL);
+    my $logger = Log::Log4perl::get_logger;
 
-# The overrides must occur before the thread is spawned in setup.
-my $override = Sub::Override->new;
-$override->replace(
-    'Gscan2pdf::Page::import_djvutext' => sub {
-        my ( $self, $text ) = @_;
-        croak 'Error parsing djvu text';
-        return;
-    }
-);
+    # The overrides must occur before the thread is spawned in setup.
+    my $override = Sub::Override->new;
+    $override->replace(
+        'Gscan2pdf::Page::import_djvutext' => sub {
+            my ( $self, $text ) = @_;
+            croak 'Error parsing djvu text';
+            return;
+        }
+    );
 
-Gscan2pdf::Document->setup($logger);
+    Gscan2pdf::Document->setup($logger);
 
-# Create test image
-system('convert rose: test.jpg;c44 test.jpg test.djvu');
+    # Create test image
+    system('convert rose: test.jpg;c44 test.jpg test.djvu');
 
-my $old = `identify -format '%m %G %g %z-bit %r' test.djvu`;
+    my $old = `identify -format '%m %G %g %z-bit %r' test.djvu`;
 
-my $slist = Gscan2pdf::Document->new;
+    my $slist = Gscan2pdf::Document->new;
 
-# dir for temporary files
-my $dir = File::Temp->newdir;
-$slist->set_dir($dir);
+    # dir for temporary files
+    my $dir = File::Temp->newdir;
+    $slist->set_dir($dir);
 
-my $expected = <<'EOS';
+    my $expected = <<'EOS';
 EOS
 
-$slist->import_files(
-    paths          => ['test.djvu'],
-    error_callback => sub {
-        my ( $uuid, $process, $message ) = @_;
-        ok( ( defined $message and $message ne '' ),
-            'error callback has message' );
-    },
-    finished_callback => sub {
-        like(
+    $slist->import_files(
+        paths          => ['test.djvu'],
+        error_callback => sub {
+            my ( $uuid, $process, $message ) = @_;
+            ok( ( defined $message and $message ne '' ),
+                'error callback has message' );
+        },
+        finished_callback => sub {
+            like(
 `identify -format '%m %G %g %z-bit %r' $slist->{data}[0][2]{filename}`,
-            qr/^TIFF/,
-            'DjVu otherwise imported correctly'
-        );
-        Gtk3->main_quit;
-    }
-);
-Gtk3->main;
+                qr/^TIFF/,
+                'DjVu otherwise imported correctly'
+            );
+            Gtk3->main_quit;
+        }
+    );
+    Gtk3->main;
 
 #########################
 
-unlink 'test.djvu', 'text.txt', 'test.jpg', <$dir/*>;
-rmdir $dir;
-Gscan2pdf::Document->quit();
+    unlink 'test.djvu', 'text.txt', 'test.jpg', <$dir/*>;
+    rmdir $dir;
+    Gscan2pdf::Document->quit();
+}

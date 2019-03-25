@@ -55,6 +55,6 @@ SKIP: {
 
     unlink $filename, <$dir/*>;
     rmdir $dir;
-}
 
-Gscan2pdf::Document->quit();
+    Gscan2pdf::Document->quit();
+}

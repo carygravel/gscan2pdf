@@ -9,48 +9,54 @@ BEGIN {
 
 #########################
 
-Gscan2pdf::Translation::set_domain('gscan2pdf');
-use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($WARN);
-my $logger = Log::Log4perl::get_logger;
-Gscan2pdf::Document->setup($logger);
+SKIP: {
+    skip 'DjVuLibre not installed', 3
+      unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
 
-# Create test image
-system('convert rose: test.pnm');
+    Gscan2pdf::Translation::set_domain('gscan2pdf');
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($WARN);
+    my $logger = Log::Log4perl::get_logger;
+    Gscan2pdf::Document->setup($logger);
 
-my $slist = Gscan2pdf::Document->new;
+    # Create test image
+    system('convert rose: test.pnm');
 
-# dir for temporary files
-my $dir = File::Temp->newdir;
-$slist->set_dir($dir);
+    my $slist = Gscan2pdf::Document->new;
 
-$slist->import_files(
-    paths             => ['test.pnm'],
-    finished_callback => sub {
-        $slist->save_djvu(
-            path          => 'test.djvu',
-            list_of_pages => [ $slist->{data}[0][2]{uuid} ],
-            options       => {
-                post_save_hook         => 'convert %i test2.png',
-                post_save_hook_options => 'fg',
-            },
-            finished_callback => sub {
-                is( -s 'test.djvu', 1054, 'DjVu created with expected size' );
-                is( $slist->scans_saved, 1, 'pages tagged as saved' );
-                Gtk3->main_quit;
-            }
-        );
-    }
-);
-Gtk3->main;
+    # dir for temporary files
+    my $dir = File::Temp->newdir;
+    $slist->set_dir($dir);
 
-like(
-    `identify test2.png`,
-    qr/test2.png PNG 70x46 70x46\+0\+0 8-bit sRGB/,
-    'ran post-save hook'
-);
+    $slist->import_files(
+        paths             => ['test.pnm'],
+        finished_callback => sub {
+            $slist->save_djvu(
+                path          => 'test.djvu',
+                list_of_pages => [ $slist->{data}[0][2]{uuid} ],
+                options       => {
+                    post_save_hook         => 'convert %i test2.png',
+                    post_save_hook_options => 'fg',
+                },
+                finished_callback => sub {
+                    is( -s 'test.djvu',
+                        1054, 'DjVu created with expected size' );
+                    is( $slist->scans_saved, 1, 'pages tagged as saved' );
+                    Gtk3->main_quit;
+                }
+            );
+        }
+    );
+    Gtk3->main;
+
+    like(
+        `identify test2.png`,
+        qr/test2.png PNG 70x46 70x46\+0\+0 8-bit sRGB/,
+        'ran post-save hook'
+    );
 
 #########################
 
-unlink 'test.pnm', 'test.djvu', 'test2.png';
-Gscan2pdf::Document->quit();
+    unlink 'test.pnm', 'test.djvu', 'test2.png';
+    Gscan2pdf::Document->quit();
+}

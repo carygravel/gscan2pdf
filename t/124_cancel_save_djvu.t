@@ -9,46 +9,50 @@ BEGIN {
 
 #########################
 
-Gscan2pdf::Translation::set_domain('gscan2pdf');
-use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($WARN);
-my $logger = Log::Log4perl::get_logger;
-Gscan2pdf::Document->setup($logger);
+SKIP: {
+    skip 'DjVuLibre not installed', 1
+      unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
+    Gscan2pdf::Translation::set_domain('gscan2pdf');
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($WARN);
+    my $logger = Log::Log4perl::get_logger;
+    Gscan2pdf::Document->setup($logger);
 
-# Create test image
-system('convert rose: test.pnm');
+    # Create test image
+    system('convert rose: test.pnm');
 
-my $slist = Gscan2pdf::Document->new;
+    my $slist = Gscan2pdf::Document->new;
 
-# dir for temporary files
-my $dir = File::Temp->newdir;
-$slist->set_dir($dir);
+    # dir for temporary files
+    my $dir = File::Temp->newdir;
+    $slist->set_dir($dir);
 
-$slist->import_files(
-    paths             => ['test.pnm'],
-    finished_callback => sub {
-        $slist->save_djvu(
-            path              => 'test.djvu',
-            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
-            finished_callback => sub { ok 0, 'Finished callback' }
-        );
-        $slist->cancel(
-            sub {
-                $slist->save_image(
-                    path              => 'test.jpg',
-                    list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
-                    finished_callback => sub { Gtk3->main_quit }
-                );
-            }
-        );
-    }
-);
-Gtk3->main;
+    $slist->import_files(
+        paths             => ['test.pnm'],
+        finished_callback => sub {
+            $slist->save_djvu(
+                path              => 'test.djvu',
+                list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
+                finished_callback => sub { ok 0, 'Finished callback' }
+            );
+            $slist->cancel(
+                sub {
+                    $slist->save_image(
+                        path              => 'test.jpg',
+                        list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
+                        finished_callback => sub { Gtk3->main_quit }
+                    );
+                }
+            );
+        }
+    );
+    Gtk3->main;
 
-is( system('identify test.jpg'),
-    0, 'can create a valid JPG after cancelling save DjVu process' );
+    is( system('identify test.jpg'),
+        0, 'can create a valid JPG after cancelling save DjVu process' );
 
 #########################
 
-unlink 'test.pnm', 'test.djvu', 'test.jpg';
-Gscan2pdf::Document->quit();
+    unlink 'test.pnm', 'test.djvu', 'test.jpg';
+    Gscan2pdf::Document->quit();
+}

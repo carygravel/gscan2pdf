@@ -2,16 +2,16 @@ Source: gscan2pdf
 Section: utils
 Priority: optional
 Build-Depends: debhelper (>= 11)
-Build-Depends-Indep: perl (>= 5.8.0-7), gettext, libtest-pod-perl
-# libgtk3-imageview-perl, libgtk3-simplelist-perl,
-# libimage-sane-perl, liblocale-gettext-perl (>= 1.05),
-# sane-utils (>= 1.0.17), libtiff-tools, libpdf-api2-perl,
-# libconfig-general-perl (>= 2.40), libimage-magick-perl, imagemagick,
-# librsvg2-common, libset-intspan-perl (>= 1.10), liblist-moreutils-perl,
-# libhtml-parser-perl, libgoocanvas2-perl, libproc-processtable-perl,
-# libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl,
-# libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl, xauth, xfonts-base,
-# xvfb, libatk-adaptor, libgail-common, libsub-override-perl, poppler-utils
+Build-Depends-Indep: perl (>= 5.8.0-7), gettext, libtest-pod-perl,
+ libgtk3-simplelist-perl, libimage-sane-perl, liblocale-gettext-perl (>= 1.05),
+ sane-utils (>= 1.0.17), libtiff-tools, libpdf-api2-perl,
+ libconfig-general-perl (>= 2.40), libimage-magick-perl, imagemagick,
+ librsvg2-common, libset-intspan-perl (>= 1.10), liblist-moreutils-perl,
+ libhtml-parser-perl, libgoocanvas2-perl, libproc-processtable-perl,
+ libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl,
+ libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl, xauth, xfonts-base,
+ xvfb, libatk-adaptor, libgail-common, libsub-override-perl, poppler-utils,
+ ghostscript, gsfonts
 Maintainer: Jeffrey Ratcliffe <jjr@debian.org>
 Standards-Version: 4.3.0
 Vcs-git: https://gscan2pdf.git.sourceforge.net/gitroot/gscan2pdf
@@ -29,7 +29,6 @@ Depends: libgtk3-simplelist-perl, libgtk3-perl (>= 0.028),
  libhtml-parser-perl, libgoocanvas2-perl, libproc-processtable-perl,
  libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl, libfilesys-df-perl,
  libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl, ${misc:Depends}
-# libgtk3-imageview-perl,
 Recommends: sane, xdg-utils, djvulibre-bin, pdftk,
  unpaper, tesseract-ocr | gocr | cuneiform
 Description: GUI to produce PDFs or DjVus from scanned documents

@@ -9,37 +9,46 @@ BEGIN {
 
 #########################
 
-Gscan2pdf::Translation::set_domain('gscan2pdf');
-use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($WARN);
-my $logger = Log::Log4perl::get_logger;
-Gscan2pdf::Document->setup($logger);
+SKIP: {
+    skip 'DjVuLibre not installed', 1
+      unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
 
-# Create test image
-system('convert rose: test.pnm');
+    Gscan2pdf::Translation::set_domain('gscan2pdf');
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($WARN);
+    my $logger = Log::Log4perl::get_logger;
+    Gscan2pdf::Document->setup($logger);
 
-my $slist = Gscan2pdf::Document->new;
+    # Create test image
+    system('convert rose: test.pnm');
 
-# dir for temporary files
-my $dir = File::Temp->newdir;
-$slist->set_dir($dir);
+    my $slist = Gscan2pdf::Document->new;
 
-$slist->import_files(
-    paths             => ['test.pnm'],
-    finished_callback => sub {
-        $slist->{data}[0][2]{hocr} = 'The quick brown fox';
-        $slist->save_djvu(
-            path              => 'test.djvu',
-            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
-            finished_callback => sub { Gtk3->main_quit }
-        );
-    }
-);
-Gtk3->main;
+    # dir for temporary files
+    my $dir = File::Temp->newdir;
+    $slist->set_dir($dir);
 
-like( `djvutxt test.djvu`, qr/The quick brown fox/, 'DjVu with expected text' );
+    $slist->import_files(
+        paths             => ['test.pnm'],
+        finished_callback => sub {
+            $slist->{data}[0][2]{hocr} = 'The quick brown fox';
+            $slist->save_djvu(
+                path              => 'test.djvu',
+                list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
+                finished_callback => sub { Gtk3->main_quit }
+            );
+        }
+    );
+    Gtk3->main;
+
+    like(
+        `djvutxt test.djvu`,
+        qr/The quick brown fox/,
+        'DjVu with expected text'
+    );
 
 #########################
 
-unlink 'test.pnm', 'test.djvu';
-Gscan2pdf::Document->quit();
+    unlink 'test.pnm', 'test.djvu';
+    Gscan2pdf::Document->quit();
+}

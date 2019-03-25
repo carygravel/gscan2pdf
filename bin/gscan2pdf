@@ -29,6 +29,9 @@
 #     sudo DIST=sid pbuilder update
 #     DIST=sid pdebuild
 #     lintian -iI --pedantic .changes
+#    or
+#     sudo sbuild-update -udr sid-amd64-sbuild
+#     sbuild -c sid-amd64-sbuild
 #    check contents with dpkg-deb --contents
 #    test dist sudo dpkg -i gscan2pdf_x.x.x_all.deb
 #     dput ftp-master .changes

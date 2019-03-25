@@ -9,41 +9,45 @@ BEGIN {
 
 #########################
 
-Gscan2pdf::Translation::set_domain('gscan2pdf');
-use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($WARN);
-my $logger = Log::Log4perl::get_logger;
-Gscan2pdf::Document->setup($logger);
+SKIP: {
+    skip 'DjVuLibre not installed', 1
+      unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
+    Gscan2pdf::Translation::set_domain('gscan2pdf');
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($WARN);
+    my $logger = Log::Log4perl::get_logger;
+    Gscan2pdf::Document->setup($logger);
 
-# Create test image
-system('convert rose: -density 100x200 test.png');
+    # Create test image
+    system('convert rose: -density 100x200 test.png');
 
-my $slist = Gscan2pdf::Document->new;
+    my $slist = Gscan2pdf::Document->new;
 
-# dir for temporary files
-my $dir = File::Temp->newdir;
-$slist->set_dir($dir);
+    # dir for temporary files
+    my $dir = File::Temp->newdir;
+    $slist->set_dir($dir);
 
-$slist->import_files(
-    paths             => ['test.png'],
-    finished_callback => sub {
-        $slist->save_djvu(
-            path              => 'test.djvu',
-            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
-            finished_callback => sub {
-                is(
-                    `djvudump test.djvu | grep INFO`,
+    $slist->import_files(
+        paths             => ['test.png'],
+        finished_callback => sub {
+            $slist->save_djvu(
+                path              => 'test.djvu',
+                list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
+                finished_callback => sub {
+                    is(
+                        `djvudump test.djvu | grep INFO`,
 "    INFO [10]         DjVu 140x46, v24, 200 dpi, gamma=2.2\n",
-                    'created djvu with expect size and resolution'
-                );
-                Gtk3->main_quit;
-            }
-        );
-    }
-);
-Gtk3->main;
+                        'created djvu with expect size and resolution'
+                    );
+                    Gtk3->main_quit;
+                }
+            );
+        }
+    );
+    Gtk3->main;
 
 #########################
 
-unlink 'test.png', 'test.djvu';
-Gscan2pdf::Document->quit();
+    unlink 'test.png', 'test.djvu';
+    Gscan2pdf::Document->quit();
+}

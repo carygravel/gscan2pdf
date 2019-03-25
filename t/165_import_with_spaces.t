@@ -9,26 +9,31 @@ BEGIN {
 
 #########################
 
-Gscan2pdf::Translation::set_domain('gscan2pdf');
-use Log::Log4perl qw(:easy);
-Log::Log4perl->easy_init($WARN);
-my $logger = Log::Log4perl::get_logger;
-Gscan2pdf::Document->setup($logger);
+SKIP: {
+    skip 'DjVuLibre not installed', 1
+      unless ( system("which c44 > /dev/null 2> /dev/null") == 0 );
+    Gscan2pdf::Translation::set_domain('gscan2pdf');
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($WARN);
+    my $logger = Log::Log4perl::get_logger;
+    Gscan2pdf::Document->setup($logger);
 
-# Create test image
-system('convert rose: test.pnm; c44 test.pnm te\ st.djvu');
+    # Create test image
+    system('convert rose: test.pnm; c44 test.pnm te\ st.djvu');
 
-my $slist = Gscan2pdf::Document->new;
-$slist->import_files(
-    paths             => ['te st.djvu'],
-    finished_callback => sub {
-        is( $#{ $slist->{data} }, 0, 'Imported correctly DjVu with spaces' );
-        Gtk3->main_quit;
-    }
-);
-Gtk3->main;
+    my $slist = Gscan2pdf::Document->new;
+    $slist->import_files(
+        paths             => ['te st.djvu'],
+        finished_callback => sub {
+            is( $#{ $slist->{data} }, 0,
+                'Imported correctly DjVu with spaces' );
+            Gtk3->main_quit;
+        }
+    );
+    Gtk3->main;
 
 #########################
 
-unlink 'test.pnm', 'te st.djvu';
-Gscan2pdf::Document->quit();
+    unlink 'test.pnm', 'te st.djvu';
+    Gscan2pdf::Document->quit();
+}
