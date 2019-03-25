@@ -17,7 +17,6 @@ Standards-Version: 4.3.0
 Vcs-git: https://gscan2pdf.git.sourceforge.net/gitroot/gscan2pdf
 Vcs-Browser: https://sourceforge.net/p/gscan2pdf/code/ci/master/tree/
 Homepage: http://gscan2pdf.sourceforge.net/
-#Testsuite: autopkgtest-pkg-perl
 
 Package: gscan2pdf
 Architecture: all
