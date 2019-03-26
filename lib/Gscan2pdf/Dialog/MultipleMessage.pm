@@ -8,13 +8,19 @@ use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Gscan2pdf::Dialog;
 use Glib::Object::Subclass Gscan2pdf::Dialog::;
 use Readonly;
-Readonly our $COL_MESSAGE  => 3;
-Readonly our $COL_CHECKBOX => 4;
+Readonly my $COL_MESSAGE  => 3;
+Readonly my $COL_CHECKBOX => 4;
+
+my %types;
 
 our $VERSION = '2.5.1';
 
 sub INIT_INSTANCE {
     my $self = shift;
+    %types = (
+        error   => __('Error'),
+        warning => __('Warning'),
+    );
     $self->set_position('center-on-parent');
     my $vbox = $self->get_content_area;
     $self->{grid}             = Gtk3::Grid->new;
@@ -57,7 +63,7 @@ sub add_message {
         0, $self->{grid_rows}, 1, 1 );
     $self->{grid}->attach( Gtk3::Label->new( $options{process} ),
         1, $self->{grid_rows}, 1, 1 );
-    $self->{grid}->attach( Gtk3::Label->new( $options{type} ),
+    $self->{grid}->attach( Gtk3::Label->new( $types{ $options{type} } ),
         2, $self->{grid_rows}, 1, 1 );
     my $view   = Gtk3::TextView->new;
     my $buffer = $view->get_buffer;
