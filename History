@@ -1,6 +1,7 @@
 2.5.2 (23.04.2019):
 
 * Allow translations for message types in multiple message window
+* Improve progress message whilst analysing pages
 * Update to Hungarian translation (thanks to csola)
 
 

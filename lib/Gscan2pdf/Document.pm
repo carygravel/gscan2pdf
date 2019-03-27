@@ -4161,7 +4161,11 @@ sub _thread_save_hocr {
 sub _thread_analyse {
     my ( $self, $list_of_pages, $uuid ) = @_;
 
+    my $i     = 1;
+    my $total = @{$list_of_pages};
     for my $page ( @{$list_of_pages} ) {
+        $self->{progress} = ( $i - 1 ) / $total;
+        $self->{message} = sprintf __('Analysing page %i of %i'), $i++, $total;
 
         # Identify with imagemagick
         my $image = Image::Magick->new;
