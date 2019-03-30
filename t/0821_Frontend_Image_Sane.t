@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 3;
+use Test::More tests => 6;
 
 BEGIN {
     use_ok('Gscan2pdf::Frontend::Image_Sane');
@@ -40,3 +40,13 @@ Gtk3->main;
 unlink $path;
 
 Gscan2pdf::Frontend::Image_Sane->quit();
+
+is( Gscan2pdf::Frontend::Image_Sane::decode_info(1),
+    'SANE_INFO_INEXACT', 'SANE_INFO_INEXACT' );
+is(
+    Gscan2pdf::Frontend::Image_Sane::decode_info(3),
+    'SANE_INFO_RELOAD_OPTIONS + SANE_INFO_INEXACT',
+    'combination'
+);
+is( Gscan2pdf::Frontend::Image_Sane::decode_info(11),
+    '? + SANE_INFO_RELOAD_OPTIONS + SANE_INFO_INEXACT', 'missing' );

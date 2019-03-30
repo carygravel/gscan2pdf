@@ -24,6 +24,7 @@ Readonly my $MAXVAL_8_BIT   => 2**$_8_BIT - 1;
 Readonly my $_16_BIT        => 16;
 Readonly my $MAXVAL_16_BIT  => 2**$_16_BIT - 1;
 Readonly my $LARGE_STATUS   => 99;
+Readonly my $NOT_FOUND      => -1;
 my $uuid_object = Data::UUID->new;
 my $EMPTY       = q{};
 
@@ -370,6 +371,38 @@ sub check_return_queue {
         }
     }
     return Glib::SOURCE_CONTINUE;
+}
+
+sub _log2 {
+    my ($n) = @_;
+    return log($n) / log 2;
+}
+
+sub decode_info {
+    my ($info) = @_;
+    my @opts =
+      qw(SANE_INFO_INEXACT SANE_INFO_RELOAD_OPTIONS SANE_INFO_RELOAD_PARAMS);
+    my @this;
+    my $n = _log2($info);
+    if ( $n > int $n ) {
+        $n = int($n) + 1;
+    }
+    my $i = @opts;
+    while ( $n > $i ) {
+        if ( $info >= 2**( $n - 1 ) ) {
+            push @this, q{?};
+            $info -= 2**( $n - 1 );
+        }
+        --$n;
+    }
+    while ( $n > $NOT_FOUND ) {
+        if ( $info >= 2**$n ) {
+            push @this, $opts[$n];
+            $info -= 2**$n;
+        }
+        --$n;
+    }
+    return join ' + ', @this;
 }
 
 sub _thread_main {
