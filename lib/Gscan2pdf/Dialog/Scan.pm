@@ -2227,6 +2227,13 @@ sub _set_option_profile {
             }
         }
 
+   # Ignore option if info from previous set_option() reported SANE_INFO_INEXACT
+        if ( defined $self->{option_info}{ $opt->{name} }
+            and $self->{option_info}{ $opt->{name} } & SANE_INFO_INEXACT )
+        {
+            return;
+        }
+
         # Ignore option if value already within tolerance
         if ( Gscan2pdf::Scanner::Options::within_tolerance( $opt, $val ) ) {
             $logger->info(

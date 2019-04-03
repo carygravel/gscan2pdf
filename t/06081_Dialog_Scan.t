@@ -92,8 +92,6 @@ $override->replace(
     }
 );
 
-# Reload if inexact due to quant > 0 to test that this doesn't trigger an
-# infinite reload loop
 $override->replace(
     'Gscan2pdf::Frontend::Image_Sane::_thread_set_option' => sub {
         my ( $self, $uuid, $index, $value ) = @_;

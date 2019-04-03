@@ -175,23 +175,24 @@ $override->replace(
 $override->replace(
     'Gscan2pdf::Frontend::Image_Sane::_thread_set_option' => sub {
         my ( $self, $uuid, $index, $value ) = @_;
+        my $info = 0;
         if ( defined $raw_options->[$index]{name}
             and $raw_options->[$index]{name} eq 'clear-calibration' )
         {
-            Gscan2pdf::Frontend::Image_Sane::_thread_get_options( $self,
-                $uuid );
+            $info = SANE_INFO_RELOAD_OPTIONS;
         }
         else {
             $raw_options->[$index]{val} = $value;
-            $self->{return}->enqueue(
-                {
-                    type    => 'finished',
-                    process => 'set-option',
-                    uuid    => $uuid,
-                    status  => SANE_STATUS_GOOD,
-                }
-            );
         }
+        $self->{return}->enqueue(
+            {
+                type    => 'finished',
+                process => 'set-option',
+                uuid    => $uuid,
+                status  => SANE_STATUS_GOOD,
+                info    => $info,
+            }
+        );
         return;
     }
 );

@@ -131,6 +131,7 @@ sub scan_options {
     # Remove lookups to geometry boxes and option widgets
     delete $self->{geometry_boxes};
     delete $self->{option_widgets};
+    delete $self->{option_info};
 
     # Ghost the scan button whilst options being updated
     $self->set_response_sensitive( 'ok', FALSE );
@@ -368,6 +369,30 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
     return;
 }
 
+sub _post_set_option_hook {
+    my ( $self, $option, $val, $uuid ) = @_;
+
+    # We can carry on applying defaults now, if necessary.
+    $self->signal_emit( 'finished-process',
+        "set_option $option->{name}"
+          . ( $option->{type} == SANE_TYPE_BUTTON ? $EMPTY : " to $val" ) );
+
+    # Unset the profile unless we are actively setting it
+    if ( not @{ $self->{setting_profile} } ) {
+        $self->set( 'profile', undef );
+
+        # Emit the changed-current-scan-options signal
+        # unless we are actively setting it
+        if ( not @{ $self->{setting_current_scan_options} } ) {
+            $self->signal_emit( 'changed-current-scan-options',
+                $self->get('current-scan-options'), $EMPTY );
+        }
+    }
+
+    $self->signal_emit( 'changed-scan-option', $option->{name}, $val, $uuid );
+    return;
+}
+
 # Update the sane option in the thread
 # If necessary, reload the options,
 # and walking the options tree, update the widgets
@@ -399,44 +424,47 @@ sub set_option {
             $self->signal_emit( 'changed-progress', undef, undef );
         },
         finished_callback => sub {
-            my ( $data, $status ) = @_;
+            my ( $info, $status ) = @_;
 
             if ( $status != SANE_STATUS_INVAL ) {
                 $self->{current_scan_options}
                   ->add_backend_option( $option->{name}, $val );
             }
 
-            my $opt;
-            if ($data) {
-                $self->update_options(
-                    Gscan2pdf::Scanner::Options->new_from_data($data) );
-                $opt = $options->by_name( $option->{name} );
+            $self->{option_info}{ $option->{name} } = $info;
+
+            if ( defined $info and $info & SANE_INFO_RELOAD_OPTIONS ) {
+                Gscan2pdf::Frontend::Image_Sane->find_scan_options(
+                    sub {    # started callback
+                        $self->signal_emit( 'started-process',
+                            __('Retrieving options') );
+                    },
+                    sub {    # running callback
+                        $self->signal_emit( 'changed-progress', undef, undef );
+                    },
+                    sub {    # finished callback
+                        my ($data) = @_;
+                        $self->update_options(
+                            Gscan2pdf::Scanner::Options->new_from_data($data) );
+                        $self->_post_set_option_hook( $option, $val, $uuid );
+                    },
+                    sub {    # error callback
+                        my ($message) = @_;
+                        $self->signal_emit(
+                            'process-error',
+                            'find_scan_options',
+                            __(
+                                'Error retrieving scanner options: ' . $message
+                            )
+                        );
+                    }
+                );
             }
             else {
-                $opt = $options->by_name( $option->{name} );
+                my $opt = $options->by_name( $option->{name} );
                 $opt->{val} = $val;
+                $self->_post_set_option_hook( $option, $val, $uuid );
             }
-
-            # We can carry on applying defaults now, if necessary.
-            $self->signal_emit( 'finished-process',
-                "set_option $option->{name}"
-                  . ( $opt->{type} == SANE_TYPE_BUTTON ? $EMPTY : " to $val" )
-            );
-
-            # Unset the profile unless we are actively setting it
-            if ( not @{ $self->{setting_profile} } ) {
-                $self->set( 'profile', undef );
-
-                # Emit the changed-current-scan-options signal
-                # unless we are actively setting it
-                if ( not @{ $self->{setting_current_scan_options} } ) {
-                    $self->signal_emit( 'changed-current-scan-options',
-                        $self->get('current-scan-options'), $EMPTY );
-                }
-            }
-
-            $self->signal_emit( 'changed-scan-option', $option->{name}, $val,
-                $uuid );
         },
         error_callback => sub {
             my ($message) = @_;

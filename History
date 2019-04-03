@@ -2,6 +2,7 @@
 
 * Allow translations for message types in multiple message window
 * Improve progress message whilst analysing pages
+* Don't reapply scan options after reload if setting returned SANE_INFO_INEXACT
 * Update to Hungarian translation (thanks to csola)
 
 

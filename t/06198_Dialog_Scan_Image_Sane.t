@@ -276,20 +276,15 @@ $override->replace(
             $info = SANE_INFO_RELOAD_OPTIONS;
         }
         $options->[$index]{val} = $value;
-        if ( $info & SANE_INFO_RELOAD_OPTIONS ) {
-            Gscan2pdf::Frontend::Image_Sane::_thread_get_options( $self,
-                $uuid );
-        }
-        else {
-            $self->{return}->enqueue(
-                {
-                    type    => 'finished',
-                    process => 'set-option',
-                    uuid    => $uuid,
-                    status  => SANE_STATUS_GOOD,
-                }
-            );
-        }
+        $self->{return}->enqueue(
+            {
+                type    => 'finished',
+                process => 'set-option',
+                uuid    => $uuid,
+                status  => SANE_STATUS_GOOD,
+                info    => $info,
+            }
+        );
         return;
     }
 );

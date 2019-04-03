@@ -183,8 +183,15 @@ $override->replace(
         # don't update the value to force gscan2pdf to try again
         # $raw_options->[$index]{val} = $value;
 
-        # Reload
-        Gscan2pdf::Frontend::Image_Sane::_thread_get_options( $self, $uuid );
+        $self->{return}->enqueue(
+            {
+                type    => 'finished',
+                process => 'set-option',
+                uuid    => $uuid,
+                status  => SANE_STATUS_GOOD,
+                info    => SANE_INFO_RELOAD_OPTIONS,    # Reload
+            }
+        );
         return;
     }
 );

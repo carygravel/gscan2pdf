@@ -364,8 +364,14 @@ sub check_return_queue {
                 $callback{ $data->{uuid} }{started}->();
             }
             if ( defined $callback{ $data->{uuid} }{finished} ) {
-                $callback{ $data->{uuid} }{finished}
-                  ->( _thaw_deref( $data->{info} ), $data->{status} );
+                if ( $data->{process} eq 'set-option' ) {
+                    $callback{ $data->{uuid} }{finished}
+                      ->( $data->{info}, $data->{status} );
+                }
+                else {
+                    $callback{ $data->{uuid} }{finished}
+                      ->( _thaw_deref( $data->{info} ), $data->{status} );
+                }
                 delete $callback{ $data->{uuid} };
             }
         }
@@ -603,28 +609,29 @@ sub _thread_set_option {
         $status = $_->status;
     };
     if ( $logger->is_info ) {
-        $logger->info( "sane_set_option $index ($opt->{name})"
+        $logger->info(
+                "sane_set_option $index ($opt->{name})"
               . ( $opt->{type} == SANE_TYPE_BUTTON ? $EMPTY : " to $value" )
               . " returned status $status ("
               . Image::Sane::strstatus($status)
               . ') with info '
-              . ( defined $info ? $info : 'undefined' ) );
-    }
-
-    # $info could be undefined if status is invalid
-    if ( defined $info and $info & SANE_INFO_RELOAD_OPTIONS ) {
-        $status = _thread_get_options( $self, $uuid );
-    }
-    else {
-        $self->{return}->enqueue(
-            {
-                type    => 'finished',
-                process => 'set-option',
-                uuid    => $uuid,
-                status  => $status,
-            }
+              . (
+                defined $info
+                ? sprintf( '%d (%s)',
+                    $info, Gscan2pdf::Frontend::Image_Sane::decode_info($info) )
+                : 'undefined'
+              )
         );
     }
+    $self->{return}->enqueue(
+        {
+            type    => 'finished',
+            process => 'set-option',
+            uuid    => $uuid,
+            status  => $status,
+            info    => $info,
+        }
+    );
     return;
 }
 
