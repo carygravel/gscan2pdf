@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 BEGIN {
     use_ok('Gscan2pdf::Frontend::Image_Sane');
@@ -41,6 +41,7 @@ unlink $path;
 
 Gscan2pdf::Frontend::Image_Sane->quit();
 
+is( Gscan2pdf::Frontend::Image_Sane::decode_info(0), 'none', 'no info' );
 is( Gscan2pdf::Frontend::Image_Sane::decode_info(1),
     'SANE_INFO_INEXACT', 'SANE_INFO_INEXACT' );
 is(

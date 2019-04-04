@@ -386,6 +386,7 @@ sub _log2 {
 
 sub decode_info {
     my ($info) = @_;
+    if ( $info == 0 ) { return 'none' }
     my @opts =
       qw(SANE_INFO_INEXACT SANE_INFO_RELOAD_OPTIONS SANE_INFO_RELOAD_PARAMS);
     my @this;
