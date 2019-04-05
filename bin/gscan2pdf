@@ -4531,6 +4531,9 @@ sub analyse {
                   setup_tpbar( $thread, $process, $completed, $total, $pid );
                 return TRUE if ( defined $signal );
             },
+            running_callback => sub {
+                return update_tpbar(@_);
+            },
             finished_callback => sub {
                 my ( $new_page, $pending ) = @_;
                 if ( not $pending ) { $thbox->hide }
