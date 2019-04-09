@@ -1980,7 +1980,9 @@ sub exec_command {
         close $fh or return $PROCESS_FAILED;
     }
 
-    waitpid $ALL_PENDING_ZOMBIE_PROCESSES, WNOHANG;
+    # Using 0 for flags, rather than WNOHANG to ensure that we wait for the
+    # process to finish and not leave a zombie
+    waitpid $ALL_PENDING_ZOMBIE_PROCESSES, 0;
     my $child_exit_status = $CHILD_ERROR >> $BITS_PER_BYTE;
     return $child_exit_status, slurp($reader), slurp($err);
 }
