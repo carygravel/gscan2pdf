@@ -11,6 +11,7 @@ use Gscan2pdf::EntryCompletion;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Date::Calc qw(Today Today_and_Now);
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
+use Encode;
 use Readonly;
 Readonly my $ENTRY_WIDTH_DATE     => 10;
 Readonly my $ENTRY_WIDTH_DATETIME => 19;
@@ -809,6 +810,7 @@ sub add_pdf_options {
     my @fonts;
     my ( undef, $stdout ) =
       Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
+    $stdout = Encode::decode_utf8($stdout);
 
     my $font = $self->get('pdf-font');
     for ( split /\n/sm, $stdout ) {

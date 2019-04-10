@@ -3,6 +3,7 @@
 * Allow translations for message types in multiple message window
 * Improve progress message whilst analysing pages
 * Don't reapply scan options after reload if setting returned SANE_INFO_INEXACT
+* Decode UTF-8 in font names for PDFs in save dialog
 * Wait for processes to finish to prevent zombies. Closes Debian bug #926634
   (Delays opening dialogs, possibly related to defunct fc-list process)
 * Update to Hungarian translation (thanks to csola)
