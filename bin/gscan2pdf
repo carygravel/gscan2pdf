@@ -6640,6 +6640,7 @@ sub get_selected_properties {
 sub show_message_dialog {
     my %options = @_;
     my $text    = Gscan2pdf::Dialog::filter_message( $options{text} );
+    $logger->info($text);
     if ( defined $SETTING{message}{$text}{response} ) {
         return $SETTING{message}{$text}{response};
     }
