@@ -1980,11 +1980,16 @@ sub exec_command {
         close $fh or return $PROCESS_FAILED;
     }
 
+    # slurping these before waitpid, as if the output is larger than 65535,
+    # waitpid hangs forever.
+    $reader = slurp($reader);
+    $err    = slurp($err);
+
     # Using 0 for flags, rather than WNOHANG to ensure that we wait for the
     # process to finish and not leave a zombie
-    waitpid $ALL_PENDING_ZOMBIE_PROCESSES, 0;
+    waitpid $pid, 0;
     my $child_exit_status = $CHILD_ERROR >> $BITS_PER_BYTE;
-    return $child_exit_status, slurp($reader), slurp($err);
+    return $child_exit_status, $reader, $err;
 }
 
 # wrapper for _program_version below
