@@ -747,10 +747,17 @@ sub check_dependencies {
         if ( $dependencies{$name} ) {
             $logger->info("Found $name $dependencies{$name}");
             if ( $name eq 'pdftk' ) {
+
+                # Create PDF via tiff2pdf, not directly with imagemagick, as
+                # some distros configure imagemagick not to write PDFs
+                my $temptif =
+                  File::Temp->new( DIR => $session, SUFFIX => '.tif' );
+                Gscan2pdf::Document::exec_command(
+                    [ 'convert', 'rose:', $temptif ] );
                 my $temppdf =
                   File::Temp->new( DIR => $session, SUFFIX => '.pdf' );
                 Gscan2pdf::Document::exec_command(
-                    [ 'convert', 'rose:', $temppdf ] );
+                    [ 'tiff2pdf', '-o', $temppdf, $temptif ] );
                 ( undef, my $out ) = Gscan2pdf::Document::exec_command(
                     [ $name, $temppdf, 'dump_data' ] );
                 if ( $out !~ /NumberOfPages/xsm ) {

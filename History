@@ -6,6 +6,8 @@
 * Decode UTF-8 in font names for PDFs in save dialog
 * Wait for processes to finish to prevent zombies. Closes Debian bug #926634
   (Delays opening dialogs, possibly related to defunct fc-list process)
+* Fix warning message about pdftk (again).
+  Closes bug #320 (Error message on startup: pdftk can't use /tmp)
 * Update to Hungarian translation (thanks to csola)
 
 
