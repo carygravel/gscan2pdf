@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 44;
+use Test::More tests => 45;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 
@@ -101,6 +101,10 @@ Gscan2pdf::Document->quit();
 ( undef, my $fonts ) =
   Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
 like( $fonts, qr/\w+/, 'exec_command produces some output from fc-list' );
+
+( undef, $fonts ) =
+  Gscan2pdf::Document::exec_command( [ 'perl', '-e', 'print "a" x 65537' ] );
+is( length $fonts, 65537, 'exec_command returns more than 65537 bytes' );
 
 #########################
 
