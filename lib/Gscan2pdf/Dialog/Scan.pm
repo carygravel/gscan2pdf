@@ -1090,22 +1090,22 @@ sub pack_widget {
             my $text;
             given ( $opt->{unit} ) {
                 when (SANE_UNIT_PIXEL) {
-                    $text = $d_sane->get('pel')
+                    $text = __('pel')
                 }
                 when (SANE_UNIT_BIT) {
-                    $text = $d_sane->get('bit')
+                    $text = __('bit')
                 }
                 when (SANE_UNIT_MM) {
-                    $text = $d_sane->get('mm')
+                    $text = __('mm')
                 }
                 when (SANE_UNIT_DPI) {
-                    $text = $d_sane->get('dpi')
+                    $text = __('ppi')
                 }
                 when (SANE_UNIT_PERCENT) {
-                    $text = $d_sane->get(q{%})
+                    $text = __(q{%})
                 }
                 when (SANE_UNIT_MICROSECOND) {
-                    $text = $d_sane->get('us')
+                    $text = __('μs')
                 }
             }
             my $label = Gtk3::Label->new($text);

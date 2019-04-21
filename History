@@ -8,6 +8,7 @@
   (Delays opening dialogs, possibly related to defunct fc-list process)
 * Fix warning message about pdftk (again).
   Closes bug #320 (Error message on startup: pdftk can't use /tmp)
+* Rename dpi->ppi (again) and us->μs
 * Update to Hungarian translation (thanks to csola)
 
 
