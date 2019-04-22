@@ -28,17 +28,18 @@
 # 5. Build package for debian
 #     sudo DIST=sid pbuilder update
 #     DIST=sid pdebuild
-#     lintian -iI --pedantic .changes
 #    or
 #     sudo sbuild-update -udr sid-amd64-sbuild
-#     sbuild -c sid-amd64-sbuild
+#     sbuild -sc sid-amd64-sbuild
+#    debsign .changes
+#    lintian -iI --pedantic .changes
 #    check contents with dpkg-deb --contents
 #    test dist sudo dpkg -i gscan2pdf_x.x.x_all.deb
 #     dput ftp-master .changes
 # 6. create version directory in https://sourceforge.net/projects/gscan2pdf/files/gscan2pdf
 #     make file_releases
 # 7. Build packages for Ubuntu
-#    name the release -0~ppa1<release>, where release is disco, cosmic, bionic, xenial (dh9), trusty (< v2), precise (< v2), etc
+#    name the release -0~ppa1<release>, where release is eoan, disco, cosmic, bionic, xenial (dh9), trusty (< v2), precise (< v2), etc
 #     debuild -S -sa
 #     dput gscan2pdf-ppa .changes
 #    https://launchpad.net/~jeffreyratcliffe/+archive

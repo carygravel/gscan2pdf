@@ -180,10 +180,8 @@ htdocs/index.html : bin/$(NAME)
 remote-html : htdocs/index.html
 	scp htdocs/index.html ra28145,$(NAME)@web.sf.net:/home/groups/g/gs/$(NAME)/htdocs/
 
-file_releases : /var/cache/pbuilder/sid-amd64/result/$(NAME)_$(VERSION)-1_all.deb
-	scp $(NAME)-$(VERSION).tar.xz \
-         $(NAME)-$(VERSION).tar.xz.asc \
-         /var/cache/pbuilder/sid-amd64/result/$(NAME)_$(VERSION)-1_all.deb \
+file_releases : ../../sandbox/$(NAME)_$(VERSION)-1_all.deb
+	scp $(NAME)-$(VERSION).tar.xz $(NAME)-$(VERSION).tar.xz.asc $< \
 	  ra28145,$(NAME)@frs.sf.net:/home/frs/project/g/gs/$(NAME)/$(NAME)/$(VERSION)/
 
 po/$(NAME).pot : $(SOURCE)
