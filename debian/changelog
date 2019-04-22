@@ -4,7 +4,7 @@ gscan2pdf (2.5.2-1) experimental; urgency=low
     Closes: #926634
     (Delays opening dialogs, possibly related to defunct fc-list process)
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Mon, 22 Apr 2019 12:46:45 +0200
 
 gscan2pdf (2.5.1-1) experimental; urgency=low
 

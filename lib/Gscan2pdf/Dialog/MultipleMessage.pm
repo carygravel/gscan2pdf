@@ -13,7 +13,7 @@ Readonly my $COL_CHECKBOX => 4;
 
 my %types;
 
-our $VERSION = '2.5.1';
+our $VERSION = '2.5.2';
 
 sub INIT_INSTANCE {
     my $self = shift;
