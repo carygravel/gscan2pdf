@@ -10,6 +10,7 @@
   Closes bug #320 (Error message on startup: pdftk can't use /tmp)
 * Rename dpi->ppi (again) and us->μs
 * Update to Hungarian translation (thanks to csola)
+* Update to Czech translation (thanks to Pavel Borecki)
 
 
 2.5.1 (23.03.2019):
