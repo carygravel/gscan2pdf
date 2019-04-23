@@ -18,7 +18,7 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system('convert rose: test.pnm');
-system('convert rose: test.pdf');
+system('convert rose: test.tif && tiff2pdf -o test.pdf test.tif');
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -47,5 +47,5 @@ is( -f 'test.pdf.bak', 1, 'Backed up original' );
 
 #########################
 
-unlink 'test.pnm', 'test.pdf', 'test.pdf.bak';
+unlink 'test.pnm', 'test.tif', 'test.pdf', 'test.pdf.bak';
 Gscan2pdf::Document->quit();

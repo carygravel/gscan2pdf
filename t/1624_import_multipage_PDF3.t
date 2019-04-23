@@ -25,7 +25,7 @@ TODO: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: page1.pdf');
+    system('convert rose: page1.tif && tiff2pdf -o page1.pdf page1.tif');
     system(
 'pdfunite page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf 10.pdf'
     );
@@ -54,7 +54,7 @@ TODO: {
 
 #########################
 
-    unlink 'page1.pdf', '10.pdf', '100.pdf', '1000.pdf', '2000.pdf', <$dir/*>;
+    unlink 'page1.tif', 'page1.pdf', '10.pdf', '100.pdf', '1000.pdf', '2000.pdf', <$dir/*>;
     rmdir $dir;
 
     Gscan2pdf::Document->quit();

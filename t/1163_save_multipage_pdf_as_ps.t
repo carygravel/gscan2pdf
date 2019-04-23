@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 3;
+use Test::More tests => 2;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -10,7 +10,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'pdf2ps not installed', 3
+    skip 'pdf2ps not installed', 2
       unless ( system("which pdf2ps > /dev/null 2> /dev/null") == 0 );
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);
@@ -46,21 +46,8 @@ SKIP: {
     );
     Gtk3->main;
 
-    like(
-        `identify 'te st.ps'`,
-        qr/te st.ps\[0\] PS \d+x\d+ \d+x\d+\+0\+0 16-bit sRGB .*B/,
-        'valid postscript created (p1)'
-    );
-    like(
-        `identify 'te st.ps'`,
-        qr/te st.ps\[1\] PS \d+x\d+ \d+x\d+\+0\+0 16-bit sRGB .*B/,
-        'valid postscript created (p2)'
-    );
-    like(
-        `identify test2.ps`,
-        qr/test2.ps\[0\] PS \d+x\d+ \d+x\d+\+0\+0 16-bit sRGB .*B/,
-        'ran post-save hook'
-    );
+    ok( -s 'te st.ps' > 194000, 'non-empty postscript created' );
+    ok( -s 'test2.ps' > 194000, 'ran post-save hook' );
 
 #########################
 

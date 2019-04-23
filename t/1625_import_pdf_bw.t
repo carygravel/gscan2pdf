@@ -18,7 +18,7 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system(
-'convert +matte -depth 1 -colorspace Gray -type Bilevel -pointsize 12 -density 300 label:"The quick brown fox" test.pdf'
+'convert +matte -depth 1 -colorspace Gray -type Bilevel -pointsize 12 -density 300 label:"The quick brown fox" test.tif && tiff2pdf -o test.pdf test.tif'
 );
 system(
 'convert +matte -depth 1 -colorspace Gray -type Bilevel -pointsize 12 -density 300 label:"The quick brown fox" test.png'
@@ -46,5 +46,5 @@ Gtk3->main;
 
 #########################
 
-unlink 'test.pdf', 'test.png';
+unlink 'test.pdf', 'test.tif', 'test.png';
 Gscan2pdf::Document->quit();

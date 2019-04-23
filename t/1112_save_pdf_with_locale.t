@@ -40,7 +40,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is( system('identify test.pdf'), 0, 'valid PDF created' );
+like( `pdfinfo test.pdf`, qr/Page size:\s+70 x 46 pts/, 'valid PDF created' );
 
 #########################
 

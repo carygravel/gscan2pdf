@@ -17,7 +17,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pdf');
+system('convert rose: test.tif && tiff2pdf -o test.pdf test.tif');
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -42,6 +42,6 @@ Gtk3->main;
 
 #########################
 
-unlink 'test.pdf', <$dir/*>;
+unlink 'test.pdf', 'test.tif', <$dir/*>;
 rmdir $dir;
 Gscan2pdf::Document->quit();

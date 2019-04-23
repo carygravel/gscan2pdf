@@ -21,7 +21,7 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: page1.pdf');
+    system('convert rose: page1.tif && tiff2pdf -o page1.pdf page1.tif');
     my $content = <<'EOS';
 %PDF-1.4
 1 0 obj
@@ -117,7 +117,7 @@ EOS
 
 #########################
 
-    unlink 'page1.pdf', 'page2.pdf', 'test.pdf', <$dir/*>;
+    unlink 'page1.tif', 'page1.pdf', 'page2.pdf', 'test.pdf', <$dir/*>;
     rmdir $dir;
 
     Gscan2pdf::Document->quit();

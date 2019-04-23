@@ -32,7 +32,7 @@ SKIP: {
     }
     else {
         system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" input.pdf'
+'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" input.tif && tiff2pdf -o test.pdf test.tif'
         );
     }
 
@@ -75,7 +75,7 @@ SKIP: {
 
 #########################
 
-    unlink 'input.pdf', 'output.pdf', 'test.png', <$dir/*>;
+    unlink 'input.pdf', 'output.pdf', 'test.png', 'test.tif', <$dir/*>;
     rmdir $dir;
     Gscan2pdf::Document->quit();
 }

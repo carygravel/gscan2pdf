@@ -43,7 +43,7 @@ $slist->import_files(
                 is( $total,     0, 'total counter re-initialised' );
             },
             options => {
-                post_save_hook         => 'convert %i test2.png',
+                post_save_hook         => 'pdftoppm %i test',
                 post_save_hook_options => 'fg',
             },
             finished_callback => sub {
@@ -61,12 +61,12 @@ $slist->import_files(
 Gtk3->main;
 
 like(
-    `identify test2.png`,
-    qr/test2.png PNG 70x46 70x46\+0\+0 8-bit sRGB/,
+    `identify test-1.ppm`,
+    qr/test-1.ppm PPM 146x96 146x96\+0\+0 8-bit sRGB/,
     'ran post-save hook on pdf'
 );
 
 #########################
 
-unlink 'test.png', 'test.pdf', 'test2.png';
+unlink 'test.pnm', 'test.pdf', 'test-1.ppm';
 Gscan2pdf::Document->quit();

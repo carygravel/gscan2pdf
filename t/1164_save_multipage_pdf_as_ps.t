@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 3;
+use Test::More tests => 2;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -43,21 +43,8 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like(
-    `identify 'te st.ps'`,
-    qr/te st.ps\[0\] PS 70x46 70x46\+0\+0 16-bit sRGB .*B/,
-    'valid postscript created (p1)'
-);
-like(
-    `identify 'te st.ps'`,
-    qr/te st.ps\[1\] PS 70x46 70x46\+0\+0 16-bit sRGB .*B/,
-    'valid postscript created (p2)'
-);
-like(
-    `identify test2.ps`,
-    qr/test2.ps\[0\] PS 70x46 70x46\+0\+0 16-bit sRGB .*B/,
-    'ran post-save hook'
-);
+cmp_ok( -s 'te st.ps', '>', 17500, 'non-empty postscript created' );
+cmp_ok( -s 'test2.ps', '>', 17500, 'ran post-save hook' );
 
 #########################
 
