@@ -6690,17 +6690,6 @@ sub show_message_dialog {
                 $SETTING{message_window_height}
             );
         }
-        if ( $options{text} =~
-            /Exception[ ]400:[ ]memory[ ]allocation[ ]failed/xsm )
-        {
-            $options{text} .=
-              __(   "\n\nThis error is normally due to ImageMagick "
-                  . 'exceeding its resource limits. These can be extended by '
-                  . 'editing its policy file, which on my system is found at '
-                  . '/etc/ImageMagick-6/policy.xml Please see '
-                  . 'https://imagemagick.org/script/resources.php for more '
-                  . 'information' );
-        }
         $message_dialog->add_message(%options);
         $message_dialog->show_all;
         $response = $message_dialog->run;

@@ -69,6 +69,18 @@ sub add_message {
     }
     $options{text} = $text;
 
+    if (
+        $options{text} =~ /Exception[ ]400:[ ]memory[ ]allocation[ ]failed/xsm )
+    {
+        $options{text} .=
+          __(   "\n\nThis error is normally due to ImageMagick "
+              . 'exceeding its resource limits. These can be extended by '
+              . 'editing its policy file, which on my system is found at '
+              . '/etc/ImageMagick-6/policy.xml Please see '
+              . 'https://imagemagick.org/script/resources.php for more '
+              . 'information' );
+    }
+
     $self->{grid}->attach( Gtk3::Label->new( $options{page} ),
         0, $self->{grid_rows}, 1, 1 );
     $self->{grid}->attach( Gtk3::Label->new( $options{process} ),
@@ -77,7 +89,9 @@ sub add_message {
         2, $self->{grid_rows}, 1, 1 );
     my $view   = Gtk3::TextView->new;
     my $buffer = $view->get_buffer;
-    $options{text} =~ s/\s+$//xsm;
+
+    # strip newlines from the end of the string, but not the end of the line
+    $options{text} =~ s/\s+\z//xsm;
     $buffer->set_text( $options{text} );
     $view->set_editable(FALSE);
     $view->set_wrap_mode('word-char');
