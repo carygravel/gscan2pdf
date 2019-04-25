@@ -1,3 +1,8 @@
+2.5.3 (22.05.2019):
+
+* Split up gimp messages to allow them to be ignored more easily
+
+
 2.5.2 (22.04.2019):
 
 * Allow translations for message types in multiple message window

@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 
@@ -56,5 +56,15 @@ is_deeply(
     [ 'message', 'my message3' ],
     'chop trailing whitespace'
 );
+
+$dialog->add_message(
+    page    => 1,
+    process => 'user-defined',
+    type    => 'warning',
+    text    => "(gimp:26514): GLib-GObject-WARNING : g_object_set_valist: "
+      . "object class 'GeglConfig' has no property named 'cache-size'\n"
+      . "(gimp:26514): GEGL-gegl-operation.c-WARNING : Cannot change name of operation class 0xE0FD30 from \"gimp:point-layer-mode\" to \"gimp:dissolve-mode\"",
+);
+is( $dialog->{grid_rows}, 6, 'split up gimp warnings' );
 
 __END__

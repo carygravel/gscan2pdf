@@ -59,6 +59,16 @@ sub INIT_INSTANCE {
 
 sub add_message {
     my ( $self, %options ) = @_;
+
+    # split up gimp messages
+    my $text = $options{text};
+    while ( $text =~ /^([(]gimp:\d+[)]:[^\n]+)\n(.*)/xsm ) {
+        $options{text} = $1;
+        $text = $2;
+        $self->add_message(%options);
+    }
+    $options{text} = $text;
+
     $self->{grid}->attach( Gtk3::Label->new( $options{page} ),
         0, $self->{grid_rows}, 1, 1 );
     $self->{grid}->attach( Gtk3::Label->new( $options{process} ),
