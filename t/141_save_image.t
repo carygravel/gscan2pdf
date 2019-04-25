@@ -47,7 +47,7 @@ like(
 );
 like(
     `identify test2.png`,
-    qr/test2\.png PNG 70x46 70x46\+0\+0 8-bit sRGB \d+\.?\d*K?B 0\.\d+u 0:00\.\d+\b/,
+qr/test2\.png PNG 70x46 70x46\+0\+0 8-bit sRGB \d+\.?\d*K?B 0\.\d+u 0:00\.\d+\b/,
     'ran post-save hook'
 );
 

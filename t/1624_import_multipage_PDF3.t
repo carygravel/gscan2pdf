@@ -54,7 +54,8 @@ TODO: {
 
 #########################
 
-    unlink 'page1.tif', 'page1.pdf', '10.pdf', '100.pdf', '1000.pdf', '2000.pdf', <$dir/*>;
+    unlink 'page1.tif', 'page1.pdf', '10.pdf', '100.pdf', '1000.pdf',
+      '2000.pdf', <$dir/*>;
     rmdir $dir;
 
     Gscan2pdf::Document->quit();
