@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 17;
+use Test::More tests => 19;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -11,6 +11,7 @@ BEGIN {
 
 #########################
 
+Gscan2pdf::Translation::set_domain('gscan2pdf');
 my $window = Gtk3::Window->new;
 
 ok(
@@ -58,6 +59,31 @@ $dialog->signal_connect_after(
 $event = Gtk3::Gdk::Event->new('key-press');
 $event->keyval(Gtk3::Gdk::KEY_Delete);
 $dialog->signal_emit( 'key_press_event', $event );
+
+is_deeply(
+    Gscan2pdf::Dialog::munge_message(
+            "(gimp:26514): GLib-GObject-WARNING : g_object_set_valist: "
+          . "object class 'GeglConfig' has no property named 'cache-size'\n"
+          . "(gimp:26514): GEGL-gegl-operation.c-WARNING : Cannot change name of operation class 0xE0FD30 from \"gimp:point-layer-mode\" to \"gimp:dissolve-mode\""
+    ),
+    [
+"(gimp:26514): GLib-GObject-WARNING : g_object_set_valist: object class 'GeglConfig' has no property named 'cache-size'",
+'(gimp:26514): GEGL-gegl-operation.c-WARNING : Cannot change name of operation class 0xE0FD30 from "gimp:point-layer-mode" to "gimp:dissolve-mode"'
+    ],
+    'split gimp messages'
+);
+
+is_deeply(
+    Gscan2pdf::Dialog::munge_message('Exception 400: memory allocation failed'),
+    "Exception 400: memory allocation failed"
+      . "\n\nThis error is normally due to ImageMagick "
+      . 'exceeding its resource limits. These can be extended by '
+      . 'editing its policy file, which on my system is found at '
+      . '/etc/ImageMagick-6/policy.xml Please see '
+      . 'https://imagemagick.org/script/resources.php for more '
+      . 'information',
+    'extend imagemagick warning'
+);
 
 is(
     Gscan2pdf::Dialog::filter_message(

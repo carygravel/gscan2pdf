@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 7;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 
@@ -55,40 +55,6 @@ is_deeply(
     [ $dialog->list_messages_to_ignore('ok') ],
     [ 'message', 'my message3' ],
     'chop trailing whitespace'
-);
-
-$dialog->add_message(
-    page    => 1,
-    process => 'user-defined',
-    type    => 'warning',
-    text    => "(gimp:26514): GLib-GObject-WARNING : g_object_set_valist: "
-      . "object class 'GeglConfig' has no property named 'cache-size'\n"
-      . "(gimp:26514): GEGL-gegl-operation.c-WARNING : Cannot change name of operation class 0xE0FD30 from \"gimp:point-layer-mode\" to \"gimp:dissolve-mode\"",
-);
-is( $dialog->{grid_rows}, 6, 'split up gimp warnings' );
-
-$dialog->add_message(
-    page             => 1,
-    process          => 'user-defined',
-    type             => 'warning',
-    text             => 'Exception 400: memory allocation failed',
-    'store-response' => TRUE,
-);
-$dialog->{grid}->get_child_at( 4, 1 )->set_active(FALSE);
-$dialog->{grid}->get_child_at( 4, 3 )->set_active(FALSE);
-$dialog->{grid}->get_child_at( 4, 6 )->set_active(TRUE);
-is_deeply(
-    [ $dialog->list_messages_to_ignore('ok') ],
-    [
-            "Exception 400: memory allocation failed"
-          . "\n\nThis error is normally due to ImageMagick "
-          . 'exceeding its resource limits. These can be extended by '
-          . 'editing its policy file, which on my system is found at '
-          . '/etc/ImageMagick-6/policy.xml Please see '
-          . 'https://imagemagick.org/script/resources.php for more '
-          . 'information'
-    ],
-    'extend imagemagick warning'
 );
 
 __END__
