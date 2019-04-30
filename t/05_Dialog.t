@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 19;
+use Test::More tests => 20;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -74,6 +74,20 @@ is_deeply(
 );
 
 is_deeply(
+    Gscan2pdf::Dialog::munge_message(
+'[image2 @ 0xc596e0] Using AVStream.codec to pass codec parameters to muxers is deprecated, use AVStream.codecpar instead.'
+          . "\n"
+          . '[image2 @ 0x1338180] Encoder did not produce proper pts, making some up.'
+          . "\n"
+    ),
+    [
+'[image2 @ 0xc596e0] Using AVStream.codec to pass codec parameters to muxers is deprecated, use AVStream.codecpar instead.',
+'[image2 @ 0x1338180] Encoder did not produce proper pts, making some up.'
+    ],
+    'split unpaper messages'
+);
+
+is_deeply(
     Gscan2pdf::Dialog::munge_message('Exception 400: memory allocation failed'),
     "Exception 400: memory allocation failed"
       . "\n\nThis error is normally due to ImageMagick "
@@ -82,7 +96,7 @@ is_deeply(
       . '/etc/ImageMagick-6/policy.xml Please see '
       . 'https://imagemagick.org/script/resources.php for more '
       . 'information',
-    'extend imagemagick warning'
+    'extend imagemagick Exception 400'
 );
 
 is(

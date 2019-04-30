@@ -1,6 +1,8 @@
 2.5.3 (22.05.2019):
 
-* Split up gimp messages to allow them to be ignored more easily
+* Split up messages from gimp and unpaper to allow them to be ignored more
+  easily. Closes bug #321
+  (Error messages when returning from editing a scanned document using gimp)
 
 
 2.5.2 (22.04.2019):

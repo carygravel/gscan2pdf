@@ -3992,8 +3992,7 @@ sub _thread_rotate {
     $e = $image->Rotate($angle);
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid},
-            'Rotate', "Error rotating: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Rotate', $e );
         return;
     }
     return if $_self->{cancel};
@@ -4011,8 +4010,7 @@ sub _thread_rotate {
     }
     catch {
         $logger->error("Error rotating: $_");
-        _thread_throw_error( $self, $uuid, $page->{uuid},
-            'Rotate', "Error rotating: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Rotate', $_ );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4239,16 +4237,14 @@ sub _thread_threshold {
     $e = $image->BlackThreshold( threshold => "$threshold%" );
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid},
-            'Threshold', "Error running threshold: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $e );
         return;
     }
     return if $_self->{cancel};
     $e = $image->WhiteThreshold( threshold => "$threshold%" );
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid},
-            'Threshold', "Error running threshold: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $e );
         return;
     }
     return if $_self->{cancel};
@@ -4263,8 +4259,7 @@ sub _thread_threshold {
     }
     catch {
         $logger->error("Error thesholding: $_");
-        _thread_throw_error( $self, $uuid, $page->{uuid},
-            'Threshold', "Error running threshold: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $e );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4309,7 +4304,7 @@ sub _thread_brightness_contrast {
     if ("$e") {
         $logger->error($e);
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'Brightness-contrast', "Error running BrightnessContrast: $e." );
+            'Brightness-contrast', $e );
         return;
     }
     return if $_self->{cancel};
@@ -4330,8 +4325,7 @@ sub _thread_brightness_contrast {
     catch {
         $logger->error("Error changing brightness / contrast: $_");
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'Brightness-contrast',
-            "Error changing brightness / contrast: $_." );
+            'Brightness-contrast', $_ );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4375,8 +4369,7 @@ sub _thread_negate {
     $e = $image->Negate;
     if ("$e") {
         $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid},
-            'Negate', "Error negating: $e." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Negate', $e );
         return;
     }
     return if $_self->{cancel};
@@ -4393,8 +4386,7 @@ sub _thread_negate {
     }
     catch {
         $logger->error("Error negating: $_");
-        _thread_throw_error( $self, $uuid, $page->{uuid},
-            'Negate', "Error negating: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Negate', $_ );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4454,7 +4446,7 @@ sub _thread_unsharp {
     if ("$e") {
         $logger->error($e);
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'Unsharp', "Error running unsharp: $e." );
+            'Unsharp', $e );
         return;
     }
     return if $_self->{cancel};
@@ -4523,7 +4515,7 @@ sub _thread_crop {
     if ("$e") {
         $logger->error($e);
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'crop', "Error cropping: $e." );
+            'crop', $e );
         return;
     }
     $image->Set( page => '0x0+0+0' );
@@ -4545,7 +4537,7 @@ sub _thread_crop {
     catch {
         $logger->error("Error cropping: $_");
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'crop', "Error cropping: $_." );
+            'crop', $_ );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4583,12 +4575,7 @@ sub _thread_to_png {
     }
     catch {
         $logger->error("Error converting to png: $_");
-        if (/^Exception[ ]445:[ ]cache[ ]resources[ ]exhausted/xsm) {
-            $_ .= "\nPlease examine ImageMagick's policy.xml file and check";
-            $_ .= ' that the memory limits are set high enough for this image.';
-        }
-        _thread_throw_error( $self, $uuid, $page->{uuid}, 'to-PNG',
-            "Error converting to png: $_." );
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'to-PNG', $_ );
         $error = TRUE;
     };
     if ($error) { return }
@@ -4627,14 +4614,14 @@ sub _thread_tesseract {
     catch {
         $logger->error("Error processing with tesseract: $_");
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'tesseract', "Error processing with tesseract: $_" );
+            'tesseract', $_ );
         $error = TRUE;
     };
     if ($error) { return }
     return if $_self->{cancel};
     if ( defined $stderr and $stderr ne $EMPTY ) {
         _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'tesseract', "Error processing with tesseract: $stderr" );
+            'tesseract', $stderr );
     }
     $options{page}{ocr_flag} = 1;    #FlagOCR
     $options{page}{ocr_time} =
@@ -4843,7 +4830,7 @@ sub _thread_unpaper {
         if ($stderr) {
             $logger->error($stderr);
             _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-                'unpaper', "Error running unpaper: $stderr" );
+                'unpaper', $stderr );
             if ( not -s $out ) { return }
         }
         return if $_self->{cancel};
@@ -4852,7 +4839,7 @@ sub _thread_unpaper {
         if ($stdout) {
             $logger->warn($stdout);
             _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-                'unpaper', "Warning running unpaper: $stdout" );
+                'unpaper', $stdout );
             if ( not -s $out ) { return }
         }
 

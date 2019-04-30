@@ -34,6 +34,7 @@ use Glib::Object::Subclass Gtk3::Dialog::,
 
 our $VERSION = '2.5.2';
 my $EMPTY    = q{};
+my $SPACE    = q{ };
 my $HEXREGEX = qr{^(.*)           # start of message
                   \b0x[[:xdigit:]]+\b # hex (e.g. address)
                   (.*)$           # rest of message
@@ -132,29 +133,39 @@ sub munge_message {
     my @out = ();
 
     # split up gimp messages
-    while ( defined $message
-        and $message =~ /^([(]gimp:\d+[)]:[^\n]+)\n(.*)/xsm )
+    while (
+        defined $message
+        and (  $message =~ /^([(]gimp:\d+[)]:[^\n]+)\n(.*)/xsm
+            or $message =~
+            /^([[]\S+\s@\s\b0x[[:xdigit:]]+\b\][^\n]+)\n(.*)/xsm )
+      )
     {
         push @out, munge_message($1);
         $message = $2;
     }
     if (@out) {
-        if ( defined $message and $message !~ /^\s+$/ ) {
+        if ( defined $message and $message !~ /^\s*$/xsm ) {
             push @out, munge_message($message);
         }
         return \@out;
     }
 
     if ( defined $message
-        and $message =~ /Exception[ ]400:[ ]memory[ ]allocation[ ]failed/xsm )
+        and $message =~
+        /Exception[ ](:?400|445):[ ]memory[ ]allocation[ ]failed/xsm )
     {
-        $message .=
-          __(   "\n\nThis error is normally due to ImageMagick "
-              . 'exceeding its resource limits. These can be extended by '
-              . 'editing its policy file, which on my system is found at '
-              . '/etc/ImageMagick-6/policy.xml Please see '
-              . 'https://imagemagick.org/script/resources.php for more '
-              . 'information' );
+        $message .= "\n\n"
+          . __(
+'This error is normally due to ImageMagick exceeding its resource limits.'
+          )
+          . $SPACE
+          . __(
+'These can be extended by editing its policy file, which on my system is found at /etc/ImageMagick-6/policy.xml'
+          )
+          . $SPACE
+          . __(
+'Please see https://imagemagick.org/script/resources.php for more information'
+          );
     }
     return $message;
 }

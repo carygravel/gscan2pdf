@@ -1760,7 +1760,7 @@ sub edit_ocr_text {
 sub scans_saved {
     my ($message) = @_;
     if ( not $slist->scans_saved ) {
-        my $response = show_message_dialog(
+        my $response = ask_question(
             parent             => $window,
             type               => 'question',
             buttons            => 'ok-cancel',
@@ -3297,7 +3297,7 @@ sub scan_dialog {
                       __('Finished scanning reverse pages. Scan facing pages?');
                     $next = 'facing';
                 }
-                my $response = show_message_dialog(
+                my $response = ask_question(
                     parent             => $windows,
                     type               => 'question',
                     buttons            => 'ok-cancel',
@@ -5786,7 +5786,7 @@ sub mark_pages {
 sub compress_temp {
     return
       if (
-        show_message_dialog(
+        ask_question(
             parent  => $window,
             type    => 'question',
             buttons => 'ok-cancel',
@@ -6636,92 +6636,104 @@ sub get_selected_properties {
       $yresolution eq $EMPTY ? 0 : sprintf '%.1g', $yresolution;
 }
 
+sub response_stored {
+    my ($text) = @_;
+    return (  defined $SETTING{message}{$text}
+          and defined $SETTING{message}{$text}{response} );
+}
+
 # Helper function to display a message dialog, wait for a response, and return it
 
-sub show_message_dialog {
+sub ask_question {
     my %options = @_;
-
-    # possibly split messages or explain them
-    my @text = Gscan2pdf::Dialog::munge_message( $options{text} );
-    if ( @text == 1 ) {
-        $options{text} = $text[0];
-    }
-    else {
-        for my $text (@text) {
-            $options{text} = $text;
-            show_message_dialog(%options);
-        }
-    }
 
     # replace any numbers with metacharacters to compare to filter
     my $text = Gscan2pdf::Dialog::filter_message( $options{text} );
-    $logger->info($text);
-    if ( defined $SETTING{message}{$text}{response} ) {
+    if ( response_stored($text) ) {
         return $SETTING{message}{$text}{response};
     }
 
-    my ( $cb, $response );
-    if ( $options{type} eq 'question' ) {
-        my $dialog =
-          Gtk3::MessageDialog->new( $options{parent},
-            [ 'destroy-with-parent', 'modal' ],
-            $options{type}, $options{buttons}, $options{text} );
-        if ( $options{'store-response'} ) {
-            $cb = Gtk3::CheckButton->new_with_label(
-                __("Don't show this message again") );
-            $dialog->get_message_area->add($cb);
-        }
-        if ( defined $options{'default-response'} ) {
-            $dialog->set_default_response( $options{'default-response'} );
-        }
-        $dialog->show_all;
-        $response = $dialog->run;
-        $dialog->destroy;
-        if ( $options{'store-response'} and $cb->get_active ) {
-            my $filter = TRUE;
-            if ( $options{'stored-responses'} ) {
-                $filter = FALSE;
-                for ( @{ $options{'stored-responses'} } ) {
-                    if ( $_ eq $response ) {
-                        $filter = TRUE;
-                        last;
-                    }
+    my $cb;
+    my $dialog =
+      Gtk3::MessageDialog->new( $options{parent},
+        [ 'destroy-with-parent', 'modal' ],
+        $options{type}, $options{buttons}, $options{text} );
+    if ( $options{'store-response'} ) {
+        $cb = Gtk3::CheckButton->new_with_label(
+            __("Don't show this message again") );
+        $dialog->get_message_area->add($cb);
+    }
+    if ( defined $options{'default-response'} ) {
+        $dialog->set_default_response( $options{'default-response'} );
+    }
+    $dialog->show_all;
+    my $response = $dialog->run;
+    $dialog->destroy;
+    if ( $options{'store-response'} and $cb->get_active ) {
+        my $filter = TRUE;
+        if ( $options{'stored-responses'} ) {
+            $filter = FALSE;
+            for ( @{ $options{'stored-responses'} } ) {
+                if ( $_ eq $response ) {
+                    $filter = TRUE;
+                    last;
                 }
             }
-            if ($filter) {
-                $SETTING{message}{$text}{response} = $response;
+        }
+        if ($filter) {
+            $SETTING{message}{$text}{response} = $response;
+        }
+    }
+    return $response;
+}
+
+sub show_message_dialog {
+    my %options = @_;
+    if ( not defined $message_dialog ) {
+        $message_dialog = Gscan2pdf::Dialog::MultipleMessage->new(
+            title           => __('Messages'),
+            'transient-for' => $options{parent}
+        );
+        $message_dialog->set_default_size( $SETTING{message_window_width},
+            $SETTING{message_window_height} );
+    }
+
+    # possibly split messages or explain them
+    my $text = Gscan2pdf::Dialog::munge_message( $options{text} );
+    if ( ref($text) eq 'ARRAY' ) {
+        for ( @{$text} ) {
+            $text = Gscan2pdf::Dialog::filter_message($_);
+            if ( not response_stored($text) ) {
+                $options{text} = $_;
+                $message_dialog->add_message(%options);
             }
         }
     }
     else {
-        if ( not defined $message_dialog ) {
-            $message_dialog = Gscan2pdf::Dialog::MultipleMessage->new(
-                title           => __('Messages'),
-                'transient-for' => $options{parent}
-            );
-            $message_dialog->set_default_size(
-                $SETTING{message_window_width},
-                $SETTING{message_window_height}
-            );
-        }
-        $message_dialog->add_message(%options);
-        $message_dialog->show_all;
-        $response = $message_dialog->run;
-        if ( defined $message_dialog ) { # could be undefined for multiple calls
-
-            for my $text ( $message_dialog->list_messages_to_ignore($response) )
-            {
-                $SETTING{message}{ Gscan2pdf::Dialog::filter_message($text) }
-                  {response} = $response;
-            }
-
-            ( $SETTING{message_window_width}, $SETTING{message_window_height} )
-              = $message_dialog->get_size;
-            $message_dialog->destroy;
-            undef $message_dialog;
+        my $filter = Gscan2pdf::Dialog::filter_message($text);
+        if ( not response_stored($filter) ) {
+            $options{text} = $text;
+            $message_dialog->add_message(%options);
         }
     }
-    return $response;
+    my $response;
+    if ( $message_dialog->{grid_rows} > 1 ) {
+        $message_dialog->show_all;
+        $response = $message_dialog->run;
+    }
+    if ( defined $message_dialog ) {    # could be undefined for multiple calls
+
+        for my $text ( $message_dialog->list_messages_to_ignore($response) ) {
+            $SETTING{message}{ Gscan2pdf::Dialog::filter_message($text) }
+              {response} = $response;
+        }
+
+        ( $SETTING{message_window_width}, $SETTING{message_window_height} ) =
+          $message_dialog->get_size;
+        $message_dialog->destroy;
+        undef $message_dialog;
+    }
+    return;
 }
 
 __END__
