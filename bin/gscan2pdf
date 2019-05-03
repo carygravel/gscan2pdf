@@ -6636,20 +6636,20 @@ sub get_selected_properties {
       $yresolution eq $EMPTY ? 0 : sprintf '%.1g', $yresolution;
 }
 
-sub response_stored {
-    my ($text) = @_;
-    return (  defined $SETTING{message}{$text}
-          and defined $SETTING{message}{$text}{response} );
-}
-
 # Helper function to display a message dialog, wait for a response, and return it
 
 sub ask_question {
     my %options = @_;
 
     # replace any numbers with metacharacters to compare to filter
-    my $text = Gscan2pdf::Dialog::filter_message( $options{text} );
-    if ( response_stored($text) ) {
+    my $text =
+      Gscan2pdf::Dialog::MultipleMessage::filter_message( $options{text} );
+    if (
+        Gscan2pdf::Dialog::MultipleMessage::response_stored(
+            $text, $SETTING{message}
+        )
+      )
+    {
         return $SETTING{message}{$text}{response};
     }
 
@@ -6698,36 +6698,17 @@ sub show_message_dialog {
             $SETTING{message_window_height} );
     }
 
-    # possibly split messages or explain them
-    my $text = Gscan2pdf::Dialog::munge_message( $options{text} );
-    if ( ref($text) eq 'ARRAY' ) {
-        for ( @{$text} ) {
-            $text = Gscan2pdf::Dialog::filter_message($_);
-            if ( not response_stored($text) ) {
-                $options{text} = $_;
-                $message_dialog->add_message(%options);
-            }
-        }
-    }
-    else {
-        my $filter = Gscan2pdf::Dialog::filter_message($text);
-        if ( not response_stored($filter) ) {
-            $options{text} = $text;
-            $message_dialog->add_message(%options);
-        }
-    }
+    $options{responses} = $SETTING{message};
+    $message_dialog->add_message(%options);
+
     my $response;
     if ( $message_dialog->{grid_rows} > 1 ) {
         $message_dialog->show_all;
         $response = $message_dialog->run;
     }
+
     if ( defined $message_dialog ) {    # could be undefined for multiple calls
-
-        for my $text ( $message_dialog->list_messages_to_ignore($response) ) {
-            $SETTING{message}{ Gscan2pdf::Dialog::filter_message($text) }
-              {response} = $response;
-        }
-
+        $message_dialog->store_responses( $response, $SETTING{message} );
         ( $SETTING{message_window_width}, $SETTING{message_window_height} ) =
           $message_dialog->get_size;
         $message_dialog->destroy;

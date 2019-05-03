@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 20;
+use Test::More tests => 12;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -59,88 +59,5 @@ $dialog->signal_connect_after(
 $event = Gtk3::Gdk::Event->new('key-press');
 $event->keyval(Gtk3::Gdk::KEY_Delete);
 $dialog->signal_emit( 'key_press_event', $event );
-
-is_deeply(
-    Gscan2pdf::Dialog::munge_message(
-            "(gimp:26514): GLib-GObject-WARNING : g_object_set_valist: "
-          . "object class 'GeglConfig' has no property named 'cache-size'\n"
-          . "(gimp:26514): GEGL-gegl-operation.c-WARNING : Cannot change name of operation class 0xE0FD30 from \"gimp:point-layer-mode\" to \"gimp:dissolve-mode\""
-    ),
-    [
-"(gimp:26514): GLib-GObject-WARNING : g_object_set_valist: object class 'GeglConfig' has no property named 'cache-size'",
-'(gimp:26514): GEGL-gegl-operation.c-WARNING : Cannot change name of operation class 0xE0FD30 from "gimp:point-layer-mode" to "gimp:dissolve-mode"'
-    ],
-    'split gimp messages'
-);
-
-is_deeply(
-    Gscan2pdf::Dialog::munge_message(
-'[image2 @ 0xc596e0] Using AVStream.codec to pass codec parameters to muxers is deprecated, use AVStream.codecpar instead.'
-          . "\n"
-          . '[image2 @ 0x1338180] Encoder did not produce proper pts, making some up.'
-          . "\n"
-    ),
-    [
-'[image2 @ 0xc596e0] Using AVStream.codec to pass codec parameters to muxers is deprecated, use AVStream.codecpar instead.',
-'[image2 @ 0x1338180] Encoder did not produce proper pts, making some up.'
-    ],
-    'split unpaper messages'
-);
-
-is_deeply(
-    Gscan2pdf::Dialog::munge_message('Exception 400: memory allocation failed'),
-    "Exception 400: memory allocation failed"
-      . "\n\nThis error is normally due to ImageMagick "
-      . 'exceeding its resource limits. These can be extended by '
-      . 'editing its policy file, which on my system is found at '
-      . '/etc/ImageMagick-6/policy.xml Please see '
-      . 'https://imagemagick.org/script/resources.php for more '
-      . 'information',
-    'extend imagemagick Exception 400'
-);
-
-is(
-    Gscan2pdf::Dialog::filter_message(
-'[image2 @ 0x1338180] Encoder did not produce proper pts, making some up.'
-    ),
-    '[image2 @ %%x] Encoder did not produce proper pts, making some up.',
-    'Filter out memory address from unpaper warning'
-);
-
-is(
-    Gscan2pdf::Dialog::filter_message(
-'[image2 @ 0xc596e0] Using AVStream.codec to pass codec parameters to muxers is deprecated, use AVStream.codecpar instead.'
-          . "\n"
-          . '[image2 @ 0x1338180] Encoder did not produce proper pts, making some up.'
-    ),
-'[image2 @ %%x] Using AVStream.codec to pass codec parameters to muxers is deprecated, use AVStream.codecpar instead.'
-      . "\n"
-      . '[image2 @ %%x] Encoder did not produce proper pts, making some up.',
-    'Filter out double memory address from unpaper warning'
-);
-
-is(
-    Gscan2pdf::Dialog::filter_message(
-        'Error processing with tesseract: Detected 440 diacritics'
-    ),
-    'Error processing with tesseract: Detected %%d diacritics',
-    'Filter out integer from tesseract warning'
-);
-
-is(
-    Gscan2pdf::Dialog::filter_message(
-'Error processing with tesseract: Warning. Invalid resolution 0 dpi. Using 70 instead.'
-    ),
-'Error processing with tesseract: Warning. Invalid resolution %%d dpi. Using %%d instead.',
-    'Filter out 1 and 2 digit integers from tesseract warning'
-);
-
-is(
-    Gscan2pdf::Dialog::filter_message(
-"[image2 @ 0x1338180] Encoder did not produce proper pts, making some up. \n "
-    ),
-    '[image2 @ %%x] Encoder did not produce proper pts, making some up.',
-    'Filter out trailing whitespace'
-);
 
 __END__

@@ -14,6 +14,15 @@ Readonly my $COL_CHECKBOX => 4;
 my %types;
 
 our $VERSION = '2.5.2';
+my $SPACE    = q{ };
+my $HEXREGEX = qr{^(.*)           # start of message
+                  \b0x[[:xdigit:]]+\b # hex (e.g. address)
+                  (.*)$           # rest of message
+                 }xsm;
+my $INTREGEX = qr{^(.*)           # start of message
+                  \b[[:digit:]]+\b # integer
+                  (.*)$           # rest of message
+                 }xsm;
 
 sub INIT_INSTANCE {
     my $self = shift;
@@ -57,7 +66,7 @@ sub INIT_INSTANCE {
     return $self;
 }
 
-sub add_message {
+sub add_row {
     my ( $self, %options ) = @_;
 
     $self->{grid}->attach( Gtk3::Label->new( $options{page} ),
@@ -90,6 +99,44 @@ sub add_message {
         $self->{cb}->set_label( __("Don't show these messages again") );
     }
     return;
+}
+
+sub add_message {
+    my ( $self, %options ) = @_;
+
+    # possibly split messages or explain them
+    my $text = munge_message( $options{text} );
+    if ( ref($text) eq 'ARRAY' ) {
+        for ( @{$text} ) {
+            $text = filter_message($_);
+            if ( not response_stored( $text, $options{responses} ) ) {
+                $options{text} = $_;
+                $self->add_row(%options);
+            }
+        }
+    }
+    else {
+        my $filter = filter_message($text);
+        if ( not response_stored( $filter, $options{responses} ) ) {
+            $options{text} = $text;
+            $self->add_row(%options);
+        }
+    }
+    return;
+}
+
+sub store_responses {
+    my ( $self, $response, $responses ) = @_;
+    for my $text ( $self->list_messages_to_ignore($response) ) {
+        $responses->{ filter_message($text) }{response} = $response;
+    }
+    return;
+}
+
+sub response_stored {
+    my ( $text, $responses ) = @_;
+    return (  defined $responses->{$text}
+          and defined $responses->{$text}{response} );
 }
 
 sub _list_checkboxes {
@@ -130,6 +177,67 @@ sub list_messages_to_ignore {
         }
     }
     return @list;
+}
+
+# Has to be carried out separately to filter_message in order to show the user
+# any addresses, error numbers, etc.
+
+sub munge_message {
+    my ($message) = @_;
+    my @out = ();
+
+    # split up gimp messages
+    while (
+        defined $message
+        and (  $message =~ /^([(]gimp:\d+[)]:[^\n]+)\n(.*)/xsm
+            or $message =~
+            /^([[]\S+\s@\s\b0x[[:xdigit:]]+\b\][^\n]+)\n(.*)/xsm )
+      )
+    {
+        push @out, munge_message($1);
+        $message = $2;
+    }
+    if (@out) {
+        if ( defined $message and $message !~ /^\s*$/xsm ) {
+            push @out, munge_message($message);
+        }
+        return \@out;
+    }
+
+    if ( defined $message
+        and $message =~
+        /Exception[ ](:?400|445):[ ]memory[ ]allocation[ ]failed/xsm )
+    {
+        $message .= "\n\n"
+          . __(
+'This error is normally due to ImageMagick exceeding its resource limits.'
+          )
+          . $SPACE
+          . __(
+'These can be extended by editing its policy file, which on my system is found at /etc/ImageMagick-6/policy.xml'
+          )
+          . $SPACE
+          . __(
+'Please see https://imagemagick.org/script/resources.php for more information'
+          );
+    }
+    return $message;
+}
+
+# External tools sometimes throws warning messages including a number,
+# e.g. hex address. As the number is very rarely the same, although the message
+# itself is, filter out the number from the message
+
+sub filter_message {
+    my ($message) = @_;
+    $message =~ s/\s+$//xsm;
+    while ( $message =~ /$HEXREGEX/xsmo ) {
+        $message =~ s/$HEXREGEX/$1%%x$2/xsmo;
+    }
+    while ( $message =~ /$INTREGEX/xsmo ) {
+        $message =~ s/$INTREGEX/$1%%d$2/xsmo;
+    }
+    return $message;
 }
 
 sub close_callback {
