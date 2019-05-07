@@ -3,6 +3,8 @@
 * Split up messages from gimp and unpaper to allow them to be ignored more
   easily. Closes bug #321
   (Error messages when returning from editing a scanned document using gimp)
+* Trap invalid dates in metadata.
+  Closes bug #323 (Crash when saving with invalid date)
 
 
 2.5.2 (22.04.2019):

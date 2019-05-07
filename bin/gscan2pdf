@@ -2108,10 +2108,25 @@ sub update_metadata_settings {
         $SETTING{"$name-suggestions"} = $dialog->get("meta-$name-suggestions");
     }
     my $datetime = $dialog->get('meta-datetime');
-    $SETTING{'datetime offset'} =
-      [ Delta_DHMS( Today_and_Now(), @{$datetime} ) ];
-
-    return;
+    my $success  = TRUE;
+    try {
+        $SETTING{'datetime offset'} =
+          [ Delta_DHMS( Today_and_Now(), @{$datetime} ) ];
+    }
+    catch {
+        $success = FALSE;
+        my $msg =
+          sprintf __('%04d-%02d-%02d %02d:%02d:%02d is not a valid datetime.'),
+          @{$datetime};
+        $logger->debug($msg);
+        show_message_dialog(
+            parent  => $window,
+            type    => 'error',
+            buttons => 'close',
+            text    => $msg,
+        );
+    };
+    return $success;
 }
 
 # Save selected pages as PDF under given name.
@@ -2330,7 +2345,10 @@ sub save_button_clicked_callback {
 
             my $file_chooser;
             if ( $_ eq 'pdf' ) {
-                update_metadata_settings($windowi);
+                if ( not update_metadata_settings($windowi) ) {
+                    save_dialog();
+                    return;
+                }
 
                 # Set up file selector
                 $file_chooser = Gtk3::FileChooserDialog->new(
@@ -2376,7 +2394,10 @@ sub save_button_clicked_callback {
         }
         when ('djvu') {
 
-            update_metadata_settings($windowi);
+            if ( not update_metadata_settings($windowi) ) {
+                save_dialog();
+                return;
+            }
 
             # cd back to cwd to save
             chdir $SETTING{cwd};
@@ -3057,7 +3078,10 @@ sub email {
         sub {
 
             # Set options
-            update_metadata_settings($windowe);
+            if ( not update_metadata_settings($windowe) ) {
+                email();
+                return;
+            }
 
             # Compile list of pages
             $SETTING{'Page range'} = $windowe->get('page-range');
