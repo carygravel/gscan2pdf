@@ -42,6 +42,7 @@ is( $dialog->get('meta-subject'),  'subject',  'subject' );
 is( $dialog->get('meta-keywords'), 'keywords', 'keywords' );
 
 $dialog = Gscan2pdf::Dialog::Save->new(
+    'transient-for'   => $window,
     'include-time'    => TRUE,
     'meta-datetime'   => [ 2017, 01, 01, 23, 59, 5 ],
     'select-datetime' => TRUE,
@@ -54,6 +55,7 @@ is_deeply(
 );
 
 $dialog = Gscan2pdf::Dialog::Save->new(
+    'transient-for' => $window,
     'include-time'  => TRUE,
     'meta-datetime' => [ 2017, 01, 01, 23, 59, 5 ],
 );
@@ -61,8 +63,9 @@ $dialog->add_metadata;
 is_deeply( $dialog->get('meta-datetime'), [Today_and_Now], 'now' );
 
 $dialog = Gscan2pdf::Dialog::Save->new(
-    'image-types' => [qw(pdf gif jpg png pnm ps tif txt hocr session)],
-    'ps-backends' => [qw(libtiff pdf2ps pdftops)],
+    'transient-for' => $window,
+    'image-types'   => [qw(pdf gif jpg png pnm ps tif txt hocr session)],
+    'ps-backends'   => [qw(libtiff pdf2ps pdftops)],
 );
 $dialog->add_metadata;
 $dialog->add_image_type;
