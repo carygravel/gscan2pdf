@@ -5,6 +5,7 @@
   (Error messages when returning from editing a scanned document using gimp)
 * Trap invalid dates in metadata.
   Closes bug #323 (Crash when saving with invalid date)
+* Use GTK's FontChooserDialog for selecting font for OCR output in PDF
 
 
 2.5.2 (22.04.2019):

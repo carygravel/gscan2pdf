@@ -798,46 +798,84 @@ sub add_pdf_options {
     );
     $hbox->pack_end( $combob, FALSE, FALSE, 0 );
 
-    # Font for non-ASCII text
-    my $scwinf = Gtk3::ScrolledWindow->new;
-    $scwinf->set_policy( 'automatic', 'automatic' );
-    $vboxp->pack_start( $scwinf, TRUE, TRUE, 0 );
-    my $hboxf = Gtk3::HBox->new;
-    $scwinf->add_with_viewport($hboxf);
-    $scwinf->get_child->set_shadow_type('none');
-    $label = Gtk3::Label->new( __('Font for non-ASCII text') );
-    $hboxf->pack_start( $label, FALSE, FALSE, 0 );
-    my @fonts;
+    # Build a look-up table of all true-type fonts installed
     my ( undef, $stdout ) =
       Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
     $stdout = Encode::decode_utf8($stdout);
-
-    my $font = $self->get('pdf-font');
+    my %fonts;
     for ( split /\n/sm, $stdout ) {
         if (/ttf:[ ]/xsm) {
             my ( $file, $family, $style ) = split /:/xsm;
             chomp $style;
             $family =~ s/^[ ]//xsm;
+            $family =~ s/,.*$//xsm;
             $style =~ s/^style=//xsm;
             $style =~ s/,.*$//xsm;
-            my $family_style = "$family $style";
-            push @fonts, [ $file, $family_style, $family_style ];
-            if ( not defined $font
-                and $family_style eq 'Times New Roman Regular' )
-            {
-                $font = $file;
-            }
+            $fonts{by_file}{$file} = [ $family, $style ];
+            $fonts{by_family}{$family}{$style} = $file;
         }
     }
-    @fonts = sort { $a->[1] cmp $b->[1] } @fonts;
-    my $combof = Gscan2pdf::ComboBoxText->new_from_array(@fonts);
-    $combof->signal_connect(
-        changed => sub {
-            $self->set( 'pdf-font', $combof->get_active_index );
+
+    # It would be nice to use a Gtk3::FontButton here, but as we can only use
+    # TTF, and we have to know the filename of the font, we must filter the
+    # list of fonts, and so we must use a Gtk3::FontChooserDialog
+    my $hboxf = Gtk3::HBox->new;
+    $vboxp->pack_start( $hboxf, TRUE, TRUE, 0 );
+    $label = Gtk3::Label->new( __('Font for non-ASCII text') );
+    $hboxf->pack_start( $label, FALSE, FALSE, 0 );
+    my $fontb = Gtk3::Button->new('Font name goes here');
+    $hboxf->pack_end( $fontb, FALSE, TRUE, 0 );
+
+    my $ttffile = $self->get('pdf-font');
+    if ( defined $ttffile and defined $fonts{by_file}{$ttffile} ) {
+        my ( $family, $style ) = @{ $fonts{by_file}{$ttffile} };
+        $fontb->set_label("$family $style");
+    }
+    else {
+        $fontb->set_label( __('Core') );
+    }
+    $fontb->signal_connect(
+        clicked => sub {
+            my $fontwin =
+              Gtk3::FontChooserDialog->new( 'transient-for' => $self, );
+            $fontwin->set_filter_func(
+                sub {
+                    my ( $family, $face ) = @_;
+                    $family = $family->get_name;
+                    $face   = $face->get_face_name;
+                    if (    defined $fonts{by_family}{$family}
+                        and defined $fonts{by_family}{$family}{$face} )
+                    {
+                        return TRUE;
+                    }
+                    return;
+                }
+            );
+            if ( defined $ttffile and defined $fonts{by_file}{$ttffile} ) {
+                my ( $family, $style ) = @{ $fonts{by_file}{$ttffile} };
+                my $font = $family;
+                if ( defined $style and $style ne $EMPTY ) {
+                    $font .= " $style";
+                }
+                $fontwin->set_font($font);
+            }
+            $fontwin->show_all;
+            if ( $fontwin->run eq 'ok' ) {
+                my $family = $fontwin->get_font_family->get_name;
+                my $face   = $fontwin->get_font_face->get_face_name;
+                if (    defined $fonts{by_family}{$family}
+                    and defined $fonts{by_family}{$family}{$face} )
+                {
+
+                    # also set local variable as a sort of cache
+                    $ttffile = $fonts{by_family}{$family}{$face};
+                    $self->set( 'pdf-font', $ttffile );
+                    $fontb->set_label("$family $face");
+                }
+            }
+            $fontwin->destroy;
         }
     );
-    $combof->set_active_index($font);
-    $hboxf->pack_start( $combof, FALSE, FALSE, 0 );
 
     if ( $self->get('can-encrypt-pdf') ) {
         my $passb = Gtk3::Button->new( __('Set passwords') );
