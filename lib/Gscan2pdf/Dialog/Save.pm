@@ -194,13 +194,6 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, properties => [
         undef,                                                # default
         [qw/readable writable/]                               # flags
     ),
-    Glib::ParamSpec->string(
-        'pdf-owner-password',                                 # name
-        'PDF owner password',                                 # nick
-        'PDF owner password',                                 # blurb
-        undef,                                                # default
-        [qw/readable writable/]                               # flags
-    ),
 ];
 
 sub SET_PROPERTY {
@@ -873,13 +866,13 @@ sub add_pdf_options {
     );
 
     if ( $self->get('can-encrypt-pdf') ) {
-        my $passb = Gtk3::Button->new( __('Set passwords') );
+        my $passb = Gtk3::Button->new( __('Encrypt PDF') );
         $vboxp->pack_start( $passb, TRUE, TRUE, 0 );
         $passb->signal_connect(
             clicked => sub {
                 my $passwin = Gscan2pdf::Dialog->new(
                     'transient-for' => $self,
-                    title           => __('Set passwords'),
+                    title           => __('Set password'),
                 );
                 $passwin->set_modal(TRUE);
                 my $passvbox = $passwin->get_content_area;
@@ -896,22 +889,10 @@ sub add_pdf_options {
                     $userentry->set_text( $self->get('pdf-user-password') );
                 }
                 $grid->attach( $userentry, 1, $row++, 1, 1 );
-
-                $hbox  = Gtk3::HBox->new;
-                $label = Gtk3::Label->new( __('Owner password') );
-                $hbox->pack_start( $label, FALSE, FALSE, 0 );
-                $grid->attach( $hbox, 0, $row, 1, 1 );
-                my $ownerentry = Gtk3::Entry->new;
-                if ( defined $self->get('pdf-owner-password') ) {
-                    $ownerentry->set_text( $self->get('pdf-owner-password') );
-                }
-                $grid->attach( $ownerentry, 1, $row++, 1, 1 );
                 $passwin->add_actions(
                     'gtk-ok',
                     sub {
                         $self->set( 'pdf-user-password', $userentry->get_text );
-                        $self->set( 'pdf-owner-password',
-                            $ownerentry->get_text );
                         $passwin->destroy;
                     },
                     'gtk-cancel',
