@@ -167,6 +167,12 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, properties => [
         'auto',                                              # default
         [qw/readable writable/]                              # flags
     ),
+    Glib::ParamSpec->scalar(
+        'available-fonts',                                   # name
+        'Available fonts',                                   # nick
+        'Hash of true type fonts available',                 # blurb
+        [qw/readable writable/]                              # flags
+    ),
     Glib::ParamSpec->string(
         'pdf-font',                                           # name
         'PDF font',                                           # nick
@@ -798,24 +804,6 @@ sub add_pdf_options {
     );
     $hbox->pack_end( $combob, FALSE, FALSE, 0 );
 
-    # Build a look-up table of all true-type fonts installed
-    my ( undef, $stdout ) =
-      Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
-    $stdout = Encode::decode_utf8($stdout);
-    my %fonts;
-    for ( split /\n/sm, $stdout ) {
-        if (/ttf:[ ]/xsm) {
-            my ( $file, $family, $style ) = split /:/xsm;
-            chomp $style;
-            $family =~ s/^[ ]//xsm;
-            $family =~ s/,.*$//xsm;
-            $style =~ s/^style=//xsm;
-            $style =~ s/,.*$//xsm;
-            $fonts{by_file}{$file} = [ $family, $style ];
-            $fonts{by_family}{$family}{$style} = $file;
-        }
-    }
-
     # It would be nice to use a Gtk3::FontButton here, but as we can only use
     # TTF, and we have to know the filename of the font, we must filter the
     # list of fonts, and so we must use a Gtk3::FontChooserDialog
@@ -827,8 +815,12 @@ sub add_pdf_options {
     $hboxf->pack_end( $fontb, FALSE, TRUE, 0 );
 
     my $ttffile = $self->get('pdf-font');
-    if ( defined $ttffile and defined $fonts{by_file}{$ttffile} ) {
-        my ( $family, $style ) = @{ $fonts{by_file}{$ttffile} };
+    my $fonts   = $self->get('available-fonts');
+    if (    defined $ttffile
+        and defined $fonts
+        and defined $fonts->{by_file}{$ttffile} )
+    {
+        my ( $family, $style ) = @{ $fonts->{by_file}{$ttffile} };
         $fontb->set_label("$family $style");
     }
     else {
@@ -843,16 +835,19 @@ sub add_pdf_options {
                     my ( $family, $face ) = @_;
                     $family = $family->get_name;
                     $face   = $face->get_face_name;
-                    if (    defined $fonts{by_family}{$family}
-                        and defined $fonts{by_family}{$family}{$face} )
+                    if (    defined $fonts->{by_family}{$family}
+                        and defined $fonts->{by_family}{$family}{$face} )
                     {
                         return TRUE;
                     }
                     return;
                 }
             );
-            if ( defined $ttffile and defined $fonts{by_file}{$ttffile} ) {
-                my ( $family, $style ) = @{ $fonts{by_file}{$ttffile} };
+            if (    defined $ttffile
+                and defined $fonts
+                and defined $fonts->{by_file}{$ttffile} )
+            {
+                my ( $family, $style ) = @{ $fonts->{by_file}{$ttffile} };
                 my $font = $family;
                 if ( defined $style and $style ne $EMPTY ) {
                     $font .= " $style";
@@ -863,12 +858,12 @@ sub add_pdf_options {
             if ( $fontwin->run eq 'ok' ) {
                 my $family = $fontwin->get_font_family->get_name;
                 my $face   = $fontwin->get_font_face->get_face_name;
-                if (    defined $fonts{by_family}{$family}
-                    and defined $fonts{by_family}{$family}{$face} )
+                if (    defined $fonts->{by_family}{$family}
+                    and defined $fonts->{by_family}{$family}{$face} )
                 {
 
                     # also set local variable as a sort of cache
-                    $ttffile = $fonts{by_family}{$family}{$face};
+                    $ttffile = $fonts->{by_family}{$family}{$face};
                     $self->set( 'pdf-font', $ttffile );
                     $fontb->set_label("$family $face");
                 }

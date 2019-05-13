@@ -286,6 +286,9 @@ my (
     # is created or we quit
     $pdf,
 
+    # hash of true type fonts available. Used by PDF OCR output
+    $fonts,
+
     # SimpleList in preferences dialog
     $option_visibility_list,
 
@@ -805,6 +808,23 @@ sub check_dependencies {
         $logger->info("Found cuneiform v$dependencies{cuneiform}");
         push @ocr_engine,
           [ 'cuneiform', __('Cuneiform'), __('Process image with Cuneiform.') ];
+    }
+
+    # Build a look-up table of all true-type fonts installed
+    my ( undef, $stdout ) =
+      Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
+    $stdout = Encode::decode_utf8($stdout);
+    for ( split /\n/sm, $stdout ) {
+        if (/ttf:[ ]/xsm) {
+            my ( $file, $family, $style ) = split /:/xsm;
+            chomp $style;
+            $family =~ s/^[ ]//xsm;
+            $family =~ s/,.*$//xsm;
+            $style =~ s/^style=//xsm;
+            $style =~ s/,.*$//xsm;
+            $fonts->{by_file}{$file} = [ $family, $style ];
+            $fonts->{by_family}{$family}{$style} = $file;
+        }
     }
     return;
 }
@@ -2255,6 +2275,7 @@ sub save_dialog {
         'downsample-dpi'            => $SETTING{'downsample dpi'},
         downsample                  => $SETTING{downsample},
         'pdf-compression'           => $SETTING{'pdf compression'},
+        'available-fonts'           => $fonts,
         'pdf-font'                  => $SETTING{'pdf font'},
         'can-encrypt-pdf'           => defined $dependencies{pdftk},
         'tiff-compression'          => $SETTING{'tiff compression'},
