@@ -3086,6 +3086,13 @@ EOS
     return;
 }
 
+# return if the given PDF::API2 font can encode the given character
+
+sub font_can_char {
+    my ( $font, $char ) = @_;
+    return $font->glyphByUni( ord $char ) ne '.notdef';
+}
+
 sub _thread_save_pdf {
     my ( $self, %options ) = @_;
 
@@ -3116,6 +3123,9 @@ sub _thread_save_pdf {
         my $metadata = prepare_output_metadata( 'PDF', $options{metadata} );
         $pdf->info( %{$metadata} );
     }
+
+    # FIXME: use font_can_char() to check whether a font (TTF or core) can
+    # encode a particular character
     $cache->{core} = $pdf->corefont('Times-Roman');
     if ( defined $options{options}{font} ) {
         $cache->{ttf} =

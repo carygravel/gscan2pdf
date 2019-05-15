@@ -1,8 +1,10 @@
 use warnings;
 use strict;
-use Test::More tests => 45;
+use Test::More tests => 48;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
+use Encode;
+use PDF::API2;
 
 BEGIN {
     use_ok('Gscan2pdf::Document');
@@ -350,5 +352,14 @@ is(
     '/command/not/found: command not found',
     'stderr open3 running unknown command'
 );
+
+my $pdf  = PDF::API2->new;
+my $font = $pdf->corefont('Times-Roman');
+is( Gscan2pdf::Document::font_can_char( $font, decode_utf8('a') ),
+    TRUE, '_font_can_char a' );
+is( Gscan2pdf::Document::font_can_char( $font, decode_utf8('ö') ),
+    TRUE, '_font_can_char ö' );
+is( Gscan2pdf::Document::font_can_char( $font, decode_utf8('п') ),
+    FALSE, '_font_can_char п' );
 
 __END__
