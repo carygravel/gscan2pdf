@@ -128,7 +128,7 @@ sub each_backend_option {
 
 sub num_backend_options {
     my ($self) = @_;
-    if ( not defined $self->{data}{backend} ) { return }
+    if ( not defined $self->{data}{backend} ) { return 0 }
     return scalar @{ $self->{data}{backend} };
 }
 

@@ -155,12 +155,15 @@ $signal = $dialog->signal_connect(
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
                     {
+                        'frontend' => {
+                            'num_pages' => 0
+                        },
                         backend =>
                           [ { $resolution => 52 }, { mode => 'Color' } ]
                     },
                     'current-scan-options with profile'
                 );
-                is( $reloads, 2,
+                is( $reloads, 1,
                     'reloaded-scan-options called once to set profile' );
                 $dialog->signal_handler_disconnect($signal);
                 $flag = TRUE;
@@ -473,7 +476,7 @@ $signal = $dialog->signal_connect(
 );
 Gtk3->main;
 
-is( $reloads, 8, 'Final number of calls reloaded-scan-options' );
+is( $reloads, 7, 'Final number of calls reloaded-scan-options' );
 is(
     $dialog->get('available-scan-options')->by_name(SANE_NAME_SCAN_BR_X)->{val},
     10, 'reloaded option still set to non-default value'

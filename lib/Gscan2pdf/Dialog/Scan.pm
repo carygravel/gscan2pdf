@@ -2162,6 +2162,12 @@ sub set_current_scan_options {
         return;
     }
 
+    # If we have no options set, no need to reset to defaults
+    if ( $self->{current_scan_options}->num_backend_options == 0 ) {
+        $self->add_current_scan_options($profile);
+        return;
+    }
+
     # reload to get defaults before applying profile
     my $signal;
     $self->{current_scan_options} =

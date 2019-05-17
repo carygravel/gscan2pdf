@@ -8,6 +8,7 @@
 * Use GTK's FontChooserDialog for selecting font for OCR output in PDF
 * Moved font discovery to program start to accelerate display of save dialog
 * Removed owner password, as it does not encrypt.
+* Don't reset to defaults if no scan options set.
 
 
 2.5.2 (22.04.2019):

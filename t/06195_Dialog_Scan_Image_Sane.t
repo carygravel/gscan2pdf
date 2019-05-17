@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 1;
+use Test::More tests => 2;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -25,9 +25,15 @@ my $dialog = Gscan2pdf::Dialog::Scan::Image_Sane->new(
     'logger'        => $logger
 );
 
+# v2.4.0 introduced resetting scan options to defaults before applying profile.
+# Check that this doesn't happen immediately after initially opening the device.
+my $num_reloads = 0;
+$dialog->signal_connect( 'reloaded-scan-options' => sub { ++$num_reloads } );
+
 $dialog->{reloaded_signal} = $dialog->signal_connect(
     'reloaded-scan-options' => sub {
         $dialog->signal_handler_disconnect( $dialog->{reloaded_signal} );
+        ++$num_reloads;
 
         # v1.5.0 introduced the property allow-batch-flatbed, disabled by
         # default. However, this prevented num_pages from defaulting to all,
@@ -68,6 +74,8 @@ $dialog->{signal} = $dialog->signal_connect(
 $dialog->set( 'device-list',
     [ { 'name' => 'test:0' }, { 'name' => 'test:1' } ] );
 Gtk3->main;
+
+is $num_reloads, 2, 'options only loaded twice';
 
 Gscan2pdf::Frontend::Image_Sane->quit;
 __END__

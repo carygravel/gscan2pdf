@@ -151,6 +151,9 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
                     {
+                        'frontend' => {
+                            'num_pages' => 0
+                        },
                         backend =>
                           [ { $resolution => 52 }, { mode => 'Color' } ]
 
