@@ -8,7 +8,9 @@
 * Use GTK's FontChooserDialog for selecting font for OCR output in PDF
 * Moved font discovery to program start to accelerate display of save dialog
 * Removed owner password, as it does not encrypt.
-* Don't reset to defaults if no scan options set.
+* Don't reset to defaults if no scan options set. Closes bug #324 (Changing scan
+  resolution from the default 100 ppi to 200 ppi creates invalid syntax for sane
+  parameters)
 * Update to German translation (thanks to Stephan Woidowski)
 * Update to Italian translation (thanks to Albano Battistella)
 * Update to Ukranian translation (thanks to Yuri Chornoivan)
