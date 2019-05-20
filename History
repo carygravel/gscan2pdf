@@ -1,4 +1,4 @@
-2.5.3 (22.05.2019):
+2.5.3 (20.05.2019):
 
 * Split up messages from gimp and unpaper to allow them to be ignored more
   easily. Closes bug #321
