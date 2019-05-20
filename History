@@ -9,6 +9,7 @@
 * Moved font discovery to program start to accelerate display of save dialog
 * Removed owner password, as it does not encrypt.
 * Don't reset to defaults if no scan options set.
+* Update to German translation (thanks to Stephan Woidowski)
 
 
 2.5.2 (22.04.2019):
