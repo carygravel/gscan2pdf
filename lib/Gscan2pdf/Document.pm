@@ -4244,14 +4244,7 @@ sub _thread_threshold {
     if ("$e") { $logger->warn($e) }
 
     # Threshold the image
-    $e = $image->BlackThreshold( threshold => "$threshold%" );
-    if ("$e") {
-        $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $e );
-        return;
-    }
-    return if $_self->{cancel};
-    $e = $image->WhiteThreshold( threshold => "$threshold%" );
+    $e = $image->Threshold( threshold => "$threshold%" );
     if ("$e") {
         $logger->error($e);
         _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $e );
