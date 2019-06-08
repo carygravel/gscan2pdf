@@ -851,8 +851,6 @@ sub SET_PROPERTY {
                     }
                 );
                 $self->set_paper($newval);
-                $self->{current_scan_options}
-                  ->add_frontend_option( $name, $newval );
             }
             when ('paper_formats') {
                 $self->{$name} = $newval;
@@ -1524,6 +1522,7 @@ sub set_paper {
     if ( not $paper_profile->num_backend_options ) {
         $self->hide_geometry($options);
         $self->{paper} = $paper;
+        $self->{current_scan_options}->add_frontend_option( 'paper', $paper );
         $self->signal_emit( 'changed-paper', $paper );
         return;
     }
@@ -1531,11 +1530,16 @@ sub set_paper {
     my $signal;
     $signal = $self->signal_connect(
         'changed-current-scan-options' => sub {
-            $self->signal_handler_disconnect($signal);
-            $self->hide_geometry($options);
-            $self->{paper} = $paper;
-            $self->set( 'profile', undef );
-            $self->signal_emit( 'changed-paper', $paper );
+            my ( $dialog, $profile, $uuid ) = @_;
+            if ( $paper_profile->{uuid} eq $uuid ) {
+                $self->signal_handler_disconnect($signal);
+                $self->hide_geometry($options);
+                $self->{paper} = $paper;
+                $self->{current_scan_options}
+                  ->add_frontend_option( 'paper', $paper );
+                $self->set( 'profile', undef );
+                $self->signal_emit( 'changed-paper', $paper );
+            }
         }
     );
 
@@ -2205,7 +2209,7 @@ sub add_current_scan_options {
     # in case they have to be reloaded.
     # Use the callback to trigger the next loop
     $self->_set_option_profile( $clone, $clone->each_backend_option );
-    return $clone->{uuid};
+    return;
 }
 
 sub _set_option_profile {

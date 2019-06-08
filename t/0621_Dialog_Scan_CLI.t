@@ -429,7 +429,7 @@ $signal = $dialog->signal_connect(
                   { $bry => 10 };
                 is_deeply(
                     $dialog->get('current-scan-options')->get_data,
-                    { backend => $expected },
+                    { backend => $expected, frontend => { paper => 'new2' } },
                     'CLI geometry option names after setting paper'
                 );
             }

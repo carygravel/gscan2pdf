@@ -239,6 +239,12 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                         backend => [
                             { 'resolution'        => '100' },
                             { 'clear-calibration' => undef },
+                            {
+                                'br-x' => '210'
+                            },
+                            {
+                                'br-y' => '279'
+                            },
                         ],
                         frontend => { paper => 'A4' }
                     },
@@ -252,7 +258,13 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 {
                     backend => [
                         { 'resolution'        => '100' },
-                        { 'clear-calibration' => undef }
+                        { 'clear-calibration' => undef },
+                        {
+                            'br-x' => '210'
+                        },
+                        {
+                            'br-y' => '279'
+                        },
                     ],
                     frontend => { paper => 'A4' }
                 }

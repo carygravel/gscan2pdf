@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 20;
+use Test::More tests => 21;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -302,6 +302,59 @@ $signal = $dialog->signal_connect(
             'Automatic Document Feeder' );
         $loop->run unless ($flag);
 
+        # bug in 2.5.3 where setting paper via default options only
+        # set combobox without setting options
+        $loop   = Glib::MainLoop->new;
+        $flag   = FALSE;
+        $signal = $dialog->signal_connect(
+            'changed-paper' => sub {
+                $dialog->signal_handler_disconnect($signal);
+                is_deeply(
+                    $dialog->get('current-scan-options')->get_data,
+                    {
+                        backend => [
+                            {
+                                'tl-x' => '0'
+                            },
+                            {
+                                'tl-y' => '0'
+                            },
+                            {
+                                'br-x' => '10'
+                            },
+                            {
+                                'br-y' => '10'
+                            },
+                        ],
+                        frontend => {
+                            'paper' => 'new'
+                        },
+                    },
+                    'set paper with conflicting options'
+                );
+                $flag = TRUE;
+                $loop->quit;
+            }
+        );
+        $dialog->set_current_scan_options(
+            Gscan2pdf::Scanner::Profile->new_from_data(
+                {
+                    backend => [
+                        {
+                            'tl-x' => '20'
+                        },
+                        {
+                            'tl-y' => '20'
+                        },
+                    ],
+                    frontend => {
+                        'paper' => 'new'
+                    },
+                },
+            )
+        );
+        $loop->run unless ($flag);
+
         # bug previous to v2.1.7 where having having set double sided and
         # reverse, and then switched from ADF to flatbed, clicking scan produced
         # the error message that the facing pages should be scanned first
@@ -327,8 +380,7 @@ Gtk3->main;
 
 is( $dialog->{combobp}->get_num_rows,
     3, 'available paper reapplied after setting/changing device' );
-is( $dialog->{combobp}->get_active_text,
-    'Manual', 'paper combobox has a value' );
+is( $dialog->{combobp}->get_active_text, 'new', 'paper combobox has a value' );
 
 Gscan2pdf::Frontend::Image_Sane->quit;
 __END__
