@@ -496,7 +496,7 @@ sub add_image_type {
     # Image type ComboBox
     my $hboxi = Gtk3::HBox->new;
     $vbox->pack_start( $hboxi, FALSE, FALSE, 0 );
-    my $label = Gtk3::Label->new( __('Image type') );
+    my $label = Gtk3::Label->new( __('Document type') );
     $hboxi->pack_start( $label, FALSE, FALSE, 0 );
 
     my @image_types = (
