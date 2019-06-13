@@ -352,7 +352,8 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
         else {                                       # $opt->{max_values} > 1
             $widget = Gtk3::Button->new( $d_sane->get( $opt->{title} ) );
             $widget->{signal} = $widget->signal_connect(
-                clicked => \&multiple_values_button_callback,
+                clicked =>
+                  \&Gscan2pdf::Dialog::Scan::multiple_values_button_callback,
                 [ $self, $opt ]
             );
         }
