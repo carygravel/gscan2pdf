@@ -292,6 +292,7 @@ sub INIT_INSTANCE {
 
     # Notebook to collate options
     $self->{notebook} = Gtk3::Notebook->new;
+    $self->{notebook}->set_scrollable(TRUE);
     $vbox->pack_start( $self->{notebook}, TRUE, TRUE, 0 );
 
     # Notebook page 1
