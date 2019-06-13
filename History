@@ -1,6 +1,7 @@
 2.5.4 (20.06.2019):
 
 * Fix bug applying paper whilst setting profile
+* Fix canvas usage in scan dialog.
 * Update to Hungarian translation (thanks to csola)
 
 

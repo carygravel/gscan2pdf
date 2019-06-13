@@ -9,6 +9,7 @@ use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 use Storable qw(dclone);
 use feature 'switch';
+use GooCanvas2;
 use Gscan2pdf::ComboBoxText;
 use Gscan2pdf::Dialog;
 use Gscan2pdf::Scanner::Options;
@@ -1895,9 +1896,8 @@ sub set_options {
     my $window = Gscan2pdf::Dialog->new(
         'transient-for' => $self,
         title           => $d_sane->get( $opt->{title} ),
-        destroy         => TRUE,
     );
-    my $canvas = Goo::Canvas->new;
+    my $canvas = GooCanvas2::Canvas->new;
     $canvas->set_size_request( $CANVAS_SIZE, $CANVAS_SIZE );
     $canvas->{border} = $CANVAS_BORDER;
     $window->get_content_area->add($canvas);
@@ -1916,8 +1916,15 @@ sub set_options {
             my $fleur = Gtk3::Gdk::Cursor->new('fleur');
             my ( $x, $y ) = to_graph( $widget, $event->x, $event->y );
             $x = int($x) + 1;
-            splice @{ $widget->{val} }, $x, 0, $y;
-            splice @{ $widget->{items} }, $x, 0, add_value( $root, $widget );
+            if ( $x > @{ $widget->{val} } ) {
+                push @{ $widget->{val} }, $y;
+                push @{ $widget->{items} }, add_value( $root, $widget );
+            }
+            else {
+                splice @{ $widget->{val} }, $x, 0, $y;
+                splice @{ $widget->{items} }, $x, 0,
+                  add_value( $root, $widget );
+            }
             update_graph($widget);
             return TRUE;
         }
@@ -1943,7 +1950,6 @@ sub set_options {
             return FALSE;
         }
     );
-    $canvas->can_focus(TRUE);
     $canvas->grab_focus($root);
 
     $canvas->{opt} = $opt;
@@ -1958,24 +1964,17 @@ sub set_options {
           sort { $a <=> $b } @{ $opt->{constraint} };
     }
 
-    # Apply button
-    my $abutton = Gtk3::Button->new_from_stock('gtk-apply');
-    $window->add_button($abutton);
-    $abutton->signal_connect(
-        clicked => sub {
+    $window->add_actions(
+        'gtk-apply' => sub {
             $self->set_option( $opt, $canvas->{val} );
 
  # when INFO_INEXACT is implemented, so that the value is reloaded, check for it
  # here, so that the reloaded value is not overwritten.
             $opt->{val} = $canvas->{val};
             $window->destroy;
-        }
+        },
+        'gtk-cancel' => sub { $window->destroy }
     );
-
-    # Cancel button
-    my $cbutton = Gtk3::Button->new_from_stock('gtk-cancel');
-    $window->add_button($cbutton);
-    $cbutton->signal_connect( clicked => sub { $window->destroy } );
 
 # Have to show the window before updating it otherwise is doesn't know how big it is
     $window->show_all;
@@ -1985,8 +1984,12 @@ sub set_options {
 
 sub add_value {
     my ( $root, $canvas ) = @_;
-    my $item = Goo::Canvas::Rect->new(
-        $root, 0, 0, $CANVAS_POINT_SIZE, $CANVAS_POINT_SIZE,
+    my $item = GooCanvas2::CanvasRect->new(
+        parent       => $root,
+        x            => 0,
+        y            => 0,
+        width        => $CANVAS_POINT_SIZE,
+        height       => $CANVAS_POINT_SIZE,
         'fill-color' => 'black',
         'line-width' => 0,
     );
@@ -2126,7 +2129,7 @@ sub update_graph {
       ( $xbounds[1] - $xbounds[0], $ybounds[1] - $ybounds[0] );
 
     # Calculate bounds of canvas
-    my ( $x, $y, $cwidth, $cheight ) = $canvas->allocation->values;
+    my ( $x, $y, $cwidth, $cheight ) = $canvas->get_bounds;
 
     # Calculate scale factors
     my @scale = (
