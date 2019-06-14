@@ -3,6 +3,7 @@
 * Fix bug applying paper whilst setting profile
 * Fix canvas usage in scan dialog.
 * Allow tabs to be scrolled to reduce width of scan dialog.
+* Restore split screen view for image and OCR output.
 * Update to Hungarian translation (thanks to csola)
 
 

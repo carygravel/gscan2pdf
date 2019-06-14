@@ -348,11 +348,9 @@ sub populate_main_window {
     $vnotebook = Gtk3::Notebook->new;
     $hpanei    = Gtk3::HPaned->new;
     $hpanei->show;
-    $hpaned->pack2( $vnotebook, TRUE, TRUE );
 
     # ImageView for detail view
     $view = Gscan2pdf::ImageView->new;
-    $vnotebook->append_page( $view, Gtk3::Label->new( __('Image') ) );
 
     $view->signal_connect(
         button_press_event => sub {
@@ -417,7 +415,7 @@ sub populate_main_window {
             $view->signal_handler_unblock( $view->{offset_changed_signal} );
         }
     );
-    $vnotebook->append_page( $canvas, Gtk3::Label->new( __('OCR Output') ) );
+    pack_viewer_tools();
 
     # Set up call back for list selection to update detail view
     $slist->{selection_changed_signal} = $slist->get_selection->signal_connect(
@@ -475,6 +473,24 @@ sub populate_main_window {
 
     # Deal with --import command line option
     if ( defined $import ) { import_files($import) }
+    return;
+}
+
+# Pack widgets according to viewer_tools
+
+sub pack_viewer_tools {
+    if ( $SETTING{viewer_tools} == $TABBED_VIEW ) {
+        $vnotebook->append_page( $view, Gtk3::Label->new( __('Image') ) );
+        $vnotebook->append_page( $canvas,
+            Gtk3::Label->new( __('OCR Output') ) );
+        $hpaned->pack2( $vnotebook, TRUE, TRUE );
+        $vnotebook->show_all;
+    }
+    else {    # $SPLIT_VIEW
+        $hpanei->pack1( $view, TRUE, TRUE );
+        $hpanei->pack2( $canvas, TRUE, TRUE );
+        $hpaned->pack2( $hpanei, TRUE, TRUE );
+    }
     return;
 }
 
@@ -1264,7 +1280,7 @@ EOS
     # and fill it with Gtk3::Action instances
     my $actions_basic = Gtk3::ActionGroup->new('actions_basic');
     $actions_basic->add_actions( \@action_items, undef );
-    $actions_basic->add_radio_actions( \@viewer_tools, $TABBED_VIEW,
+    $actions_basic->add_radio_actions( \@viewer_tools, $SETTING{viewer_tools},
         \&change_view_cb );
 
     # Add the actiongroup to the uimanager
@@ -5006,24 +5022,18 @@ sub unsharp {
 
 sub change_view_cb {
     my ( $action, $current ) = @_;
-    my $value = $current->get_current_value();
-    if ( $value == $TABBED_VIEW ) {
+    $SETTING{viewer_tools} = $current->get_current_value();
+    if ( $SETTING{viewer_tools} == $TABBED_VIEW ) {
         $hpaned->remove($hpanei);
         $hpanei->remove($view);
         $hpanei->remove($canvas);
-        $vnotebook->append_page( $view, Gtk3::Label->new( __('Image') ) );
-        $vnotebook->append_page( $canvas,
-            Gtk3::Label->new( __('OCR Output') ) );
-        $hpaned->pack2( $vnotebook, TRUE, TRUE );
     }
     else {    # $SPLIT_VIEW
         $hpaned->remove($vnotebook);
         $vnotebook->remove($view);
         $vnotebook->remove($canvas);
-        $hpanei->pack1( $view, TRUE, TRUE );
-        $hpanei->pack2( $canvas, TRUE, TRUE );
-        $hpaned->pack2( $hpanei, TRUE, TRUE );
     }
+    pack_viewer_tools();
     return;
 }
 
