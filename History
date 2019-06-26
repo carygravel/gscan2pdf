@@ -1,5 +1,6 @@
 2.5.5 (20.07.2019):
 
+* Fix occasional error messages when clearing all pages
 * Update to Hungarian translation (thanks to csola)
 
 
