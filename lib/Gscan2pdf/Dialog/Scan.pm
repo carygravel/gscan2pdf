@@ -1205,7 +1205,8 @@ sub create_paper_widget {
             }
         );
 
-        # If the geometry is changed, unset the paper size
+        # If the geometry is changed, unset the paper size,
+        # if we are not setting a profile
         for (
             ( SANE_NAME_SCAN_TL_X, SANE_NAME_SCAN_TL_Y,
                 SANE_NAME_SCAN_BR_X,   SANE_NAME_SCAN_BR_Y,
@@ -1217,7 +1218,9 @@ sub create_paper_widget {
                 my $widget = $self->{option_widgets}{$_};
                 $widget->signal_connect(
                     changed => sub {
-                        if ( defined $self->get('paper') ) {
+                        if ( not @{ $self->{setting_current_scan_options} }
+                            and defined $self->get('paper') )
+                        {
                             $self->set( 'paper', undef );
                         }
                     }
