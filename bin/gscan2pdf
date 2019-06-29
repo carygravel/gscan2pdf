@@ -1752,7 +1752,8 @@ sub display_image {
     }
 
     # Convert hocr output to Goo:Canvas if defined
-    if ( defined $current_page->{hocr} ) { create_canvas($current_page) }
+    if   ( defined $current_page->{hocr} ) { create_canvas($current_page) }
+    else                                   { $canvas->clear_text }
     return;
 }
 
