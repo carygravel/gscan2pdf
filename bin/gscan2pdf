@@ -75,15 +75,15 @@ use Gtk3::SimpleList;
 # the config file is saved with the numeric locale
 # and the application name is shown as Perl in GNOME 3
 use Gtk3 0.028 -init;
-use Cwd;               # To obtain current working directory
-use File::Basename;    # Split filename into dir, file, ext
+use Cwd qw(abs_path getcwd);    # To obtain current working directory
+use File::Basename;             # Split filename into dir, file, ext
 use File::Copy;
-use File::Temp;        # To create temporary files
+use File::Temp;                 # To create temporary files
 use File::Path qw(remove_tree);
-use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
+use Glib qw(TRUE FALSE);        # To get TRUE and FALSE
 use PDF::API2;
 use Getopt::Long;
-use Set::IntSpan 1.10;      # For size method for page numbering issues
+use Set::IntSpan 1.10;          # For size method for page numbering issues
 use Proc::Killfam;
 use Fcntl qw(:flock)
   ;    # import LOCK_* constants to prevent us clobbering running instances
@@ -515,6 +515,7 @@ sub parse_arguments {
     if ( not GetOptions(@args) ) { exit 1 }
     $Image::Sane::DEBUG = $debug;
 
+    if ( defined $log ) { $log = abs_path($log) }
     if ( not defined $log_level ) {
         if ( defined $log ) {
             $log_level = 'DEBUG';
@@ -756,6 +757,7 @@ sub check_dependencies {
         ],
         [ 'pdf2ps', 'stdout', qr/([\d.]+)/xsm, [ 'gs',    '--version' ] ],
         [ 'pdftk',  'stdout', qr/([\d.]+)/xsm, [ 'pdftk', '--version' ] ],
+        [ 'xz',     'stdout', qr/([\d.]+)/xsm, [ 'xz',    '--version' ] ],
     );
     for (@dependencies) {
         my ( $name, $stream, $regex, $cmd ) = @{$_};
@@ -5686,6 +5688,9 @@ sub quit {
     $logger->info('Killing document thread(s)');
     Gscan2pdf::Document->quit();
     $logger->debug('Quitting');
+
+    # compress log file if we have xz
+    if ( $dependencies{xz} ) { system "xz -f \"$log\"" }
     return TRUE;
 }
 

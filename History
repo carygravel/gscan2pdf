@@ -3,6 +3,7 @@
 * Fix occasional error messages when clearing all pages
 * Only set paper to Manual if not applying profile
 * Update OCR view switching between pages with and without OCR output
+* xz compress log file if xz available
 * Update to Hungarian translation (thanks to csola)
 
 
