@@ -1542,7 +1542,6 @@ sub set_paper {
                 $self->{paper} = $paper;
                 $self->{current_scan_options}
                   ->add_frontend_option( 'paper', $paper );
-                $self->set( 'profile', undef );
                 $self->signal_emit( 'changed-paper', $paper );
             }
         }
@@ -2210,6 +2209,10 @@ sub add_current_scan_options {
     # First clone the profile, as otherwise it would be self-modifying
     my $clone = dclone($profile);
 
+    # forget the previous option info calls, as these are only interesting
+    # *whilst* setting a profile, and now we are starting from scratch
+    delete $self->{option_info};
+
     push @{ $self->{setting_current_scan_options} }, $clone->{uuid};
 
     # Give the GUI a chance to catch up between settings,
@@ -2248,6 +2251,10 @@ sub _set_option_profile {
         if ( defined $self->{option_info}{ $opt->{name} }
             and $self->{option_info}{ $opt->{name} } & SANE_INFO_INEXACT )
         {
+            $logger->warn(
+"Skip setting option '$name' to '$val', as previous call set SANE_INFO_INEXACT"
+            );
+            $self->_set_option_profile( $profile, $next );
             return;
         }
 

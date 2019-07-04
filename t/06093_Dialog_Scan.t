@@ -479,7 +479,10 @@ $override->replace(
             else {
                 $opt->{val} = 279.399993896484;
             }
-            $info = 21943;
+            $info =
+              21936 + SANE_INFO_RELOAD_PARAMS +
+              SANE_INFO_RELOAD_OPTIONS +
+              SANE_INFO_INEXACT;
 
             $logger->info(
                     "sane_set_option $index ($opt->{name})"

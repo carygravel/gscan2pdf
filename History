@@ -4,6 +4,7 @@
 * Only set paper to Manual if not applying profile
 * Update OCR view switching between pages with and without OCR output
 * xz compress log file if xz available
+* Fix bug applying paper after profile set SANE_INFO_INEXACT
 * Update to Hungarian translation (thanks to csola)
 
 
