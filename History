@@ -5,6 +5,7 @@
 * Update OCR view switching between pages with and without OCR output
 * xz compress log file if xz available
 * Fix bug applying paper after profile set SANE_INFO_INEXACT
+* When saving current settings as new profile, actually set the profile
 * Update to Hungarian translation (thanks to csola)
 
 

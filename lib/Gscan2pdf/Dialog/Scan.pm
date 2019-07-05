@@ -1741,6 +1741,7 @@ sub save_current_profile {
     $self->{combobsp}->set_active( $self->{combobsp}->get_num_rows - 1 );
     $self->{combobsp}
       ->signal_handler_unblock( $self->{combobsp_changed_signal} );
+    $self->{profile} = $name;
     return;
 }
 

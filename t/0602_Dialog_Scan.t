@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 21;
+use Test::More tests => 22;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -88,6 +88,8 @@ $signal = $dialog->signal_connect(
             },
             'applied 1st profile'
         );
+        is( $dialog->get('profile'),
+            'profile 1', 'saving current profile sets profile' );
 
         $loop   = Glib::MainLoop->new;
         $flag   = FALSE;
