@@ -3642,19 +3642,6 @@ sub process_error_callback {
     }
     $shbox->hide;
 
-    # If we get an error opening a device,
-    # remove it from the device list
-    if ( $process =~ /^(?:get_devices|open_device|find_scan_options)$/xsm ) {
-        my $device_list = $widget->get('device-list');
-        my $device      = $widget->get('device');
-        if ( defined $device ) {
-            my @device_list;
-            for ( @{$device_list} ) {
-                if ( $_->{name} ne $device ) { push @device_list, $_ }
-            }
-            $widget->set( 'device-list', \@device_list );
-        }
-    }
     show_message_dialog(
         parent           => $widget,
         type             => 'error',

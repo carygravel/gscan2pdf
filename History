@@ -6,6 +6,7 @@
 * xz compress log file if xz available
 * Fix bug applying paper after profile set SANE_INFO_INEXACT
 * When saving current settings as new profile, actually set the profile
+* If a device throws an error when opening it, add it to a session blacklist
 * Update to Hungarian translation (thanks to csola)
 
 
