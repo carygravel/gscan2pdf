@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 19;
+use Test::More tests => 20;
 use Image::Sane ':all';     # For enums
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 BEGIN { use_ok('Gscan2pdf::Scanner::Options') }
@@ -851,3 +851,26 @@ is(
     FALSE,
     'SANE_TYPE_STRING negative'
 );
+
+$options = [
+    undef,
+    {
+        'cap'        => SANE_CAP_SOFT_SELECT + SANE_CAP_SOFT_DETECT,
+        'constraint' => {
+            'max'   => '297.179992675781',
+            'min'   => 0,
+            'quant' => 0
+        },
+        'constraint_type' => SANE_CONSTRAINT_RANGE,
+        'desc'            => 'Top Left Y',
+        'index'           => 14,
+        'max_values'      => 1,
+        'name'            => 'tl-y',
+        'title'           => 'Top Left Y',
+        'type'            => SANE_TYPE_FIXED,
+        'unit'            => SANE_UNIT_MM,
+        'val'             => 0.999984741210938
+    },
+];
+is( Gscan2pdf::Scanner::Options::within_tolerance( $options->[1], 1, 0.001 ),
+    TRUE, 'SANE_CONSTRAINT_RANGE inexact with tolerance' );

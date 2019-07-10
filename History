@@ -7,6 +7,8 @@
 * Fix bug applying paper after profile set SANE_INFO_INEXACT
 * When saving current settings as new profile, actually set the profile
 * If a device throws an error when opening it, add it to a session blacklist
+* + option tolerance to cover buggy backends that return inexact options
+  without setting SANE_INFO_INEXACT
 * Update to Hungarian translation (thanks to csola)
 
 

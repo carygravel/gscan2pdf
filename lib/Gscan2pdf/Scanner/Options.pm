@@ -237,13 +237,14 @@ sub flatbed_selected {
 # not, and undef for options with no value or for an invalid value
 
 sub within_tolerance {
-    my ( $option, $value ) = @_;
+    my ( $option, $value, $tolerance ) = @_;
+    if ( not defined $tolerance ) { $tolerance = 0 }
     given ( $option->{constraint_type} ) {
         when (SANE_CONSTRAINT_RANGE) {
             if ( defined $option->{constraint}{quant} ) {
                 return (
                     abs( $value - $option->{val} ) <=
-                      $option->{constraint}{quant} / 2 );
+                      $option->{constraint}{quant} / 2 + $tolerance );
             }
         }
         when (SANE_CONSTRAINT_STRING_LIST) {
@@ -261,7 +262,7 @@ sub within_tolerance {
             return ( $value eq $option->{val} );
         }
         when ( $_ == SANE_TYPE_INT or $_ == SANE_TYPE_FIXED ) {
-            return ( $value == $option->{val} );
+            return ( abs( $value - $option->{val} ) <= $tolerance );
         }
     }
     return;

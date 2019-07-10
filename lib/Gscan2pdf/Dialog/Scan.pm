@@ -16,6 +16,9 @@ use Gscan2pdf::Scanner::Options;
 use Gscan2pdf::Scanner::Profile;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use List::MoreUtils qw(first_index);
+use Readonly;
+Readonly my $PAPER_TOLERANCE  => 1;
+Readonly my $OPTION_TOLERANCE => 0.001;
 
 my (
     $MAX_PAGES,        $MAX_INCREMENT, $DOUBLE_INCREMENT,
@@ -273,7 +276,6 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, signals => {
 our $VERSION = '2.5.4';
 
 my ( $d_sane, $logger );
-my $tolerance             = 1;
 my $SANE_NAME_SCAN_TL_X   = SANE_NAME_SCAN_TL_X;
 my $SANE_NAME_SCAN_TL_Y   = SANE_NAME_SCAN_TL_Y;
 my $SANE_NAME_SCAN_BR_X   = SANE_NAME_SCAN_BR_X;
@@ -1484,7 +1486,8 @@ sub set_paper_formats {
         $self->{ignored_paper_formats} = ();
         my $options = $self->get('available-scan-options');
         for ( keys %{$formats} ) {
-            if ( $options->supports_paper( $formats->{$_}, $tolerance ) ) {
+            if ( $options->supports_paper( $formats->{$_}, $PAPER_TOLERANCE ) )
+            {
                 $logger->debug("Options support paper size '$_'.");
                 $combobp->prepend_text($_);
             }
@@ -2291,7 +2294,12 @@ sub _set_option_profile {
         }
 
         # Ignore option if value already within tolerance
-        if ( Gscan2pdf::Scanner::Options::within_tolerance( $opt, $val ) ) {
+        if (
+            Gscan2pdf::Scanner::Options::within_tolerance(
+                $opt, $val, $OPTION_TOLERANCE
+            )
+          )
+        {
             $logger->info(
                 "No need to set option '$name': already within tolerance.");
             $self->_set_option_profile( $profile, $next );
