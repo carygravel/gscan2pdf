@@ -1,4 +1,4 @@
-2.5.5 (20.07.2019):
+2.5.5 (19.07.2019):
 
 * Fix occasional error messages when clearing all pages
 * Only set paper to Manual if not applying profile
