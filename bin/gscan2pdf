@@ -25,22 +25,19 @@
 #    If the latter doesn't work, try:
 #     git push --tags https://ra28145@git.code.sf.net/p/gscan2pdf/code master
 #     make signed_tardist
-# 5. Build package for debian
-#     sudo DIST=sid pbuilder update
-#     DIST=sid pdebuild
-#    or
+# 5. Build .deb for sf
 #     sudo sbuild-update -udr sid-amd64-sbuild
 #     sbuild -sc sid-amd64-sbuild
-#    debsign .changes
+#     #debsign .changes
 #    lintian -iI --pedantic .changes
 #    check contents with dpkg-deb --contents
 #    test dist sudo dpkg -i gscan2pdf_x.x.x_all.deb
-#     dput ftp-master .changes
 # 6. create version directory in https://sourceforge.net/projects/gscan2pdf/files/gscan2pdf
 #     make file_releases
-# 7. Build packages for Ubuntu
+# 7. Build packages for Debian & Ubuntu
 #    name the release -0~ppa1<release>, where release is eoan, disco, cosmic, bionic, xenial (dh9), trusty (< v2), precise (< v2), etc
 #     debuild -S -sa
+#     dput ftp-master .changes
 #     dput gscan2pdf-ppa .changes
 #    https://launchpad.net/~jeffreyratcliffe/+archive
 # 8. gscan2pdf-announce@lists.sourceforge.net, gscan2pdf-help@lists.sourceforge.net, gnome-announce-list@gnome.org, sane-devel@lists.alioth.debian.org
