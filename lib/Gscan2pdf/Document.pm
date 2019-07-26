@@ -4725,9 +4725,7 @@ sub _thread_gocr {
         my $x;
         if ( defined $threshold and $threshold ) {
             $logger->info("thresholding at $threshold to $pnm");
-            $image->BlackThreshold( threshold => "$threshold%" );
-            return if $_self->{cancel};
-            $image->WhiteThreshold( threshold => "$threshold%" );
+            $image->Threshold( threshold => "$threshold%" );
             return if $_self->{cancel};
             $x = $image->Quantize( colors => 2 );
             return if $_self->{cancel};

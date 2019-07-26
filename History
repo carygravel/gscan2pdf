@@ -2,6 +2,9 @@
 
 * Prevent Negate from changing the alpha channel. 
   Thanks to Chris Mayo for the patch. Closes merge request #25
+* Avoid image corruption with colour images when applying WhiteThreshold
+  after BlackThreshold.
+  Thanks to Chris Mayo for the patch. Closes merge request #26
 
 
 2.5.5 (19.07.2019):
