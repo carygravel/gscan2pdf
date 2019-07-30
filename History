@@ -5,6 +5,8 @@
 * Avoid image corruption with colour images when applying WhiteThreshold
   after BlackThreshold.
   Thanks to Chris Mayo for the patch. Closes merge request #26
+* Extended edit profile functionality in scan dialog to current scan options,
+  when no profile selected. Closes bug #328 (Blue cast to all colour scans)
 
 
 2.5.5 (19.07.2019):

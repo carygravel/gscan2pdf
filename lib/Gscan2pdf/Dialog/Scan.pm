@@ -719,18 +719,27 @@ sub _save_profile_callback {
 sub _edit_profile_callback {
     my ( $widget, $parent ) = @_;
     my $name = $parent->get('profile');
-    if ( not defined $name or $name eq $EMPTY ) { return }
+    my ( $msg, $profile );
+
+    if ( not defined $name or $name eq $EMPTY ) {
+        $msg     = __('Editing current scan options');
+        $profile = $parent->{current_scan_options};
+    }
+    else {
+        $msg = sprintf __('Editing scan profile "%s"'), $name;
+        $profile = $parent->{profiles}{$name};
+    }
     my $dialog = Gtk3::Dialog->new(
-        sprintf( __('Editing scan profile "%s"'), $name ), $parent,
+        $msg, $parent,
         'destroy-with-parent',
         'gtk-ok'     => 'ok',
         'gtk-cancel' => 'cancel'
     );
-    my $label = Gtk3::Label->new( sprintf __('Scan profile "%s"'), $name );
+    my $label = Gtk3::Label->new($msg);
     $dialog->get_content_area->pack_start( $label, TRUE, TRUE, 0 );
 
     # Clone so that we can cancel the changes, if necessary
-    my $profile = dclone( $parent->{profiles}{$name} );
+    $profile = dclone($profile);
     _build_profile_table( $profile, $parent->get('available-scan-options'),
         $dialog->get_content_area );
     $dialog->set_default_response('ok');
@@ -738,22 +747,27 @@ sub _edit_profile_callback {
 
     # save the profile and reload
     if ( $dialog->run eq 'ok' ) {
-        $parent->{profiles}{$name} = $profile;
+        if ( not defined $name or $name eq $EMPTY ) {
+            $parent->set_current_scan_options($profile);
+        }
+        else {
+            $parent->{profiles}{$name} = $profile;
 
-        # unset profile to allow us to set it again on reload
-        $parent->{profile} = undef;
+            # unset profile to allow us to set it again on reload
+            $parent->{profile} = undef;
 
-        # emit signal to update settings
-        $parent->signal_emit( 'added-profile', $name,
-            $parent->{profiles}{$name} );
-        my $signal;
-        $signal = $parent->signal_connect(
-            'reloaded-scan-options' => sub {
-                $parent->signal_handler_disconnect($signal);
-                $parent->set_profile($name);
-            }
-        );
-        $parent->scan_options( $parent->get('device') );
+            # emit signal to update settings
+            $parent->signal_emit( 'added-profile', $name,
+                $parent->{profiles}{$name} );
+            my $signal;
+            $signal = $parent->signal_connect(
+                'reloaded-scan-options' => sub {
+                    $parent->signal_handler_disconnect($signal);
+                    $parent->set_profile($name);
+                }
+            );
+            $parent->scan_options( $parent->get('device') );
+        }
     }
     $dialog->destroy;
     return;
