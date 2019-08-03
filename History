@@ -7,6 +7,7 @@
   Thanks to Chris Mayo for the patch. Closes merge request #26
 * Extended edit profile functionality in scan dialog to current scan options,
   when no profile selected. Closes bug #328 (Blue cast to all colour scans)
+* Don't try to compress log file if it wasn't created.
 
 
 2.5.5 (19.07.2019):

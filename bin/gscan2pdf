@@ -5674,7 +5674,7 @@ sub quit {
     $logger->debug('Quitting');
 
     # compress log file if we have xz
-    if ( $dependencies{xz} ) { system "xz -f \"$log\"" }
+    if ( $log and $dependencies{xz} ) { system "xz -f \"$log\"" }
     return TRUE;
 }
 
