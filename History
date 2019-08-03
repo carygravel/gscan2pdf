@@ -8,6 +8,7 @@
 * Extended edit profile functionality in scan dialog to current scan options,
   when no profile selected. Closes bug #328 (Blue cast to all colour scans)
 * Don't try to compress log file if it wasn't created.
+* Don't blacklist empty device name
 
 
 2.5.5 (19.07.2019):

@@ -585,7 +585,7 @@ sub INIT_INSTANCE {
                 /^(?:get_devices|open_device|find_scan_options)$/xsm )
             {
                 my $device = $widget->get('device');
-                if ( defined $device ) {
+                if ( defined $device and $device ne $EMPTY ) {
                     $logger->warn(
                         "adding device '$device' to session blacklist");
                     push @{ $self->{device_blacklist} }, $device;
