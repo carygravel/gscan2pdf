@@ -9,6 +9,8 @@
   when no profile selected. Closes bug #328 (Blue cast to all colour scans)
 * Don't try to compress log file if it wasn't created.
 * Don't blacklist empty device name
+* Improve layout of multiple message dialog. Closes bug #329 (A scanner error
+  (ADF jammed) caused GScan2PDF to display an insane dialog box)
 
 
 2.5.5 (19.07.2019):
