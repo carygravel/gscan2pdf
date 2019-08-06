@@ -5674,7 +5674,9 @@ sub quit {
     $logger->debug('Quitting');
 
     # compress log file if we have xz
-    if ( $log and $dependencies{xz} ) { system "xz -f \"$log\"" }
+    if ( $log and $dependencies{xz} ) {
+        Gscan2pdf::Document::exec_command( [ 'xz', '-f', $log ] );
+    }
     return TRUE;
 }
 
@@ -5689,7 +5691,7 @@ sub view_html {
         $html = 'http://gscan2pdf.sf.net';
     }
     $logger->info("Opening $html in default webbrowser via xdg-open");
-    system "xdg-open $html";
+    Gscan2pdf::Document::exec_command( [ 'xdg-open', $html ] );
     return;
 }
 
