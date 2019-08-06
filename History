@@ -11,6 +11,8 @@
 * Don't blacklist empty device name
 * Improve layout of multiple message dialog. Closes bug #329 (A scanner error
   (ADF jammed) caused GScan2PDF to display an insane dialog box)
+* Don't use tiff2pdf to create temporary PDF to check for pdftk.
+  Closes bug #330 (Cannot save, pdftk failure to access /tmp)
 
 
 2.5.5 (19.07.2019):
