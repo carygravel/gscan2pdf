@@ -51,21 +51,16 @@ sub INIT_INSTANCE {
     );
     $self->{cbl} = Gtk3::Label->new( __("Don't show this message again") );
     $self->{cbl}->set_halign('end');
-    $self->{grid}->attach(
-        $self->{cbl},
-        $COL_MESSAGE, $self->{grid_rows},
-        1, 1
-    );
+    $self->{grid}
+      ->attach( $self->{cbl}, $COL_MESSAGE, $self->{grid_rows}, 1, 1 );
     $self->{cb} = Gtk3::CheckButton->new;
     $self->{cb}->set_halign('center');
-    $self->{grid}->attach(
-        $self->{cb},
-        $COL_CHECKBOX, $self->{grid_rows},
-        1, 1
-    );
+    $self->{grid}
+      ->attach( $self->{cb}, $COL_CHECKBOX, $self->{grid_rows}, 1, 1 );
     $vbox->pack_start( $self->{grid}, TRUE, TRUE, 0 );
     $self->{cb}->signal_connect(
         toggled => sub {
+
             if ( $self->{cb}->get_active ) {
                 for my $cb ( $self->_list_checkboxes ) {
                     $cb->set_active(TRUE);
@@ -81,7 +76,7 @@ sub INIT_INSTANCE {
 sub add_row {
     my ( $self, %options ) = @_;
 
-    $self->{grid}->insert_row($self->{grid_rows});
+    $self->{grid}->insert_row( $self->{grid_rows} );
     $self->{grid}->attach( Gtk3::Label->new( $options{page} ),
         0, $self->{grid_rows}, 1, 1 );
     $self->{grid}->attach( Gtk3::Label->new( $options{process} ),
@@ -102,8 +97,8 @@ sub add_row {
     if ( $options{'store-response'} ) {
         my $button = Gtk3::CheckButton->new();
         $button->set_halign('center');
-        $self->{grid}->attach( $button, $COL_CHECKBOX, $self->{grid_rows} - 1,
-            1, 1 );
+        $self->{grid}
+          ->attach( $button, $COL_CHECKBOX, $self->{grid_rows} - 1, 1, 1 );
         if ( $options{'stored-responses'} ) {
             $self->{stored_responses}[ $self->{grid_rows} - 1 ] =
               $options{'stored-responses'};
