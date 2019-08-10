@@ -13,6 +13,8 @@
   (ADF jammed) caused GScan2PDF to display an insane dialog box)
 * Don't use tiff2pdf to create temporary PDF to check for pdftk.
   Closes bug #330 (Cannot save, pdftk failure to access /tmp)
+* Fix --import option. Closes Debian bug #934107
+  (Importing with --import=file.pdf does not import anything)
 
 
 2.5.5 (19.07.2019):

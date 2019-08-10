@@ -498,7 +498,7 @@ sub parse_arguments {
         'device=s'     => \@device,
         'test=s%'      => \$test,
         'test-image=s' => \$test_image,
-        'import=s'     => \$import,
+        'import=s@'    => \$import,
         'locale=s'     => \$locale,
         'help'         => \$help,
         'log=s'        => \$log,
