@@ -1,9 +1,9 @@
 use warnings;
 use strict;
-use Test::More tests => 10;
+use Test::More tests => 12;
+use Gscan2pdf::Document;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
-use Image::Sane ':all';     # To get SANE_* enums
 
 BEGIN {
     use_ok('Gscan2pdf::Dialog::Scan');
@@ -53,5 +53,22 @@ $dialog->set( 'allow-batch-flatbed', FALSE );
 is $dialog->get('num-pages'), 2,
   'with no source, num-pages not affected by allow-batch-flatbed';
 ok $dialog->{framen}->is_sensitive, 'with no source, num-page gui not ghosted';
+
+my $slist = Gscan2pdf::Document->new;
+$dialog = Gscan2pdf::Dialog::Scan->new(
+    title           => 'title',
+    'transient-for' => $window,
+    'document'      => $slist,
+    'logger'        => $logger,
+);
+@{ $slist->{data} } = (
+    [ 1, undef, undef ],
+    [ 2, undef, undef ],
+    [ 4, undef, undef ],
+    [ 5, undef, undef ]
+);
+is $dialog->get('page-number-start'), 3,
+  'adding pages should update page-number-start';
+is $dialog->get('num-pages'), 1, 'adding pages should update num-pages';
 
 __END__

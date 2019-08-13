@@ -23,7 +23,10 @@ Readonly my $OPTION_TOLERANCE => 0.001;
 my (
     $MAX_PAGES,        $MAX_INCREMENT, $DOUBLE_INCREMENT,
     $CANVAS_SIZE,      $CANVAS_BORDER, $CANVAS_POINT_SIZE,
-    $CANVAS_MIN_WIDTH, $NO_INDEX,      $EMPTY
+    $CANVAS_MIN_WIDTH, $NO_INDEX,      $EMPTY,
+
+    # start page
+    $start,
 );
 
 # need to register this with Glib before we can use it below
@@ -271,6 +274,12 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, signals => {
         0,                                                        # default
         [qw/readable/]                                            # flags
     ),
+    Glib::ParamSpec->scalar(
+        'document',                                               # name
+        'Document',                                               # nick
+        'Gscan2pdf::Document for new scans',                      # blurb
+        [qw/readable writable/]                                   # flags
+    ),
   ];
 
 our $VERSION = '2.5.5';
@@ -356,6 +365,9 @@ sub INIT_INSTANCE {
             else {
                 $spin_buttonn->set_value($value);
             }
+
+            # Check that there is room in the list for the number of pages
+            $self->update_num_pages;
         }
     );
     $self->signal_connect(
@@ -401,12 +413,21 @@ sub INIT_INSTANCE {
     $spin_buttons->signal_connect(
         'value-changed' => sub {
             $self->set( 'page-number-start', $spin_buttons->get_value );
+            $self->update_start_page;
         }
     );
     $self->signal_connect(
         'changed-page-number-start' => sub {
             my ( $widget, $value ) = @_;
             $spin_buttons->set_value($value);
+            my $slist = $self->get('document');
+            if ( not defined $slist ) { return }
+            $self->set(
+                'max-pages',
+                $slist->pages_possible(
+                    $value, $self->get('page-number-increment')
+                )
+            );
         }
     );
 
@@ -431,6 +452,14 @@ sub INIT_INSTANCE {
         'changed-page-number-increment' => sub {
             my ( $widget, $value ) = @_;
             $spin_buttoni->set_value($value);
+            my $slist = $self->get('document');
+            if ( not defined $slist ) { return }
+            $self->set(
+                'max-pages',
+                $slist->pages_possible(
+                    $self->get('page-number-start'), $value
+                )
+            );
         }
     );
 
@@ -578,35 +607,33 @@ sub INIT_INSTANCE {
     # If we get an error opening a device, add it to a session-only blacklist,
     # removing it from the device list
     $self->{device_blacklist} = [];
-    $self->signal_connect(
-        'process-error' => sub {
-            my ( $widget, $process, $msg ) = @_;
-            if ( $process =~
-                /^(?:get_devices|open_device|find_scan_options)$/xsm )
-            {
-                my $device = $widget->get('device');
-                if ( defined $device and $device ne $EMPTY ) {
-                    $logger->warn(
-                        "adding device '$device' to session blacklist");
-                    push @{ $self->{device_blacklist} }, $device;
-                    my $device_list = $widget->get('device-list');
-                    my @device_list;
-                    for my $dev ( @{$device_list} ) {
-                        my $found = FALSE;
-                        for ( @{ $self->{device_blacklist} } ) {
-                            if ( $_ eq $dev->{name} ) {
-                                $found = TRUE;
-                                last;
-                            }
-                        }
-                        if ( not $found ) { push @device_list, $dev }
-                    }
-                    $widget->set( 'device-list', \@device_list );
-                }
-            }
-        }
-    );
+    $self->signal_connect( 'process-error' => \&process_error_callback );
     return $self;
+}
+
+sub process_error_callback {
+    my ( $self, $process, $msg ) = @_;
+    if ( $process =~ /^(?:get_devices|open_device|find_scan_options)$/xsm ) {
+        my $device = $self->get('device');
+        if ( defined $device and $device ne $EMPTY ) {
+            $logger->warn("adding device '$device' to session blacklist");
+            push @{ $self->{device_blacklist} }, $device;
+            my $device_list = $self->get('device-list');
+            my @device_list;
+            for my $dev ( @{$device_list} ) {
+                my $found = FALSE;
+                for ( @{ $self->{device_blacklist} } ) {
+                    if ( $_ eq $dev->{name} ) {
+                        $found = TRUE;
+                        last;
+                    }
+                }
+                if ( not $found ) { push @device_list, $dev }
+            }
+            $self->set( 'device-list', \@device_list );
+        }
+    }
+    return;
 }
 
 sub _add_device_combobox {
@@ -817,9 +844,7 @@ sub SET_PROPERTY {
         $logger->debug('Set logger in Gscan2pdf::Dialog::Scan');
         $self->{$name} = $newval;
     }
-    elsif (( defined $newval and defined $oldval and $newval ne $oldval )
-        or ( defined $newval xor defined $oldval ) )
-    {
+    elsif ( _new_val( $oldval, $newval ) ) {
         my $msg;
         if ( defined $logger ) {
             $msg =
@@ -845,6 +870,16 @@ sub SET_PROPERTY {
                 $self->{$name} = $newval;
                 $self->set_device_list($newval);
                 $self->signal_emit( 'changed-device-list', $newval )
+            }
+            when ('document') {
+                $self->{$name} = $newval;
+
+                # Update the start spinbutton if the page number is been edited.
+                my $slist = $self->get('document');
+                if ( defined $slist ) {
+                    $slist->get_model->signal_connect(
+                        'row-changed' => sub { $self->update_start_page } );
+                }
             }
             when ('num_pages') {
                 $self->_set_num_pages( $name, $newval );
@@ -933,6 +968,14 @@ sub SET_PROPERTY {
         }
     }
     return;
+}
+
+sub _new_val {
+    my ( $oldval, $newval ) = @_;
+    return (
+             ( defined $newval and defined $oldval and $newval ne $oldval )
+          or ( defined $newval xor defined $oldval )
+    );
 }
 
 sub _flatbed_or_duplex_callback {
@@ -2462,6 +2505,81 @@ sub get_xy_resolution {
     if ( not defined $x ) { $x = $Gscan2pdf::Document::POINTS_PER_INCH }
     if ( not defined $y ) { $y = $Gscan2pdf::Document::POINTS_PER_INCH }
     return $x, $y;
+}
+
+# Update the number of pages to scan spinbutton if necessary
+
+sub update_num_pages {
+    my ($self) = @_;
+    my $slist = $self->get('document');
+    if ( not defined $slist ) { return }
+    my $n = $slist->pages_possible( $self->get('page-number-start'),
+        $self->get('page-number-increment') );
+    if ( $n > 0 and $n < $self->get('num-pages') ) {
+        $self->set( 'num-pages', $n );
+    }
+    return;
+}
+
+# Called either from changed-value signal of spinbutton,
+# or row-changed signal of simplelist
+
+sub update_start_page {
+    my ($self) = @_;
+    my $slist = $self->get('document');
+    if ( not defined $slist ) { return }
+    my $value = $self->get('page-number-start');
+    if ( not defined $start ) { $start = $self->get('page-number-start') }
+    my $step = $value - $start;
+    if ( $step == 0 ) { $step = $self->get('page-number-increment') }
+    my $exists = TRUE;
+    my $i = $step > 0 ? 0 : $#{ $slist->{data} };
+    $start = $value;
+
+    while ($exists) {
+        if (   $i < 0
+            or $i > $#{ $slist->{data} }
+            or ( $slist->{data}[$i][0] > $value and $step > 0 )
+            or ( $slist->{data}[$i][0] < $value and $step < 0 ) )
+        {
+            $exists = FALSE;
+        }
+        elsif ( $slist->{data}[$i][0] == $value ) {
+            $value += $step;
+            if ( $value < 1 ) {
+                $value = 1;
+                $step  = 1;
+            }
+        }
+        else {
+            $i += $step > 0 ? 1 : $NO_INDEX;
+        }
+    }
+    $self->set( 'page-number-start', $value );
+    $start = $value;
+
+    $self->update_num_pages;
+    return;
+}
+
+# Reset start page number after delete or new
+
+sub reset_start_page {
+    my ($self) = @_;
+    my $slist = $self->get('document');
+    if ( not defined $slist ) { return }
+    if ( $#{ $slist->{data} } > $NO_INDEX ) {
+        my $start_page = $self->get('page-number-start');
+        my $step       = $self->get('page-number-increment');
+        if ( $start_page > $slist->{data}[ $#{ $slist->{data} } ][0] + $step ) {
+            $self->set( 'page-number-start',
+                $slist->{data}[ $#{ $slist->{data} } ][0] + $step );
+        }
+    }
+    else {
+        $self->set( 'page-number-start', 1 );
+    }
+    return;
 }
 
 1;

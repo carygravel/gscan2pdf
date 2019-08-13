@@ -257,9 +257,6 @@ my (
     $windowr,        $view,           $windowp,        $message_dialog,
     $print_settings, $windowc,        $current_page,   $gconftool,
 
-    # start page on scan dialog
-    $start,
-
     # Goo::Canvas for OCR output
     $canvas,
 
@@ -334,10 +331,6 @@ sub populate_main_window {
     # Set up callback for right mouse clicks.
     $slist->signal_connect( button_press_event   => \&handle_clicks );
     $slist->signal_connect( button_release_event => \&handle_clicks );
-
-    # Update the start spinbutton if the page number is been edited.
-    $slist->get_model->signal_connect( 'row-changed' => sub { update_start() }
-    );
 
     $scwin_thumbs->add($slist);
 
@@ -1526,7 +1519,7 @@ sub update_uimanager {
     }
 
    # If the scan dialog has already been drawn, update the start page spinbutton
-    update_start();
+    if ( defined $windows ) { $windows->update_start_page }
     return;
 }
 
@@ -1858,8 +1851,7 @@ sub new {
     undef $current_page;
 
     # Reset start page in scan dialog
-    reset_start();
-
+    $windows->reset_start_page;
     return;
 }
 
@@ -3268,9 +3260,7 @@ sub scan_dialog {
         'allow-batch-flatbed' => $SETTING{'allow-batch-flatbed'},
         'adf-defaults-scan-all-pages' =>
           $SETTING{'adf-defaults-scan-all-pages'},
-        'page-number-start' => $#{ $slist->{data} } > $EMPTY_LIST
-        ? $slist->{data}[ $#{ $slist->{data} } ][0] + 1
-        : 1,
+        'document' => $slist,
     );
     if ( $SETTING{frontend} eq 'libimage-sane-perl' ) {
         $windows = Gscan2pdf::Dialog::Scan::Image_Sane->new(
@@ -3308,31 +3298,8 @@ sub scan_dialog {
     # Update default device
     $windows->signal_connect( 'changed-device' => \&changed_device_callback );
 
-    # Check that there is room in the list for the number of pages
-    $windows->signal_connect( 'changed-num-pages' => sub { update_number() } );
-    $windows->signal_connect(
-        'changed-page-number-start' => sub {
-            my ( $widget, $value ) = @_;
-            $windows->set(
-                'max-pages',
-                $slist->pages_possible(
-                    $value, $windows->get('page-number-increment')
-                )
-            );
-        }
-    );
-    $windows->signal_connect(
-        'changed-page-number-increment' => sub {
-            my ( $widget, $step ) = @_;
-            $windows->set(
-                'max-pages',
-                $slist->pages_possible(
-                    $windows->get('page-number-start'), $step
-                )
-            );
-            update_postprocessing_options_callback();
-        }
-    );
+    $windows->signal_connect( 'changed-page-number-increment' =>
+          \&update_postprocessing_options_callback );
 
     $windows->signal_connect(
         'changed-side-to-scan' => \&changed_side_to_scan_callback );
@@ -4057,59 +4024,6 @@ sub add_postprocessing_options {
     return;
 }
 
-# Called either from changed-value signal of spinbutton,
-# or row-changed signal of simplelist
-
-sub update_start {
-    if ( not defined $windows ) { return }
-    my $value = $windows->get('page-number-start');
-    if ( not defined $start ) { $start = $windows->get('page-number-start') }
-    my $step = $value - $start;
-    if ( $step == 0 ) { $step = $windows->get('page-number-increment') }
-    my $exists = TRUE;
-    my $i = $step > 0 ? 0 : $#{ $slist->{data} };
-    $start = $value;
-
-    while ($exists) {
-        if (   $i < 0
-            or $i > $#{ $slist->{data} }
-            or ( $slist->{data}[$i][0] > $value and $step > 0 )
-            or ( $slist->{data}[$i][0] < $value and $step < 0 ) )
-        {
-            $exists = FALSE;
-        }
-        elsif ( $slist->{data}[$i][0] == $value ) {
-            $value += $step;
-            if ( $value < 1 ) {
-                $value = 1;
-                $step  = 1;
-            }
-        }
-        else {
-            $i += $step > 0 ? 1 : $EMPTY_LIST;
-        }
-    }
-    $windows->set( 'page-number-start', $value );
-    $start = $value;
-
-    update_number();
-    return;
-}
-
-# Update the number of pages to scan spinbutton if necessary
-
-sub update_number {
-    if ( not defined $windows ) { return }
-    my $n = $slist->pages_possible(
-        $windows->get('page-number-start'),
-        $windows->get('page-number-increment')
-    );
-    if ( $n > 0 and $n < $windows->get('num-pages') ) {
-        $windows->set( 'num-pages', $n );
-    }
-    return;
-}
-
 # print
 
 sub print_dialog {
@@ -4223,28 +4137,7 @@ sub delete_selection {
     $slist->delete_selection_extra;
 
     # Reset start page in scan dialog
-    reset_start();
-    return;
-}
-
-# Reset start page number after delete or new
-
-sub reset_start {
-    if ( defined $windows ) {
-        if ( $#{ $slist->{data} } > $EMPTY_LIST ) {
-            my $start_page = $windows->get('page-number-start');
-            my $step       = $windows->get('page-number-increment');
-            if ( $start_page >
-                $slist->{data}[ $#{ $slist->{data} } ][0] + $step )
-            {
-                $windows->set( 'page-number-start',
-                    $slist->{data}[ $#{ $slist->{data} } ][0] + $step );
-            }
-        }
-        else {
-            $windows->set( 'page-number-start', 1 );
-        }
-    }
+    $windows->reset_start_page;
     return;
 }
 
