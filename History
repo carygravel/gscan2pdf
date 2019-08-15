@@ -38,7 +38,8 @@
 
 * Fix bug applying paper whilst setting profile
 * Fix canvas usage in scan dialog.
-* Allow tabs to be scrolled to reduce width of scan dialog.
+* Allow tabs to be scrolled to reduce width of scan dialog. Closes bug #242
+  (Scan Document window cannot be narrowed horizontally)
 * Restore split screen view for image and OCR output.
 * Update to Hungarian translation (thanks to csola)
 * Update to German translation (thanks to Stephan Woidowski)
