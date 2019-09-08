@@ -4083,7 +4083,7 @@ sub print_dialog {
             $cr->scale( $scale, $scale );
 
             # Set source pixbuf
-            Gtk3::Gdk::Cairo::Context::set_source_pixbuf( $cr, $pixbuf, 0, 0 );
+            Gtk3::Gdk::cairo_set_source_pixbuf( $cr, $pixbuf, 0, 0 );
 
             # Paint
             $cr->paint;
