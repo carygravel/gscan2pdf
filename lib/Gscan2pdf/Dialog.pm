@@ -85,26 +85,26 @@ sub add_page_range {
 
 # Add buttons and link up their actions
 sub add_actions {
-    my ( $self, $button1, $callback1, $button2, $callback2 ) = @_;
-    if ( defined $button2 ) {
-        $self->add_buttons( $button1 => 'ok', $button2 => 'cancel' );
-    }
-    else {
-        $self->add_buttons( $button1 => 'ok' );
+    my ( $self, @button_list ) = @_;
+    my @responses = qw(ok cancel);
+    my ( @buttons, %callbacks );
+    my $i = 0;
+    while ( $i < @button_list - 1 ) {
+        my $text     = shift @button_list;
+        my $callback = shift @button_list;
+        my $response = shift @responses;
+        if ( not defined $response ) { last }
+        $callbacks{$response} = $callback;
+        push @buttons, $self->add_button( $text => $response );
     }
     $self->set_default_response('ok');
     $self->signal_connect(
         response => sub {
             my ( $widget, $response ) = @_;
-            if ( $response eq 'ok' ) {
-                $callback1->();
-            }
-            elsif ( defined $callback2 ) {
-                $callback2->();
-            }
+            $callbacks{$response}->();
         }
     );
-    return;
+    return @buttons;
 }
 
 sub dump_or_stringify {

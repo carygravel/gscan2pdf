@@ -594,7 +594,7 @@ sub INIT_INSTANCE {
     );
     $hboxsp->pack_start( $dbutton, FALSE, FALSE, 0 );
 
-    $self->add_actions(
+    ( $self->{scan_button} ) = $self->add_actions(
         __('Scan'),
         sub {
             $self->signal_emit('clicked-scan-button');
@@ -2598,14 +2598,15 @@ sub reset_start_page {
 sub set_cursor {
     my ( $self, $cursor ) = @_;
     my $win = $self->get_window;
+    if ( not defined $cursor ) {
+        $cursor = $self->get('cursor');
+    }
     if ( defined $win ) {
         my $display = Gtk3::Gdk::Display::get_default;
-        if ( not defined $cursor ) {
-            $cursor = $self->get('cursor');
-        }
         $win->set_cursor(
             Gtk3::Gdk::Cursor->new_from_name( $display, $cursor ) );
     }
+    $self->{scan_button}->set_sensitive( $cursor eq 'default' );
     return;
 }
 

@@ -20,6 +20,7 @@
 * Set "wait" cursor while scan options are being loaded and "progress" cursor
   while scanning.
 * Use gtk-3 cursors for ImageView widget
+* Ghost scan button while scan options are being loaded and scanning.
 
 
 2.5.5 (19.07.2019):
