@@ -21,6 +21,8 @@
   while scanning.
 * Use gtk-3 cursors for ImageView widget
 * Ghost scan button while scan options are being loaded and scanning.
+* Fix bug storing responses from multiple message window when no responses had
+  been stored before.
 * Update to Czech translation (thanks to Pavel Borecki)
 
 

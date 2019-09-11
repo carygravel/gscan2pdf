@@ -201,7 +201,10 @@ Gscan2pdf::Config::add_defaults( \%output );
         t                   => 1,
     },
     'scan-reload-triggers' => qw(mode),
-    message                => undef,
+
+    # if this is undef, then no hash can be passed to
+    # Gscan2pdf::Dialog::MultipleMessage::store_responses()
+    message => {},
 );
 
 is_deeply( \%output, \%example, 'add_defaults' );

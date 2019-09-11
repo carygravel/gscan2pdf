@@ -381,7 +381,7 @@ sub add_defaults {
             t                   => 1,
         },
         'scan-reload-triggers' => qw(mode),
-        message                => undef,
+        message                => {},
     );
     if (
         defined $SETTING->{frontend}
