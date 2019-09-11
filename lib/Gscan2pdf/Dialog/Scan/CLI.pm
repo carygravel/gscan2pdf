@@ -119,6 +119,7 @@ sub SET_PROPERTY {
 
 sub get_devices {
     my ($self) = @_;
+    $self->set( 'cursor', 'wait' );
 
     my $pbar;
     my $hboxd = $self->{hboxd};
@@ -152,6 +153,7 @@ sub get_devices {
             }
             $self->set( 'device-list', \@device_list );
             $hboxd->show_all;
+            $self->set( 'cursor', 'default' );
         }
     );
     return;
@@ -201,10 +203,11 @@ sub cache_key {
     return $cache_key;
 }
 
-# Scan device-dependent scan options
+# retrieve device-dependent scan options
 
 sub scan_options {
     my ($self) = @_;
+    $self->set( 'cursor', 'wait' );
 
     # Remove any existing pages
     while ( $self->{notebook}->get_n_pages > 1 ) {
@@ -310,6 +313,7 @@ sub scan_options {
             # so don't set this until we have finished
             $self->set( 'available-scan-options', $options );
             $self->set_paper_formats( $self->{paper_formats} );
+            $self->set( 'cursor', 'default' );
         },
         error_callback => sub {
             my ($message) = @_;
@@ -317,6 +321,7 @@ sub scan_options {
             $self->signal_emit( 'process-error', 'find_scan_options',
                 $message );
             $logger->warn($message);
+            $self->set( 'cursor', 'default' );
         },
     );
     return;
@@ -828,6 +833,7 @@ sub update_widget {    # FIXME: this is partly duplicated in Sane.pm
 
 sub scan {
     my ($self) = @_;
+    $self->set( 'cursor', 'progress' );
 
     # Get selected number of pages
     my $npages = $self->get('num-pages');
@@ -867,6 +873,7 @@ sub scan {
         },
         finished_callback => sub {
             $self->signal_emit( 'finished-process', 'scan_pages' );
+            $self->set( 'cursor', 'default' );
         },
         new_page_callback => sub {
             my ( $path, $n ) = @_;
@@ -879,6 +886,7 @@ sub scan {
         error_callback => sub {
             my ($msg) = @_;
             $self->signal_emit( 'process-error', 'scan_pages', $msg );
+            $self->set( 'cursor', 'default' );
         }
     );
     return;

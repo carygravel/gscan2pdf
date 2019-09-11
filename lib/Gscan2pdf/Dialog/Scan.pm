@@ -280,6 +280,12 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, signals => {
         'Gscan2pdf::Document for new scans',                      # blurb
         [qw/readable writable/]                                   # flags
     ),
+    Glib::ParamSpec->scalar(
+        'cursor',                                                 # name
+        'Cursor',                                                 # nick
+        'name of current cursor',                                 # blurb
+        [qw/readable writable/]                                   # flags
+    ),
   ];
 
 our $VERSION = '2.5.5';
@@ -608,6 +614,8 @@ sub INIT_INSTANCE {
     # removing it from the device list
     $self->{device_blacklist} = [];
     $self->signal_connect( 'process-error' => \&process_error_callback );
+
+    $self->set( 'cursor', 'default' );
     return $self;
 }
 
@@ -861,6 +869,10 @@ sub SET_PROPERTY {
             when ('available_scan_options') {
                 $self->_set_available_scan_options( $name, $newval );
             }
+            when ('cursor') {
+                $self->{$name} = $newval;
+                $self->set_cursor($newval);
+            }
             when ('device') {
                 $self->{$name} = $newval;
                 $self->set_device($newval);
@@ -1091,6 +1103,7 @@ sub show {
     {
         $self->hide_geometry( $self->get('available-scan-options') );
     }
+    $self->set_cursor;
     return;
 }
 
@@ -2578,6 +2591,20 @@ sub reset_start_page {
     }
     else {
         $self->set( 'page-number-start', 1 );
+    }
+    return;
+}
+
+sub set_cursor {
+    my ( $self, $cursor ) = @_;
+    my $win = $self->get_window;
+    if ( defined $win ) {
+        my $display = Gtk3::Gdk::Display::get_default;
+        if ( not defined $cursor ) {
+            $cursor = $self->get('cursor');
+        }
+        $win->set_cursor(
+            Gtk3::Gdk::Cursor->new_from_name( $display, $cursor ) );
     }
     return;
 }
