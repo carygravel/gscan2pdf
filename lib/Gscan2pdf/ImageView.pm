@@ -17,19 +17,19 @@ our $VERSION = '2.5.5';
 
 my %cursorhash = (
     left => {
-        top    => 'top-left-corner',
-        mid    => 'left-side',
-        bottom => 'bottom-left-corner',
+        top    => 'nw-resize',
+        mid    => 'w-resize',
+        bottom => 'sw-resize',
     },
     mid => {
-        top    => 'top-side',
+        top    => 'n-resize',
         mid    => 'crosshair',
-        bottom => 'bottom-side',
+        bottom => 's-resize',
     },
     right => {
-        top    => 'top-right-corner',
-        mid    => 'right-side',
-        bottom => 'bottom-right-corner',
+        top    => 'ne-resize',
+        mid    => 'e-resize',
+        bottom => 'se-resize',
     },
 );
 
@@ -638,10 +638,11 @@ sub update_cursor {
             and $y < $pixbuf_size->{height} )
         {
             if ( $self->{dragging} ) {
-                $cursor = Gtk3::Gdk::Cursor->new('hand2');
+                $cursor =
+                  Gtk3::Gdk::Cursor->new_from_name( $display, 'grabbing' );
             }
             else {
-                $cursor = Gtk3::Gdk::Cursor->new('hand1');
+                $cursor = Gtk3::Gdk::Cursor->new_from_name( $display, 'grab' );
             }
         }
     }
@@ -678,7 +679,7 @@ sub update_cursor {
                 $self->{v_edge} = 'bottom';
             }
         }
-        $cursor = Gtk3::Gdk::Cursor->new(
+        $cursor = Gtk3::Gdk::Cursor->new_from_name( $display,
             $cursorhash{ $self->{h_edge} }{ $self->{v_edge} } );
     }
     $win->set_cursor($cursor);

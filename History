@@ -19,6 +19,7 @@
 * Fix printing. Closes bug #331 (print error suse leap 15.1)
 * Set "wait" cursor while scan options are being loaded and "progress" cursor
   while scanning.
+* Use gtk-3 cursors for ImageView widget
 
 
 2.5.5 (19.07.2019):
