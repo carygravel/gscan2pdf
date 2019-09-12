@@ -1,4 +1,4 @@
-2.5.6 (08.09.2019):
+2.5.6 (11.09.2019):
 
 * Prevent Negate from changing the alpha channel. 
   Thanks to Chris Mayo for the patch. Closes merge request #25

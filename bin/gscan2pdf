@@ -138,7 +138,7 @@ Readonly my $_100_000MB              => 100_000;
 
 Glib::set_application_name('gscan2pdf');
 my $prog_name = Glib::get_application_name;
-my $VERSION   = '2.5.5';
+my $VERSION   = '2.5.6';
 
 # Image border to ensure that a scaled to fit image gets no scrollbars
 my $border = 1;
