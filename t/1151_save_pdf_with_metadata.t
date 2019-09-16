@@ -46,8 +46,8 @@ $slist->import_files(
 Gtk3->main;
 
 my $info = `pdfinfo $pdf`;
-like( $info, qr/metadata title/,            'metadata title in PDF' );
-like( $info, qr/Wed Feb 10 0\d:00:00 2016/, 'metadata ModDate in PDF' );
+like( $info, qr/metadata title/, 'metadata title in PDF' );
+like( $info, qr/Wed Feb (9|10) \d\d:00:00 2016/, 'metadata ModDate in PDF' );
 my $sb = stat($pdf);
 is( $sb->mtime, Date_to_Time( 2016, 2, 10, 0, 0, 0 ), 'timestamp' );
 
