@@ -256,7 +256,11 @@ sub _initialise_options {    ## no critic (ProhibitExcessComplexity)
 
             # Label
             if ( $opt->{type} != SANE_TYPE_BUTTON ) {
-                my $label = Gtk3::Label->new( $d_sane->get( $opt->{title} ) );
+                my $text = $opt->{title};
+                if ( not defined $text or $text eq $EMPTY ) {
+                    $text = $opt->{name};
+                }
+                my $label = Gtk3::Label->new( $d_sane->get($text) );
                 $hbox->pack_start( $label, FALSE, FALSE, 0 );
             }
 

@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 3;
+use Test::More tests => 4;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -161,6 +161,18 @@ my $raw_options = [
         'unit'            => 3,
         'val'             => 0
     },
+    {
+        'cap'             => 69,
+        'constraint_type' => 0,
+        'desc'            => '',
+        'index'           => 18,
+        'max_values'      => 1,
+        'name'            => 'cct-1',
+        'title'           => '',
+        'type'            => 2,
+        'unit'            => 0,
+        'val'             => '1.07818603515625'
+    },
 ];
 $override->replace(
     'Gscan2pdf::Frontend::Image_Sane::_thread_get_options' => sub {
@@ -299,6 +311,10 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
         # EPSON DS-1660W calls the flatbed a document table
         my $options = $dialog->get('available-scan-options');
         is( $options->flatbed_selected, TRUE, 'Document Table means flatbed' );
+
+        # as cct-1 does not have a title, test for label text
+        is( $dialog->get_label_for_option('cct-1'),
+            'cct-1', 'text for option with no title' );
 
         Gtk3->main_quit;
     }

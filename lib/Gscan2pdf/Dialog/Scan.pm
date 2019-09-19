@@ -2610,6 +2610,18 @@ sub set_cursor {
     return;
 }
 
+sub get_label_for_option {
+    my ( $self, $name ) = @_;
+    my $widget = $self->{option_widgets}{$name};
+    my $hbox   = $widget->get_parent;
+    for my $child ( $hbox->get_children ) {
+        if ( $child->isa('Gtk3::Label') ) {
+            return $child->get_text;
+        }
+    }
+    return;
+}
+
 1;
 
 __END__
