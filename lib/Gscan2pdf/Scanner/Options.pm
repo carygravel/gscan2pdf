@@ -227,7 +227,7 @@ sub flatbed_selected {
     my ($self) = @_;
     return (
         defined $self->{source} and ( defined $self->{source}{val}
-            and $self->{source}{val} =~ /flatbed/xsmi )
+            and $self->{source}{val} =~ /(flatbed|Document[ ]Table)/xsmi )
           or (  $#{ $self->{source}{constraint} } == 0
             and $self->{source}{constraint}[0] =~ /flatbed/xsmi )
     );

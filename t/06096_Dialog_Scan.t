@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 2;
+use Test::More tests => 3;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -281,7 +281,6 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     },
                     'set inexact paper without SANE_INFO_INEXACT'
                 );
-                my $options = $dialog->get('available-scan-options');
                 $flag = TRUE;
                 $loop->quit;
             }
@@ -296,6 +295,11 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
             )
         );
         $loop->run unless ($flag);
+
+        # EPSON DS-1660W calls the flatbed a document table
+        my $options = $dialog->get('available-scan-options');
+        is( $options->flatbed_selected, TRUE, 'Document Table means flatbed' );
+
         Gtk3->main_quit;
     }
 );
