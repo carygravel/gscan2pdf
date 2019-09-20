@@ -811,10 +811,15 @@ sub _edit_profile_callback {
 sub _build_profile_table {
     my ( $profile, $options, $vbox ) = @_;
 
+    my $frameb = Gtk3::Frame->new( __('Backend options') );
+    my $framef = Gtk3::Frame->new( __('Frontend options') );
+    $vbox->pack_start( $frameb, TRUE, TRUE, 0 );
+    $vbox->pack_start( $framef, TRUE, TRUE, 0 );
+
     # listbox to align widgets
     my $listbox = Gtk3::ListBox->new;
     $listbox->set_selection_mode('none');
-    $vbox->pack_start( $listbox, TRUE, TRUE, 0 );
+    $frameb->add($listbox);
     my $iter = $profile->each_backend_option;
     while ( my $i = $iter->() ) {
         my ( $name, $val ) = $profile->get_backend_option_by_index($i);
@@ -829,13 +834,39 @@ sub _build_profile_table {
             clicked => sub {
                 $logger->debug("removing option '$name' from profile");
                 $profile->remove_backend_option_by_index($i);
-                $listbox->destroy;
+                $frameb->destroy;
+                $framef->destroy;
                 _build_profile_table( $profile, $options, $vbox );
             }
         );
         $row->add($hbox);
         $listbox->add($row);
     }
+
+    $listbox = Gtk3::ListBox->new;
+    $listbox->set_selection_mode('none');
+    $framef->add($listbox);
+    $iter = $profile->each_frontend_option;
+    while ( my $name = $iter->() ) {
+        my $row   = Gtk3::ListBoxRow->new;
+        my $hbox  = Gtk3::HBox->new;
+        my $label = Gtk3::Label->new($name);
+        $hbox->pack_start( $label, FALSE, TRUE, 0 );
+        my $button = Gtk3::Button->new_from_stock('gtk-delete');
+        $hbox->pack_end( $button, FALSE, FALSE, 0 );
+        $button->signal_connect(
+            clicked => sub {
+                $logger->debug("removing option '$name' from profile");
+                $profile->remove_frontend_option($name);
+                $frameb->destroy;
+                $framef->destroy;
+                _build_profile_table( $profile, $options, $vbox );
+            }
+        );
+        $row->add($hbox);
+        $listbox->add($row);
+    }
+
     $vbox->show_all;
     return;
 }

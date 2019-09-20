@@ -2,6 +2,7 @@
 
 * Recognise "Document Table" as flatbed for imagescan backend.
 * Use option name as label for those options with no title.
+* Extended edit profile functionality in scan dialog to frontend options.
 
 
 2.5.6 (11.09.2019):

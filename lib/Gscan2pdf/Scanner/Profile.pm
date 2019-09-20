@@ -162,6 +162,12 @@ sub get_frontend_option {
     return $self->{data}{frontend}{$name};
 }
 
+sub remove_frontend_option {
+    my ( $self, $name ) = @_;
+    delete $self->{data}{frontend}{$name};
+    return;
+}
+
 sub get_data {
     my ($self) = @_;
     return $self->{data};
