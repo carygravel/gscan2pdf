@@ -6,7 +6,6 @@ MANIFEST
 Makefile.PL
 bin/gscan2pdf
 debian/changelog
-debian/compat
 debian/control
 debian/copyright
 debian/rules

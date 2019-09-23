@@ -2,6 +2,7 @@ gscan2pdf (2.5.7-1) unstable; urgency=low
 
   * New upstream release
   * Bumped standards to 4.4.0 (no changes required)
+  * Bumped debhelper-compat to 12
 
  --
 
