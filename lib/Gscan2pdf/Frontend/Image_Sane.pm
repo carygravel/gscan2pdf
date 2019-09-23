@@ -143,6 +143,24 @@ sub open_device {
     return;
 }
 
+sub close_device {
+    my ( $class, %options ) = @_;
+
+    my $uuid = $uuid_object->create_str;
+    $callback{$uuid}{started}  = $options{started_callback};
+    $callback{$uuid}{running}  = $options{running_callback};
+    $callback{$uuid}{finished} = sub {
+        $_self->{device_name} = $options{device_name};
+        $options{finished_callback}->();
+    };
+    $callback{$uuid}{error} = $options{error_callback};
+    my $sentinel =
+      _enqueue_request( 'close',
+        { uuid => $uuid, device_name => $options{device_name} } );
+    _monitor_process( $sentinel, $uuid );
+    return;
+}
+
 sub find_scan_options {
     my (
         $class,             $started_callback, $running_callback,
@@ -429,6 +447,16 @@ sub _thread_main {
                 _thread_open_device( $self, $request->{uuid},
                     $request->{device_name} )
             }
+            when ('close') {
+                if ( defined( $self->{device_handle} ) ) {
+                    $logger->debug("closing device '$self->{device_name}'");
+                    undef $self->{device_handle};
+                }
+                else {
+                    $logger->debug(
+                        'Ignoring close_device() call - no device open.');
+                }
+            }
             when ('get-options') {
                 _thread_get_options( $self, $request->{uuid} )
             }
@@ -504,7 +532,8 @@ sub _thread_open_device {
     my $status = SANE_STATUS_GOOD;
     try {
         $self->{device_handle} = Image::Sane::Device->open($device_name);
-        $logger->debug("opened device '$device_name'");
+        $self->{device_name}   = $device_name;
+        $logger->debug("opened device '$self->{device_name}'");
     }
     catch {
         $status = $_->status;

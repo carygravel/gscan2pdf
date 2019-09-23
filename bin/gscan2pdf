@@ -5839,6 +5839,8 @@ sub preferences {
             $windowr->hide;
             if ( $SETTING{frontend} ne $combob->get_active_index ) {
                 $SETTING{frontend} = $combob->get_active_index;
+                $logger->info("Switched frontend to $SETTING{frontend}");
+                Gscan2pdf::Frontend::Image_Sane->close_device;
                 $windows->hide;
                 undef $windows;
             }
