@@ -5,6 +5,8 @@
 * Extended edit profile functionality in scan dialog to frontend options.
 * Close device when switching frontends so as not to block SANE for the new
   frontend.
+* Allow tool processes to immediately continue working on subsequent pages
+  despite errors on previous ones.
 
 
 2.5.6 (11.09.2019):

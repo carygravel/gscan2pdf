@@ -1893,14 +1893,22 @@ sub error_callback {
     $logger->error("$page_uuid, $process, $message");
 
     my $page = $slist->find_page_by_uuid($page_uuid);
-    show_message_dialog(
-        parent           => $window,
-        type             => 'error',
-        buttons          => 'close',
-        page             => $slist->{data}[$page][0],
-        process          => $process,
-        text             => $message,
-        'store-response' => TRUE
+
+    # Wrap show_message_dialog() in Glib::Idle->add() to allow the thread to
+    # return immediately in order to allow it to work on subsequent pages
+    # despite errors on previous ones
+    Glib::Idle->add(
+        sub {
+            show_message_dialog(
+                parent           => $window,
+                type             => 'error',
+                buttons          => 'close',
+                page             => $slist->{data}[$page][0],
+                process          => $process,
+                text             => $message,
+                'store-response' => TRUE
+            );
+        }
     );
     $thbox->hide;
     return;
