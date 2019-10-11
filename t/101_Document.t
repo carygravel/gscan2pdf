@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 48;
+use Test::More tests => 49;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -24,6 +24,8 @@ is( $slist->pages_possible( 1, 1 ),
     -1, 'pages_possible infinite forwards in empty document' );
 is( $slist->pages_possible( 2, -1 ),
     2, 'pages_possible finite backwards in empty document' );
+is( $slist->pages_possible( 1, -2 ),
+    1, 'pages_possible finite backwards in empty document #2' );
 
 my @selected = $slist->get_page_index( 'all', sub { pass('error in all') } );
 is_deeply( \@selected, [], 'no pages' );

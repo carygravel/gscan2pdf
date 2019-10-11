@@ -780,7 +780,8 @@ sub pages_possible {
 
     # Empty document and negative step
     if ( $i < 0 and $step < 0 ) {
-        return -$start / $step;
+        my $n = -$start / $step;
+        return $n == int($n) ? $n : int($n) + 1;
     }
 
     # Empty document, or start page after end of document, allow infinite pages
