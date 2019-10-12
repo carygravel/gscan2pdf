@@ -2576,27 +2576,15 @@ sub update_start_page {
     if ( not defined $start ) { $start = $self->get('page-number-start') }
     my $step = $value - $start;
     if ( $step == 0 ) { $step = $self->get('page-number-increment') }
-    my $exists = TRUE;
-    my $i = $step > 0 ? 0 : $#{ $slist->{data} };
     $start = $value;
 
-    while ($exists) {
-        if (   $i < 0
-            or $i > $#{ $slist->{data} }
-            or ( $slist->{data}[$i][0] > $value and $step > 0 )
-            or ( $slist->{data}[$i][0] < $value and $step < 0 ) )
-        {
-            $exists = FALSE;
-        }
-        elsif ( $slist->{data}[$i][0] == $value ) {
-            $value += $step;
-            if ( $value < 1 ) {
-                $value = 1;
-                $step  = 1;
-            }
+    while ( $slist->pages_possible( $value, $step ) == 0 ) {
+        if ( $value < 1 ) {
+            $value = 1;
+            $step  = 1;
         }
         else {
-            $i += $step > 0 ? 1 : $NO_INDEX;
+            $value += $step;
         }
     }
     $self->set( 'page-number-start', $value );
