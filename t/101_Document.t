@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 49;
+use Test::More tests => 50;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -52,6 +52,11 @@ is( $slist->pages_possible( 1, -1 ),
 $slist->{data}[0][0] = 1;
 is( $slist->pages_possible( 2, 1 ),
     -1, 'pages_possible infinite forwards in non-empty document' );
+
+@{ $slist->{data} } =
+  ( [ 1, undef, undef ], [ 2, undef, undef ], [ 3, undef, undef ] );
+is( $slist->pages_possible( 2, -2 ),
+    0, 'pages_possible several existing pages and negative step' );
 
 @{ $slist->{data} } =
   ( [ 1, undef, undef ], [ 3, undef, undef ], [ 5, undef, undef ] );

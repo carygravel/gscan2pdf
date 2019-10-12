@@ -772,6 +772,37 @@ sub check_return_queue {
     return Glib::SOURCE_CONTINUE;
 }
 
+# does the given page exist?
+
+sub index_for_page {
+    my ( $self, $n, $min, $max, $direction ) = @_;
+    if ( $#{ $self->{data} } < 0 ) { return $INFINITE }
+    if ( not defined $min ) {
+        $min = 0;
+    }
+    if ( not defined $max ) {
+        $max = $n - 1;
+    }
+    my $s    = $min;
+    my $e    = $max + 1;
+    my $step = 1;
+    if ( defined $direction and $direction < 0 ) {
+        $step = -$step;
+        $s    = $max;
+        if ( $s > $#{ $self->{data} } ) { $s = $#{ $self->{data} } }
+        $e = $min - 1;
+    }
+
+    my $i = $s;
+    while ( $step > 0 ? $i <= $e : $i >= $e ) {
+        if ( $self->{data}[$i][0] == $n ) {
+            return $i;
+        }
+        $i += $step;
+    }
+    return $INFINITE;
+}
+
 # Check how many pages could be scanned
 
 sub pages_possible {
@@ -785,57 +816,32 @@ sub pages_possible {
     }
 
     # Empty document, or start page after end of document, allow infinite pages
-    elsif ( ( $i < 0 or $self->{data}[$i][0] < $start )
-        and $step > 0 )
-    {
+    elsif ( ( $i < 0 or $self->{data}[$i][0] < $start ) and $step > 0 ) {
         return $INFINITE;
     }
 
-    # track backwards to find index before which start page would be inserted
-    while ( $i > 0 and $self->{data}[ $i - 1 ][0] > $start ) {
-        --$i;
-    }
-
     # scan in appropriate direction, looking for position for last page
-    my $n = 0;
+    my $n               = 0;
+    my $max_page_number = $self->{data}[$i][0];
     while (TRUE) {
 
-        # fallen off bottom of index
-        if ( $i < 0 ) {    ## no critic (ProhibitCascadingIfElse)
-            return $n;
-        }
-
         # fallen off top of index
-        elsif ( $i > $#{ $self->{data} } ) {
+        if ( $step > 0 and $start + $n * $step > $max_page_number ) {
             return $INFINITE;
         }
 
-        # Settings take us into negative page range
-        elsif ( $start + $n * $step < 1 ) {
+        # fallen off bottom of index
+        if ( $step < 0 and $start + $n * $step < 1 ) {
             return $n;
         }
 
-        # Found existing page
-        elsif ( $self->{data}[$i][0] == $start + $n * $step ) {
+        # Found page
+        $i = $self->index_for_page( $start + $n * $step, 0, $start - 1, $step );
+        if ( $i > $INFINITE ) {
             return $n;
         }
 
-        # increment index
-        elsif ( $step > 1 and $self->{data}[$i][0] < $start + $n * $step ) {
-            ++$i;
-            ++$n;
-        }
-
-        # decrement index
-        elsif ( $step < 0 and $self->{data}[$i][0] > $start + $n * $step ) {
-            --$i;
-            ++$n;
-        }
-
-        # Try one more page
-        else {
-            ++$n;
-        }
+        $n++;
     }
     return;
 }
