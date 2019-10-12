@@ -4,7 +4,7 @@ gscan2pdf (2.5.7-1) unstable; urgency=low
   * Bumped standards to 4.4.0 (no changes required)
   * Bumped debhelper-compat to 12
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 12 Oct 2019 09:47:31 +0200
 
 gscan2pdf (2.5.6-1) unstable; urgency=low
 
