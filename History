@@ -8,6 +8,7 @@
 * Allow tool processes to immediately continue working on subsequent pages
   despite errors on previous ones.
 * Fix infinite loop scanning reverse pages
+* Update to German translation (thanks to Stephan Woidowski)
 
 
 2.5.6 (11.09.2019):
