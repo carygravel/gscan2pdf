@@ -13,10 +13,11 @@ Build-Depends-Indep: perl (>= 5.8.0-7), gettext, libtest-pod-perl,
  xvfb, libatk-adaptor, libgail-common, libsub-override-perl, poppler-utils,
  ghostscript, gsfonts
 Maintainer: Jeffrey Ratcliffe <jjr@debian.org>
-Standards-Version: 4.4.0
+Standards-Version: 4.4.1
 Vcs-git: https://git.code.sf.net/p/gscan2pdf/code
 Vcs-Browser: https://sourceforge.net/p/gscan2pdf/code/ci/master/tree/
 Homepage: http://gscan2pdf.sourceforge.net/
+Rules-Requires-Root: no
 
 Package: gscan2pdf
 Architecture: all
