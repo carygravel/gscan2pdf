@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 12;
+use Test::More tests => 13;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -59,5 +59,10 @@ $dialog->signal_connect_after(
 $event = Gtk3::Gdk::Event->new('key-press');
 $event->keyval(Gtk3::Gdk::KEY_Delete);
 $dialog->signal_emit( 'key_press_event', $event );
+
+$dialog = Gscan2pdf::Dialog->new;
+$dialog->add_actions( 'gtk-close', sub { } );
+$dialog->response(0);    # 0 = GTK_RESPONSE_NONE
+pass 'no crash due to undefined response';
 
 __END__

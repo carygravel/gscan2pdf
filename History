@@ -1,3 +1,9 @@
+2.5.8 (11.11.2019):
+
+* Fix crash closing multiple message dialog via x-icon
+  Closes bug #333 (Segmentation fault when closing Messages window)
+
+
 2.5.7 (11.10.2019):
 
 * Recognise "Document Table" as flatbed for imagescan backend.

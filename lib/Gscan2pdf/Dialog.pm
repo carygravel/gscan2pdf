@@ -101,7 +101,9 @@ sub add_actions {
     $self->signal_connect(
         response => sub {
             my ( $widget, $response ) = @_;
-            $callbacks{$response}->();
+            if ( defined $response and defined $callbacks{$response} ) {
+                $callbacks{$response}->();
+            }
         }
     );
     return @buttons;
