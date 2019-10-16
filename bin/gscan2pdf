@@ -6041,7 +6041,7 @@ sub _preferences_scan_options {
         __('Allow batch scanning from flatbed') );
     $cb_batch_flatbed->set_tooltip_text(
         __(
-'If not set, switching to a flatbed scanner will force # pages to 1.'
+'If not set, switching to a flatbed scanner will force # pages to 1 and single-sided mode.'
         )
     );
     $cb_batch_flatbed->set_active( $SETTING{'allow-batch-flatbed'} );
