@@ -2,6 +2,7 @@
 
 * Fix crash closing multiple message dialog via x-icon
   Closes bug #333 (Segmentation fault when closing Messages window)
+* + --import-all option
 
 
 2.5.7 (11.10.2019):

@@ -387,7 +387,7 @@ sub _get_file_info_finished_callback2 {
                         undef,
                         'Open file',
                         __(
-'Error: import a multipage file at the same time as another file.'
+'Error: importing a multipage file at the same time as another file.'
                         )
                     );
                 }

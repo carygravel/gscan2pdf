@@ -152,7 +152,7 @@ my $ASTERISK = q{*};
 my $d_sane   = Locale::gettext->domain('sane-backends');
 my (
     $test,   $help,       $log,    $log_level, @device,
-    $locale, $test_image, $logger, $import
+    $locale, $test_image, $logger, $import,    $import_all
 );
 parse_arguments();
 
@@ -463,6 +463,7 @@ sub populate_main_window {
 
     # Deal with --import command line option
     if ( defined $import ) { import_files($import) }
+    if ( defined $import_all ) { import_files( $import_all, TRUE ) }
     return;
 }
 
@@ -488,14 +489,15 @@ sub pack_viewer_tools {
 
 sub parse_arguments {
     my @args = (
-        'device=s'     => \@device,
-        'test=s%'      => \$test,
-        'test-image=s' => \$test_image,
-        'import=s@'    => \$import,
-        'locale=s'     => \$locale,
-        'help'         => \$help,
-        'log=s'        => \$log,
-        'debug'        => sub { $log_level = 'DEBUG'; $debug = TRUE },
+        'device=s'      => \@device,
+        'test=s%'       => \$test,
+        'test-image=s'  => \$test_image,
+        'import=s@'     => \$import,
+        'import-all=s@' => \$import_all,
+        'locale=s'      => \$locale,
+        'help'          => \$help,
+        'log=s'         => \$log,
+        'debug'         => sub { $log_level = 'DEBUG'; $debug = TRUE },
         'info'  => sub { $log_level = 'INFO' },
         'warn'  => sub { $log_level = 'WARN' },
         'error' => sub { $log_level = 'ERROR' },
@@ -2069,11 +2071,11 @@ sub open_dialog {
 }
 
 sub import_files {
-    my ($filenames) = @_;
+    my ( $filenames, $all_pages ) = @_;
 
     # FIXME: import_files() now returns an array of pids.
     my ( $signal, $pid );
-    $pid = $slist->import_files(
+    my %options = (
         paths             => $filenames,
         password_callback => sub {
             my ($filename) = @_;
@@ -2109,7 +2111,28 @@ sub import_files {
               setup_tpbar( $thread, $process, $completed, $total, $pid );
             return TRUE if ( defined $signal );
         },
-        pagerange_callback => sub {
+        running_callback => sub {
+            return update_tpbar(@_);
+        },
+        finished_callback => sub {
+            my ($pending) = @_;
+            $logger->debug("import_files finished @{$filenames}");
+            if ( not $pending ) { $thbox->hide }
+            if ( defined $signal ) {
+                $tcbutton->signal_handler_disconnect($signal);
+            }
+            $slist->save_session;
+        },
+        error_callback => \&error_callback,
+    );
+    if ($all_pages) {
+        $options{pagerange_callback} = sub {
+            my ($info) = @_;
+            return 1, $info->{pages};
+          }
+    }
+    else {
+        $options{pagerange_callback} = sub {
             my ($info) = @_;
             my $dialog = Gtk3::Dialog->new(
                 __('Pages to extract'),
@@ -2141,21 +2164,9 @@ sub import_files {
                 return $spinbuttonf->get_value, $spinbuttonl->get_value;
             }
             return;
-        },
-        running_callback => sub {
-            return update_tpbar(@_);
-        },
-        finished_callback => sub {
-            my ($pending) = @_;
-            $logger->debug("import_files finished @{$filenames}");
-            if ( not $pending ) { $thbox->hide }
-            if ( defined $signal ) {
-                $tcbutton->signal_handler_disconnect($signal);
-            }
-            $slist->save_session;
-        },
-        error_callback => \&error_callback
-    );
+          }
+    }
+    $pid = $slist->import_files(%options);
     return;
 }
 
