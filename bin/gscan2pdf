@@ -235,7 +235,7 @@ else {
 }
 init_icons(
     [ 'rotate90',    "$iconpath/stock-rotate-90.svg" ],
-    [ 'rotate180',   "$iconpath/stock-rotate-180.svg" ],
+    [ 'rotate180',   "$iconpath/180_degree.svg" ],
     [ 'rotate270',   "$iconpath/stock-rotate-270.svg" ],
     [ 'scanner',     "$iconpath/scanner.svg" ],
     [ 'pdf',         "$iconpath/pdf.svg" ],

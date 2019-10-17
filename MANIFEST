@@ -17,6 +17,7 @@ gscan2pdf.Suse.spec
 gscan2pdf.appdata.xml
 gscan2pdf.desktop
 gscan2pdf.spec
+icons/180_degree.svg
 icons/gscan2pdf-papyrus.svg
 icons/gscan2pdf.svg
 icons/hand-tool.svg

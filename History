@@ -3,6 +3,7 @@
 * Fix crash closing multiple message dialog via x-icon
   Closes bug #333 (Segmentation fault when closing Messages window)
 * + --import-all option
+* + new rotate 180° icon. Closes feature request (#107 Replace 180 degree icon)
 
 
 2.5.7 (11.10.2019):
