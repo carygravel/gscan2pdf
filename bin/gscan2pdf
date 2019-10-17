@@ -6746,8 +6746,12 @@ Specifies a file to store logging messages.
 =item --(debug|info|warn|error|fatal)
 Defines the log level. If a log file is specified, this defaults to 'debug', otherwise 'warn'.
 
-=item --import=<PDF|DjVu|image>
-Imports the specified file
+=item --import=<PDF|DjVu|images>
+Imports the specified file(s). If the document has more than one page, a window is
+displayed to select the required pages.
+
+=item --import-all=<PDF|DjVu|images>
+Imports all pages of the specified file(s).
 
 =item --version
 Displays the program version and exits.
