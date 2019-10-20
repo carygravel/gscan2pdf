@@ -1,7 +1,8 @@
 2.5.8 (11.11.2019):
 
 * Fix crash closing multiple message dialog via x-icon
-  Closes bug #333 (Segmentation fault when closing Messages window)
+  Closes bugs #333 (Segmentation fault when closing Messages window) and #334
+  (Closing Scan Document dialog using close button causes gscan2pdf to exit)
 * + --import-all option
 * + new rotate 180° icon. Closes feature request (#107 Replace 180 degree icon)
 
