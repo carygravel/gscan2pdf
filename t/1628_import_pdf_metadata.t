@@ -1,0 +1,49 @@
+use warnings;
+use strict;
+use Gscan2pdf::Document;
+use Gtk3 -init;    # Could just call init separately
+use Test::More tests => 6;
+
+#########################
+
+Gscan2pdf::Translation::set_domain('gscan2pdf');
+use Log::Log4perl qw(:easy);
+Log::Log4perl->easy_init($WARN);
+my $logger = Log::Log4perl::get_logger;
+
+Gscan2pdf::Document->setup($logger);
+
+# Create b&w test image
+system(
+'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.tif && tiff2pdf -o test.pdf -e 20181231120000 -a Author -t Title -s Subject -k Keywords test.tif'
+);
+
+my $slist = Gscan2pdf::Document->new;
+
+# dir for temporary files
+my $dir = File::Temp->newdir;
+$slist->set_dir($dir);
+
+$slist->import_files(
+    paths             => ['test.pdf'],
+    metadata_callback => sub {
+        my ($metadata) = @_;
+        is_deeply $metadata->{datetime}, [ 2018, 12, 31, 13, 0, 0 ], 'datetime';
+        is_deeply $metadata->{tz}, [ undef, undef, undef, 1, 0, undef, undef ],
+          'timezone';
+        is $metadata->{author},   'Author',   'author';
+        is $metadata->{subject},  'Subject',  'subject';
+        is $metadata->{keywords}, 'Keywords', 'keywords';
+        is $metadata->{title},    'Title',    'title';
+    },
+    finished_callback => sub {
+        Gtk3->main_quit;
+    }
+);
+Gtk3->main;
+
+#########################
+
+unlink 'test.pdf', 'test.png', 'test.tif', <$dir/*>;
+rmdir $dir;
+Gscan2pdf::Document->quit();

@@ -37,6 +37,7 @@ use English qw( -no_match_vars );    # for $PROCESS_ID, $INPUT_RECORD_SEPARATOR
 use POSIX qw(:sys_wait_h strftime);
 use Data::UUID;
 use Date::Calc qw(Add_Delta_DHMS Date_to_Time Today_and_Now);
+use Time::Piece;
 use version;
 use Readonly;
 Readonly our $POINTS_PER_INCH             => 72;
@@ -90,6 +91,9 @@ my $uuid_object    = Data::UUID->new;
 my $EMPTY          = q{};
 my $SPACE          = q{ };
 my $PERCENT        = q{%};
+my $isodate_regex  = qr{(\d{4})-(\d\d)-(\d\d)}xsm;
+my $time_regex     = qr{(\d\d):(\d\d):(\d\d)}xsm;
+my $tz_regex       = qr{([+-]\d\d):(\d\d)}xsm;
 my ( $_self, $logger, $paper_sizes, %callback );
 
 my %format = (
@@ -399,6 +403,10 @@ sub _get_file_info_finished_callback2 {
         delete $options{paths};
         delete $options{finished_callback};
         for my $i ( 0 .. $#{$info} ) {
+            if ( $options{metadata_callback} ) {
+                $options{metadata_callback}
+                  ->( _extract_metadata( $info->[$i] ) );
+            }
             if ( $i == $#{$info} ) {
                 $options{finished_callback} = $finished_callback;
             }
@@ -414,6 +422,9 @@ sub _get_file_info_finished_callback2 {
         $self->open_session_file( info => $info->[0]{path}, %options );
     }
     else {
+        if ( $options{metadata_callback} ) {
+            $options{metadata_callback}->( _extract_metadata( $info->[0] ) );
+        }
         my $first_page = 1;
         my $last_page  = $info->[0]{pages};
         if ( $options{pagerange_callback} and $last_page > 1 ) {
@@ -433,6 +444,48 @@ sub _get_file_info_finished_callback2 {
         );
     }
     return;
+}
+
+sub _extract_metadata {
+    my ($info) = @_;
+    my %metadata;
+    for my $key ( keys %{$info} ) {
+        if (    $key =~ /(author|title|subject|keywords|datetime|tz)/xsm
+            and $info->{$key} ne 'NONE' )
+        {
+            $metadata{$key} = $info->{$key};
+        }
+    }
+    if ( $metadata{datetime} ) {
+        if ( $info->{format} eq 'Portable Document Format' ) {
+            if ( $metadata{datetime} =~ /^(.*?)\s(\S\S\S)$/xsm ) {
+                my $t = Time::Piece->strptime( $1, '%a %b %d %H:%M:%S %Y' );
+                my $tz = $2;
+                $metadata{datetime} = [
+                    $t->year, $t->mon, $t->day_of_month,
+                    $t->hour, $t->min, $t->sec
+                ];
+                $metadata{tz} = [ undef, undef, undef, 0, 0, undef, undef ];
+                given ($tz) {
+                    when (/(?:BST|CET)/xsm) {
+                        $metadata{tz} =
+                          [ undef, undef, undef, 1, 0, undef, undef ];
+                    }
+                }
+            }
+        }
+        elsif ( $info->{format} eq 'DJVU' ) {
+            if ( $metadata{datetime} =~
+                /^$isodate_regex\s$time_regex$tz_regex/xsm )
+            {
+                $metadata{datetime} =
+                  [ int $1, int $2, int $3, int $4, int $5, int $6 ];
+                $metadata{tz} =
+                  [ undef, undef, undef, int($7), int($8), undef, undef ];
+            }
+        }
+    }
+    return \%metadata;
 }
 
 # Because the finished, error and cancelled callbacks are triggered by the
@@ -2652,6 +2705,18 @@ sub _thread_get_file_info {
             $options{info}{ppi}   = \@ppi;
             $options{info}{pages} = $pages;
             $options{info}{path}  = $options{filename};
+
+            # Dig out the metadata
+            ( undef, $info ) =
+              exec_command(
+                [ 'djvused', $options{filename}, '-e', 'print-meta' ],
+                $options{pidfile} );
+            $logger->info($info);
+            return if $_self->{cancel};
+
+            # extract the metadata from the file
+            _add_metadata_to_info( $options{info}, $info, qr{\s+"([^"]+)}xsm );
+
             $self->{return}->enqueue(
                 {
                     type => 'file-info',
@@ -2689,6 +2754,10 @@ sub _thread_get_file_info {
                     $options{info}{page_size} = [ $1, $2, $3 ];
                     $logger->info("Page size: $1 x $2 $3");
                 }
+
+                # extract the metadata from the file
+                _add_metadata_to_info( $options{info}, $info,
+                    qr{:\s+([^\n]+)}xsm );
             }
         }
 
@@ -2748,6 +2817,24 @@ sub _thread_get_file_info {
     $self->{return}->enqueue(
         { type => 'file-info', uuid => $options{uuid}, info => $options{info} }
     );
+    return;
+}
+
+sub _add_metadata_to_info {
+    my ( $info, $string, $regex ) = @_;
+    my %kw_lookup = (
+        Title        => 'title',
+        Subject      => 'subject',
+        Keywords     => 'keywords',
+        Author       => 'author',
+        CreationDate => 'datetime',
+    );
+
+    while ( my ( $key, $value ) = each %kw_lookup ) {
+        if ( $string =~ /$key$regex/xsm ) {
+            $info->{$value} = $1;
+        }
+    }
     return;
 }
 

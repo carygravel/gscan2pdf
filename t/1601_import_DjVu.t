@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
-use Test::More tests => 4;
+use Test::More tests => 10;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -36,6 +36,18 @@ EOS
     print {$fh} $text;
     close $fh;
     system("djvused 'test.djvu' -e 'select 1; set-txt text.txt' -s");
+
+    $text = <<'EOS';
+Author	"Author"
+Keywords	"Keywords"
+Title	"Title"
+Subject	"Subject"
+CreationDate	"2018-12-31 13:00:00+01:00"
+EOS
+    open $fh, '>', 'text.txt';
+    print {$fh} $text;
+    close $fh;
+    system("djvused 'test.djvu' -e 'set-meta text.txt' -s");
 
     my $old = `identify -format '%m %G %g %z-bit %r' test.djvu`;
 
@@ -80,6 +92,17 @@ EOS
                 $progress )
               = @_;
             pass 'started callback';
+        },
+        metadata_callback => sub {
+            my ($metadata) = @_;
+            is_deeply $metadata->{datetime}, [ 2018, 12, 31, 13, 0, 0 ],
+              'datetime';
+            is_deeply $metadata->{tz},
+              [ undef, undef, undef, 1, 0, undef, undef ], 'timezone';
+            is $metadata->{author},   'Author',   'author';
+            is $metadata->{subject},  'Subject',  'subject';
+            is $metadata->{keywords}, 'Keywords', 'keywords';
+            is $metadata->{title},    'Title',    'title';
         },
         finished_callback => sub {
             like(

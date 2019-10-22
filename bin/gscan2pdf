@@ -2123,6 +2123,10 @@ sub import_files {
             }
             $slist->save_session;
         },
+        metadata_callback => sub {
+            my ($metadata) = @_;
+            update_metadata_settings($metadata);
+        },
         error_callback => \&error_callback,
     );
     if ($all_pages) {
@@ -2175,28 +2179,55 @@ sub update_metadata_settings {
     my ($dialog) = @_;
 
     for my $name (qw(author title subject keywords)) {
-        $SETTING{$name} = $dialog->get("meta-$name");
-        $SETTING{"$name-suggestions"} = $dialog->get("meta-$name-suggestions");
+        if ( ref($dialog) eq 'HASH' ) {
+            if ( defined $dialog->{$name} ) {
+                $SETTING{$name} = $dialog->{$name};
+                for my $dialog2 ( ( $windowi, $windowe ) ) {
+                    if ( defined $dialog2 ) {
+                        $dialog->set( "meta-$name", $SETTING{$name} );
+                    }
+                }
+            }
+        }
+        else {
+            $SETTING{$name} = $dialog->get("meta-$name");
+            $SETTING{"$name-suggestions"} =
+              $dialog->get("meta-$name-suggestions");
+        }
     }
-    my $datetime = $dialog->get('meta-datetime');
-    my $success  = TRUE;
-    try {
-        $SETTING{'datetime offset'} =
-          [ Delta_DHMS( Today_and_Now(), @{$datetime} ) ];
+    my $datetime;
+    if ( ref($dialog) eq 'HASH' ) {
+        $datetime = $dialog->{datetime};
+        for my $dialog2 ( ( $windowi, $windowe ) ) {
+            if ( defined $dialog2 ) {
+                $dialog->set( 'meta-datetime', $datetime );
+            }
+        }
     }
-    catch {
-        $success = FALSE;
-        my $msg =
-          sprintf __('%04d-%02d-%02d %02d:%02d:%02d is not a valid datetime.'),
-          @{$datetime};
-        $logger->debug($msg);
-        show_message_dialog(
-            parent  => $window,
-            type    => 'error',
-            buttons => 'close',
-            text    => $msg,
-        );
-    };
+    else {
+        $datetime = $dialog->get('meta-datetime');
+    }
+    my $success = TRUE;
+    if ( defined $datetime ) {
+        try {
+            $SETTING{'datetime offset'} =
+              [ Delta_DHMS( Today_and_Now(), @{$datetime} ) ];
+        }
+        catch {
+            $success = FALSE;
+            my $msg =
+              sprintf __(
+                '%04d-%02d-%02d %02d:%02d:%02d is not a valid datetime.'),
+              @{$datetime};
+            $logger->debug($msg);
+            show_message_dialog(
+                parent  => $window,
+                type    => 'error',
+                buttons => 'close',
+                text    => $msg,
+            );
+        };
+    }
     return $success;
 }
 

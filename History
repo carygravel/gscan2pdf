@@ -4,7 +4,9 @@
   Closes bugs #333 (Segmentation fault when closing Messages window) and #334
   (Closing Scan Document dialog using close button causes gscan2pdf to exit)
 * + --import-all option
-* + new rotate 180° icon. Closes feature request (#107 Replace 180 degree icon)
+* + new rotate 180° icon. Closes feature request #107 (Replace 180 degree icon)
+* import metadata when opening PDF or DjVu files.
+  Closes feature request #89 (Load document metadata at during open)
 
 
 2.5.7 (11.10.2019):
