@@ -7151,14 +7151,17 @@ On some scanners, this is the only way of generating an out-of-documents signal.
 Saves the selected or all pages as a PDF, DjVu, TIFF, PNG, JPEG, PNM or
 GIF.
 
-=head4 PDF Metadata
+=head4 Metadata
 
-Metadata are information that are not visible when viewing the PDF, but are
+Metadata are information that are not visible when viewing the PDF/DjVu, but are
 embedded in the file and so searchable and can be examined, typically with the
-"Properties" option of the PDF viewer.
+"Properties" option of the document viewer.
 
 The metadata are completely optional, but can also be used to generate the
 filename see preferences for details.
+
+The date can be selected with use of the calendar widget. The displayed date can
+be incremented or decremented with use of the '+' and '-' keys.
 
 =head4 DjVu
 

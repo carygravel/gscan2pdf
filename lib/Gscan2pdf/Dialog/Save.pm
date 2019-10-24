@@ -9,7 +9,7 @@ use Gscan2pdf::Dialog;
 use Gscan2pdf::Document;
 use Gscan2pdf::EntryCompletion;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
-use Date::Calc qw(Today Today_and_Now);
+use Date::Calc qw(Today Today_and_Now Add_Delta_DHMS);
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use Encode;
 use Readonly;
@@ -471,9 +471,41 @@ sub datetime2string {
 
 sub insert_text_handler {
     my ( $widget, $string, $len, $position, $self ) = @_;
+    my $text     = $widget->get_text;
+    my $text_len = length( $widget->get_text );
+    $widget->signal_handlers_block_by_func( \&insert_text_handler );
+
+    # trap + & - for incrementing and decrementing date
+    if (
+        (
+            (
+                not $self->get('include-time')
+                and $text_len == $ENTRY_WIDTH_DATE
+            )
+            or
+
+            (
+                    $self->get('include-time')
+                and $text_len == $ENTRY_WIDTH_DATETIME
+            )
+        )
+        and $string =~ /^[+\-]+$/smx
+      )
+    {
+        my $offset = 1;
+        if ( $string eq q{-} ) { $offset = -$offset }
+        $widget->set_text(
+            $self->datetime2string(
+                Add_Delta_DHMS(
+                    Gscan2pdf::Document::text_to_datetime($text),
+                    $offset, 0, 0, 0
+                )
+            )
+        );
+    }
 
     # only allow integers and -
-    if (
+    elsif (
         ( not $self->get('include-time') and $string =~ /^[\d\-]+$/smx )
         or
 
@@ -481,10 +513,9 @@ sub insert_text_handler {
         ( $self->get('include-time') and $string =~ /^[\d\- :]+$/smx )
       )
     {
-        $widget->signal_handlers_block_by_func( \&insert_text_handler );
         $widget->insert_text( $string, $len, $position++ );
-        $widget->signal_handlers_unblock_by_func( \&insert_text_handler );
     }
+    $widget->signal_handlers_unblock_by_func( \&insert_text_handler );
     $widget->signal_stop_emission_by_name('insert-text');
     return $position;
 }

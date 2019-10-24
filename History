@@ -7,6 +7,7 @@
 * + new rotate 180° icon. Closes feature request #107 (Replace 180 degree icon)
 * import metadata when opening PDF or DjVu files.
   Closes feature request #89 (Load document metadata at during open)
+* Increment/decrement date on save dialog with +/- keys.
 
 
 2.5.7 (11.10.2019):
