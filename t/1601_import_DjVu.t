@@ -11,7 +11,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'DjVuLibre not installed', 4
+    skip 'DjVuLibre not installed', 10
       unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);

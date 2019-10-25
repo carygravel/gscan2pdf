@@ -2,7 +2,8 @@ use warnings;
 use strict;
 use Gscan2pdf::Document;
 use Gtk3 -init;    # Could just call init separately
-use Test::More tests => 6;
+use Date::Calc qw(Add_Delta_DHMS);
+use Test::More tests => 5;
 
 #########################
 
@@ -28,9 +29,9 @@ $slist->import_files(
     paths             => ['test.pdf'],
     metadata_callback => sub {
         my ($metadata) = @_;
-        is_deeply $metadata->{datetime}, [ 2018, 12, 31, 13, 0, 0 ], 'datetime';
-        is_deeply $metadata->{tz}, [ undef, undef, undef, 1, 0, undef, undef ],
-          'timezone';
+        my @tz = ( 0, -$metadata->{tz}[3], -$metadata->{tz}[4], 0 );
+        my @gmt = Add_Delta_DHMS( @{ $metadata->{datetime} }, @tz );
+        is_deeply \@gmt, [ 2018, 12, 31, 12, 0, 0 ], 'datetime - timezone';
         is $metadata->{author},   'Author',   'author';
         is $metadata->{subject},  'Subject',  'subject';
         is $metadata->{keywords}, 'Keywords', 'keywords';
