@@ -111,6 +111,8 @@ PO = $(filter %.po,$(MANIFEST))
 LANGUAGES = $(patsubst po/$(NAME)-%.po,%,$(PO))
 MO = $(foreach lang,$(LANGUAGES),$(DESTDIR)$(LOCALEDIR)/$(lang)/LC_MESSAGES/$(NAME).mo)
 ICONS = $(wildcard icons/*)
+TLD = net
+VENDOR = sourceforge
 
 rpmdist : $(NAME).spec $(NAME).Suse.spec tardist
 	$(MKPATH) rpm rpm/SPECS rpm/SOURCES rpm/BUILD rpm/RPMS rpm/SRPMS \
@@ -131,14 +133,14 @@ $(DESTDIR)$(LOCALEDIR)/%/LC_MESSAGES/$(NAME).mo : po/$(NAME)-%.po
 $(DESTDIR)$(SHAREDIR)/$(NAME) $(DESTDIR)$(SHAREDIR)/applications $(DESTDIR)$(SHAREDIR)/pixmaps $(DESTDIR)$(SHAREDIR)/metainfo :
 	$(MKPATH) $@
 
-icon_install : $(NAME).desktop $(ICONS) $(NAME).appdata.xml \
+icon_install : $(TLD).$(VENDOR).$(NAME).desktop $(ICONS) $(TLD).$(VENDOR).$(NAME).appdata.xml \
              | $(DESTDIR)$(SHAREDIR)/$(NAME) $(DESTDIR)$(SHAREDIR)/applications \
                $(DESTDIR)$(SHAREDIR)/pixmaps \
                $(DESTDIR)$(SHAREDIR)/metainfo
-	$(CP) $(NAME).desktop $(DESTDIR)$(SHAREDIR)/applications
+	$(CP) $(TLD).$(VENDOR).$(NAME).desktop $(DESTDIR)$(SHAREDIR)/applications
 	$(CP) $(ICONS) $(DESTDIR)$(SHAREDIR)/$(NAME)
 	$(CP) icons/$(NAME).svg $(DESTDIR)$(SHAREDIR)/pixmaps
-	$(CP) $(NAME).appdata.xml $(DESTDIR)$(SHAREDIR)/metainfo
+	$(CP) $(TLD).$(VENDOR).$(NAME).appdata.xml $(DESTDIR)$(SHAREDIR)/metainfo
 
 # remove the =for html sections to satisfy lintian
 html_install :

@@ -7,6 +7,7 @@
   <name>gscan2pdf</name>
   <name xml:lang="en_GB">gscan2pdf</name>
   <name xml:lang="cs_CZ">gscan2pdf</name>
+  <launchable type="desktop-id">net.sourceforge.gscan2pdf.desktop</launchable>
   <summary>GUI to produce PDFs or DjVus from scanned documents</summary>
   <summary xml:lang="en_GB">GUI to produce PDFs or DjVus from scanned documents</summary>
   <summary xml:lang="cs_CZ">Grafické rozhraní na výrobu PDF nebo DjVu dokumentů z naskenovaných dokumentů</summary>

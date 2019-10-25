@@ -14,8 +14,6 @@ debian/tests/control
 debian/upstream/signing-key.pgp
 debian/watch
 gscan2pdf.Suse.spec
-gscan2pdf.appdata.xml
-gscan2pdf.desktop
 gscan2pdf.spec
 icons/180_degree.svg
 icons/gscan2pdf-papyrus.svg
@@ -53,6 +51,8 @@ lib/Gscan2pdf/Scanner/Profile.pm
 lib/Gscan2pdf/Tesseract.pm
 lib/Gscan2pdf/Translation.pm
 lib/Gscan2pdf/Unpaper.pm
+net.sourceforge.gscan2pdf.appdata.xml
+net.sourceforge.gscan2pdf.desktop
 po/gscan2pdf-ab.po
 po/gscan2pdf-be.po
 po/gscan2pdf-bg.po
