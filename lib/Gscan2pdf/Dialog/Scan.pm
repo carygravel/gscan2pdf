@@ -2308,6 +2308,10 @@ sub set_current_scan_options {
         return;
     }
 
+    # forget the previous option info calls, as these are only interesting
+    # *whilst* setting a profile, and now we are starting from scratch
+    delete $self->{option_info};
+
     # If we have no options set, no need to reset to defaults
     if ( $self->{current_scan_options}->num_backend_options == 0 ) {
         $self->add_current_scan_options($profile);
@@ -2344,10 +2348,6 @@ sub add_current_scan_options {
 
     # First clone the profile, as otherwise it would be self-modifying
     my $clone = dclone($profile);
-
-    # forget the previous option info calls, as these are only interesting
-    # *whilst* setting a profile, and now we are starting from scratch
-    delete $self->{option_info};
 
     push @{ $self->{setting_current_scan_options} }, $clone->{uuid};
 

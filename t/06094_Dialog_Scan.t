@@ -267,10 +267,10 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                     {
                         backend => [
                             {
-                                'br-x' => '10'
+                                'br-x' => '20'
                             },
                             {
-                                'br-y' => '10'
+                                'br-y' => '20'
                             },
                         ],
                         frontend => {
