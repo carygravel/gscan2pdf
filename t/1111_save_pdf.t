@@ -1,7 +1,8 @@
 use warnings;
 use strict;
 use Test::More tests => 9;
-use Gtk3 -init;    # Could just call init separately
+use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
+use Gtk3 -init;             # Could just call init separately
 
 BEGIN {
     use_ok('Gscan2pdf::Document');
@@ -25,6 +26,10 @@ my $slist = Gscan2pdf::Document->new;
 my $dir = File::Temp->newdir;
 $slist->set_dir($dir);
 
+# use a new main loop to avoid nesting, which was preventing the counters
+# resetting in some environments
+my $loop = Glib::MainLoop->new;
+my $flag = FALSE;
 $slist->import_files(
     paths            => ['test.pnm'],
     started_callback => sub {
@@ -34,28 +39,32 @@ $slist->import_files(
     },
     finished_callback => sub {
         is( $slist->scans_saved, '', 'pages not tagged as saved' );
-        $slist->save_pdf(
-            path             => 'test.pdf',
-            list_of_pages    => [ $slist->{data}[0][2]{uuid} ],
-            started_callback => sub {
-                my ( $thread, $process, $completed, $total ) = @_;
-                is( $completed, 0, 'completed counter re-initialised' );
-                is( $total,     0, 'total counter re-initialised' );
-            },
-            options => {
-                post_save_hook         => 'pdftoppm %i test',
-                post_save_hook_options => 'fg',
-            },
-            finished_callback => sub {
-                is(
-                    `pdfinfo test.pdf | grep 'Page size:'`,
-                    "Page size:      70 x 46 pts\n",
-                    'valid PDF created'
-                );
-                is( $slist->scans_saved, 1, 'pages tagged as saved' );
-                Gtk3->main_quit;
-            }
+        $flag = TRUE;
+        $loop->quit;
+    }
+);
+$loop->run unless ($flag);
+
+$slist->save_pdf(
+    path             => 'test.pdf',
+    list_of_pages    => [ $slist->{data}[0][2]{uuid} ],
+    started_callback => sub {
+        my ( $thread, $process, $completed, $total ) = @_;
+        is( $completed, 0, 'completed counter re-initialised' );
+        is( $total,     1, 'total counter re-initialised' );
+    },
+    options => {
+        post_save_hook         => 'pdftoppm %i test',
+        post_save_hook_options => 'fg',
+    },
+    finished_callback => sub {
+        is(
+            `pdfinfo test.pdf | grep 'Page size:'`,
+            "Page size:      70 x 46 pts\n",
+            'valid PDF created'
         );
+        is( $slist->scans_saved, 1, 'pages tagged as saved' );
+        Gtk3->main_quit;
     }
 );
 Gtk3->main;
