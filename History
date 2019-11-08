@@ -10,6 +10,7 @@
 * Increment/decrement date on save dialog with +/- keys.
 * Fixed reload-recursion bug triggered by unusual environment (reprotest)
 * Update to French translation (thanks to Ltrlg)
+* Update to Ukrainian translation (thanks to Yuri Chornoivan)
 
 
 2.5.7 (11.10.2019):
