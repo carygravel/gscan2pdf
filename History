@@ -9,6 +9,7 @@
   Closes feature request #89 (Load document metadata at during open)
 * Increment/decrement date on save dialog with +/- keys.
 * Fixed reload-recursion bug triggered by unusual environment (reprotest)
+* Update to French translation (thanks to Ltrlg)
 
 
 2.5.7 (11.10.2019):
