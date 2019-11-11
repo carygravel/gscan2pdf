@@ -3,7 +3,7 @@ gscan2pdf (2.6.0-1) unstable; urgency=low
   * New upstream release
   * Updated copyright to include icons
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sun, 10 Nov 2019 15:01:15 +0100
 
 gscan2pdf (2.5.7-1) unstable; urgency=low
 
