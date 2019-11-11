@@ -2184,7 +2184,7 @@ sub update_metadata_settings {
                 $SETTING{$name} = $dialog->{$name};
                 for my $dialog2 ( ( $windowi, $windowe ) ) {
                     if ( defined $dialog2 ) {
-                        $dialog->set( "meta-$name", $SETTING{$name} );
+                        $dialog2->set( "meta-$name", $SETTING{$name} );
                     }
                 }
             }
@@ -2200,7 +2200,7 @@ sub update_metadata_settings {
         $datetime = $dialog->{datetime};
         for my $dialog2 ( ( $windowi, $windowe ) ) {
             if ( defined $dialog2 ) {
-                $dialog->set( 'meta-datetime', $datetime );
+                $dialog2->set( 'meta-datetime', $datetime );
             }
         }
     }
