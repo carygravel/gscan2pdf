@@ -51,27 +51,23 @@ $signal = $dialog->signal_connect(
         # due to the profiles not being cloned in the set and get routines
 
         # need a new main loop to avoid nesting
-        my $loop = Glib::MainLoop->new;
-        my $flag = FALSE;
+        my $loop1 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
-                $flag = TRUE;
-                $loop->quit;
+                $loop1->quit;
             }
         );
         $dialog->set_option( $options->by_name('tl-x'), 10 );
-        $loop->run unless ($flag);
+        $loop1->run;
 
-        $loop   = Glib::MainLoop->new;
-        $flag   = FALSE;
+        my $loop2 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
-                $flag = TRUE;
-                $loop->quit;
+                $loop2->quit;
             }
         );
         $dialog->set_option( $options->by_name('tl-y'), 10 );
-        $loop->run unless ($flag);
+        $loop2->run;
 
         $dialog->save_current_profile('profile 1');
         is_deeply(
@@ -91,27 +87,25 @@ $signal = $dialog->signal_connect(
         is( $dialog->get('profile'),
             'profile 1', 'saving current profile sets profile' );
 
-        $loop   = Glib::MainLoop->new;
-        $flag   = FALSE;
+        my $loop3 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
-                $flag = TRUE;
-                $loop->quit;
+                $loop3->quit;
             }
         );
         $dialog->set_option( $options->by_name('tl-x'), 20 );
-        $loop->run unless ($flag);
+        $loop3->run;
 
-        $loop   = Glib::MainLoop->new;
-        $flag   = FALSE;
+        my $loop4 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
-                $flag = TRUE;
-                $loop->quit;
+
+                #                $flag = TRUE;
+                $loop4->quit;
             }
         );
         $dialog->set_option( $options->by_name('tl-y'), 20 );
-        $loop->run unless ($flag);
+        $loop4->run;
 
         $dialog->save_current_profile('profile 2');
         is_deeply(
@@ -186,8 +180,7 @@ $signal = $dialog->signal_connect(
         $dialog->set( 'allow-batch-flatbed', FALSE );
 
         # need a new main loop to avoid nesting
-        $loop = Glib::MainLoop->new;
-        $flag = FALSE;
+        my $loop5 = Glib::MainLoop->new;
         is $dialog->get('adf-defaults-scan-all-pages'), 1,
           'default adf-defaults-scan-all-pages';
         $signal = $dialog->signal_connect(
@@ -199,49 +192,43 @@ $signal = $dialog->signal_connect(
                       'adf-defaults-scan-all-pages should force num-pages';
                     is $options->flatbed_selected, FALSE,
                       'not flatbed_selected() via value';
-                    $flag = TRUE;
-                    $loop->quit;
+                    $loop5->quit;
                 }
             }
         );
         $dialog->set_option( $options->by_name('source'),
             'Automatic Document Feeder' );
-        $loop->run unless ($flag);
+        $loop5->run;
 
         # need a new main loop to avoid nesting
-        $loop   = Glib::MainLoop->new;
-        $flag   = FALSE;
+        my $loop6 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
                 my ( $widget, $option, $value ) = @_;
                 $dialog->signal_handler_disconnect($signal);
                 $dialog->set( 'num-pages', 1 );
-                $flag = TRUE;
-                $loop->quit;
+                $loop6->quit;
             }
         );
         $dialog->set_option( $options->by_name('source'), 'Flatbed' );
-        $loop->run unless ($flag);
+        $loop6->run;
 
         # need a new main loop to avoid nesting
-        $loop   = Glib::MainLoop->new;
-        $flag   = FALSE;
+        my $loop7 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
                 my ( $widget, $option, $value ) = @_;
                 $dialog->signal_handler_disconnect($signal);
                 $dialog->signal_handler_disconnect($signal2);
                 fail 'should not try to set invalid option';
-                $flag = TRUE;
-                $loop->quit;
+                $loop7->quit;
             }
         );
         $signal2 = $dialog->signal_connect(
             'changed-current-scan-options' => sub {
                 $dialog->signal_handler_disconnect($signal);
                 $dialog->signal_handler_disconnect($signal2);
-                $flag = TRUE;
-                $loop->quit;
+                $loop7->quit;
             }
         );
         $dialog->set_current_scan_options(
@@ -251,40 +238,40 @@ $signal = $dialog->signal_connect(
                 }
             )
         );
-        $loop->run unless ($flag);
+        $loop7->run;
 
         # need a new main loop to avoid nesting
-        $loop   = Glib::MainLoop->new;
-        $flag   = FALSE;
+        my $loop8 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
                 my ( $widget, $option, $value ) = @_;
                 $dialog->signal_handler_disconnect($signal);
                 $dialog->signal_handler_disconnect($signal2);
                 fail 'should not try to set option if value already correct';
-                $flag = TRUE;
-                $loop->quit;
+                $loop8->quit;
             }
         );
         $signal2 = $dialog->signal_connect(
             'changed-current-scan-options' => sub {
                 $dialog->signal_handler_disconnect($signal);
                 $dialog->signal_handler_disconnect($signal2);
-                $flag = TRUE;
-                $loop->quit;
+                $loop8->quit;
             }
         );
-        $dialog->set_current_scan_options(
-            Gscan2pdf::Scanner::Profile->new_from_data(
-                {
-                    'backend' => [ { 'mode' => 'Gray' } ]
-                }
-            )
+        Glib::Idle->add(
+            sub {
+                $dialog->set_current_scan_options(
+                    Gscan2pdf::Scanner::Profile->new_from_data(
+                        {
+                            'backend' => [ { 'mode' => 'Gray' } ]
+                        }
+                    )
+                );
+            }
         );
-        $loop->run unless ($flag);
+        $loop8->run;
 
-        $loop = Glib::MainLoop->new;
-        $flag = FALSE;
+        my $loop9 = Glib::MainLoop->new;
         $dialog->set( 'adf-defaults-scan-all-pages', 0 );
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
@@ -296,18 +283,16 @@ $signal = $dialog->signal_connect(
                 is $dialog->{vboxx}->get_visible, TRUE,
                   'simplex ADF, so show vbox for page numbering';
 
-                $flag = TRUE;
-                $loop->quit;
+                $loop9->quit;
             }
         );
         $dialog->set_option( $options->by_name('source'),
             'Automatic Document Feeder' );
-        $loop->run unless ($flag);
+        $loop9->run;
 
         # bug in 2.5.3 where setting paper via default options only
         # set combobox without setting options
-        $loop   = Glib::MainLoop->new;
-        $flag   = FALSE;
+        my $loop10 = Glib::MainLoop->new;
         $signal = $dialog->signal_connect(
             'changed-paper' => sub {
                 $dialog->signal_handler_disconnect($signal);
@@ -334,8 +319,7 @@ $signal = $dialog->signal_connect(
                     },
                     'set paper with conflicting options'
                 );
-                $flag = TRUE;
-                $loop->quit;
+                $loop10->quit;
             }
         );
         $dialog->set_current_scan_options(
@@ -355,7 +339,7 @@ $signal = $dialog->signal_connect(
                 },
             )
         );
-        $loop->run unless ($flag);
+        $loop10->run;
 
         # bug previous to v2.1.7 where having having set double sided and
         # reverse, and then switched from ADF to flatbed, clicking scan produced
