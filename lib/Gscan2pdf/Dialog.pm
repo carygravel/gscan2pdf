@@ -32,7 +32,7 @@ use Glib::Object::Subclass Gtk3::Dialog::,
     ),
   ];
 
-our $VERSION = '2.6.0';
+our $VERSION = '2.6.1';
 my $EMPTY = q{};
 
 sub INIT_INSTANCE {
