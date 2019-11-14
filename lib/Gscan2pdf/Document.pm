@@ -3887,7 +3887,7 @@ sub _add_text_to_djvu {
         # Write djvusedtxtfile
         my $djvusedtxtfile = File::Temp->new( DIR => $dir, SUFFIX => '.txt' );
         $logger->debug( $pagedata->{hocr} );
-        $logger->debug( $pagedata->djvu_text );
+        $logger->debug($txt);
         open my $fh, '>:encoding(UTF8)', $djvusedtxtfile
           or croak( sprintf __("Can't open file: %s"), $djvusedtxtfile );
         _write_file( $self, $fh, $djvusedtxtfile, $txt, $uuid )

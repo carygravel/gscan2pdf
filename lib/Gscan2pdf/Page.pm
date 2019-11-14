@@ -545,6 +545,13 @@ EOS
 sub _djvu2boxes {
     my ( $text, $h ) = @_;
     my @boxes;
+
+    # unescape utf8
+    while ( defined $text
+        and $text =~ /^(.*)\\(\d{3})\\(\d{3})(.*)$/xsm )
+    {
+        $text = $1 . decode( 'UTF-8', chr( oct $2 ) . chr oct $3 ) . $4;
+    }
     while ( defined $text and $text !~ /\A\s*\z/xsm ) {
         my @result = extract_bracketed( $text, '(")' );
         if ( not defined $result[0] ) {
