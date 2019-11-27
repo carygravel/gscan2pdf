@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 50;
+use Test::More tests => 53;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -307,6 +307,44 @@ is_deeply(
         'keywords' => 'keywords'
     },
     'collate time'
+);
+
+#########################
+
+is_deeply(
+    Gscan2pdf::Document::_extract_metadata(
+        {
+            format   => 'Portable Document Format',
+            datetime => 'Sat Aug  6 02:00:00 2016 CEST'
+        }
+    ),
+    {
+        datetime => [ 2016,  8,     6,     2, 0, 0 ],
+        tz       => [ undef, undef, undef, 2, 0, undef, undef ],
+    },
+    '_extract_metadata'
+);
+
+is_deeply(
+    Gscan2pdf::Document::_extract_metadata(
+        {
+            format   => 'Portable Document Format',
+            datetime => 'non-parsable date'
+        }
+    ),
+    {},
+    '_extract_metadata on error'
+);
+
+is_deeply(
+    Gscan2pdf::Document::_extract_metadata(
+        {
+            format   => 'Portable Document Format',
+            datetime => 'non-parsable-string'
+        }
+    ),
+    {},
+    '_extract_metadata on error 2'
 );
 
 #########################

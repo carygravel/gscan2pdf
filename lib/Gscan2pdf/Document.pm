@@ -450,32 +450,38 @@ sub _extract_metadata {
     my ($info) = @_;
     my %metadata;
     for my $key ( keys %{$info} ) {
-        if (    $key =~ /(author|title|subject|keywords|datetime|tz)/xsm
+        if (    $key =~ /(author|title|subject|keywords|tz)/xsm
             and $info->{$key} ne 'NONE' )
         {
             $metadata{$key} = $info->{$key};
         }
     }
-    if ( $metadata{datetime} ) {
+    if ( $info->{datetime} ) {
         if ( $info->{format} eq 'Portable Document Format' ) {
-            if ( $metadata{datetime} =~ /^(.*?)\s(\S\S\S)$/xsm ) {
-                my $t = Time::Piece->strptime( $1, '%a %b %d %H:%M:%S %Y' );
-                my $tz = $2;
-                $metadata{datetime} = [
-                    $t->year, $t->mon, $t->day_of_month,
-                    $t->hour, $t->min, $t->sec
-                ];
-                $metadata{tz} = [ undef, undef, undef, 0, 0, undef, undef ];
-                given ($tz) {
-                    when (/(?:BST|CET)/xsm) {
-                        $metadata{tz} =
-                          [ undef, undef, undef, 1, 0, undef, undef ];
+            if ( $info->{datetime} =~ /^(.*?)\s(\S\S\S\S?)$/xsm ) {
+                try {
+                    my $t = Time::Piece->strptime( $1, '%a %b %d %H:%M:%S %Y' );
+                    my $tz = $2;
+                    $metadata{datetime} = [
+                        $t->year, $t->mon, $t->day_of_month,
+                        $t->hour, $t->min, $t->sec
+                    ];
+                    $metadata{tz} = [ undef, undef, undef, 0, 0, undef, undef ];
+                    given ($tz) {
+                        when (/(?:BST|CET)/xsm) {
+                            $metadata{tz} =
+                              [ undef, undef, undef, 1, 0, undef, undef ];
+                        }
+                        when (/(?:CEST)/xsm) {
+                            $metadata{tz} =
+                              [ undef, undef, undef, 2, 0, undef, undef ];
+                        }
                     }
                 }
             }
         }
         elsif ( $info->{format} eq 'DJVU' ) {
-            if ( $metadata{datetime} =~
+            if ( $info->{datetime} =~
                 /^$isodate_regex\s$time_regex$tz_regex/xsm )
             {
                 $metadata{datetime} =
