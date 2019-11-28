@@ -1,4 +1,4 @@
-2.6.2 (12.12.2019):
+2.6.2 (27.11.2019):
 
 * Fix importing UTF-8 in DjVu text layer
 * Fix crash importing metadata
