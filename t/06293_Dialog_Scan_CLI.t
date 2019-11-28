@@ -98,7 +98,9 @@ my $override = Sub::Override->new;
 $override->replace(
     'Gscan2pdf::Frontend::CLI::_watch_cmd' => sub {
         my (%options) = @_;
-        $options{started_callback}->();
+        if ( $options{started_callback} ) {
+            $options{started_callback}->();
+        }
         $options{finished_callback}->( $help_out, $help_err );
     }
 );

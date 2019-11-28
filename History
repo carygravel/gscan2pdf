@@ -2,6 +2,8 @@
 
 * Fix importing UTF-8 in DjVu text layer
 * Fix crash importing metadata
+* Add compatibility with combination of scanimage frontend and SANE 1.0.28
+  Closes bug #335 (Tests fail with sane-backends 1.0.28)
 * Update to Czech translation (thanks to Pavel Borecki)
 * Update to German translation (thanks to Stephan Woidowski)
 * Update to Ukrainian translation (thanks to Yuri Chornoivan)

@@ -40,6 +40,17 @@ my $page_no         = qr/page[ ](\d*)/xsm;
 sub setup {
     ( my $class, $logger ) = @_;
     $_self = {};
+    _watch_cmd(
+        cmd               => 'scanimage --version',
+        finished_callback => sub {
+            my ( $output, $error ) = @_;
+            if ( $output =~
+                /scanimage\s[(]sane-backends[)]\s\d+[.]\d+[.](\d+)/xsm )
+            {
+                $_self->{version} = $1;
+            }
+        }
+    );
     return;
 }
 
@@ -323,6 +334,9 @@ sub _create_scanimage_cmd {
         }
     }
     if ( not $help ) {
+        if ( defined $_self->{version} and $_self->{version} gt '27' ) {
+            push @options, '--format=pnm';
+        }
         push @options, '--batch';
         push @options, '--progress';
         if ( defined $options{start} and $options{start} != 0 ) {
