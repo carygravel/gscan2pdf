@@ -3,6 +3,7 @@
 * Fix importing UTF-8 in DjVu text layer
 * Fix crash importing metadata
 * Update to Czech translation (thanks to Pavel Borecki)
+* Update to German translation (thanks to Stephan Woidowski)
 
 
 2.6.1 (12.11.2019):
