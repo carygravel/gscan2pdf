@@ -7,7 +7,6 @@ BEGIN {
     use Gscan2pdf::Document;
     use Gscan2pdf::Unpaper;
     use Gtk3 -init;    # Could just call init separately
-    use version;
 }
 
 SKIP: {
