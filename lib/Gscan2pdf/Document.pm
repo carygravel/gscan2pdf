@@ -3228,9 +3228,22 @@ sub _thread_save_pdf {
     # encode a particular character
     $cache->{core} = $pdf->corefont('Times-Roman');
     if ( defined $options{options}{font} ) {
-        $cache->{ttf} =
-          $pdf->ttfont( $options{options}{font}, -unicodemap => 1 );
-        $logger->info("Using $options{options}{font} for non-ASCII text");
+        try {
+            $cache->{ttf} =
+              $pdf->ttfont( $options{options}{font}, -unicodemap => 1 );
+            $logger->info("Using $options{options}{font} for non-ASCII text");
+        }
+        catch {
+            _thread_throw_error(
+                $self,
+                $options{uuid},
+                $options{page}{uuid},
+                'Save file',
+                sprintf __(
+                    "Unable to find font '%s'. Defaulting to core font."),
+                $options{options}{font}
+              )
+        }
     }
 
     for my $pagedata ( @{ $options{list_of_pages} } ) {

@@ -1,5 +1,7 @@
 2.6.3 (27.12.2019):
 
+* Fallback to core PDF font if requested font cannot be loaded.
+  Closes bug #336 (Saving to PDF never ends if empty font is selected)
 * Update to Hungarian translation (thanks to csola)
 
 
