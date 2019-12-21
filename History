@@ -2,6 +2,7 @@
 
 * Fallback to core PDF font if requested font cannot be loaded.
   Closes bug #336 (Saving to PDF never ends if empty font is selected)
+* Detect GraphicsMagick in ImageMagick compatibility mode.
 * Update to Hungarian translation (thanks to csola)
 
 

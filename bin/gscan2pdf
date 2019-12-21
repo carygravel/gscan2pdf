@@ -719,6 +719,10 @@ sub check_dependencies {
             [ 'convert', '--version' ]
         ],
         [
+            'graphicsmagick', 'stdout',
+            qr/GraphicsMagick\s([\d.-]+)/xsm, [ 'gm', '-version' ]
+        ],
+        [
             'scanadf', 'stdout',
             qr/scanadf\s[(]sane-frontends[)]\s([\d.]+)/xsm,
             [ 'scanadf', '--version' ]
@@ -757,6 +761,24 @@ sub check_dependencies {
           Gscan2pdf::Document::program_version( $stream, $regex, $cmd );
         if ( $dependencies{$name} and $dependencies{$name} eq '-1' ) {
             delete $dependencies{$name};
+        }
+        if ( not $dependencies{imagemagick} and $dependencies{graphicsmagick} )
+        {
+            my $msg = __(
+'GraphicsMagick is being used in ImageMagick compatibility mode.'
+              )
+              . $SPACE
+              . __('Whilst this might work, it is not currently supported.')
+              . $SPACE
+              . __('Please switch to ImageMagick in case of problems.');
+            show_message_dialog(
+                parent           => $window,
+                type             => 'warning',
+                buttons          => 'ok',
+                text             => $msg,
+                'store-response' => TRUE
+            );
+            $dependencies{imagemagick} = $dependencies{graphicsmagick};
         }
         if ( $dependencies{$name} ) {
             $logger->info("Found $name $dependencies{$name}");
