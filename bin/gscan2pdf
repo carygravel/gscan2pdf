@@ -4391,10 +4391,10 @@ sub about {
     $about->set_authors( ['Jeff Ratcliffe'] );
     $about->add_credit_section( 'Patches gratefully received from', $authors );
     $about->set_comments( __('To aid the scan-to-PDF process') );
-    $about->set_copyright( __('Copyright 2006--2019 Jeffrey Ratcliffe') );
+    $about->set_copyright( __('Copyright 2006--2020 Jeffrey Ratcliffe') );
     my $licence = <<'EOS';
 gscan2pdf --- to aid the scan to PDF or DjVu process
-Copyright 2006 -- 2019 Jeffrey Ratcliffe <jffry@posteo.net>
+Copyright 2006 -- 2020 Jeffrey Ratcliffe <jffry@posteo.net>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the version 3 GNU General Public License as
@@ -7520,7 +7520,7 @@ Sourceforge for hosting the project.
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2006--2019 Jeffrey Ratcliffe <jffry@posteo.net>
+Copyright (C) 2006--2020 Jeffrey Ratcliffe <jffry@posteo.net>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the version 3 GNU General Public License as
