@@ -3,6 +3,7 @@
 * Fallback to core PDF font if requested font cannot be loaded.
   Closes bug #336 (Saving to PDF never ends if empty font is selected)
 * Detect GraphicsMagick in ImageMagick compatibility mode.
+* Set program name to RDN ID to allow Gnome to add gscan2pdf as a favorite.
 * Update to Hungarian translation (thanks to csola)
 
 
