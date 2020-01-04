@@ -51,7 +51,7 @@ SKIP: {
                     for my $i ( 0 .. 1 ) {
                         if (
 `convert $slist->{data}[$i][2]{filename} -depth 1 -resize 1x1 txt:-`
-                            =~ qr/gray\((\d\d\d)\)/ )
+                            =~ qr/gray\((\d\d\d(\.\d+)?)\)/ )
                         {
                             $level[$i] = $1;
                             pass "valid PNM created for page $i";
