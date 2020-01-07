@@ -1,9 +1,10 @@
-2.6.3 (27.12.2019):
+2.6.3 (06.01.2020):
 
 * Fallback to core PDF font if requested font cannot be loaded.
   Closes bug #336 (Saving to PDF never ends if empty font is selected)
 * Detect GraphicsMagick in ImageMagick compatibility mode.
 * Set program name to RDN ID to allow Gnome to add gscan2pdf as a favorite.
+* Fix importing metadata from PDFs when timezone has format like GMT-14
 * Update to Hungarian translation (thanks to csola)
 
 

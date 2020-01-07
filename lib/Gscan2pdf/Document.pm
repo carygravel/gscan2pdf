@@ -468,6 +468,10 @@ sub _extract_metadata {
                     ];
                     $metadata{tz} = [ undef, undef, undef, 0, 0, undef, undef ];
                     given ($tz) {
+                        when (/(?:[+-]\d+)/xsm) {
+                            $metadata{tz} =
+                              [ undef, undef, undef, int $tz, 0, undef, undef ];
+                        }
                         when (/(?:BST|CET)/xsm) {
                             $metadata{tz} =
                               [ undef, undef, undef, 1, 0, undef, undef ];
