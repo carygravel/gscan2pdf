@@ -570,6 +570,11 @@ EOS
     setlocale( LC_NUMERIC, 'C' );
     $logger->info( 'Using ', setlocale(LC_CTYPE), ' locale' );
     $logger->info( 'Startup LC_NUMERIC ', setlocale(LC_NUMERIC) );
+
+    if ( not defined $import_all and @ARGV ) {
+        $import_all = \@ARGV;
+    }
+
     return;
 }
 
