@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 12;
+use Test::More tests => 14;
 use Gscan2pdf::Document;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
@@ -70,5 +70,19 @@ $dialog = Gscan2pdf::Dialog::Scan->new(
 is $dialog->get('page-number-start'), 3,
   'adding pages should update page-number-start';
 is $dialog->get('num-pages'), 1, 'adding pages should update num-pages';
+
+# v2.6.3 had the bug where scanning 10 pages on single-sided, followed by
+# 10 pages double-sided reverse resulted in the reverse pages being numbered:
+# 11, 9, 7, 5, 3, 1, -1, -3, -5, -7
+$dialog->set( 'allow-batch-flatbed', TRUE );
+$slist->{data} =
+  [ [ 1, undef, undef ], [ 3, undef, undef ], [ 5, undef, undef ] ];
+$dialog->set( 'page-number-start', 6 );
+$dialog->set( 'num-pages',         0 );
+$dialog->set( 'side-to-scan',      'reverse' );
+is $dialog->get('num-pages'), 3,
+  'selecting reverse should automatically limit the number of pages to scan';
+is $dialog->get('max-pages'), 3,
+'selecting reverse should automatically limit the max number of pages to scan';
 
 __END__

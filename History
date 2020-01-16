@@ -1,3 +1,9 @@
+2.6.4 (06.02.2020):
+
+* Limit the number of pages to scan when switching between scanning facing and
+  reverse pages.
+
+
 2.6.3 (06.01.2020):
 
 * Fallback to core PDF font if requested font cannot be loaded.

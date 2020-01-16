@@ -19,6 +19,7 @@ use List::MoreUtils qw(first_index);
 use Readonly;
 Readonly my $PAPER_TOLERANCE  => 1;
 Readonly my $OPTION_TOLERANCE => 0.001;
+Readonly my $INFINITE         => -1;
 
 my (
     $MAX_PAGES,        $MAX_INCREMENT, $DOUBLE_INCREMENT,
@@ -871,6 +872,28 @@ sub _build_profile_table {
     return;
 }
 
+sub _set_side_to_scan {
+    my ( $self, $name, $newval ) = @_;
+    $self->{$name} = $newval;
+    $self->signal_emit( 'changed-side-to-scan', $newval );
+    $self->{combobs}->set_active( $newval eq 'facing' ? 0 : 1 );
+    my $slist = $self->get('document');
+    if ( defined $slist ) {
+        my $possible = $slist->pages_possible(
+            $self->get('page-number-start'),
+            $self->get('page-number-increment')
+        );
+        my $requested = $self->get('num-pages');
+        if ( $possible != $INFINITE
+            and ( $requested == 0 or $requested > $possible ) )
+        {
+            $self->set( 'num-pages', $possible );
+            $self->set( 'max-pages', $possible );
+        }
+    }
+    return;
+}
+
 sub SET_PROPERTY {
     my ( $self, $pspec, $newval ) = @_;
     my $name   = $pspec->get_name;
@@ -936,9 +959,7 @@ sub SET_PROPERTY {
                 $self->signal_emit( 'changed-page-number-increment', $newval )
             }
             when ('side_to_scan') {
-                $self->{$name} = $newval;
-                $self->signal_emit( 'changed-side-to-scan', $newval );
-                $self->{combobs}->set_active( $newval eq 'facing' ? 0 : 1 );
+                $self->_set_side_to_scan( $name, $newval );
             }
             when ('sided') {
                 $self->{$name} = $newval;
