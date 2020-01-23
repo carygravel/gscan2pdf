@@ -2,6 +2,7 @@
 
 * Limit the number of pages to scan when switching between scanning facing and
   reverse pages.
+* Fix scan dialog if no devices found (again).
 
 
 2.6.3 (06.01.2020):

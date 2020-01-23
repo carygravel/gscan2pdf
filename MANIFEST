@@ -184,6 +184,7 @@ t/0614_Dialog_Scan_Image_Sane.t
 t/0615_Dialog_Scan_Image_Sane.t
 t/0616_Dialog_Scan_Image_Sane.t
 t/0617_Dialog_Scan_Image_Sane.t
+t/06181_Dialog_Scan_Image_Sane.t
 t/0618_Dialog_Scan_Image_Sane.t
 t/06190_Dialog_Scan_Image_Sane.t
 t/06191_Dialog_Scan_Image_Sane.t
@@ -202,6 +203,7 @@ t/0624_Dialog_Scan_CLI.t
 t/0625_Dialog_Scan_CLI.t
 t/0626_Dialog_Scan_CLI.t
 t/0627_Dialog_Scan_CLI.t
+t/06281_Dialog_Scan_CLI.t
 t/0628_Dialog_Scan_CLI.t
 t/06290_Dialog_Scan_CLI.t
 t/06291_Dialog_Scan_CLI.t

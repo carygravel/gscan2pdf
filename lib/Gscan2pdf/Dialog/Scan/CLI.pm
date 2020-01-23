@@ -144,6 +144,7 @@ sub get_devices {
             my @device_list = @{$device_list};
             $logger->info( 'scanimage --formatted-device-list: ',
                 Dumper( \@device_list ) );
+            $self->set( 'device-list', \@device_list );
             if ( @device_list == 0 ) {
                 $self->signal_emit( 'process-error', 'get_devices',
                     __('No devices found') );
@@ -151,7 +152,6 @@ sub get_devices {
                 undef $self;
                 return FALSE;
             }
-            $self->set( 'device-list', \@device_list );
             $hboxd->show_all;
             $self->set( 'cursor', 'default' );
         }
