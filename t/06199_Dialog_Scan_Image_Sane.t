@@ -19,8 +19,6 @@ my $window = Gtk3::Window->new;
 Gscan2pdf::Translation::set_domain('gscan2pdf');
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($WARN);
-
-#Log::Log4perl->easy_init($DEBUG);
 my $logger = Log::Log4perl::get_logger();
 
 # The overrides must occur before the thread is spawned in setup.
