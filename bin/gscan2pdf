@@ -139,8 +139,8 @@ Readonly my $_100_000MB              => 100_000;
 Glib::set_application_name('gscan2pdf');
 
 #Glib::set_prgname('net.sourceforge.gscan2pdf');
-Glib::Object::Introspection->invoke( "GLib", undef, "set_prgname",
-    "net.sourceforge.gscan2pdf" );
+Glib::Object::Introspection->invoke( 'GLib', undef, 'set_prgname',
+    'net.sourceforge.gscan2pdf' );
 my $prog_name = Glib::get_application_name;
 my $VERSION   = '2.6.3';
 
