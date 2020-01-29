@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use Test::More tests => 17;
+use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
 
@@ -60,7 +61,7 @@ $page->{hocr} = <<'EOS';
 EOS
 
 my $canvas = Gscan2pdf::Canvas->new;
-$canvas->add_text($page);
+$canvas->set_text( $page, undef, FALSE );
 my $group = $canvas->get_root_item;
 $group = $group->get_child(0);
 $group = $group->get_child(1);
@@ -196,7 +197,7 @@ $page->{hocr} = <<'EOS';
 EOS
 
 $canvas = Gscan2pdf::Canvas->new;
-$canvas->add_text($page);
+$canvas->set_text( $page, undef, FALSE );
 $group = $canvas->get_root_item;
 $group = $group->get_child(0);
 $group = $group->get_child(1);
@@ -257,7 +258,7 @@ $page = Gscan2pdf::Page->new(
 $page->{hocr} = 'The quick brown fox';
 
 $canvas = Gscan2pdf::Canvas->new;
-$canvas->add_text($page);
+$canvas->set_text( $page, undef, FALSE );
 $expected = <<"EOS";
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"

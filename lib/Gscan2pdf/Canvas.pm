@@ -7,6 +7,7 @@ no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use GooCanvas2;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use HTML::Entities;
+use Carp;
 use Readonly;
 Readonly my $_100_PERCENT       => 100;
 Readonly my $_360_DEGREES       => 360;
@@ -14,6 +15,7 @@ Readonly my $FULLPAGE_OCR_SCALE => 0.8;
 my $SPACE = q{ };
 my $EMPTY = q{};
 my $device;
+my @old_idles;
 
 our $VERSION = '2.6.3';
 
@@ -110,9 +112,22 @@ sub SET_PROPERTY {
     return;
 }
 
-sub add_text {
-    my ( $self, $page, $edit_callback ) = @_;
-    my $root = $self->get_root_item;
+sub set_text {
+    my ( $self, $page, $edit_callback, $idle ) = @_;
+    if ( not defined $idle ) {
+        $idle = TRUE;
+    }
+    my $root;
+    if (@old_idles) {
+        while (@old_idles) {
+            Glib::Source->remove( pop @old_idles );
+        }
+        $root = GooCanvas2::CanvasGroup->new;
+        $self->set_root_item($root);
+    }
+    else {
+        $root = $self->get_root_item;
+    }
     if ( not defined $page->{w} ) {
 
         # quotes required to prevent File::Temp object being clobbered
@@ -132,7 +147,17 @@ sub add_text {
 
     # Attach the text to the canvas
     for my $box ( @{ $page->boxes } ) {
-        _boxed_text( $root, $box, [ 0, 0, 0 ], $edit_callback, $color_hex );
+        if ($idle) {
+            push @old_idles, Glib::Idle->add(
+                sub {
+                    _boxed_text( $root, $box, [ 0, 0, 0 ],
+                        $edit_callback, $color_hex );
+                }
+            );
+        }
+        else {
+            _boxed_text( $root, $box, [ 0, 0, 0 ], $edit_callback, $color_hex );
+        }
     }
     return;
 }
@@ -144,10 +169,7 @@ sub get_pixbuf_size {
 
 sub clear_text {
     my ($self) = @_;
-    my $root = $self->get_root_item;
-    if ( $root->get_n_children > 0 ) {
-        $root->remove_child(0);
-    }
+    $self->set_root_item( GooCanvas2::CanvasGroup->new );
     delete $self->{pixbuf_size};
     return;
 }
@@ -259,6 +281,11 @@ sub _boxed_text {
         );
         my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
         my $bounds = $text->get_bounds;
+        if ( ( $bounds->x2 - $bounds->x1 ) == 0 ) {
+            Glib->warning( __PACKAGE__,
+                "text $box->{text} has no width, skipping" );
+            return;
+        }
         my $scale =
           ( $angle ? $y_size : $x_size ) / ( $bounds->x2 - $bounds->x1 );
 

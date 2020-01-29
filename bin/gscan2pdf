@@ -1787,8 +1787,7 @@ sub display_image {
 
 sub create_canvas {
     my ($page) = @_;
-    $canvas->clear_text;
-    $canvas->add_text( $page, \&edit_ocr_text );
+    $canvas->set_text( $page, \&edit_ocr_text );
     $canvas->set_scale( $view->get_zoom );
     my $offset = $view->get_offset;
     $canvas->set_offset( $offset->{x}, $offset->{y} );
