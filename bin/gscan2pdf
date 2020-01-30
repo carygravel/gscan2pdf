@@ -3335,7 +3335,8 @@ sub scan_dialog {
         'allow-batch-flatbed' => $SETTING{'allow-batch-flatbed'},
         'adf-defaults-scan-all-pages' =>
           $SETTING{'adf-defaults-scan-all-pages'},
-        'document' => $slist,
+        'document'                   => $slist,
+        'ignore-duplex-capabilities' => $SETTING{'ignore-duplex-capabilities'},
     );
     if ( $SETTING{frontend} eq 'libimage-sane-perl' ) {
         $windows = Gscan2pdf::Dialog::Scan::Image_Sane->new(
@@ -5895,7 +5896,8 @@ sub preferences {
     $vbox->pack_start( $notebook, TRUE, TRUE, 0 );
 
     my ( $vbox1, $frontends, $combob, $preentry, $cbc, $cbo,
-        $blacklist, $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages )
+        $blacklist, $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages,
+        $cb_ignore_duplex )
       = _preferences_scan_options( $windowr->style_get('content-area-border') );
     $notebook->append_page( $vbox1, Gtk3::Label->new( __('Scan options') ) );
 
@@ -5976,12 +5978,14 @@ sub preferences {
             $SETTING{'cycle sane handle'}    = $cbcsh->get_active;
             $SETTING{'allow-batch-flatbed'}  = $cb_batch_flatbed->get_active;
             $SETTING{'cancel-between-pages'} = $cb_cancel_btw_pages->get_active;
-            $SETTING{'default filename'}     = $fileentry->get_text;
-            $SETTING{'restore window'}       = $cbw->get_active;
-            $SETTING{use_timezone}           = $cbtz->get_active;
-            $SETTING{use_time}               = $cbtm->get_active;
-            $SETTING{set_timestamp}          = $cbts->get_active;
-            $SETTING{to_png}                 = $cbtp->get_active;
+            $SETTING{'ignore-duplex-capabilities'} =
+              $cb_ignore_duplex->get_active;
+            $SETTING{'default filename'} = $fileentry->get_text;
+            $SETTING{'restore window'}   = $cbw->get_active;
+            $SETTING{use_timezone}       = $cbtz->get_active;
+            $SETTING{use_time}           = $cbtm->get_active;
+            $SETTING{set_timestamp}      = $cbts->get_active;
+            $SETTING{to_png}             = $cbtp->get_active;
             $SETTING{'convert whitespace to underscores'} = $cbb->get_active;
 
             if ( defined $windows ) {
@@ -5995,6 +5999,8 @@ sub preferences {
                 }
                 $windows->set( 'allow-batch-flatbed',
                     $SETTING{'allow-batch-flatbed'} );
+                $windows->set( 'ignore-duplex-capabilities',
+                    $SETTING{'ignore-duplex-capabilities'} );
             }
 
             if ( defined $windowi ) {
@@ -6113,6 +6119,18 @@ sub _preferences_scan_options {
     );
     $cb_batch_flatbed->set_active( $SETTING{'allow-batch-flatbed'} );
     $vbox->pack_start( $cb_batch_flatbed, FALSE, FALSE, 0 );
+
+    # Ignore duplex capabilities
+    my $cb_ignore_duplex =
+      Gtk3::CheckButton->new_with_label(
+        __('Ignore duplex capabilities of scanner') );
+    $cb_ignore_duplex->set_tooltip_text(
+        __(
+'If set, any duplex capabilities are ignored, and facing/reverse widgets are displayed to allow manual interleaving of pages.'
+        )
+    );
+    $cb_ignore_duplex->set_active( $SETTING{'ignore-duplex-capabilities'} );
+    $vbox->pack_start( $cb_ignore_duplex, FALSE, FALSE, 0 );
 
     # Force new scan job between pages
     my $cb_cancel_btw_pages =
@@ -6274,7 +6292,7 @@ sub _preferences_scan_options {
     );
     $combob->set_active_index( $SETTING{frontend} );
     return $vbox, \@frontends, $combob, $preentry, $cbc, $cbo, $blacklist,
-      $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages;
+      $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages, $cb_ignore_duplex;
 }
 
 sub _preferences_general_options {

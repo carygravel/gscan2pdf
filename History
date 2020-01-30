@@ -4,6 +4,8 @@
   reverse pages.
 * Fix scan dialog if no devices found (again).
 * Improve responsiveness with OCR output
+* + 'Ignore duplex capabilities of scanner' preferences option. Closes feature
+  request #109 (Retain 'Source Document' options on 'Scan Document' dialog)
 
 
 2.6.3 (06.01.2020):

@@ -294,6 +294,7 @@ sub add_defaults {
         'cancel-between-pages'              => FALSE,
         'adf-defaults-scan-all-pages'       => TRUE,
         'cycle sane handle'                 => FALSE,
+        'ignore-duplex-capabilities'        => FALSE,
         profile                             => undef,
         'default profile'                   => undef,
         'default-scan-options'              => undef,

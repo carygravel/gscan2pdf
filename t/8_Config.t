@@ -96,6 +96,7 @@ Gscan2pdf::Config::add_defaults( \%output );
     'cancel-between-pages'              => FALSE,
     'adf-defaults-scan-all-pages'       => TRUE,
     'cycle sane handle'                 => FALSE,
+    'ignore-duplex-capabilities'        => FALSE,
     'downsample'                        => FALSE,
     'downsample dpi'                    => 150,
     'threshold-before-ocr'              => FALSE,

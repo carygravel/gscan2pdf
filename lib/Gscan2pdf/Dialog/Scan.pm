@@ -287,6 +287,13 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, signals => {
         'name of current cursor',                                 # blurb
         [qw/readable writable/]                                   # flags
     ),
+    Glib::ParamSpec->boolean(
+        'ignore-duplex-capabilities',    # name
+        'Ignore duplex capabilities',    # nick
+        'Ignore duplex capabilities',    # blurb
+        FALSE,                           # default_value
+        [qw/readable writable/]          # flags
+    ),
   ];
 
 our $VERSION = '2.6.3';
@@ -947,6 +954,10 @@ sub SET_PROPERTY {
                         'row-changed' => sub { $self->update_start_page } );
                 }
             }
+            when ('ignore_duplex_capabilities') {
+                $self->{$name} = $newval;
+                $self->_flatbed_or_duplex_callback;
+            }
             when ('num_pages') {
                 $self->_set_num_pages( $name, $newval );
             }
@@ -1046,7 +1057,12 @@ sub _flatbed_or_duplex_callback {
     my ($self) = @_;
     my $options = $self->get('available-scan-options');
     if ( defined $options ) {
-        if ( $options->flatbed_selected or $options->can_duplex ) {
+        if (
+            $options->flatbed_selected
+            or ( $options->can_duplex
+                and not $self->get('ignore-duplex-capabilities') )
+          )
+        {
             $self->{vboxx}->hide;
         }
         else {
