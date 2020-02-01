@@ -38,6 +38,9 @@ use POSIX qw(:sys_wait_h strftime);
 use Data::UUID;
 use Date::Calc qw(Add_Delta_DHMS Date_to_Time Today_and_Now);
 use Time::Piece;
+
+# to deal with utf8 in filenames
+use Encode qw(_utf8_off _utf8_on);
 use version;
 use Readonly;
 Readonly our $POINTS_PER_INCH             => 72;
@@ -3715,12 +3718,21 @@ sub _post_save_hook {
     my ( $filename, %options ) = @_;
     if ( defined $options{post_save_hook} ) {
         my $command = $options{post_save_hook};
+
+        # a filename returned by Gtk3::FileChooserDialog containing utf8 is
+        # not marked as utf8. This is then mangled by the string operations
+        # below, but not for the operations than come afterwards, so just
+        # turning on utf8 for the append.
+        # Annoyingly, I have been unable to construct a test case to reproduce
+        # the problem.
+        _utf8_on($filename);
         $command =~ s/%i/"$filename"/gxsm;
         if ( not defined $options{post_save_hook_options}
             or $options{post_save_hook_options} ne 'fg' )
         {
             $command .= ' &';
         }
+        _utf8_off($filename);
         $logger->info($command);
         system $command;
     }
