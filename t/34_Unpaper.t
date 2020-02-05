@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use Sub::Override;
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 BEGIN {
     use_ok('Gscan2pdf::Unpaper');
@@ -86,19 +86,14 @@ is(
 
 #########################
 
-$unpaper = Gscan2pdf::Unpaper->new;
+$unpaper = Gscan2pdf::Unpaper->new( { layout => 'double' } );
 $unpaper->add_options($vbox);
-
-# have to set output-pages in separate call to make sure is happens afterwards
-$unpaper->set_options( { layout         => 'double' } );
 $unpaper->set_options( { 'output-pages' => 2 } );
 
-# There is a race condition here, which means that the layout is not always set
-# before output-pages. Don't know how to solve that, so commenting out for now
-#is(
-#    $unpaper->get_cmdline,
-#'unpaper --black-threshold 0.33 --border-margin 0,0 --deskew-scan-direction left,right --layout double --output-pages 2 --white-threshold 0.9 --overwrite %s %s %s',
-#    'output-pages = 2'
-#);
+is(
+    $unpaper->get_cmdline,
+'unpaper --black-threshold 0.33 --border-margin 0,0 --deskew-scan-direction left,right --layout double --output-pages 2 --white-threshold 0.9 --overwrite %s %s %s',
+    'output-pages = 2'
+);
 
 __END__

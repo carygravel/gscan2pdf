@@ -261,7 +261,7 @@ sub add_options {
     my $outpages = $self->add_widget( $vbox, $options, 'output-pages' );
     $combobl->signal_connect(
         changed => sub {
-            if ( $combobl->get_active == 0 ) {
+            if ( $self->get_option('layout') eq 'double' ) {
                 $outpages->set_range( 1, 2 );
             }
             else {

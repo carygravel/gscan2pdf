@@ -8,6 +8,7 @@
   request #109 (Retain 'Source Document' options on 'Scan Document' dialog)
 * Fix running post-save hook on filenames with UTF-8.
   Closes bug #341 (Wrong character encoding at post-save hook)
+* Fixed frequent layout/output-pages mismatch in unpaper dialog
 
 
 2.6.3 (06.01.2020):
