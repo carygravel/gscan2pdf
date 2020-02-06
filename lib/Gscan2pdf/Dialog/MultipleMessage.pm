@@ -13,7 +13,7 @@ Readonly my $COL_CHECKBOX => 4;
 
 my %types;
 
-our $VERSION = '2.6.3';
+our $VERSION = '2.6.4';
 my $SPACE    = q{ };
 my $HEXREGEX = qr{^(.*)           # start of message
                   \b0x[[:xdigit:]]+\b # hex (e.g. address)
