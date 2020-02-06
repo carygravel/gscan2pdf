@@ -3417,29 +3417,37 @@ sub scan_dialog {
             if (    $process eq 'scan_pages'
                 and $windows->get('sided') eq 'double' )
             {
-                my ( $message, $next );
-                if ( $windows->get('side-to-scan') eq 'facing' ) {
-                    $message =
-                      __('Finished scanning facing pages. Scan reverse pages?');
-                    $next = 'reverse';
-                }
-                else {
-                    $message =
-                      __('Finished scanning reverse pages. Scan facing pages?');
-                    $next = 'facing';
-                }
-                my $response = ask_question(
-                    parent             => $windows,
-                    type               => 'question',
-                    buttons            => 'ok-cancel',
-                    text               => $message,
-                    'default-response' => 'ok',
-                    'store-response'   => TRUE,
-                    'stored-responses' => ['ok']
+                Glib::Idle->add(
+                    sub {
+                        my ( $message, $next );
+                        if ( $windows->get('side-to-scan') eq 'facing' ) {
+                            $message =
+                              __(
+'Finished scanning facing pages. Scan reverse pages?'
+                              );
+                            $next = 'reverse';
+                        }
+                        else {
+                            $message =
+                              __(
+'Finished scanning reverse pages. Scan facing pages?'
+                              );
+                            $next = 'facing';
+                        }
+                        my $response = ask_question(
+                            parent             => $windows,
+                            type               => 'question',
+                            buttons            => 'ok-cancel',
+                            text               => $message,
+                            'default-response' => 'ok',
+                            'store-response'   => TRUE,
+                            'stored-responses' => ['ok']
+                        );
+                        if ( $response eq 'ok' ) {
+                            $windows->set( 'side-to-scan', $next );
+                        }
+                    }
                 );
-                if ( $response eq 'ok' ) {
-                    $windows->set( 'side-to-scan', $next );
-                }
             }
         }
     );

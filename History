@@ -9,6 +9,8 @@
 * Fix running post-save hook on filenames with UTF-8.
   Closes bug #341 (Wrong character encoding at post-save hook)
 * Fixed frequent layout/output-pages mismatch in unpaper dialog
+* Don't allow dialog offering to switch from Facing to Reverse after scanning
+  double-sided pages to block scanner thread.
 * Update to Czech translation (thanks to Pavel Borecki)
 * Update to German translation (thanks to Stephan Woidowski)
 * Update to Swedish translation (thanks to Jonatan Nyberg)
