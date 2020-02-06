@@ -9,6 +9,7 @@
 * Fix running post-save hook on filenames with UTF-8.
   Closes bug #341 (Wrong character encoding at post-save hook)
 * Fixed frequent layout/output-pages mismatch in unpaper dialog
+* Update to Czech translation (thanks to Pavel Borecki)
 
 
 2.6.3 (06.01.2020):
