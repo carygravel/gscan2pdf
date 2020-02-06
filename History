@@ -10,6 +10,7 @@
   Closes bug #341 (Wrong character encoding at post-save hook)
 * Fixed frequent layout/output-pages mismatch in unpaper dialog
 * Update to Czech translation (thanks to Pavel Borecki)
+* Update to German translation (thanks to Stephan Woidowski)
 
 
 2.6.3 (06.01.2020):
