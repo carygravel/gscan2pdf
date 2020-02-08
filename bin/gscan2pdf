@@ -1557,15 +1557,18 @@ sub update_uimanager {
 }
 
 sub selection_changed_callback {
-    my @page = $slist->get_selected_indices;
+    my @selection = $slist->get_selected_indices;
+    my $i         = shift @selection;
 
     # Display the new image
-    if (@page) {
-        my $path = Gtk3::TreePath->new_from_indices( $page[0] );
+    # When editing the page number, there is a race condition where the page
+    # can be undefined
+    if ( defined $i and defined $slist->{data}[$i] ) {
+        my $path = Gtk3::TreePath->new_from_indices($i);
         $slist->scroll_to_cell( $path, $slist->get_column(0),
             TRUE, $HALF, $HALF );
         my $sel = $view->get_selection;
-        display_image( $slist->{data}[ $page[0] ][2] );
+        display_image( $slist->{data}[$i][2] );
         if ( defined $sel ) { $view->set_selection($sel) }
     }
     else {

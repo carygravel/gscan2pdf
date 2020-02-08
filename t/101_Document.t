@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 54;
+use Test::More tests => 55;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -30,6 +30,7 @@ is( $slist->pages_possible( 1, -2 ),
 my @selected = $slist->get_page_index( 'all', sub { pass('error in all') } );
 is_deeply( \@selected, [], 'no pages' );
 
+$slist->get_model->signal_handler_block( $slist->{row_changed_signal} );
 @{ $slist->{data} } = ( [ 2, undef, undef ] );
 @selected =
   $slist->get_page_index( 'selected', sub { pass('error in selected') } );
@@ -102,6 +103,16 @@ is_deeply(
 );
 is( $slist->pages_possible( 2, 1 ),
     4, 'pages_possible finite forwards starting in middle of range2' );
+
+#########################
+
+@{ $slist->{data} } =
+  ( [ 1, undef, { uuid => 'aa' } ], [ 2, undef, { uuid => 'ab' } ] );
+$slist->select(0);
+$slist->get_model->signal_handler_unblock( $slist->{row_changed_signal} );
+$slist->{data}[0][0] = 3;
+is_deeply( [ $slist->get_selected_indices ],
+    [1], 'correctly selected page after manual renumber' );
 
 Gscan2pdf::Document->quit();
 

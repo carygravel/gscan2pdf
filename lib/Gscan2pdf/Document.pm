@@ -197,6 +197,14 @@ sub new {
     # Set-up the callback when the page number has been edited.
     $self->{row_changed_signal} = $self->get_model->signal_connect(
         'row-changed' => sub {
+
+            # Note uuids for selected pages
+            my @selection = $self->get_selected_indices;
+            my @uuids;
+            for (@selection) {
+                push @uuids, $self->{data}[$_][2]->{uuid};
+            }
+
             $self->get_model->signal_handler_block(
                 $self->{row_changed_signal} );
 
@@ -207,6 +215,13 @@ sub new {
             $self->renumber;
             $self->get_model->signal_handler_unblock(
                 $self->{row_changed_signal} );
+
+            # Select the renumbered pages via uuid
+            @selection = ();
+            for (@uuids) {
+                push @selection, $self->find_page_by_uuid($_);
+            }
+            $self->select(@selection);
         }
     );
 
