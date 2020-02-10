@@ -1,5 +1,9 @@
 2.6.5 (06.03.2020):
 
+* Fixed bug when editing page number causing page to deselect and thumbnails to
+  scroll to top of list
+* Use a scrolled window in the multiple message dialog to prevent it from
+  growing too large.
 * Update to Hungarian translation (thanks to csola)
 
 

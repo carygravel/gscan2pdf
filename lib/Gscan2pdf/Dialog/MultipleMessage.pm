@@ -32,6 +32,10 @@ sub INIT_INSTANCE {
     );
     $self->set_position('center-on-parent');
     my $vbox = $self->get_content_area;
+
+    # to ensure dialog can't grow too big if we have too many messages
+    my $scwin = Gtk3::ScrolledWindow->new;
+    $vbox->pack_start( $scwin, TRUE, TRUE, 0 );
     $self->{grid}             = Gtk3::Grid->new;
     $self->{grid_rows}        = 0;
     $self->{stored_responses} = [];
@@ -57,7 +61,7 @@ sub INIT_INSTANCE {
     $self->{cb}->set_halign('center');
     $self->{grid}
       ->attach( $self->{cb}, $COL_CHECKBOX, $self->{grid_rows}, 1, 1 );
-    $vbox->pack_start( $self->{grid}, TRUE, TRUE, 0 );
+    $scwin->add( $self->{grid} );
     $self->{cb}->signal_connect(
         toggled => sub {
 
