@@ -4,6 +4,9 @@
   scroll to top of list
 * Use a scrolled window in the multiple message dialog to prevent it from
   growing too large.
+* Use the "Don't show these messages again" checkbox to switch the checkboxes
+  for the individual messages. Set the button inconsistent if the states are not
+  all the same.
 * Update to Hungarian translation (thanks to csola)
 
 

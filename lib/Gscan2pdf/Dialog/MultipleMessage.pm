@@ -64,11 +64,9 @@ sub INIT_INSTANCE {
     $scwin->add( $self->{grid} );
     $self->{cb}->signal_connect(
         toggled => sub {
-
-            if ( $self->{cb}->get_active ) {
-                for my $cb ( $self->_list_checkboxes ) {
-                    $cb->set_active(TRUE);
-                }
+            my $state = $self->{cb}->get_active;
+            for my $cb ( $self->_list_checkboxes ) {
+                $cb->set_active($state);
             }
         }
     );
@@ -100,6 +98,7 @@ sub add_row {
 
     if ( $options{'store-response'} ) {
         my $button = Gtk3::CheckButton->new();
+        $button->signal_connect( toggled => \&_checkbutton_consistency, $self );
         $button->set_halign('center');
         $self->{grid}
           ->attach( $button, $COL_CHECKBOX, $self->{grid_rows} - 1, 1, 1 );
@@ -107,9 +106,32 @@ sub add_row {
             $self->{stored_responses}[ $self->{grid_rows} - 1 ] =
               $options{'stored-responses'};
         }
+        _checkbutton_consistency( $button, $self );
     }
     if ( $self->{grid_rows} > 2 ) {
         $self->{cbl}->set_label( __("Don't show these messages again") );
+    }
+    return;
+}
+
+sub _checkbutton_consistency {
+    my ( $widget, $self ) = @_;
+    my $state;
+    for my $cb ( $self->_list_checkboxes ) {
+        if ( not defined $state ) {
+            $state = $cb->get_active;
+        }
+        elsif ( $state != $cb->get_active ) {
+            undef $state;
+            last;
+        }
+    }
+    if ( defined $state ) {
+        $self->{cb}->set_inconsistent(FALSE);
+        $self->{cb}->set_active($state);
+    }
+    else {
+        $self->{cb}->set_inconsistent(TRUE);
     }
     return;
 }

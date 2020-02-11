@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 19;
+use Test::More tests => 22;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 
@@ -39,7 +39,7 @@ $dialog->add_row(
 );
 is( $dialog->{grid_rows}, 3, '2 messages' );
 
-$dialog->{grid}->get_child_at( 4, 1 )->set_active(TRUE);
+$dialog->{cb}->set_active(TRUE);
 is_deeply( [ $dialog->list_messages_to_ignore('ok') ],
     ['message'], 'list_messages_to_ignore' );
 
@@ -50,7 +50,9 @@ $dialog->add_row(
     text             => "my message3\n",
     'store-response' => TRUE
 );
-$dialog->{grid}->get_child_at( 4, 3 )->set_active(TRUE);
+is( $dialog->{cb}->get_inconsistent, TRUE, 'inconsistent if states different' );
+$dialog->{cb}->set_active(FALSE);
+$dialog->{cb}->set_active(TRUE);
 is_deeply(
     [ $dialog->list_messages_to_ignore('ok') ],
     [ 'message', 'my message3' ],
@@ -88,9 +90,13 @@ EOS
   );
 is( $dialog->{grid_rows}, 3, 'add_message added 2 messages' );
 $dialog->{grid}->get_child_at( 4, 1 )->set_active(TRUE);
+is( $dialog->{cb}->get_inconsistent, TRUE, 'inconsistent if states different' );
+
 $dialog->{grid}->get_child_at( 4, 2 )->set_active(TRUE);
 $dialog->store_responses( 'ok', $responses );
 is( scalar keys %{$responses}, 2, 'stored 2 responses' );
+
+is( $dialog->{cb}->get_inconsistent, FALSE, 'consistent as states same' );
 
 $dialog = Gscan2pdf::Dialog::MultipleMessage->new(
     title           => 'title',
