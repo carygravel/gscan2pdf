@@ -3,7 +3,7 @@ use strict;
 use Gscan2pdf::Document;
 use Gtk3 -init;    # Could just call init separately
 use Date::Calc qw(Add_Delta_DHMS);
-use Test::More tests => 6;
+use Test::More tests => 5;
 
 #########################
 
@@ -31,18 +31,6 @@ $slist->import_files(
         my ($metadata) = @_;
         my @tz = ( 0, -$metadata->{tz}[3], -$metadata->{tz}[4], 0 );
         my @gmt = Add_Delta_DHMS( @{ $metadata->{datetime} }, @tz );
-
-        # reprotest has a environment which confuses the timezone maths.
-        # So skipping the test including the hour until I understand it.
-      SKIP: {
-            skip
-'skipping the full datetime + timezone test until I understand it better',
-              1;
-            is_deeply \@gmt, [ 2018, 12, 31, 12, 0, 0 ], 'datetime - timezone';
-        }
-
-        # setting the hour to be able to test the rest
-        $gmt[3] = 12;
         is_deeply \@gmt, [ 2018, 12, 31, 12, 0, 0 ], 'datetime - timezone';
         is $metadata->{author},   'Author',   'author';
         is $metadata->{subject},  'Subject',  'subject';

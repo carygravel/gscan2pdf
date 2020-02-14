@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 55;
+use Test::More tests => 56;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -326,7 +326,21 @@ is_deeply(
     Gscan2pdf::Document::_extract_metadata(
         {
             format   => 'Portable Document Format',
-            datetime => 'Sat Aug  6 02:00:00 2016 CEST'
+            datetime => '2016-08-06T02:00:00Z'
+        }
+    ),
+    {
+        datetime => [ 2016,  8,     6,     2, 0, 0 ],
+        tz       => [ undef, undef, undef, 0, 0, undef, undef ],
+    },
+    '_extract_metadata'
+);
+
+is_deeply(
+    Gscan2pdf::Document::_extract_metadata(
+        {
+            format   => 'Portable Document Format',
+            datetime => '2016-08-06T02:00:00+02'
         }
     ),
     {
@@ -340,7 +354,7 @@ is_deeply(
     Gscan2pdf::Document::_extract_metadata(
         {
             format   => 'Portable Document Format',
-            datetime => 'Tue Jan  1 02:00:00 2019 +14'
+            datetime => '2019-01-01T02:00:00+14'
         }
     ),
     {

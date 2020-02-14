@@ -476,29 +476,19 @@ sub _extract_metadata {
     }
     if ( $info->{datetime} ) {
         if ( $info->{format} eq 'Portable Document Format' ) {
-            if ( $info->{datetime} =~ /^(.*?)\s(\S\S\S\S?)$/xsm ) {
+            if ( $info->{datetime} =~ /^(.{19})((?:[+-]\d+)|Z)?$/xsm ) {
                 try {
-                    my $t = Time::Piece->strptime( $1, '%a %b %d %H:%M:%S %Y' );
+                    my $t = Time::Piece->strptime( $1, '%Y-%m-%dT%H:%M:%S' );
                     my $tz = $2;
                     $metadata{datetime} = [
                         $t->year, $t->mon, $t->day_of_month,
                         $t->hour, $t->min, $t->sec
                     ];
-                    $metadata{tz} = [ undef, undef, undef, 0, 0, undef, undef ];
-                    given ($tz) {
-                        when (/(?:[+-]\d+)/xsm) {
-                            $metadata{tz} =
-                              [ undef, undef, undef, int $tz, 0, undef, undef ];
-                        }
-                        when (/(?:BST|CET)/xsm) {
-                            $metadata{tz} =
-                              [ undef, undef, undef, 1, 0, undef, undef ];
-                        }
-                        when (/(?:CEST)/xsm) {
-                            $metadata{tz} =
-                              [ undef, undef, undef, 2, 0, undef, undef ];
-                        }
+                    if ( not defined $tz or $tz eq 'Z' ) {
+                        $tz = 0;
                     }
+                    $metadata{tz} =
+                      [ undef, undef, undef, int $tz, 0, undef, undef ];
                 }
             }
         }
@@ -2756,10 +2746,13 @@ sub _thread_get_file_info {
         }
         when (/PDF[ ]document/xsm) {
             $format = 'Portable Document Format';
-            my $args = [ 'pdfinfo', $options{filename} ];
+            my $args = [ 'pdfinfo', '-isodates', $options{filename} ];
             if ( defined $options{password} ) {
-                $args =
-                  [ 'pdfinfo', '-upw', $options{password}, $options{filename} ];
+                $args = [
+                    'pdfinfo', '-isodates',
+                    '-upw',    $options{password},
+                    $options{filename}
+                ];
             }
             ( undef, my $info, my $error ) =
               exec_command( $args, $options{pidfile} );
