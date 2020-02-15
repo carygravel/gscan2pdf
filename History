@@ -7,6 +7,8 @@
 * Use the "Don't show these messages again" checkbox to switch the checkboxes
   for the individual messages. Set the button inconsistent if the states are not
   all the same.
+* Fix warning message about pdftk (again) by making sure that user-defined tmp
+  directory is available in time.
 * Update to Hungarian translation (thanks to csola)
 
 

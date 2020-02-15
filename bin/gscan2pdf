@@ -307,6 +307,13 @@ sub populate_main_window {
     my $main_vbox = Gtk3::VBox->new;
     $window->add($main_vbox);
 
+    # Set up a SimpleList
+    $slist = Gscan2pdf::Document->new;
+
+    # The temp directory has to be available before we start checking for
+    # dependencies in order to be used for the pdftk check.
+    create_temp_directory();
+
     # Create the menu bar
     create_menu_bar($window);
     $main_vbox->pack_start( $menubar, FALSE, TRUE,  0 );
@@ -325,9 +332,6 @@ sub populate_main_window {
     $hpaned->pack1( $scwin_thumbs, FALSE, TRUE );
     $scwin_thumbs->set_policy( 'automatic', 'automatic' );
     $scwin_thumbs->set_shadow_type('etched-in');
-
-    # Set up a SimpleList
-    $slist = Gscan2pdf::Document->new;
 
     # If dragged below the bottom of the window, scroll it.
     $slist->signal_connect( 'drag-motion' => \&drag_motion_callback );
@@ -434,8 +438,6 @@ sub populate_main_window {
     $unpaper = Gscan2pdf::Unpaper->new( $SETTING{'unpaper options'} );
 
     update_uimanager();
-
-    create_temp_directory();
 
     $window->show_all;
 
