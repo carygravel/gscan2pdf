@@ -15,7 +15,7 @@ Readonly my $FULLPAGE_OCR_SCALE => 0.8;
 my $SPACE = q{ };
 my $EMPTY = q{};
 my $device;
-my @old_idles;
+my %old_idles;
 
 our $VERSION = '2.6.4';
 
@@ -118,16 +118,14 @@ sub set_text {
         $idle = TRUE;
     }
     my $root;
-    if (@old_idles) {
-        while (@old_idles) {
-            Glib::Source->remove( pop @old_idles );
+    if (%old_idles) {
+        while ( my ( $box, $source ) = each %old_idles ) {
+            Glib::Source->remove($source);
+            delete $old_idles{$box};
         }
-        $root = GooCanvas2::CanvasGroup->new;
-        $self->set_root_item($root);
     }
-    else {
-        $root = $self->get_root_item;
-    }
+    $root = GooCanvas2::CanvasGroup->new;
+    $self->set_root_item($root);
     if ( not defined $page->{w} ) {
 
         # quotes required to prevent File::Temp object being clobbered
@@ -148,10 +146,12 @@ sub set_text {
     # Attach the text to the canvas
     for my $box ( @{ $page->boxes } ) {
         if ($idle) {
-            push @old_idles, Glib::Idle->add(
+            $old_idles{$box} = Glib::Idle->add(
                 sub {
                     _boxed_text( $root, $box, [ 0, 0, 0 ],
                         $edit_callback, $color_hex );
+                    delete $old_idles{$box};
+                    return Glib::SOURCE_REMOVE;
                 }
             );
         }

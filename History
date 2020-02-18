@@ -9,6 +9,7 @@
   all the same.
 * Fix warning message about pdftk (again) by making sure that user-defined tmp
   directory is available in time.
+* Improve responsiveness with OCR output (again)
 * Update to Hungarian translation (thanks to csola)
 
 
