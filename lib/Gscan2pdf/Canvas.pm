@@ -145,18 +145,25 @@ sub set_text {
 
     # Attach the text to the canvas
     for my $box ( @{ $page->boxes } ) {
+        my %options = (
+            root           => $root,
+            box            => $box,
+            transformation => [ 0, 0, 0 ],
+            edit_callback  => $edit_callback,
+            text_color     => $color_hex,
+            idle           => $idle,
+        );
         if ($idle) {
             $old_idles{$box} = Glib::Idle->add(
                 sub {
-                    _boxed_text( $root, $box, [ 0, 0, 0 ],
-                        $edit_callback, $color_hex );
+                    _boxed_text(%options);
                     delete $old_idles{$box};
                     return Glib::SOURCE_REMOVE;
                 }
             );
         }
         else {
-            _boxed_text( $root, $box, [ 0, 0, 0 ], $edit_callback, $color_hex );
+            _boxed_text(%options);
         }
     }
     return;
@@ -215,7 +222,13 @@ sub get_offset {
 # Draw text on the canvas with a box around it
 
 sub _boxed_text {
-    my ( $root, $box, $transformation, $edit_callback, $text_color ) = @_;
+    my (%options)      = @_;
+    my $root           = $options{root};
+    my $box            = $options{box};
+    my $transformation = $options{transformation};
+    my $edit_callback  = $options{edit_callback};
+    my $text_color     = $options{text_color};
+    my $idle           = $options{idle};
     my ( $rotation, $x0, $y0 ) = @{$transformation};
     my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
     my $x_size = abs $x2 - $x1;
@@ -311,8 +324,26 @@ sub _boxed_text {
     }
     if ( $box->{contents} ) {
         for my $box ( @{ $box->{contents} } ) {
-            _boxed_text( $g, $box, [ $textangle + $rotation, $x1, $y1 ],
-                $edit_callback, $text_color );
+            my %noptions = (
+                root           => $g,
+                box            => $box,
+                transformation => [ $textangle + $rotation, $x1, $y1 ],
+                edit_callback  => $edit_callback,
+                text_color     => $text_color,
+                idle           => $idle,
+            );
+            if ($idle) {
+                $old_idles{$box} = Glib::Idle->add(
+                    sub {
+                        _boxed_text(%noptions);
+                        delete $old_idles{$box};
+                        return Glib::SOURCE_REMOVE;
+                    }
+                );
+            }
+            else {
+                _boxed_text(%noptions);
+            }
         }
     }
 
