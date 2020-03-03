@@ -541,6 +541,9 @@ sub INIT_INSTANCE {
             my ( $widget, $value ) = @_;
             $self->set( 'page-number-increment',
                 $value eq 'facing' ? $DOUBLE_INCREMENT : -$DOUBLE_INCREMENT );
+            if ( $value eq 'facing' ) {
+                $self->set( 'num-pages', 0 );
+            }
         }
     );
     $self->{combobs}->set_tooltip_text(

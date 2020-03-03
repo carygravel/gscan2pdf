@@ -10,6 +10,8 @@
 * Fix warning message about pdftk (again) by making sure that user-defined tmp
   directory is available in time.
 * Improve responsiveness with OCR output (again)
+* Select # pages = all when switching from reverse->facing.
+  Closes bug #344 (# Pages in Scan Document dialog reverts to # from All)
 * Update to Hungarian translation (thanks to csola)
 
 

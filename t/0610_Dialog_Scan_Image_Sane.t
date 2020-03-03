@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 50;
+use Test::More tests => 51;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -479,9 +479,11 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 }
             }
         );
-        $dialog->set( 'num-pages',         1 );
         $dialog->set( 'page-number-start', 1 );
+        $dialog->set( 'num-pages',         1 );
         $dialog->set( 'side-to-scan',      'facing' );
+        is $dialog->get('num-pages'), 0, 'num-pages after selecting facing';
+        $dialog->set( 'num-pages', 1 );
         $dialog->scan;
     }
 );
