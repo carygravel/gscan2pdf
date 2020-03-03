@@ -377,6 +377,10 @@ sub INIT_INSTANCE {
                 $bscanall->set_active(TRUE);
             }
             else {
+                # if spin button is already $value, but pages = all is selected,
+                # then the callback will not fire to activate # pages, so doing
+                # it here
+                $bscannum->set_active(TRUE);
                 $spin_buttonn->set_value($value);
             }
 
