@@ -2404,6 +2404,7 @@ sub add_current_scan_options {
 
 sub _set_option_profile {
     my ( $self, $profile, $next, $step ) = @_;
+    $self->set( 'cursor', 'wait' );
 
     if ( my $i = $next->($step) ) {
         my ( $name, $val ) = $profile->get_backend_option_by_index($i);
@@ -2496,6 +2497,7 @@ sub _set_option_profile {
             $self->get('current-scan-options'),
             $profile->{uuid}
         );
+        $self->set( 'cursor', 'default' );
     }
     return;
 }

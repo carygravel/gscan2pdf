@@ -12,6 +12,8 @@
 * Improve responsiveness with OCR output (again)
 * Select # pages = all when switching from reverse->facing.
   Closes bug #344 (# Pages in Scan Document dialog reverts to # from All)
+* Show "waiting" cursor for longer to prevent scans from being started before
+  all options applied.
 * Update to Hungarian translation (thanks to csola)
 
 

@@ -124,7 +124,6 @@ sub get_devices {
 
 sub scan_options {
     my ($self) = @_;
-    $self->set( 'cursor', 'wait' );
 
     # Remove any existing pages
     while ( $self->{notebook}->get_n_pages > 1 ) {
@@ -136,14 +135,15 @@ sub scan_options {
     delete $self->{option_widgets};
     delete $self->{option_info};
 
-    # Ghost the scan button whilst options being updated
-    $self->set_response_sensitive( 'ok', FALSE );
-
     my $signal;
     Gscan2pdf::Frontend::Image_Sane->open_device(
         device_name      => $self->get('device'),
         started_callback => sub {
+            $self->set( 'cursor', 'wait' );
             $self->signal_emit( 'started-process', __('Opening device') );
+
+            # Ghost the scan button whilst options being updated
+            $self->set_response_sensitive( 'ok', FALSE );
         },
         running_callback => sub {
             $self->signal_emit( 'changed-progress', undef, undef );
