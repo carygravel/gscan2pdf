@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
-use Test::More tests => 5;
+use Test::More tests => 7;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -9,10 +9,11 @@ BEGIN {
     use Gtk3 -init;    # Could just call init separately
 }
 
+Gscan2pdf::Translation::set_domain('gscan2pdf');
+
 SKIP: {
     skip 'unpaper not installed', 5
       unless ( system("which unpaper > /dev/null 2> /dev/null") == 0 );
-    Gscan2pdf::Translation::set_domain('gscan2pdf');
     my $unpaper = Gscan2pdf::Unpaper->new;
 
     use Log::Log4perl qw(:easy);
@@ -100,3 +101,18 @@ SKIP: {
     rmdir $dir;
     Gscan2pdf::Document->quit();
 }
+
+my $unpaper =
+  Gscan2pdf::Unpaper->new( { 'output-pages' => 2, layout => 'double' } );
+$Gscan2pdf::Unpaper::UNPAPER_VERSION = 0.3;
+is(
+    $unpaper->get_cmdline,
+'unpaper --black-threshold 0.33 --deskew-scan-direction left,right --layout double --output-pages 2 --white-threshold 0.9 --overwrite --input-file-sequence %s --output-file-sequence %s %s',
+    'cmdline v0.3'
+);
+$Gscan2pdf::Unpaper::UNPAPER_VERSION = 0.4;
+is(
+    $unpaper->get_cmdline,
+'unpaper --black-threshold 0.33 --deskew-scan-direction left,right --layout double --output-pages 2 --white-threshold 0.9 --overwrite %s %s %s',
+    'cmdline v0.4'
+);

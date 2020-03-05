@@ -29,7 +29,7 @@ our @EXPORT_OK;
 
 my $COMMA = q{,};
 my $SPACE = q{ };
-my ($version);
+our ($UNPAPER_VERSION);
 
 sub new {
     my ( $class, $default ) = @_;
@@ -665,12 +665,12 @@ sub get_cmdline {
 }
 
 sub version {
-    if ( not defined $version ) {
-        $version =
+    if ( not defined $UNPAPER_VERSION ) {
+        $UNPAPER_VERSION =
           Gscan2pdf::Document::program_version( 'stdout', qr/([\d.]+)/xsm,
             [ 'unpaper', '--version' ] );
     }
-    return $version;
+    return $UNPAPER_VERSION;
 }
 
 1;
