@@ -15,6 +15,7 @@
 * Show "waiting" cursor for longer to prevent scans from being started before
   all options applied.
 * Update to Hungarian translation (thanks to csola)
+* Update to German translation (thanks to Martin Butter)
 
 
 2.6.4 (06.02.2020):
