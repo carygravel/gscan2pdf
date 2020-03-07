@@ -38,6 +38,7 @@ use POSIX qw(:sys_wait_h strftime);
 use Data::UUID;
 use Date::Calc qw(Add_Delta_DHMS Date_to_Time Today_and_Now);
 use Time::Piece;
+use Carp qw(longmess);
 
 # to deal with utf8 in filenames
 use Encode qw(_utf8_off _utf8_on);
@@ -920,6 +921,10 @@ sub pages_possible {
 
 sub find_page_by_uuid {
     my ( $self, $uuid ) = @_;
+    if ( not defined $uuid ) {
+        $logger->error( longmess('find_page_by_uuid() called with undef') );
+        return;
+    }
     my $i = 0;
     while ( $i <= $#{ $self->{data} } and $self->{data}[$i][2]{uuid} ne $uuid )
     {
