@@ -46,12 +46,8 @@ $slist->import_files(
 );
 Gtk3->main;
 
-my $info = `pdfinfo $pdf`;
-like(
-    $info,
-    qr/(Wed|Thu) Feb ( 9|10) \d\d:00:00 1966/,
-    'metadata ModDate in PDF'
-);
+my $info = `pdfinfo -isodates $pdf`;
+like $info, qr/1966-02-10T00:00:00Z/, 'metadata ModDate in PDF';
 
 #########################
 

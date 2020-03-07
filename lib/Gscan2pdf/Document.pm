@@ -65,6 +65,7 @@ Readonly my $ID_URI                       => 0;
 Readonly my $ID_PAGE                      => 1;
 Readonly my $STRFTIME_YEAR_OFFSET         => -1900;
 Readonly my $STRFTIME_MONTH_OFFSET        => -1;
+Readonly my $LAST_ELEMENT                 => -1;
 
 BEGIN {
     use Exporter ();
@@ -3292,7 +3293,7 @@ sub _thread_save_pdf {
         and $options{options}{set_timestamp} )
     {
         _set_timestamp( $self, $filename, $options{uuid},
-            @{ $options{metadata}{datetime} } );
+            %{ $options{metadata} } );
     }
 
     if ( defined $options{options}{ps} ) {
@@ -3392,7 +3393,22 @@ sub _encrypt_pdf {
 }
 
 sub _set_timestamp {
-    my ( $self, $filename, $uuid, @datetime ) = @_;
+    my ( $self, $filename, $uuid, %metadata ) = @_;
+    my @datetime = @{ $metadata{datetime} };
+    if ( defined $metadata{tz} ) {
+        my @tz = @{ $metadata{tz} };
+        splice @tz, 0, 2;
+        splice @tz, $LAST_ELEMENT, 1;
+        for (@tz) {
+            if ( not defined ) {
+                $_ = 0;
+            }
+            else {
+                $_ = -$_;
+            }
+        }
+        @datetime = Add_Delta_DHMS( @datetime, @tz );
+    }
     try {
         my $time = Date_to_Time(@datetime);
         utime $time, $time, $filename;
@@ -3810,7 +3826,7 @@ sub _thread_save_djvu {
         and $options{options}{set_timestamp} )
     {
         _set_timestamp( $self, $options{path}, $options{uuid},
-            @{ $options{metadata}{datetime} } );
+            %{ $options{metadata} } );
     }
 
     _post_save_hook( $options{path}, %{ $options{options} } );

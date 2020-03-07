@@ -1,10 +1,12 @@
 use warnings;
 use strict;
-use Test::More tests => 56;
+use Test::More tests => 58;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
 use PDF::API2;
+use File::stat;
+use Date::Calc qw(Time_to_Date);
 
 BEGIN {
     use_ok('Gscan2pdf::Document');
@@ -385,6 +387,22 @@ is_deeply(
     {},
     '_extract_metadata on error 2'
 );
+
+#########################
+
+my $filename = 'test.txt';
+system("touch $filename");
+my %metadata = ( datetime => [ 2016, 2, 10, 0, 0, 0 ], );
+Gscan2pdf::Document::_set_timestamp( undef, $filename, undef, %metadata );
+my $sb = stat($filename);
+is_deeply [ Time_to_Date( $sb->mtime ) ], [ 2016, 2, 10, 0, 0, 0 ],
+  'timestamp no timezone';
+
+$metadata{tz} = [ undef, undef, undef, 14, 0, undef, undef ],
+  Gscan2pdf::Document::_set_timestamp( undef, $filename, undef, %metadata );
+$sb = stat($filename);
+is_deeply [ Time_to_Date( $sb->mtime ) ], [ 2016, 2, 9, 10, 0, 0 ],
+  'timestamp with timezone';
 
 #########################
 

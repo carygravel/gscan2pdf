@@ -14,6 +14,7 @@
   Closes bug #344 (# Pages in Scan Document dialog reverts to # from All)
 * Show "waiting" cursor for longer to prevent scans from being started before
   all options applied.
+* Respect 'Use timezone from locale' option when setting file system timestamp
 * Update to Hungarian translation (thanks to csola)
 * Update to German translation (thanks to Martin Butter)
 * Update to Spanish translation (thanks to rodroes)
