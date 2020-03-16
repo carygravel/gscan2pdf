@@ -9,7 +9,8 @@
   all the same.
 * Fix warning message about pdftk (again) by making sure that user-defined tmp
   directory is available in time.
-* Improve responsiveness with OCR output (again)
+* Improve responsiveness with OCR output (again). Closes bug #192 (Sometimes
+  after saving a PDF, the page selection UI becomes sluggish/unresponsive)
 * Select # pages = all when switching from reverse->facing.
   Closes bug #344 (# Pages in Scan Document dialog reverts to # from All)
 * Show "waiting" cursor for longer to prevent scans from being started before
