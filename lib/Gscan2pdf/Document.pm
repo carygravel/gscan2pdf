@@ -67,6 +67,8 @@ Readonly my $ID_PAGE                      => 1;
 Readonly my $STRFTIME_YEAR_OFFSET         => -1900;
 Readonly my $STRFTIME_MONTH_OFFSET        => -1;
 Readonly my $LAST_ELEMENT                 => -1;
+Readonly my $_90_DEGREES                  => 90;
+Readonly my $_270_DEGREES                 => 270;
 
 BEGIN {
     use Exporter ();
@@ -681,8 +683,10 @@ sub import_scan {
         sub {
             my ( $fileno, $condition ) = @_;
             if ( $condition & 'in' ) { # bit field operation. >= would also work
+                my ( $width, $height );
                 if ( $size == 0 ) {
-                    $size = Gscan2pdf::NetPBM::file_size_from_header(
+                    ( $size, $width, $height ) =
+                      Gscan2pdf::NetPBM::file_size_from_header(
                         $options{filename} );
                     $logger->info("Header suggests $size");
                     return Glib::SOURCE_CONTINUE if ( $size == 0 );
@@ -710,6 +714,8 @@ sub import_scan {
                     filename    => $options{filename},
                     xresolution => $options{xresolution},
                     yresolution => $options{yresolution},
+                    width       => $width,
+                    height      => $height,
                     format      => 'Portable anymap',
                     delete      => $options{delete},
                     dir         => $options{dir},
@@ -976,9 +982,8 @@ sub add_page {
     if ( defined $self->{row_changed_signal} ) {
         $self->get_model->signal_handler_block( $self->{row_changed_signal} );
     }
-    my $thumb =
-      get_pixbuf( $new->{filename}, $self->{heightt}, $self->{widtht} );
-    my ( $xresolution, $yresolution ) = $new->resolution($paper_sizes);
+    my ( $xresolution, $yresolution ) = $new->get_resolution($paper_sizes);
+    my $thumb = $new->get_pixbuf_at_scale( $self->{heightt}, $self->{widtht} );
 
     if ( defined $i ) {
         if ( defined $ref->{replace} ) {
@@ -1074,23 +1079,6 @@ sub manual_sort_by_column {
 
     @{ $self->{data} } = @data;
     return;
-}
-
-# Returns the pixbuf scaled to fit in the given box
-
-sub get_pixbuf {
-    my ( $filename, $height, $width ) = @_;
-
-    my $pixbuf;
-    try {
-        $pixbuf =
-          Gtk3::Gdk::Pixbuf->new_from_file_at_scale( $filename, $width, $height,
-            TRUE );
-    }
-    catch {
-        $logger->warn("Caught error getting pixbuf: $_");
-    };
-    return $pixbuf;
 }
 
 sub drag_data_received_callback {    ## no critic (ProhibitManyArgs)
@@ -1874,8 +1862,7 @@ sub open_session {
             # This is tested in t/175_open_session2.t
             if ( defined $page->{window} ) { delete $page->{window} }
             my $thumb =
-              get_pixbuf( $page->{filename}, $self->{heightt},
-                $self->{widtht} );
+              $page->get_pixbuf_at_scale( $self->{heightt}, $self->{widtht} );
             push @{ $self->{data} }, [ $pagenum, $thumb, $page ];
         }
         catch {
@@ -2706,13 +2693,17 @@ sub _thread_get_file_info {
                 $pages = $1;
             }
 
-            # Dig out the resolution of each page
-            my (@ppi);
+            # Dig out the size and resolution of each page
+            my ( @width, @height, @ppi );
             $options{info}{format} = 'DJVU';
-            while ( $info =~ /\s(\d+)\s+dpi(.*)/xsm ) {
-                push @ppi, $1;
-                $info = $2;
-                $logger->info("Page $#ppi is $ppi[$#ppi] ppi");
+            while ( $info =~ /DjVu\s(\d+)x(\d+).+\s+(\d+)\s+dpi(.*)/xsm ) {
+                push @width,  $1;
+                push @height, $2;
+                push @ppi,    $3;
+                $info = $4;
+                $logger->info(
+"Page $#ppi is $width[$#width]x$height[$#height], $ppi[$#ppi] ppi"
+                );
             }
             if ( $pages != @ppi ) {
                 _thread_throw_error(
@@ -2726,9 +2717,11 @@ sub _thread_get_file_info {
                 );
                 return;
             }
-            $options{info}{ppi}   = \@ppi;
-            $options{info}{pages} = $pages;
-            $options{info}{path}  = $options{filename};
+            $options{info}{width}  = \@width;
+            $options{info}{height} = \@height;
+            $options{info}{ppi}    = \@ppi;
+            $options{info}{pages}  = $pages;
+            $options{info}{path}   = $options{filename};
 
             # Dig out the metadata
             ( undef, $info ) =
@@ -2804,6 +2797,20 @@ sub _thread_get_file_info {
             $options{info}{pages} = () =
               $info =~ /TIFF[ ]Directory[ ]at[ ]offset/xsmg;
             $logger->info("$options{info}{pages} pages");
+
+            # Dig out the size of each page
+            my ( @width, @height );
+            while (
+                $info =~ /Image\sWidth:\s(\d+)\sImage\sLength:\s(\d+)(.*)/xsm )
+            {
+                push @width,  $1;
+                push @height, $2;
+                $info = $3;
+                $logger->info(
+                    "Page $#width is $width[$#width]x$height[$#height]");
+            }
+            $options{info}{width}  = \@width;
+            $options{info}{height} = \@height;
         }
         default {
 
@@ -2836,7 +2843,11 @@ sub _thread_get_file_info {
                 return;
             }
             $logger->info("Format $format");
-            $options{info}{pages} = 1;
+            $options{info}{width}       = $image->Get('width');
+            $options{info}{height}      = $image->Get('height');
+            $options{info}{xresolution} = $image->Get('xresolution');
+            $options{info}{yresolution} = $image->Get('yresolution');
+            $options{info}{pages}       = 1;
         }
     }
     $options{info}{format} = $format;
@@ -2939,6 +2950,8 @@ sub _thread_import_file {
                         format      => 'Tagged Image File Format',
                         xresolution => $options{info}{ppi}[ $i - 1 ],
                         yresolution => $options{info}{ppi}[ $i - 1 ],
+                        width       => $options{info}{width}[ $i - 1 ],
+                        height      => $options{info}{height}[ $i - 1 ],
                     );
                     try {
                         $page->import_djvutext($txt);
@@ -2968,12 +2981,14 @@ sub _thread_import_file {
             # Only one page, so skip tiffcp in case it gives us problems
             if ( $options{last} == 1 ) {
                 $self->{progress} = 1;
-                $self->{message} = sprintf __('Importing page %i of %i'), 1, 1;
+                $self->{message}  = sprintf __('Importing page %i of %i'), 1, 1;
                 my $page = Gscan2pdf::Page->new(
                     filename => $options{info}{path},
                     dir      => $options{dir},
                     delete   => FALSE,
                     format   => $options{info}{format},
+                    width    => $options{info}{width}[0],
+                    height   => $options{info}{height}[0],
                 );
                 $self->{return}->enqueue(
                     {
@@ -3048,6 +3063,8 @@ sub _thread_import_file {
                         dir      => $options{dir},
                         delete   => TRUE,
                         format   => $options{info}{format},
+                        width    => $options{info}{width}[ $i - 1 ],
+                        height   => $options{info}{height}[ $i - 1 ],
                     );
                     $self->{return}->enqueue(
                         {
@@ -3062,9 +3079,13 @@ sub _thread_import_file {
         when (/(?:$PNG|$JPG|$GIF)/xsm) {
             try {
                 my $page = Gscan2pdf::Page->new(
-                    filename => $options{info}{path},
-                    dir      => $options{dir},
-                    format   => $options{info}{format},
+                    filename    => $options{info}{path},
+                    dir         => $options{dir},
+                    format      => $options{info}{format},
+                    width       => $options{info}{width},
+                    height      => $options{info}{height},
+                    xresolution => $options{info}{xresolution},
+                    yresolution => $options{info}{yresolution},
                 );
                 $self->{return}->enqueue(
                     {
@@ -3090,6 +3111,8 @@ sub _thread_import_file {
                     filename => $options{info}{path},
                     dir      => $options{dir},
                     format   => $options{info}{format},
+                    width    => $options{info}{width},
+                    height   => $options{info}{height},
                 );
                 $self->{return}->enqueue(
                     {
@@ -3437,12 +3460,12 @@ sub _add_page_to_pdf {
     return if $_self->{cancel};
     if ("$status") { $logger->warn($status) }
 
-    # Get the size and resolution. Resolution is dots per inch, width
-    # and height are in inches.
-    my $w = $image->Get('width') / $pagedata->{xresolution};
-    my $h = $image->Get('height') / $pagedata->{yresolution};
-    $pagedata->{w} = $w;
-    $pagedata->{h} = $h;
+    # Get the size and resolution. Resolution is pixels per inch, width
+    # and height are in pixels.
+    my ( $width, $height ) = $pagedata->get_size;
+    my ( $xres,  $yres )   = $pagedata->get_resolution;
+    my $w = $width / $xres;
+    my $h = $height / $yres;
 
     # Automatic mode
     my $type;
@@ -3600,8 +3623,14 @@ sub _convert_image_for_pdf {
         if ( $options{options}{downsample} ) {
             $output_xresolution = $options{options}{'downsample dpi'};
             $output_yresolution = $options{options}{'downsample dpi'};
-            my $w_pixels = $pagedata->{w} * $output_xresolution;
-            my $h_pixels = $pagedata->{h} * $output_yresolution;
+            my $w_pixels =
+              $pagedata->{width} *
+              $output_xresolution /
+              $pagedata->{xresolution};
+            my $h_pixels =
+              $pagedata->{height} *
+              $output_yresolution /
+              $pagedata->{yresolution};
 
             $logger->info("Resizing $filename to $w_pixels x $h_pixels");
             my $status =
@@ -3666,10 +3695,10 @@ sub _write_image_object {
 
 sub _add_text_to_pdf {
     my ( $pdf_page, $gs_page, $boxes, $ttfcache, $corecache ) = @_;
-    my $h           = $gs_page->{h};
-    my $w           = $gs_page->{w};
     my $xresolution = $gs_page->{xresolution};
     my $yresolution = $gs_page->{yresolution};
+    my $w           = $gs_page->{width} / $gs_page->{xresolution};
+    my $h           = $gs_page->{height} / $gs_page->{yresolution};
     my $font;
     my $text = $pdf_page->text;
     for my $box ( @{$boxes} ) {
@@ -4186,6 +4215,12 @@ sub _thread_rotate {
     if ("$e") { $logger->warn($e) }
     $page->{filename}   = $filename->filename;
     $page->{dirty_time} = timestamp();           #flag as dirty
+    if ( $angle == $_90_DEGREES or $angle == $_270_DEGREES ) {
+        ( $page->{width}, $page->{height} ) =
+          ( $page->{height}, $page->{width} );
+        ( $page->{xresolution}, $page->{yresolution} ) =
+          ( $page->{yresolution}, $page->{xresolution} );
+    }
     $self->{return}->enqueue(
         {
             type => 'page',

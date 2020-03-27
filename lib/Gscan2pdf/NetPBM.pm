@@ -19,18 +19,19 @@ sub file_size_from_header {
     my ( $magic_value, $width, $height, $bytes_per_channel, $header ) =
       read_header($filename);
     if ( not defined $magic_value ) { return 0 }
+    my $padded_width = $width;
     if ( $magic_value == $BINARY_BITMAP ) {
-        my $mod = $width % $BITS_PER_BYTE;
-        if ( $mod > 0 ) { $width += $BITS_PER_BYTE - $mod }
+        my $mod = $padded_width % $BITS_PER_BYTE;
+        if ( $mod > 0 ) { $padded_width += $BITS_PER_BYTE - $mod }
     }
-    my $datasize = $width * $height * $bytes_per_channel * (
+    my $datasize = $padded_width * $height * $bytes_per_channel * (
         $magic_value == $BINARY_BITMAP ? $BITMAP_BYTES_PER_PIXEL
         : (
               $magic_value == $BINARY_GRAYMAP ? $GRAYMAP_CHANNELS
             : $PIXMAP_CHANNELS
         )
     );
-    return $header + $datasize;
+    return $header + $datasize, $width, $height;
 }
 
 sub read_header {

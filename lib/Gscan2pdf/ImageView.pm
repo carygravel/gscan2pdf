@@ -77,13 +77,22 @@ use Glib::Object::Subclass Gtk3::DrawingArea::, signals => {
         1.0,                                # default_value
         [qw/readable writable/]             # flags
     ),
+    Glib::ParamSpec->float(
+        'resolution-ratio',                      # name
+        'resolution-ratio',                      # nick
+        'Ratio of x-resolution/y-resolution',    # blurb
+        0.0001,                                  # minimum
+        1000.0,                                  # maximum
+        1.0,                                     # default_value
+        [qw/readable writable/]                  # flags
+    ),
     Glib::ParamSpec->enum(
-        'tool',                                 # name
-        'tool',                                 # nickname
-        'Active Gscan2pdf::ImageView::Tool',    # blurb
+        'tool',                                  # name
+        'tool',                                  # nickname
+        'Active Gscan2pdf::ImageView::Tool',     # blurb
         'Gscan2pdf::ImageView::Tool',
-        'dragger',                              # default
-        [qw/readable writable/]                 #flags
+        'dragger',                               # default
+        [qw/readable writable/]                  #flags
     ),
     Glib::ParamSpec->scalar(
         'selection',                                 # name
@@ -171,6 +180,10 @@ sub SET_PROPERTY {
                         $newval->{y} );
                     $invalidate = TRUE;
                 }
+            }
+            when ('resolution-ratio') {
+                $self->{$name} = $newval;
+                $invalidate = TRUE;
             }
             when ('selection') {
                 if (   ( defined $newval xor defined $oldval )
@@ -271,8 +284,10 @@ sub _motion {
     if ( $self->get_tool eq 'dragger' ) {
         my $offset = $self->get_offset;
         my $zoom   = $self->get_zoom;
+        my $ratio  = $self->get_resolution_ratio;
         my $offset_x =
-          $offset->{x} + ( $event->x - $self->{drag_start}{x} ) / $zoom;
+          $offset->{x} +
+          ( $event->x - $self->{drag_start}{x} ) / $zoom * $ratio;
         my $offset_y =
           $offset->{y} + ( $event->y - $self->{drag_start}{y} ) / $zoom;
         ( $self->{drag_start}{x}, $self->{drag_start}{y} ) =
@@ -360,10 +375,11 @@ sub _draw {
     my $allocation = $self->get_allocation;
     my $style      = $self->get_style_context;
     my $pixbuf     = $self->get_pixbuf;
+    my $ratio      = $self->get_resolution_ratio;
     my $viewport   = $self->get_viewport;
     if ( defined $pixbuf ) {
         my $zoom = $self->get_zoom;
-        $context->scale( $zoom, $zoom );
+        $context->scale( $zoom / $ratio, $zoom );
         my $offset = $self->get_offset;
         $context->translate( $offset->{x}, $offset->{y} );
     }
@@ -430,30 +446,35 @@ sub get_zoom {
 sub _to_widget_coords {
     my ( $self, $x, $y ) = @_;
     my $zoom   = $self->get_zoom;
+    my $ratio  = $self->get_resolution_ratio;
     my $offset = $self->get_offset;
-    return ( $x + $offset->{x} ) * $zoom, ( $y + $offset->{y} ) * $zoom;
+    return ( $x + $offset->{x} ) * $zoom / $ratio,
+      ( $y + $offset->{y} ) * $zoom;
 }
 
 # convert x, y in widget coords to image coords
 sub _to_image_coords {
     my ( $self, $x, $y ) = @_;
     my $zoom   = $self->get_zoom;
+    my $ratio  = $self->get_resolution_ratio;
     my $offset = $self->get_offset;
-    return $x / $zoom - $offset->{x}, $y / $zoom - $offset->{y};
+    return $x / $zoom * $ratio - $offset->{x}, $y / $zoom - $offset->{y};
 }
 
 # convert x, y in widget distance to image distance
 sub _to_image_distance {
     my ( $self, $x, $y ) = @_;
-    my $zoom = $self->get_zoom;
-    return $x / $zoom, $y / $zoom;
+    my $zoom  = $self->get_zoom;
+    my $ratio = $self->get_resolution_ratio;
+    return $x / $zoom * $ratio, $y / $zoom;
 }
 
 # set zoom with centre in image coordinates
 sub _set_zoom_with_center {
     my ( $self, $zoom, $center_x, $center_y ) = @_;
     my $allocation = $self->get_allocation;
-    my $offset_x   = $allocation->{width} / 2 / $zoom - $center_x;
+    my $ratio      = $self->get_resolution_ratio;
+    my $offset_x   = $allocation->{width} / 2 / $zoom * $ratio - $center_x;
     my $offset_y   = $allocation->{height} / 2 / $zoom - $center_y;
     $self->_set_zoom($zoom);
     $self->set_offset( $offset_x, $offset_y );
@@ -484,11 +505,12 @@ sub _calculate_zoom_to_fit {
     my $pixbuf_size = $self->get_pixbuf_size;
     if ( not defined $pixbuf_size ) { return }
     my $allocation  = $self->get_allocation;
-    my $sc_factor_w = $allocation->{width} / $pixbuf_size->{width};
+    my $ratio       = $self->get_resolution_ratio;
+    my $sc_factor_w = $allocation->{width} / $pixbuf_size->{width} * $ratio;
     my $sc_factor_h = $allocation->{height} / $pixbuf_size->{height};
     $self->_set_zoom_with_center(
         min( $sc_factor_w, $sc_factor_h ),
-        $pixbuf_size->{width} / 2,
+        $pixbuf_size->{width} / $ratio / 2,
         $pixbuf_size->{height} / 2
     );
     return;
@@ -619,6 +641,20 @@ sub set_selection {
 sub get_selection {
     my ($self) = @_;
     return $self->get('selection');
+}
+
+sub set_resolution_ratio {
+    my ( $self, $ratio ) = @_;
+    $self->set( 'resolution-ratio', $ratio );
+    if ( $self->get_zoom_to_fit ) {
+        $self->_calculate_zoom_to_fit;
+    }
+    return;
+}
+
+sub get_resolution_ratio {
+    my ($self) = @_;
+    return $self->get('resolution-ratio');
 }
 
 sub update_cursor {

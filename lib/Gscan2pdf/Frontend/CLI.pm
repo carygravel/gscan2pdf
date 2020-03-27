@@ -402,7 +402,7 @@ sub _scanadf {
                         and ( -s "out$id.pnm" ) >
                         50 )    ## no critic (ProhibitMagicNumbers)
                     {
-                        $size = Gscan2pdf::NetPBM::file_size_from_header(
+                        ($size) = Gscan2pdf::NetPBM::file_size_from_header(
                             "out$id.pnm");
                     }
                     else {

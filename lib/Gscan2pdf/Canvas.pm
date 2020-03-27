@@ -125,16 +125,14 @@ sub set_text {
         }
     }
     $root = GooCanvas2::CanvasGroup->new;
-    $self->set_root_item($root);
-    if ( not defined $page->{w} ) {
+    my ( $width, $height ) = $page->get_size;
+    my ( $xres,  $yres )   = $page->get_resolution;
 
-        # quotes required to prevent File::Temp object being clobbered
-        my $pixbuf = Gtk3::Gdk::Pixbuf->new_from_file("$page->{filename}");
-        $page->{w} = $pixbuf->get_width;
-        $page->{h} = $pixbuf->get_height;
-    }
-    $self->{pixbuf_size} = { width => $page->{w}, height => $page->{h} };
-    $self->set_bounds( 0, 0, $page->{w}, $page->{h} );
+    # Commenting out the scaling factor, as it segfaults in GooCanvas2 v0.06
+    # $root->set_scale($yres / $xres, 1);
+    $self->set_root_item($root);
+    $self->{pixbuf_size} = { width => $width, height => $height };
+    $self->set_bounds( 0, 0, $width, $height );
 
     my $style        = $self->get_style_context;
     my $color_string = $style->get_color('normal')->to_string;

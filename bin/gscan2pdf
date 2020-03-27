@@ -1766,21 +1766,18 @@ sub display_image {
     # quotes required to prevent File::Temp object being clobbered
     my $pixbuf = Gtk3::Gdk::Pixbuf->new_from_file("$current_page->{filename}");
     $view->set_pixbuf( $pixbuf, TRUE );
+    $view->set_resolution_ratio(
+        $current_page->{xresolution} / $current_page->{yresolution} );
 
     # Get image dimensions to constrain selector spinbuttons on crop dialog
-    ( $current_page->{w}, $current_page->{h} ) =
-      ( $pixbuf->get_width, $pixbuf->get_height );
+    my ( $width, $height ) = $current_page->get_size;
 
     # Update the ranges on the crop dialog
     if ( defined $sb_selector_w and defined $current_page ) {
-        $sb_selector_w->set_range( 0,
-            $current_page->{w} - $sb_selector_x->get_value );
-        $sb_selector_h->set_range( 0,
-            $current_page->{h} - $sb_selector_y->get_value );
-        $sb_selector_x->set_range( 0,
-            $current_page->{w} - $sb_selector_w->get_value );
-        $sb_selector_y->set_range( 0,
-            $current_page->{h} - $sb_selector_h->get_value );
+        $sb_selector_w->set_range( 0, $width - $sb_selector_x->get_value );
+        $sb_selector_h->set_range( 0, $height - $sb_selector_y->get_value );
+        $sb_selector_x->set_range( 0, $width - $sb_selector_w->get_value );
+        $sb_selector_y->set_range( 0, $height - $sb_selector_h->get_value );
 
         $SETTING{selection}{x}      = $sb_selector_x->get_value;
         $SETTING{selection}{y}      = $sb_selector_y->get_value;
@@ -4154,9 +4151,11 @@ sub print_dialog {
         }
     );
 
-    $print_op->signal_connect(
+    $print_op->signal_connect
+      (   # FIXME: check print preview works for pages with ratios other than 1.
         draw_page => sub {
             my ( $op, $context, $page_number ) = @_;
+            my $page = $slist->{data}[$page_number][2];
 
             my $cr = $context->get_cairo_context;
 
@@ -4165,16 +4164,16 @@ sub print_dialog {
             my $pheight = $context->get_height;
 
             # Image dimensions
-            my $pixbuf = Gtk3::Gdk::Pixbuf->new_from_file(
-                "$slist->{data}[$page_number][2]{filename}")
-              ;   # quotes required to prevent File::Temp object being clobbered
+            # quotes required to prevent File::Temp object being clobbered
+            my $pixbuf  = Gtk3::Gdk::Pixbuf->new_from_file("$page->{filename}");
+            my $ratio   = $page->{xresolution} / $page->{yresolution};
             my $iwidth  = $pixbuf->get_width;
             my $iheight = $pixbuf->get_height;
 
             # Scale context to fit image
-            my $scale = $pwidth / $iwidth;
+            my $scale = $pwidth / $iwidth * $ratio;
             if ( $pheight / $iheight < $scale ) { $scale = $pheight / $iheight }
-            $cr->scale( $scale, $scale );
+            $cr->scale( $scale / $ratio, $scale );
 
             # Set source pixbuf
             Gtk3::Gdk::cairo_set_source_pixbuf( $cr, $pixbuf, 0, 0 );
@@ -5057,14 +5056,11 @@ sub crop_dialog {
     # Frame for page range
     $windowc->add_page_range;
 
-    $sb_selector_x =
-      Gtk3::SpinButton->new_with_range( 0, $current_page->{w}, 1 );
-    $sb_selector_y =
-      Gtk3::SpinButton->new_with_range( 0, $current_page->{h}, 1 );
-    $sb_selector_w =
-      Gtk3::SpinButton->new_with_range( 0, $current_page->{w}, 1 );
-    $sb_selector_h =
-      Gtk3::SpinButton->new_with_range( 0, $current_page->{h}, 1 );
+    my ( $width, $height ) = $current_page->get_size;
+    $sb_selector_x = Gtk3::SpinButton->new_with_range( 0, $width,  1 );
+    $sb_selector_y = Gtk3::SpinButton->new_with_range( 0, $height, 1 );
+    $sb_selector_w = Gtk3::SpinButton->new_with_range( 0, $width,  1 );
+    $sb_selector_h = Gtk3::SpinButton->new_with_range( 0, $height, 1 );
     my @layout = (
         [
             __('x'),
@@ -5104,24 +5100,21 @@ sub crop_dialog {
     $sb_selector_x->signal_connect(
         'value-changed' => sub {
             $SETTING{selection}{x} = $sb_selector_x->get_value;
-            $sb_selector_w->set_range( 0,
-                $current_page->{w} - $SETTING{selection}{x} );
+            $sb_selector_w->set_range( 0, $width - $SETTING{selection}{x} );
             update_selector();
         }
     );
     $sb_selector_y->signal_connect(
         'value-changed' => sub {
             $SETTING{selection}{y} = $sb_selector_y->get_value;
-            $sb_selector_h->set_range( 0,
-                $current_page->{h} - $SETTING{selection}{y} );
+            $sb_selector_h->set_range( 0, $height - $SETTING{selection}{y} );
             update_selector();
         }
     );
     $sb_selector_w->signal_connect(
         'value-changed' => sub {
             $SETTING{selection}{width} = $sb_selector_w->get_value;
-            $sb_selector_x->set_range( 0,
-                $current_page->{w} - $SETTING{selection}{width} );
+            $sb_selector_x->set_range( 0, $width - $SETTING{selection}{width} );
             update_selector();
         }
     );
@@ -5129,7 +5122,7 @@ sub crop_dialog {
         'value-changed' => sub {
             $SETTING{selection}{height} = $sb_selector_h->get_value;
             $sb_selector_y->set_range( 0,
-                $current_page->{h} - $SETTING{selection}{height} );
+                $height - $SETTING{selection}{height} );
             update_selector();
         }
     );

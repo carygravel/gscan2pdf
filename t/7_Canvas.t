@@ -107,7 +107,8 @@ is_deeply(
     [ 0, 0 ],
     'convert_from_pixels'
 );
-$canvas->set_bounds( -10, -10, $page->{w} + 10, $page->{h} + 10 );
+my ( $width, $height ) = $page->get_size;
+$canvas->set_bounds( -10, -10, $width + 10, $height + 10 );
 is_deeply(
     [ $canvas->get_bounds ],
     [ -10, -10, 80, 56 ],

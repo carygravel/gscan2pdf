@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 25;
+use Test::More tests => 29;
 
 BEGIN {
     use_ok('Gscan2pdf::Page');
@@ -311,10 +311,10 @@ is_deeply( $page->djvu_text, $expected, 'djvu_text from cuneiform 1.0.0' );
 
 #########################
 
-$page->{hocr} = 'The quick brown fox';
-$page->{w}    = 422;
-$page->{h}    = 61;
-$expected     = <<'EOS';
+$page->{hocr}   = 'The quick brown fox';
+$page->{width}  = 422;
+$page->{height} = 61;
+$expected       = <<'EOS';
 (page 0 0 422 61 "The quick brown fox")
 EOS
 
@@ -701,7 +701,7 @@ is_deeply(
 
 #########################
 
-is( $page->resolution( \%paper_sizes ), 25.4, 'resolution' );
+is( $page->get_resolution( \%paper_sizes ), 25.4, 'resolution' );
 
 system('convert -units "PixelsPerInch" -density 300 xc:white test.jpg');
 $page = Gscan2pdf::Page->new(
@@ -709,7 +709,7 @@ $page = Gscan2pdf::Page->new(
     format   => 'Joint Photographic Experts Group JFIF format',
     dir      => File::Temp->newdir,
 );
-is( $page->resolution( \%paper_sizes ), 300, 'inches' );
+is( $page->get_resolution( \%paper_sizes ), 300, 'inches' );
 
 system('convert -units "PixelsPerCentimeter" -density 118 xc:white test.jpg');
 $page = Gscan2pdf::Page->new(
@@ -717,7 +717,7 @@ $page = Gscan2pdf::Page->new(
     format   => 'Joint Photographic Experts Group JFIF format',
     dir      => File::Temp->newdir,
 );
-is( $page->resolution( \%paper_sizes ), 299.72, 'centimetres' );
+is( $page->get_resolution( \%paper_sizes ), 299.72, 'centimetres' );
 
 system('convert -units "Undefined" -density 300 xc:white test.jpg');
 $page = Gscan2pdf::Page->new(
@@ -725,7 +725,7 @@ $page = Gscan2pdf::Page->new(
     format   => 'Joint Photographic Experts Group JFIF format',
     dir      => File::Temp->newdir,
 );
-is( $page->resolution( \%paper_sizes ), 300, 'undefined' );
+is( $page->get_resolution( \%paper_sizes ), 300, 'undefined' );
 
 #########################
 
@@ -736,7 +736,18 @@ $page = Gscan2pdf::Page->new(
     dir      => File::Temp->newdir,
     size     => [ 105, 148, 'pts' ],
 );
-is( $page->resolution, 144.243243243243, 'from pdfinfo paper size' );
+is( $page->get_resolution, 144.486486486486, 'from pdfinfo paper size' );
+
+#########################
+
+is_deeply [ Gscan2pdf::Page::_prepare_scale( 1000, 100, 1, 100, 100 ) ],
+  [ 100, 10 ], 'scale x, ratio 1';
+is_deeply [ Gscan2pdf::Page::_prepare_scale( 100, 1000, 1, 100, 100 ) ],
+  [ 10, 100 ], 'scale y, ratio 1';
+is_deeply [ Gscan2pdf::Page::_prepare_scale( 1000, 100, 2, 100, 100 ) ],
+  [ 100, 20 ], 'scale x, ratio 2';
+is_deeply [ Gscan2pdf::Page::_prepare_scale( 100, 1000, 2, 100, 100 ) ],
+  [ 5, 100 ], 'scale y, ratio 2';
 
 #########################
 

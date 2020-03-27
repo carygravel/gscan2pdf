@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use Try::Tiny;
-use Test::More tests => 37;
+use Test::More tests => 38;
 
 BEGIN {
     use Glib qw/TRUE FALSE/;
@@ -100,6 +100,9 @@ is_deeply(
     { x => 10, y => 10, width => 60, height => 36 },
     'selection cannot overlap bottom right border'
 );
+
+$view->set_resolution_ratio(2);
+is $view->get_resolution_ratio, 2, 'get/set_resolution_ratio()';
 
 SKIP: {
     skip 'not yet', 5;

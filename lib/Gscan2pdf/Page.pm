@@ -17,6 +17,7 @@ use POSIX qw(locale_h);
 use Data::UUID;
 use Text::Balanced qw ( extract_bracketed );
 use English qw( -no_match_vars );    # for $ERRNO
+use Try::Tiny;
 use Gscan2pdf::Document;
 use Gscan2pdf::Translation '__';     # easier to extract strings with xgettext
 use Readonly;
@@ -101,7 +102,7 @@ sub new {
         my $image = $self->im_object;
         my $units = $image->Get('units');
         if ( $units =~ /undefined/xsm ) {
-            my ( $xresolution, $yresolution ) = $self->resolution;
+            my ( $xresolution, $yresolution ) = $self->get_resolution;
             $image->Write(
                 units    => 'PixelsPerInch',
                 density  => $xresolution . 'x' . $yresolution,
@@ -187,7 +188,7 @@ sub boxes {
     return [
         {
             type => 'page',
-            bbox => [ 0, 0, $self->{w}, $self->{h} ],
+            bbox => [ 0, 0, $self->{width}, $self->{height} ],
             text => _decode_hocr($hocr)
         }
     ];
@@ -346,7 +347,7 @@ sub _prune_empty_branches {
 sub _pdftotext2boxes {
     my ( $self, $html ) = @_;
     my $p = HTML::TokeParser->new( \$html );
-    my ( $xresolution, $yresolution ) = $self->resolution;
+    my ( $xresolution, $yresolution ) = $self->get_resolution;
     my ( $data, @stack, $boxes );
     while ( my $token = $p->get_token ) {
         given ( $token->[0] ) {
@@ -455,7 +456,9 @@ sub djvu_text {
     my $boxes = $self->boxes;
     if ( defined $boxes and $#{$boxes} > $EMPTY_LIST ) {
         my $h =
-          ( $boxes->[0]{type} eq 'page' ) ? $boxes->[0]{bbox}[-1] : $self->{h};
+          ( $boxes->[0]{type} eq 'page' )
+          ? $boxes->[0]{bbox}[-1]
+          : $self->{height};
         return _boxes2djvu( $boxes, 0, $h );
     }
     return $EMPTY;
@@ -613,7 +616,7 @@ sub to_png {
     # Write the png
     my $png =
       File::Temp->new( DIR => $self->{dir}, SUFFIX => '.png', UNLINK => FALSE );
-    my ( $xresolution, $yresolution ) = $self->resolution($page_sizes);
+    my ( $xresolution, $yresolution ) = $self->get_resolution($page_sizes);
     $self->im_object->Write(
         units    => 'PixelsPerInch',
         density  => $xresolution . 'x' . $yresolution,
@@ -625,42 +628,49 @@ sub to_png {
         dir         => $self->{dir},
         xresolution => $xresolution,
         yresolution => $yresolution,
+        width       => $self->{width},
+        height      => $self->{height},
     );
     if ( defined $self->{hocr} ) { $new->{hocr} = $self->{hocr} }
     return $new;
 }
 
-sub resolution {
+sub get_size {
+    my ($self) = @_;
+    if ( not defined $self->{width} or not defined $self->{height} ) {
+        my $image = $self->im_object;
+        $self->{width}  = $image->Get('width');
+        $self->{height} = $image->Get('height');
+    }
+    return $self->{width}, $self->{height};
+}
+
+sub get_resolution {
     my ( $self, $paper_sizes ) = @_;
     if ( defined $self->{xresolution} and defined $self->{yresolution} ) {
         return $self->{xresolution}, $self->{yresolution};
     }
-    my $image  = $self->im_object;
-    my $format = $image->Get('format');
     setlocale( LC_NUMERIC, 'C' );
 
     if ( defined $self->{size} ) {
-        my $width  = $image->Get('width');
-        my $height = $image->Get('height');
+        my ( $width, $height ) = $self->get_size;
         $logger->debug("PDF size @{$self->{size}}");
         $logger->debug("image size $width $height");
         my $scale = $Gscan2pdf::Document::POINTS_PER_INCH;
         if ( $self->{size}[2] ne 'pts' ) {
             croak "Error: unknown units '$self->{size}[2]'";
         }
-        my $xres = $width / $self->{size}[0] * $scale;
-        my $yres = $height / $self->{size}[1] * $scale;
-        $logger->debug("resolution $xres $yres");
-        if ( abs( $xres - $yres ) / $yres < $PAGE_TOLERANCE ) {
-            $self->{xresolution} = ( $xres + $yres ) / 2;
-            $self->{yresolution} = $self->{xresolution};
-            return $self->{xresolution}, $self->{yresolution};
-        }
+        $self->{xresolution} = $width / $self->{size}[0] * $scale;
+        $self->{yresolution} = $height / $self->{size}[1] * $scale;
+        $logger->debug("resolution $self->{xresolution} $self->{yresolution}");
+        return $self->{xresolution}, $self->{yresolution};
     }
 
     # Imagemagick always reports PNMs as 72ppi
     # Some versions of imagemagick report colour PNM as Portable pixmap (PPM)
     # B&W are Portable anymap
+    my $image  = $self->im_object;
+    my $format = $image->Get('format');
     if ( $format !~ /^Portable[ ]...map/xsm ) {
         $self->{xresolution} = $image->Get('x-resolution');
         $self->{yresolution} = $image->Get('y-resolution');
@@ -703,31 +713,24 @@ sub resolution {
 # returns hash of matching resolutions (pixels per inch)
 
 sub matching_paper_sizes {
-    my ( $self, $paper_sizes ) = @_;
+    my ( $self,  $paper_sizes ) = @_;
+    my ( $width, $height )      = $self->get_size;
     my %matching;
-    if ( not( defined $self->{height} and defined $self->{width} ) ) {
-        my $image = $self->im_object;
-        $self->{width}  = $image->Get('width');
-        $self->{height} = $image->Get('height');
-        if ( not( defined $self->{height} and defined $self->{width} ) ) {
-            $logger->warn(
+    if ( not( defined $height and defined $width ) ) {
+        $logger->warn(
 'ImageMagick returns undef for image size - resolution cannot be guessed'
-            );
-            return \%matching;
-        }
+        );
+        return \%matching;
     }
-    my $ratio = $self->{height} / $self->{width};
+    my $ratio = $height / $width;
     if ( $ratio < 1 ) { $ratio = 1 / $ratio }
     for ( keys %{$paper_sizes} ) {
         if ( $paper_sizes->{$_}{x} > 0
             and abs( $ratio - $paper_sizes->{$_}{y} / $paper_sizes->{$_}{x} ) <
             $PAGE_TOLERANCE )
         {
-            $matching{$_} = (
-                ( $self->{height} > $self->{width} )
-                ? $self->{height}
-                : $self->{width}
-              ) /
+            $matching{$_} =
+              ( ( $height > $width ) ? $height : $width ) /
               $paper_sizes->{$_}{y} *
               $MM_PER_INCH;
         }
@@ -743,6 +746,54 @@ sub im_object {
     my $x      = $image->Read( $self->{filename} );
     if ("$x") { $logger->warn("Error creating IM object - $x"); croak $x }
     return $image;
+}
+
+# logic taken from at_scale_size_prepared_cb() in
+# https://gitlab.gnome.org/GNOME/gdk-pixbuf/blob/2.40.0/gdk-pixbuf/gdk-pixbuf-io.c
+
+sub _prepare_scale {
+    my ( $image_width, $image_height, $res_ratio, $max_width, $max_height ) =
+      @_;
+    if (   $image_width <= 0
+        or $image_height <= 0
+        or $max_width <= 0
+        or $max_height <= 0 )
+    {
+        return;
+    }
+    $image_width = $image_width / $res_ratio;
+
+    if ( $image_height * $max_width > $image_width * $max_height ) {
+        $image_width  = $image_width * $max_height / $image_height;
+        $image_height = $max_height;
+    }
+    else {
+        $image_height = $image_height * $max_width / $image_width;
+        $image_width  = $max_width;
+    }
+
+    return $image_width, $image_height;
+}
+
+# Returns the pixbuf scaled to fit in the given box
+
+sub get_pixbuf_at_scale {
+    my ( $self, $max_width, $max_height ) = @_;
+    my ( $xresolution, $yresolution ) = $self->get_resolution;
+    my ( $width,       $height )      = $self->get_size;
+    ( $width, $height ) =
+      _prepare_scale( $width, $height, $xresolution / $yresolution,
+        $max_width, $max_height );
+    my $pixbuf;
+    try {
+        $pixbuf =
+          Gtk3::Gdk::Pixbuf->new_from_file_at_scale( "$self->{filename}",
+            $width, $height, FALSE );
+    }
+    catch {
+        $logger->warn("Caught error getting pixbuf: $_");
+    };
+    return $pixbuf;
 }
 
 1;
