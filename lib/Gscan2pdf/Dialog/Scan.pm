@@ -1703,6 +1703,10 @@ sub set_paper {
         $options->by_name(SANE_NAME_SCAN_BR_Y)->{val}
     );
 
+    # forget the previous option info calls, as these are only interesting
+    # *whilst* setting a profile, and now we are starting from scratch
+    delete $self->{option_info};
+
     if ( not $paper_profile->num_backend_options ) {
         $self->hide_geometry($options);
         $self->{paper} = $paper;

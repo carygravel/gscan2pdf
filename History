@@ -1,6 +1,8 @@
 2.6.6 (06.04.2020):
 
 * Support importing PDF with different resolutions in x and y directions.
+* Fix bug applying paper after option set SANE_INFO_INEXACT
+  Closes bug #348 (paper size selection has no effect for US Letter / US Legal)
 
 
 2.6.5 (06.03.2020):

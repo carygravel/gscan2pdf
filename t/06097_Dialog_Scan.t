@@ -290,15 +290,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 $loop->quit;
             }
         );
-        $dialog->set_current_scan_options(
-            Gscan2pdf::Scanner::Profile->new_from_data(
-                {
-                    frontend => {
-                        'paper' => 'US Letter'
-                    },
-                },
-            )
-        );
+        $dialog->set( 'paper', 'US Letter' );
         $loop->run unless ($flag);
 
         # need a new main loop because of the timeout
@@ -328,15 +320,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
                 $loop->quit;
             }
         );
-        $dialog->set_current_scan_options(
-            Gscan2pdf::Scanner::Profile->new_from_data(
-                {
-                    frontend => {
-                        'paper' => 'US Legal'
-                    },
-                },
-            )
-        );
+        $dialog->set( 'paper', 'US Legal' );
         $loop->run unless ($flag);
         Gtk3->main_quit;
     }
