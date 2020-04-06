@@ -4,6 +4,7 @@
 * Fix bug applying paper after option set SANE_INFO_INEXACT
   Closes bug #348 (paper size selection has no effect for US Letter / US Legal)
 * Update to Bulgarian translation (thanks to Berov)
+* Update to Turkish translation (thanks to Utku BERBEROĞLU)
 
 
 2.6.5 (06.03.2020):
