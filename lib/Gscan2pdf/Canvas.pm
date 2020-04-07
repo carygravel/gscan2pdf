@@ -17,7 +17,7 @@ my $EMPTY = q{};
 my $device;
 my %old_idles;
 
-our $VERSION = '2.6.5';
+our $VERSION = '2.6.6';
 
 use Glib::Object::Subclass GooCanvas2::Canvas::, signals => {
     'zoom-changed' => {

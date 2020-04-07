@@ -13,7 +13,7 @@ use Readonly;
 Readonly my $HALF          => 0.5;
 Readonly my $CURSOR_PIXELS => 5;
 
-our $VERSION = '2.6.5';
+our $VERSION = '2.6.6';
 
 my %cursorhash = (
     left => {
