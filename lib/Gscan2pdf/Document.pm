@@ -4743,6 +4743,8 @@ sub _thread_crop {
     return if $_self->{cancel};
 
     $options{page}{filename}   = $filename->filename;
+    $options{page}{width}      = $options{w};
+    $options{page}{height}     = $options{h};
     $options{page}{dirty_time} = timestamp();           #flag as dirty
     $self->{return}->enqueue(
         {

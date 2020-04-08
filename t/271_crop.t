@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
-use Test::More tests => 3;
+use Test::More tests => 5;
 
 BEGIN {
     use_ok('Gscan2pdf::Document');
@@ -28,6 +28,8 @@ $slist->set_dir($dir);
 $slist->import_files(
     paths             => ['test.gif'],
     finished_callback => sub {
+        is_deeply [ $slist->{data}[0][2]{width}, $slist->{data}[0][2]{height} ],
+          [ 70, 46 ], 'dimensions before crop';
         $slist->crop(
             page              => $slist->{data}[0][2]->{uuid},
             x                 => 10,
@@ -35,12 +37,15 @@ $slist->import_files(
             w                 => 10,
             h                 => 10,
             finished_callback => sub {
+                is_deeply [ $slist->{data}[0][2]{width},
+                    $slist->{data}[0][2]{height} ], [ 10, 10 ],
+                  'dimensions after crop';
                 my $got =
                   `identify -format '%g' $slist->{data}[0][2]{filename}`;
                 chomp($got);
-                is( $got, "10x10+0+0", 'GIF cropped correctly' );
-                is( dirname("$slist->{data}[0][2]{filename}"),
-                    "$dir", 'using session directory' );
+                is $got, "10x10+0+0", 'GIF cropped correctly';
+                is dirname("$slist->{data}[0][2]{filename}"),
+                  "$dir", 'using session directory';
                 Gtk3->main_quit;
             }
         );
