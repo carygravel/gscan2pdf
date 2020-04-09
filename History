@@ -1,6 +1,7 @@
 2.6.7 (08.04.2020):
 
 * Fix bug causing stretched images after cropping.
+* Don't allow errors without page numbers to hang GUI.
 
 
 2.6.6 (06.04.2020):

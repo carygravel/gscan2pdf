@@ -1924,26 +1924,32 @@ sub add_filter {
 
 sub error_callback {
     my ( $page_uuid, $process, $message ) = @_;
-    $logger->error("$page_uuid, $process, $message");
 
+    my %options = (
+        parent           => $window,
+        type             => 'error',
+        buttons          => 'close',
+        process          => $process,
+        text             => $message,
+        'store-response' => TRUE,
+    );
     my $page = $slist->find_page_by_uuid($page_uuid);
+    if ( defined $page ) {
+        $options{page} = $slist->{data}[$page][0];
+    }
+
+    if ( defined $page_uuid ) {
+        $page_uuid .= ', ';
+    }
+    else {
+        $page_uuid = $EMPTY;
+    }
+    $logger->error("$page_uuid$process, $message");
 
     # Wrap show_message_dialog() in Glib::Idle->add() to allow the thread to
     # return immediately in order to allow it to work on subsequent pages
     # despite errors on previous ones
-    Glib::Idle->add(
-        sub {
-            show_message_dialog(
-                parent           => $window,
-                type             => 'error',
-                buttons          => 'close',
-                page             => $slist->{data}[$page][0],
-                process          => $process,
-                text             => $message,
-                'store-response' => TRUE
-            );
-        }
-    );
+    Glib::Idle->add( sub { show_message_dialog(%options) } );
     $thbox->hide;
     return;
 }
