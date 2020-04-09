@@ -2696,7 +2696,7 @@ sub _thread_get_file_info {
             # Dig out the size and resolution of each page
             my ( @width, @height, @ppi );
             $options{info}{format} = 'DJVU';
-            while ( $info =~ /DjVu\s(\d+)x(\d+).+\s+(\d+)\s+dpi(.*)/xsm ) {
+            while ( $info =~ /DjVu\s(\d+)x(\d+).+?\s+(\d+)\s+dpi(.*)/xsm ) {
                 push @width,  $1;
                 push @height, $2;
                 push @ppi,    $3;

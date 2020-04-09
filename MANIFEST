@@ -273,6 +273,7 @@ t/157_save_hocr_multipage.t
 t/1601_import_DjVu.t
 t/1602_import_DjVu_with_error.t
 t/1603_import_DjVu_with_error2.t
+t/1604_import_multipage_DjVu.t
 t/1611_import_TIFF.t
 t/1612_import_TIFF_with_error.t
 t/1613_import_multipage_TIFF.t
