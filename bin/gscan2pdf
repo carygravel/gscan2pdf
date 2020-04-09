@@ -4470,6 +4470,8 @@ Olesya Gerasimenko
 Pavel Borecki
 Stephan Woidowski
 Jonatan Nyberg
+Berov
+Utku BERBEROĞLU
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
