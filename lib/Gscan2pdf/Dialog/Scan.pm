@@ -1656,6 +1656,7 @@ sub set_paper {
     my ( $self, $paper ) = @_;
     if ( not defined $paper ) {
         $self->{paper} = $paper;
+        $self->{current_scan_options}->remove_frontend_option('paper');
         $self->signal_emit( 'changed-paper', $paper );
         return;
     }

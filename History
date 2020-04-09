@@ -3,6 +3,7 @@
 * Fix bug causing stretched images after cropping.
 * Don't allow errors without page numbers to hang GUI.
 * Fixed bug importing multipage DjVu.
+* Fixed bug reloading options after setting manual paper size.
 
 
 2.6.6 (06.04.2020):

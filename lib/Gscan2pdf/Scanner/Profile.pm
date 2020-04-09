@@ -165,6 +165,9 @@ sub get_frontend_option {
 sub remove_frontend_option {
     my ( $self, $name ) = @_;
     delete $self->{data}{frontend}{$name};
+    if ( not keys %{ $self->{data}{frontend} } ) {
+        delete $self->{data}{frontend};
+    }
     return;
 }
 

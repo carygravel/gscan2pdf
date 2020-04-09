@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 22;
+use Test::More tests => 23;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
 use Image::Sane ':all';     # To get SANE_* enums
@@ -344,6 +344,7 @@ $signal = $dialog->signal_connect(
         # bug previous to v2.1.7 where having having set double sided and
         # reverse, and then switched from ADF to flatbed, clicking scan produced
         # the error message that the facing pages should be scanned first
+        $loop10 = Glib::MainLoop->new;
         $dialog->set( 'side-to-scan', 'reverse' );
         $signal = $dialog->signal_connect(
             'changed-scan-option' => sub {
@@ -354,10 +355,49 @@ $signal = $dialog->signal_connect(
                 is $dialog->get('sided'), 'single',
                   'selecting flatbed forces single sided';
 
-                Gtk3->main_quit;
+                $loop10->quit;
             }
         );
         $dialog->set_option( $options->by_name('source'), 'Flatbed' );
+        $loop10->run;
+
+        # bug previous to v2.6.7 where changing a geometry option, thus setting
+        # paper to Manual/undef was not respected when reloading options
+        $signal = $dialog->signal_connect(
+            'changed-scan-option' => sub {
+                my ( $widget, $option, $value ) = @_;
+                $dialog->set_paper;
+            }
+        );
+        $signal = $dialog->signal_connect(
+            'changed-paper' => sub {
+                $dialog->signal_handler_disconnect($signal);
+                is_deeply $dialog->get('current-scan-options')->get_data,
+                  {
+                    backend => [
+                        {
+                            'tl-x' => '0'
+                        },
+                        {
+                            'tl-y' => '0'
+                        },
+                        {
+                            'br-x' => '10'
+                        },
+                        {
+                            'source' => 'Flatbed'
+                        },
+                        {
+                            'br-y' => '9'
+                        },
+                    ],
+                  },
+                  'set Manual paper';
+
+                Gtk3->main_quit;
+            }
+        );
+        $dialog->set_option( $options->by_name('br-y'), 9 );
     }
 );
 $dialog->set( 'device', 'test' );
