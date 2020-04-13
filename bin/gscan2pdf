@@ -3526,6 +3526,9 @@ sub scan_dialog {
         }
         $windows->set( 'device-list', \@device_list );
     }
+    elsif ( @{ $SETTING{'device list'} } ) {
+        $windows->set( 'device-list', $SETTING{'device list'} );
+    }
     else {
         $windows->get_devices;
     }
@@ -3577,6 +3580,8 @@ sub changed_device_list_callback {
                 return;
             }
         }
+
+        $SETTING{'device list'} = $device_list;
 
        # Only set default device if it hasn't been specified on the command line
        # and it is in the the device list

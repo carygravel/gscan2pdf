@@ -91,6 +91,7 @@ Gscan2pdf::Config::add_defaults( \%output );
     keywords                            => undef,
     'keywords-suggestions'              => undef,
     device                              => undef,
+    'device list'                       => [],
     'device blacklist'                  => undef,
     'allow-batch-flatbed'               => FALSE,
     'cancel-between-pages'              => FALSE,

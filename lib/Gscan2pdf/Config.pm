@@ -281,6 +281,7 @@ sub add_defaults {
         quality                             => 75,
         'image type'                        => undef,
         device                              => undef,
+        'device list'                       => [],
         'device blacklist'                  => undef,
         frontend                            => 'libimage-sane-perl',
         'scan prefix'                       => $EMPTY,
