@@ -2479,7 +2479,6 @@ sub _set_option_profile {
             }
         );
         $self->set_option( $opt, $val, $profile->{uuid} );
-        $self->update_widget_value( $opt, $val );
     }
     else {
 
@@ -2515,7 +2514,11 @@ sub update_widget_value {
               . ( $opt->{type} == SANE_TYPE_BUTTON ? $EMPTY : " to '$val'." ) );
         $widget->signal_handler_block( $widget->{signal} );
         given ($widget) {
-            when ( $widget->isa('Gtk3::CheckButton') ) {
+            when (
+                     $widget->isa('Gtk3::CheckButton')
+                  or $widget->isa('Gtk3::Switch')
+              )
+            {
                 if ( $val eq $EMPTY ) { $val = 0 }
                 if ( $widget->get_active != $val ) {
                     $widget->set_active($val);

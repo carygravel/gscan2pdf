@@ -1,6 +1,7 @@
 2.7.0 (08.05.2020):
 
 * Cache device list to speed up first display of scan dialog.
+* Fix bug updating switch widgets in scan options.
 
 
 2.6.7 (08.04.2020):

@@ -400,6 +400,8 @@ sub _post_set_option_hook {
         }
     }
 
+    $self->update_widget_value( $option, $val );
+
     $self->signal_emit( 'changed-scan-option', $option->{name}, $val, $uuid );
     return;
 }
