@@ -2,6 +2,8 @@
 
 * Cache device list to speed up first display of scan dialog.
 * Fix bug updating switch widgets in scan options.
+* Fixed bug importing file with non-ASCII characters in filename from file
+  browser.
 
 
 2.6.7 (08.04.2020):

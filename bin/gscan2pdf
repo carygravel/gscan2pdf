@@ -574,6 +574,9 @@ EOS
     $logger->info( 'Startup LC_NUMERIC ', setlocale(LC_NUMERIC) );
 
     if ( not defined $import_all and @ARGV ) {
+        for (@ARGV) {
+            $_ = Encode::decode_utf8($_);
+        }
         $import_all = \@ARGV;
     }
 
