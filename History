@@ -18,7 +18,8 @@
 
 * Support importing PDF with different resolutions in x and y directions.
 * Fix bug applying paper after option set SANE_INFO_INEXACT
-  Closes bug #348 (paper size selection has no effect for US Letter / US Legal)
+  Closes bugs #346 (gscan2pdf paper size selection inoperative) and
+  #348 (paper size selection has no effect for US Letter / US Legal)
 * Update to Bulgarian translation (thanks to Berov)
 * Update to Turkish translation (thanks to Utku BERBEROĞLU)
 
