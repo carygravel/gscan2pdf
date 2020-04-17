@@ -94,7 +94,8 @@ use English qw( -no_match_vars )
 
 # To sort out LC_NUMERIC and $SIG{CHLD}
 use POSIX qw(locale_h :signal_h :errno_h :sys_wait_h);
-use Date::Calc qw(Delta_DHMS Add_Delta_DHMS Today_and_Now Timezone);
+use Date::Calc
+  qw(Delta_DHMS Add_Delta_DHMS Today_and_Now Timezone Date_to_Time);
 use Locale::gettext;
 
 # to deal with utf8 in filenames
@@ -2268,6 +2269,11 @@ sub update_metadata_settings {
                 text    => $msg,
             );
         };
+        $SETTING{'timezone offset'} = [
+            Gscan2pdf::Document::delta_timezone(
+                Timezone(), Timezone( Date_to_Time( @{$datetime} ) )
+            )
+        ];
     }
     return $success;
 }

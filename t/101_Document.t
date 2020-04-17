@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 58;
+use Test::More tests => 61;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -272,9 +272,10 @@ my %settings = (
     subject           => 'subject',
     keywords          => 'keywords',
     'datetime offset' => [ 2, 0, 59, 59 ],
+    'timezone offset' => [ 0, 0, 0, 0, 0, 0, 0 ],
 );
 my @today_and_now = ( 2016, 2, 10, 1, 2, 3 );
-my @timezone = ( 0, 0, 0, 1, 0, 0, 0 );
+my @timezone      = ( 0,    0, 0,  1, 0, 0, 0 );
 my @time = ( 19, 59, 5 );
 is_deeply(
     Gscan2pdf::Document::collate_metadata(
@@ -321,6 +322,35 @@ is_deeply(
     },
     'collate time'
 );
+
+@today_and_now = ( 2016, 6, 10, 1, 2, 3 );
+@timezone      = ( 0,    0, 0,  2, 0, 0, 1 );
+$settings{'datetime offset'} = [ -119, 0, 59, 59 ];
+$settings{'timezone offset'} = [ 0,    0, 0,  -1, 0, 0, -1 ];
+is_deeply(
+    Gscan2pdf::Document::collate_metadata(
+        \%settings, \@today_and_now, \@timezone
+    ),
+    {
+        datetime => [ 2016, 2, 12, 2, 2, 2 ],
+        tz       => [ 0,    0, 0,  1, 0, 0, 0 ],
+        author     => 'a.n.other',
+        title      => 'title',
+        'subject'  => 'subject',
+        'keywords' => 'keywords'
+    },
+    'collate dst at time of docdate'
+);
+
+#########################
+
+my @tz1      = ( 0, 0, 0, 2,  0, 0, 1 );
+my @tz_delta = ( 0, 0, 0, -1, 0, 0, -1 );
+my @tz2 = Gscan2pdf::Document::add_delta_timezone( @tz1, @tz_delta );
+is_deeply \@tz2, [ 0, 0, 0, 1, 0, 0, 0 ], 'Add_Delta_Timezone';
+
+@tz_delta = Gscan2pdf::Document::delta_timezone( @tz1, @tz2 );
+is_deeply \@tz_delta, [ 0, 0, 0, -1, 0, 0, -1 ], 'Delta_Timezone';
 
 #########################
 

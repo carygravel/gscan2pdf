@@ -30,13 +30,13 @@ use Proc::Killfam;
 use IPC::Open3 'open3';
 use Symbol;            # for gensym
 use Try::Tiny;
-use Set::IntSpan 1.10;               # For size method for page numbering issues
+use Set::IntSpan 1.10;    # For size method for page numbering issues
 use PDF::API2;
 use English qw( -no_match_vars );    # for $PROCESS_ID, $INPUT_RECORD_SEPARATOR
                                      # $CHILD_ERROR
 use POSIX qw(:sys_wait_h strftime);
 use Data::UUID;
-use Date::Calc qw(Add_Delta_DHMS Date_to_Time Today_and_Now);
+use Date::Calc qw(Add_Delta_DHMS Date_to_Time Today_and_Now Timezone);
 use Time::Piece;
 use Carp qw(longmess);
 
@@ -2201,9 +2201,38 @@ sub collate_metadata {
           @time, @time;
     }
     if ( defined $settings->{use_timezone} ) {
-        $metadata{tz} = $timezone;
+        $metadata{tz} = [
+            add_delta_timezone(
+                @{$timezone}, @{ $settings->{'timezone offset'} }
+            )
+        ];
     }
     return \%metadata;
+}
+
+# calculate delta between two timezones - mostly to spot differences between
+# DST.
+
+sub add_delta_timezone {
+    my @tz_delta = @_;
+    my @tz1      = splice @tz_delta, 0, @tz_delta / 2;
+    my @tz2;
+    for my $i ( 0 .. $#tz1 ) {
+        $tz2[$i] = $tz1[$i] + $tz_delta[$i];
+    }
+    return @tz2;
+}
+
+# apply timezone delta
+
+sub delta_timezone {
+    my @tz2 = @_;
+    my @tz1 = splice @tz2, 0, @tz2 / 2;
+    my @tz_delta;
+    for my $i ( 0 .. $#tz1 ) {
+        $tz_delta[$i] = $tz2[$i] - $tz1[$i];
+    }
+    return @tz_delta;
 }
 
 sub prepare_output_metadata {
