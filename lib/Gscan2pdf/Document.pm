@@ -452,6 +452,7 @@ sub _get_file_info_finished_callback2 {
         if ( $options{pagerange_callback} and $last_page > 1 ) {
             ( $first_page, $last_page ) =
               $options{pagerange_callback}->( $info->[0] );
+            if ( not defined $first_page or not defined $last_page ) { return }
         }
         my $password = $options{passwords}[0];
         delete $options{paths};
