@@ -5,6 +5,7 @@
 * Fixed bug importing file with non-ASCII characters in filename from file
   browser.
 * Use daylight savings time from document date when setting timezone.
+* Use UTF8 in logs, fixing "wide character in print" warnings.
 
 
 2.6.7 (08.04.2020):

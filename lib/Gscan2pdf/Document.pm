@@ -41,7 +41,7 @@ use Time::Piece;
 use Carp qw(longmess);
 
 # to deal with utf8 in filenames
-use Encode qw(_utf8_off _utf8_on);
+use Encode qw(_utf8_off _utf8_on decode encode);
 use version;
 use Readonly;
 Readonly our $POINTS_PER_INCH             => 72;
@@ -3742,7 +3742,8 @@ sub _add_text_to_pdf {
         if ( not defined $txt ) { next }
         if ( $txt =~ /([[:^ascii:]])/xsm and defined $ttfcache ) {
             if ( defined $1 ) {
-                $logger->debug("non-ascii text is '$1' in '$txt'");
+                $logger->debug(
+                    encode( 'UTF-8', "Using TTF for '$1' in '$txt'" ) );
             }
             $font = $ttfcache;
         }
