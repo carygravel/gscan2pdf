@@ -6,6 +6,7 @@
   browser.
 * Use daylight savings time from document date when setting timezone.
 * Use UTF8 in logs, fixing "wide character in print" warnings.
+* Fix UTF8 encoding when importing metadata from PDF or DjVu.
 
 
 2.6.7 (08.04.2020):

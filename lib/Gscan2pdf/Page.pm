@@ -12,7 +12,7 @@ use File::Temp;             # To create temporary files
 use HTML::TokeParser;
 use HTML::Entities;
 use Image::Magick;
-use Encode;
+use Encode qw(decode_utf8 encode_utf8);
 use POSIX qw(locale_h);
 use Data::UUID;
 use Text::Balanced qw ( extract_bracketed );
@@ -549,12 +549,6 @@ sub _djvu2boxes {
     my ( $text, $h ) = @_;
     my @boxes;
 
-    # unescape utf8
-    while ( defined $text
-        and $text =~ /^(.*)\\(\d{3})\\(\d{3})(.*)$/xsm )
-    {
-        $text = $1 . decode( 'UTF-8', chr( oct $2 ) . chr oct $3 ) . $4;
-    }
     while ( defined $text and $text !~ /\A\s*\z/xsm ) {
         my @result = extract_bracketed( $text, '(")' );
         if ( not defined $result[0] ) {

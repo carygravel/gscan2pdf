@@ -16,7 +16,7 @@ Gscan2pdf::Document->setup($logger);
 
 # Create b&w test image
 system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.tif && tiff2pdf -o test.pdf -e 20181231120000 -a Author -t Title -s Subject -k Keywords test.tif'
+'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.tif && tiff2pdf -o test.pdf -e 20181231120000 -a Authör -t Title -s Sübject -k Keywörds test.tif'
 );
 
 my $slist = Gscan2pdf::Document->new;
@@ -29,13 +29,13 @@ $slist->import_files(
     paths             => ['test.pdf'],
     metadata_callback => sub {
         my ($metadata) = @_;
-        my @tz = ( 0, -$metadata->{tz}[3], -$metadata->{tz}[4], 0 );
-        my @gmt = Add_Delta_DHMS( @{ $metadata->{datetime} }, @tz );
+        my @tz         = ( 0, -$metadata->{tz}[3], -$metadata->{tz}[4], 0 );
+        my @gmt        = Add_Delta_DHMS( @{ $metadata->{datetime} }, @tz );
         is_deeply \@gmt, [ 2018, 12, 31, 12, 0, 0 ], 'datetime - timezone';
-        is $metadata->{author},   'Author',   'author';
-        is $metadata->{subject},  'Subject',  'subject';
-        is $metadata->{keywords}, 'Keywords', 'keywords';
-        is $metadata->{title},    'Title',    'title';
+        is $metadata->{author},   'Authör',   'author';
+        is $metadata->{subject},  'Sübject',  'subject';
+        is $metadata->{keywords}, 'Keywörds', 'keywords';
+        is $metadata->{title},    'Title',     'title';
     },
     finished_callback => sub {
         Gtk3->main_quit;

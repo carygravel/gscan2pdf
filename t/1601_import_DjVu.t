@@ -38,13 +38,13 @@ EOS
     system("djvused 'test.djvu' -e 'select 1; set-txt text.txt' -s");
 
     $text = <<'EOS';
-Author	"Author"
-Keywords	"Keywords"
-Title	"Title"
-Subject	"Subject"
+Author	"Authör"
+Keywords	"Keywörds"
+Title	"Titleß"
+Subject	"Sübject"
 CreationDate	"2018-12-31 13:00:00+01:00"
 EOS
-    open $fh, '>', 'text.txt';
+    open $fh, '>:encoding(UTF8)', 'text.txt';
     print {$fh} $text;
     close $fh;
     system("djvused 'test.djvu' -e 'set-meta text.txt' -s");
@@ -99,10 +99,10 @@ EOS
               'datetime';
             is_deeply $metadata->{tz},
               [ undef, undef, undef, 1, 0, undef, undef ], 'timezone';
-            is $metadata->{author},   'Author',   'author';
-            is $metadata->{subject},  'Subject',  'subject';
-            is $metadata->{keywords}, 'Keywords', 'keywords';
-            is $metadata->{title},    'Title',    'title';
+            is $metadata->{author},   'Authör',   'author';
+            is $metadata->{subject},  'Sübject',  'subject';
+            is $metadata->{keywords}, 'Keywörds', 'keywords';
+            is $metadata->{title},    'Titleß',   'title';
         },
         finished_callback => sub {
             like(

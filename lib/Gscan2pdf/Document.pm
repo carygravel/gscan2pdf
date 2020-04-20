@@ -2016,6 +2016,16 @@ sub slurp {
     return $text;
 }
 
+sub unescape_utf8 {
+    my ($text) = @_;
+    while ( defined $text
+        and $text =~ /^(.*)\\(\d{3})\\(\d{3})(.*)$/xsm )
+    {
+        $text = $1 . decode( 'UTF-8', chr( oct $2 ) . chr oct $3 ) . $4;
+    }
+    return $text;
+}
+
 sub exec_command {
     my ( $cmd, $pidfile ) = @_;
 
@@ -2054,8 +2064,8 @@ sub exec_command {
 
     # slurping these before waitpid, as if the output is larger than 65535,
     # waitpid hangs forever.
-    $reader = slurp($reader);
-    $err    = slurp($err);
+    $reader = unescape_utf8( slurp($reader) );
+    $err    = unescape_utf8( slurp($err) );
 
     # Using 0 for flags, rather than WNOHANG to ensure that we wait for the
     # process to finish and not leave a zombie
@@ -2806,7 +2816,7 @@ sub _thread_get_file_info {
                 }
 
                 # extract the metadata from the file
-                _add_metadata_to_info( $options{info}, $info,
+                _add_metadata_to_info( $options{info}, decode( 'UTF-8', $info ),
                     qr{:\s+([^\n]+)}xsm );
             }
         }
