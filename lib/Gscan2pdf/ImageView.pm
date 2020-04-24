@@ -147,7 +147,7 @@ sub INIT_INSTANCE {
               )
         );
     }
-    $self->set_tool('dragger');
+    $self->set_tool('selector');
     $self->set_redraw_on_allocate(FALSE);
     return $self;
 }
@@ -273,6 +273,7 @@ sub _button_released {
     if ( $self->get_tool eq 'selector' ) {
         $self->_update_selection($event);
     }
+    $self->set_tool('selector');
     return;
 }
 

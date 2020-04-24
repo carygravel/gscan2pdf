@@ -314,7 +314,7 @@ sub _boxed_text {
                     my ( $widget, $target, $event ) = @_;
                     if ( $event->button == 1 ) {
                         $root->get_parent->{dragging} = FALSE;
-                        $edit_callback->( $widget, $target, $event );
+                        $edit_callback->( $widget, $target, $event, $g );
                     }
                 }
             );
@@ -372,8 +372,8 @@ sub _boxed_text {
 
 # Set the text in the given widget
 
-sub set_box_text {
-    my ( $self, $widget, $text ) = @_;
+sub update_box {    #FIXME: bbox should have its own class
+    my ( $self, $widget, $text, $selection ) = @_;
 
     # per above: group = text's parent, group's 1st child = rect
     my $g    = $widget->get_property('parent');
@@ -388,14 +388,16 @@ sub set_box_text {
 
         # re-adjust text size & position
         if ( $g->{type} ne 'page' ) {
-            my ( $x1, $y1, $x2, $y2 ) = @{ $g->{bbox} };
-            my $x_size = abs $x2 - $x1;
-            my $y_size = abs $y2 - $y1;
+            my ( $x1, $y1 ) = ( $selection->{x}, $selection->{y} );
+            my ( $x2, $y2 ) =
+              ( $x1 + $selection->{width}, $y1 + $selection->{height} );
+            $g->{bbox} = [ $x1, $y1, $x2, $y2 ];
             $widget->set_simple_transform( 0, 0, 1, 0 );
             my $bounds = $widget->get_bounds;
-            my $angle = $g->{_angle} || 0;
+            my $angle  = $g->{_angle} || 0;
             my $scale =
-              ( $angle ? $y_size : $x_size ) / ( $bounds->x2 - $bounds->x1 );
+              ( $angle ? $selection->{height} : $selection->{width} ) /
+              ( $bounds->x2 - $bounds->x1 );
 
             _transform_text( $g, $widget, $scale, $angle );
         }

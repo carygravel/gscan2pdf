@@ -13,7 +13,7 @@ BEGIN {
 
 my $view = Gscan2pdf::ImageView->new;
 isa_ok( $view, 'Gscan2pdf::ImageView' );
-is( $view->get_tool, 'dragger', 'get_tool() defaults to dragger' );
+is( $view->get_tool, 'selector', 'get_tool() defaults to selector' );
 
 system('convert rose: test.jpg');
 my $signal;
@@ -82,10 +82,10 @@ $signal = $view->signal_connect(
     'tool-changed' => sub {
         my ( $widget, $tool ) = @_;
         $view->signal_handler_disconnect($signal);
-        is $tool, 'selector', 'emitted tool-changed signal';
+        is $tool, 'dragger', 'emitted tool-changed signal';
     }
 );
-$view->set_tool('selector');
+$view->set_tool('dragger');
 
 $view->set_selection( { x => -10, y => -10, width => 20, height => 20 } );
 is_deeply(

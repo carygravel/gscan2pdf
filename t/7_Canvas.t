@@ -69,7 +69,8 @@ $group = $group->get_child(1);
 $group = $group->get_child(1);
 my $text = $group->get_child(1);
 
-$canvas->set_box_text( $text, 'No' );
+$canvas->update_box( $text, 'No',
+    { x => 2, y => 15, width => 74, height => 32 } );
 
 my $expected = <<"EOS";
 <\?xml version="1.0" encoding="UTF-8"\?>
@@ -85,7 +86,7 @@ my $expected = <<"EOS";
   <div class='ocr_page' id='page_1' title='bbox 0 0 422 61'>
    <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
     <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
-     <span class='ocr_word' id='word_1_1' title='bbox 1 14 77 48; x_wconf 100'>No</span>
+     <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>No</span>
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf -3'>quick</span>
      <span class='ocr_word' id='word_1_3' title='bbox 214 14 341 48; x_wconf -3'>brown</span>
      <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf -4'>fox</span>
@@ -122,7 +123,8 @@ is_deeply(
 
 #########################
 
-$canvas->set_box_text( $text, '<em>No</em>' );
+$canvas->update_box( $text, '<em>No</em>',
+    { x => 2, y => 15, width => 74, height => 32 } );
 
 $expected = <<"EOS";
 <\?xml version="1.0" encoding="UTF-8"\?>
@@ -138,7 +140,7 @@ $expected = <<"EOS";
   <div class='ocr_page' id='page_1' title='bbox 0 0 422 61'>
    <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
     <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
-     <span class='ocr_word' id='word_1_1' title='bbox 1 14 77 48; x_wconf 100'>&lt;em&gt;No&lt;/em&gt;</span>
+     <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>&lt;em&gt;No&lt;/em&gt;</span>
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf -3'>quick</span>
      <span class='ocr_word' id='word_1_3' title='bbox 214 14 341 48; x_wconf -3'>brown</span>
      <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf -4'>fox</span>

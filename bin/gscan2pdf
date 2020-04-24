@@ -263,7 +263,7 @@ my (
     $print_settings, $windowc,        $current_page,   $gconftool,
 
     # Goo::Canvas for OCR output
-    $canvas,
+    $canvas, $vpaned, $ocr_text_hbox, $ocr_textbuffer, $ocr_text_widget,
 
     # Notebook, split panes for detail view and OCR output
     $vnotebook, $hpanei,
@@ -414,6 +414,39 @@ sub populate_main_window {
             $view->signal_handler_unblock( $view->{offset_changed_signal} );
         }
     );
+
+    # split panes for detail view/OCR output and ocr text dialog
+    $vpaned = Gtk3::VPaned->new;
+    $hpaned->pack2( $vpaned, TRUE, TRUE );
+    $vpaned->show;
+    $ocr_text_hbox = Gtk3::HBox->new;
+    $vpaned->pack2( $ocr_text_hbox, FALSE, TRUE );
+    my $ocr_textview = Gtk3::TextView->new;
+    $ocr_textbuffer = $ocr_textview->get_buffer;
+    my $ocr_text_obutton = Gtk3::Button->new;
+    my $ocr_text_cbutton = Gtk3::Button->new;
+    $ocr_text_obutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-ok', 'button' ) );
+    $ocr_text_cbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-cancel', 'button' ) );
+    $ocr_text_hbox->pack_start( $ocr_textview, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_end( $ocr_text_cbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_end( $ocr_text_obutton, FALSE, FALSE, 0 );
+
+    $ocr_text_obutton->signal_connect(
+        clicked => sub {
+            $canvas->update_box( $ocr_text_widget, $ocr_textbuffer->get('text'),
+                $view->get_selection );
+            $current_page->{hocr} = $canvas->hocr;
+            $ocr_text_hbox->hide;
+        }
+    );
+    $ocr_text_cbutton->signal_connect(
+        clicked => sub {
+            $ocr_text_hbox->hide;
+        }
+    );
+
     pack_viewer_tools();
 
     # Set up call back for list selection to update detail view
@@ -465,11 +498,13 @@ sub populate_main_window {
         Gtk3::Image->new_from_stock( 'gtk-cancel', 'button' ) );
     $thbox->pack_end( $tcbutton, FALSE, FALSE, 0 );
 
+    $ocr_text_hbox->hide;
+
     # Open scan dialog in background
     if ( $SETTING{'auto-open-scan-dialog'} ) { scan_dialog( undef, TRUE ) }
 
     # Deal with --import command line option
-    if ( defined $import ) { import_files($import) }
+    if ( defined $import )     { import_files($import) }
     if ( defined $import_all ) { import_files( $import_all, TRUE ) }
     return;
 }
@@ -481,13 +516,13 @@ sub pack_viewer_tools {
         $vnotebook->append_page( $view, Gtk3::Label->new( __('Image') ) );
         $vnotebook->append_page( $canvas,
             Gtk3::Label->new( __('OCR Output') ) );
-        $hpaned->pack2( $vnotebook, TRUE, TRUE );
+        $vpaned->pack1( $vnotebook, TRUE, TRUE );
         $vnotebook->show_all;
     }
     else {    # $SPLIT_VIEW
         $hpanei->pack1( $view, TRUE, TRUE );
         $hpanei->pack2( $canvas, TRUE, TRUE );
-        $hpaned->pack2( $hpanei, TRUE, TRUE );
+        $vpaned->pack1( $hpanei, TRUE, TRUE );
     }
     return;
 }
@@ -1807,25 +1842,20 @@ sub create_canvas {
 }
 
 sub edit_ocr_text {
-    my ( $widget, $target, $ev ) = @_;
-    my $dialog = Gtk3::Dialog->new(
-        __('Editing text') . '...', $window,
-        'modal',
-        'gtk-ok'     => 'ok',
-        'gtk-cancel' => 'cancel'
-    );
-    my $textview   = Gtk3::TextView->new;
-    my $textbuffer = $textview->get_buffer;
-    $textbuffer->set( text => $widget->get('text') );
-    $dialog->get_content_area->add($textview);
-    $dialog->set_default_response('ok');
-    $dialog->show_all;
+    my ( $widget, $target, $ev, $g ) = @_;
+    $ocr_text_widget = $widget;
+    $ocr_textbuffer->set( text => $widget->get('text') );
+    $ocr_text_hbox->show_all;
 
-    if ( $dialog->run eq 'ok' ) {
-        $canvas->set_box_text( $widget, $textbuffer->get('text') );
-        $current_page->{hocr} = $canvas->hocr;
-    }
-    $dialog->destroy;
+    my ( $x1, $y1, $x2, $y2 ) = @{ $g->{bbox} };
+    my %box = (
+        x      => $x1,
+        y      => $y1,
+        width  => $x2 - $x1,
+        height => $y2 - $y1,
+    );
+    $view->set_selection( \%box );
+
     $canvas->pointer_ungrab( $widget, $ev->time );
     return TRUE;
 }
@@ -5047,12 +5077,12 @@ sub change_view_cb {
     my ( $action, $current ) = @_;
     $SETTING{viewer_tools} = $current->get_current_value();
     if ( $SETTING{viewer_tools} == $TABBED_VIEW ) {
-        $hpaned->remove($hpanei);
+        $vpaned->remove($hpanei);
         $hpanei->remove($view);
         $hpanei->remove($canvas);
     }
     else {    # $SPLIT_VIEW
-        $hpaned->remove($vnotebook);
+        $vpaned->remove($vnotebook);
         $vnotebook->remove($view);
         $vnotebook->remove($canvas);
     }
