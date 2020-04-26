@@ -4983,7 +4983,7 @@ sub _thread_gocr {
     # Using temporary txt file, as perl munges charset encoding
     # if text is passed by stdin/stdout
     exec_command( [ 'gocr', $pnm, '-o', $txt ], $pidfile );
-    ( $page->{hocr}, undef ) = Gscan2pdf::Document::slurp($txt);
+    ( $page->{hocr}, undef ) = slurp($txt);
 
     return if $_self->{cancel};
     $page->{ocr_flag} = 1;              #FlagOCR
