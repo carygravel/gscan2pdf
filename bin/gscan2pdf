@@ -5914,7 +5914,7 @@ sub compress_temp {
     for ( @{ $slist->{data} } ) {
         my ( $signal, $pid );
         $pid = $slist->to_png(
-            page            => $_->[2],
+            page            => $_->[2]->{uuid},
             queued_callback => sub {
                 return update_tpbar(@_);
             },
