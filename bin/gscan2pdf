@@ -1593,7 +1593,7 @@ sub update_uimanager {
     }
 
    # If the scan dialog has already been drawn, update the start page spinbutton
-    if ( defined $windows ) { $windows->update_start_page }
+    if ( is_not_an_empty_hashref($windows) ) { $windows->update_start_page }
     return;
 }
 
@@ -3361,7 +3361,7 @@ sub email {
 sub scan_dialog {
     my ( $action, $hidden ) = @_;
 
-    if ( defined $windows ) {
+    if ( is_not_an_empty_hashref($windows) ) {
         $windows->show_all;
         update_postprocessing_options_callback();
         return;
@@ -3754,6 +3754,10 @@ sub process_error_callback {
         $scbutton->signal_handler_disconnect($signal);
     }
     $shbox->hide;
+
+    if ( $process eq 'open_device' and $msg =~ /Invalid[ ]argument/xsm ) {
+        undef $windows;
+    }
 
     show_message_dialog(
         parent           => $widget,
@@ -4280,7 +4284,9 @@ sub delete_selection {
     $slist->delete_selection_extra;
 
     # Reset start page in scan dialog
-    $windows->reset_start_page;
+    if ( is_not_an_empty_hashref($windows) ) {
+        $windows->reset_start_page;
+    }
     return;
 }
 
@@ -5703,7 +5709,7 @@ sub quit {
     ( $SETTING{window_width}, $SETTING{window_height} ) = $window->get_size;
     ( $SETTING{window_x},     $SETTING{window_y} )      = $window->get_position;
     $SETTING{'thumb panel'} = $hpaned->get_position;
-    if ( defined $windows ) {
+    if ( is_not_an_empty_hashref($windows) ) {
         ( $SETTING{scan_window_width}, $SETTING{scan_window_height} ) =
           $windows->get_size;
     }
@@ -5984,9 +5990,11 @@ sub preferences {
             if ( $SETTING{frontend} ne $combob->get_active_index ) {
                 $SETTING{frontend} = $combob->get_active_index;
                 $logger->info("Switched frontend to $SETTING{frontend}");
-                Gscan2pdf::Frontend::Image_Sane->close_device;
-                $windows->hide;
-                undef $windows;
+                if ( is_not_an_empty_hashref($windows) ) {
+                    Gscan2pdf::Frontend::Image_Sane->close_device;
+                    $windows->hide;
+                    undef $windows;
+                }
             }
             else {
                 $SETTING{'visible-scan-options'} = ();
@@ -6002,7 +6010,7 @@ sub preferences {
                 {
                     $SETTING{'scan prefix'}   = $preentry->get_text;
                     $SETTING{'cache options'} = $cbc->get_active;
-                    if ( defined $windows ) {
+                    if ( is_not_an_empty_hashref($windows) ) {
                         $windows->set( 'prefix', $SETTING{'scan prefix'} );
                         $windows->set( 'cache-options',
                             $SETTING{'cache options'} );
@@ -6054,7 +6062,7 @@ sub preferences {
             $SETTING{to_png}             = $cbtp->get_active;
             $SETTING{'convert whitespace to underscores'} = $cbb->get_active;
 
-            if ( defined $windows ) {
+            if ( is_not_an_empty_hashref($windows) ) {
                 if (   $SETTING{frontend} eq 'libsane-perl'
                     or $SETTING{frontend} eq 'libimage-sane-perl' )
                 {
@@ -6253,7 +6261,9 @@ sub _preferences_scan_options {
     $buttonc->signal_connect(
         clicked => sub {
             if ( defined $SETTING{cache} ) { delete $SETTING{cache} }
-            if ( defined $windows ) { $windows->set( 'options-cache', undef ) }
+            if ( is_not_an_empty_hashref($windows) ) {
+                $windows->set( 'options-cache', undef );
+            }
         }
     );
 
@@ -6298,7 +6308,7 @@ sub _preferences_scan_options {
     my $fbutton = Gtk3::Button->new( __('List current options') );
     $fbutton->signal_connect(
         clicked => sub {
-            if ( defined $windows ) {
+            if ( is_not_an_empty_hashref($windows) ) {
                 @{ $option_visibility_list->{data} } = ();
                 my $options = $windows->get('available-scan-options');
                 for my $i ( 1 .. $options->num_options - 1 ) {
@@ -6839,6 +6849,11 @@ sub show_message_dialog {
         undef $message_dialog;
     }
     return;
+}
+
+sub is_not_an_empty_hashref {
+    my ($hashref) = @_;
+    return ( defined $hashref and keys %{$hashref} );
 }
 
 __END__
