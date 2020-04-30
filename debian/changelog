@@ -1,3 +1,10 @@
+gscan2pdf (2.7.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Removed source dependency on libgail-common left over from gtk+2
+
+ --
+
 gscan2pdf (2.6.7-1) unstable; urgency=low
 
   * New upstream release

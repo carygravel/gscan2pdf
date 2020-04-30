@@ -10,7 +10,7 @@ Build-Depends-Indep: perl (>= 5.8.0-7), gettext, libtest-pod-perl,
  libhtml-parser-perl, libgoocanvas2-perl, libproc-processtable-perl,
  libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl,
  libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl, xauth, xfonts-base,
- xvfb, libatk-adaptor, libgail-common, libsub-override-perl, poppler-utils,
+ xvfb, libatk-adaptor, libsub-override-perl, poppler-utils,
  ghostscript, gsfonts
 Maintainer: Jeffrey Ratcliffe <jjr@debian.org>
 Standards-Version: 4.5.0
