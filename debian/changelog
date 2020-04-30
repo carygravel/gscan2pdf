@@ -2,6 +2,8 @@ gscan2pdf (2.7.0-1) unstable; urgency=low
 
   * New upstream release
   * Removed source dependency on libgail-common left over from gtk+2
+  * Removed recommends: sane,
+    as saneadf doesn't offer any advantage over scanimage
 
  --
 
