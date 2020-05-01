@@ -142,6 +142,7 @@ sub set_text {
     }
 
     # Attach the text to the canvas
+    $self->{proof_list} = [];
     for my $box ( @{ $page->boxes } ) {
         my %options = (
             root           => $root,
@@ -150,6 +151,7 @@ sub set_text {
             edit_callback  => $edit_callback,
             text_color     => $color_hex,
             idle           => $idle,
+            proof_list     => $self->{proof_list},
         );
         if ($idle) {
             $old_idles{$box} = Glib::Idle->add(
@@ -164,6 +166,54 @@ sub set_text {
             _boxed_text(%options);
         }
     }
+    return;
+}
+
+sub get_first_text {
+    my ($self) = @_;
+    $self->{proof_list_indexer} = 0;
+    return $self->get_text_by_index;
+}
+
+sub get_previous_text {
+    my ($self) = @_;
+    if ( $self->{proof_list_indexer} > 0 ) {
+        $self->{proof_list_indexer} -= 1;
+    }
+    return $self->get_text_by_index;
+}
+
+sub get_next_text {
+    my ($self) = @_;
+    if ( $self->{proof_list_indexer} < $#{ $self->{proof_list} } ) {
+        $self->{proof_list_indexer} += 1;
+    }
+    return $self->get_text_by_index;
+}
+
+sub get_last_text {
+    my ($self) = @_;
+    $self->{proof_list_indexer} = $#{ $self->{proof_list} };
+    return $self->get_text_by_index;
+}
+
+sub get_text_by_index {
+    my ($self) = @_;
+    return $self->{proof_list}[ $self->{proof_list_indexer} ][0];
+}
+
+# FIXME: replace this linear search with a hash lookup after finding a way to
+# keep a hash up to date.
+
+sub update_index_by_text {
+    my ( $self, $text ) = @_;
+    for my $i ( 0 .. $#{ $self->{proof_list} } ) {
+        if ( $self->{proof_list}->[$i][0] == $text ) {
+            $self->{proof_list_indexer} = $i;
+            return $i;
+        }
+    }
+    delete $self->{proof_list_indexer};
     return;
 }
 
@@ -290,6 +340,9 @@ sub _boxed_text {
             'font'       => 'Sans',
             'fill-color' => $text_color,
         );
+        add_box_to_proof_list( $options{proof_list}, $text,
+            $box->{confidence} );
+
         my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
         my $bounds = $text->get_bounds;
         if ( ( $bounds->x2 - $bounds->x1 ) == 0 ) {
@@ -321,20 +374,21 @@ sub _boxed_text {
         }
     }
     if ( $box->{contents} ) {
-        for my $box ( @{ $box->{contents} } ) {
+        for my $child ( @{ $box->{contents} } ) {
             my %noptions = (
                 root           => $g,
-                box            => $box,
+                box            => $child,
                 transformation => [ $textangle + $rotation, $x1, $y1 ],
                 edit_callback  => $edit_callback,
                 text_color     => $text_color,
                 idle           => $idle,
+                proof_list     => $options{proof_list},
             );
             if ($idle) {
-                $old_idles{$box} = Glib::Idle->add(
+                $old_idles{$child} = Glib::Idle->add(
                     sub {
                         _boxed_text(%noptions);
-                        delete $old_idles{$box};
+                        delete $old_idles{$child};
                         return Glib::SOURCE_REMOVE;
                     }
                 );
@@ -367,6 +421,44 @@ sub _boxed_text {
     #   #  return TRUE;
     #  }
     # );
+    return;
+}
+
+# insert, sorted by confidence level
+# FIXME: replace this linear search with a binary search
+
+sub add_box_to_proof_list {
+    my ( $proof_list, $text, $confidence ) = @_;
+    my $inserted = FALSE;
+    for my $i ( 0 .. $#{$proof_list} ) {
+        my ( $otext, $oconfidence ) = @{ $proof_list->[$i] };
+        if ( $confidence < $oconfidence ) {
+            splice @{$proof_list}, $i, 0, [ $text, $confidence ];
+            $inserted = TRUE;
+            last;
+        }
+    }
+    if ( not $inserted ) {
+        push @{$proof_list}, [ $text, $confidence ];
+    }
+    return;
+}
+
+sub delete_box {    #FIXME: bbox should have its own class
+    my ( $self, $widget ) = @_;
+    my $g      = $widget->get_property('parent');
+    my $parent = $g->get_property('parent');
+    for my $i ( 0 .. $parent->get_n_children - 1 ) {
+        my $group = $parent->get_child($i);
+        if ( $group eq $g ) {
+            $parent->remove_child($i);
+            last;
+        }
+    }
+    splice @{ $self->{proof_list} }, $self->{proof_list_indexer}, 1;
+    if ( $self->{proof_list_indexer} > $#{ $self->{proof_list} } ) {
+        $self->{proof_list_indexer} = $#{ $self->{proof_list} };
+    }
     return;
 }
 
@@ -403,9 +495,7 @@ sub update_box {    #FIXME: bbox should have its own class
         }
     }
     else {
-        delete $g->{text};
-        $g->remove_child(0);
-        $g->remove_child(1);
+        $self->delete_box($widget);
     }
     return;
 }

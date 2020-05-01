@@ -9,6 +9,7 @@
 * Fix UTF8 encoding when importing metadata from PDF or DjVu.
 * When editing OCR text, display bounding box on image and allow it to be
   adjusted.
+* + buttons to navigate between OCR text boxes, sorted by confidence level.
 * Fix error running File/Compress temporary files.
 
 

@@ -422,30 +422,79 @@ sub populate_main_window {
     $ocr_text_hbox = Gtk3::HBox->new;
     $vpaned->pack2( $ocr_text_hbox, FALSE, TRUE );
     my $ocr_textview = Gtk3::TextView->new;
+    $ocr_textview->set_tooltip_text( __('OCR text') );
     $ocr_textbuffer = $ocr_textview->get_buffer;
+
+    my $ocr_text_fbutton = Gtk3::Button->new;
+    $ocr_text_fbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-goto-first', 'button' ) );
+    $ocr_text_fbutton->set_tooltip_text( __('Go to least confident text') );
+    $ocr_text_fbutton->signal_connect(
+        clicked => sub { edit_ocr_text( $canvas->get_first_text ) } );
+
+    my $ocr_text_pbutton = Gtk3::Button->new;
+    $ocr_text_pbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-go-back', 'button' ) );
+    $ocr_text_pbutton->set_tooltip_text( __('Go to previous text') );
+    $ocr_text_pbutton->signal_connect(
+        clicked => sub { edit_ocr_text( $canvas->get_previous_text ) } );
+
+    my $ocr_text_nbutton = Gtk3::Button->new;
+    $ocr_text_nbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-go-forward', 'button' ) );
+    $ocr_text_nbutton->set_tooltip_text( __('Go to next text') );
+    $ocr_text_nbutton->signal_connect(
+        clicked => sub { edit_ocr_text( $canvas->get_next_text ) } );
+
+    my $ocr_text_lbutton = Gtk3::Button->new;
+    $ocr_text_lbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-goto-last', 'button' ) );
+    $ocr_text_lbutton->set_tooltip_text( __('Go to most confident text') );
+    $ocr_text_lbutton->signal_connect(
+        clicked => sub { edit_ocr_text( $canvas->get_last_text ) } );
+
     my $ocr_text_obutton = Gtk3::Button->new;
-    my $ocr_text_cbutton = Gtk3::Button->new;
     $ocr_text_obutton->set_image(
         Gtk3::Image->new_from_stock( 'gtk-ok', 'button' ) );
-    $ocr_text_cbutton->set_image(
-        Gtk3::Image->new_from_stock( 'gtk-cancel', 'button' ) );
-    $ocr_text_hbox->pack_start( $ocr_textview, FALSE, FALSE, 0 );
-    $ocr_text_hbox->pack_end( $ocr_text_cbutton, FALSE, FALSE, 0 );
-    $ocr_text_hbox->pack_end( $ocr_text_obutton, FALSE, FALSE, 0 );
-
+    $ocr_text_obutton->set_tooltip_text( __('Accept corrections') );
     $ocr_text_obutton->signal_connect(
         clicked => sub {
             $canvas->update_box( $ocr_text_widget, $ocr_textbuffer->get('text'),
                 $view->get_selection );
             $current_page->{hocr} = $canvas->hocr;
-            $ocr_text_hbox->hide;
+            edit_ocr_text( $canvas->get_next_text );
         }
     );
+
+    my $ocr_text_cbutton = Gtk3::Button->new;
+    $ocr_text_cbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-cancel', 'button' ) );
+    $ocr_text_cbutton->set_tooltip_text( __('Cancel corrections') );
     $ocr_text_cbutton->signal_connect(
         clicked => sub {
             $ocr_text_hbox->hide;
         }
     );
+
+    my $ocr_text_dbutton = Gtk3::Button->new;
+    $ocr_text_dbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-delete', 'button' ) );
+    $ocr_text_dbutton->set_tooltip_text( __('Delete text') );
+    $ocr_text_dbutton->signal_connect(
+        clicked => sub {
+            $canvas->delete_box($ocr_text_widget);
+            edit_ocr_text( $canvas->get_text_by_index );
+        }
+    );
+
+    $ocr_text_hbox->pack_start( $ocr_text_fbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_start( $ocr_text_pbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_start( $ocr_text_nbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_start( $ocr_text_lbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_start( $ocr_textview,     FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_end( $ocr_text_dbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_end( $ocr_text_cbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_end( $ocr_text_obutton, FALSE, FALSE, 0 );
 
     pack_viewer_tools();
 
@@ -1847,6 +1896,9 @@ sub edit_ocr_text {
     $ocr_textbuffer->set( text => $widget->get('text') );
     $ocr_text_hbox->show_all;
 
+    if ( not $g ) {
+        $g = $widget->get_property('parent');
+    }
     my ( $x1, $y1, $x2, $y2 ) = @{ $g->{bbox} };
     my %box = (
         x      => $x1,
@@ -1856,7 +1908,10 @@ sub edit_ocr_text {
     );
     $view->set_selection( \%box );
 
-    $canvas->pointer_ungrab( $widget, $ev->time );
+    if ($ev) {
+        $canvas->pointer_ungrab( $widget, $ev->time );
+        $canvas->update_index_by_text($widget);
+    }
     return TRUE;
 }
 

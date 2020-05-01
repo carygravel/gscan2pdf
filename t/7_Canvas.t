@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 17;
+use Test::More tests => 23;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -44,13 +44,13 @@ $page->{hocr} = <<'EOS';
        <span class='xocr_word' id='xword_1_1' title="x_wconf -3">The</span>
       </span>
       <span class='ocr_word' id='word_1_2' title="bbox 92 14 202 59">
-       <span class='xocr_word' id='xword_1_2' title="x_wconf -3">quick</span>
+       <span class='xocr_word' id='xword_1_2' title="x_wconf 74">quick</span>
       </span>
       <span class='ocr_word' id='word_1_3' title="bbox 214 14 341 48">
-       <span class='xocr_word' id='xword_1_3' title="x_wconf -3">brown</span>
+       <span class='xocr_word' id='xword_1_3' title="x_wconf 75">brown</span>
       </span>
       <span class='ocr_word' id='word_1_4' title="bbox 355 14 420 48">
-       <span class='xocr_word' id='xword_1_4' title="x_wconf -4">fox</span>
+       <span class='xocr_word' id='xword_1_4' title="x_wconf 71">fox</span>
       </span>
      </span>
     </p>
@@ -62,12 +62,22 @@ EOS
 
 my $canvas = Gscan2pdf::Canvas->new;
 $canvas->set_text( $page, undef, FALSE );
+
+is $canvas->get_first_text->get('text'),    'The',   'get_first_text';
+is $canvas->get_next_text->get('text'),     'fox',   'get_next_text';
+is $canvas->get_previous_text->get('text'), 'The',   'get_previous_text';
+is $canvas->get_last_text->get('text'),     'brown', 'get_last_text';
+
+$canvas->delete_box( $canvas->get_text_by_index() );
+is $canvas->get_last_text->get('text'), 'quick', 'get_last_text after deletion';
+
 my $group = $canvas->get_root_item;
 $group = $group->get_child(0);
 $group = $group->get_child(1);
 $group = $group->get_child(1);
 $group = $group->get_child(1);
 my $text = $group->get_child(1);
+is $canvas->update_index_by_text($text), 0, 'update_index_by_text';
 
 $canvas->update_box( $text, 'No',
     { x => 2, y => 15, width => 74, height => 32 } );
@@ -87,9 +97,8 @@ my $expected = <<"EOS";
    <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
     <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
      <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>No</span>
-     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf -3'>quick</span>
-     <span class='ocr_word' id='word_1_3' title='bbox 214 14 341 48; x_wconf -3'>brown</span>
-     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf -4'>fox</span>
+     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
+     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
     </span>
    </div>
   </div>
@@ -141,9 +150,8 @@ $expected = <<"EOS";
    <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
     <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
      <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>&lt;em&gt;No&lt;/em&gt;</span>
-     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf -3'>quick</span>
-     <span class='ocr_word' id='word_1_3' title='bbox 214 14 341 48; x_wconf -3'>brown</span>
-     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf -4'>fox</span>
+     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
+     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
     </span>
    </div>
   </div>
