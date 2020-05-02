@@ -8,6 +8,7 @@ use GooCanvas2;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use HTML::Entities;
 use Carp;
+use POSIX qw/ceil/;
 use Readonly;
 Readonly my $_100_PERCENT       => 100;
 Readonly my $_360_DEGREES       => 360;
@@ -424,23 +425,30 @@ sub _boxed_text {
     return;
 }
 
-# insert, sorted by confidence level
-# FIXME: replace this linear search with a binary search
+# insert into list sorted by confidence level using a binary search
+# https://en.wikipedia.org/wiki/Binary_search_algorithm#Alternative_procedure
 
 sub add_box_to_proof_list {
     my ( $proof_list, $text, $confidence ) = @_;
-    my $inserted = FALSE;
-    for my $i ( 0 .. $#{$proof_list} ) {
-        my ( $otext, $oconfidence ) = @{ $proof_list->[$i] };
-        if ( $confidence < $oconfidence ) {
-            splice @{$proof_list}, $i, 0, [ $text, $confidence ];
-            $inserted = TRUE;
-            last;
+    if ( not @{$proof_list} ) {
+        push @{$proof_list}, [ $text, $confidence ];
+        return;
+    }
+    my $l = 0;
+    my $r = $#{$proof_list};
+    while ( $l != $r ) {
+        my $m = ceil( ( $l + $r ) / 2 );
+        if ( $proof_list->[$m][1] > $confidence ) {
+            $r = $m - 1;
+        }
+        else {
+            $l = $m;
         }
     }
-    if ( not $inserted ) {
-        push @{$proof_list}, [ $text, $confidence ];
+    if ( $proof_list->[$l][1] < $confidence ) {
+        $l += 1;
     }
+    splice @{$proof_list}, $l, 0, [ $text, $confidence ];
     return;
 }
 
