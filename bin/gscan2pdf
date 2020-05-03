@@ -1910,7 +1910,7 @@ sub edit_ocr_text {
 
     if ($ev) {
         $canvas->pointer_ungrab( $widget, $ev->time );
-        $canvas->update_index_by_text($widget);
+        $canvas->update_index_by_text( $widget, $g->{confidence} );
     }
     return TRUE;
 }

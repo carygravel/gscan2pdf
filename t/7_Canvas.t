@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 23;
+use Test::More tests => 25;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -63,10 +63,16 @@ EOS
 my $canvas = Gscan2pdf::Canvas->new;
 $canvas->set_text( $page, undef, FALSE );
 
-is $canvas->get_first_text->get('text'),    'The',   'get_first_text';
-is $canvas->get_next_text->get('text'),     'fox',   'get_next_text';
-is $canvas->get_previous_text->get('text'), 'The',   'get_previous_text';
-is $canvas->get_last_text->get('text'),     'brown', 'get_last_text';
+my $text = $canvas->get_first_text;
+is $text->get('text'), 'The', 'get_first_text';
+is $canvas->update_index_by_text( $text, -3 ), 0, 'update_index_by_text 1';
+$text = $canvas->get_next_text;
+is $text->get('text'), 'fox', 'get_next_text';
+is $canvas->update_index_by_text( $text, 71 ), 1, 'update_index_by_text 2';
+is $canvas->get_previous_text->get('text'), 'The', 'get_previous_text';
+$text = $canvas->get_last_text;
+is $text->get('text'), 'brown', 'get_last_text';
+is $canvas->update_index_by_text( $text, 75 ), 3, 'update_index_by_text 3';
 
 $canvas->delete_box( $canvas->get_text_by_index() );
 is $canvas->get_last_text->get('text'), 'quick', 'get_last_text after deletion';
@@ -76,8 +82,7 @@ $group = $group->get_child(0);
 $group = $group->get_child(1);
 $group = $group->get_child(1);
 $group = $group->get_child(1);
-my $text = $group->get_child(1);
-is $canvas->update_index_by_text($text), 0, 'update_index_by_text';
+$text  = $group->get_child(1);
 
 $canvas->update_box( $text, 'No',
     { x => 2, y => 15, width => 74, height => 32 } );

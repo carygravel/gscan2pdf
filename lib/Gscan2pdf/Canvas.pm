@@ -143,16 +143,16 @@ sub set_text {
     }
 
     # Attach the text to the canvas
-    $self->{proof_list} = [];
+    $self->{confidence_list} = [];
     for my $box ( @{ $page->boxes } ) {
         my %options = (
-            root           => $root,
-            box            => $box,
-            transformation => [ 0, 0, 0 ],
-            edit_callback  => $edit_callback,
-            text_color     => $color_hex,
-            idle           => $idle,
-            proof_list     => $self->{proof_list},
+            root            => $root,
+            box             => $box,
+            transformation  => [ 0, 0, 0 ],
+            edit_callback   => $edit_callback,
+            text_color      => $color_hex,
+            idle            => $idle,
+            confidence_list => $self->{confidence_list},
         );
         if ($idle) {
             $old_idles{$box} = Glib::Idle->add(
@@ -172,49 +172,55 @@ sub set_text {
 
 sub get_first_text {
     my ($self) = @_;
-    $self->{proof_list_indexer} = 0;
+    $self->{confidence_index} = 0;
     return $self->get_text_by_index;
 }
 
 sub get_previous_text {
     my ($self) = @_;
-    if ( $self->{proof_list_indexer} > 0 ) {
-        $self->{proof_list_indexer} -= 1;
+    if ( $self->{confidence_index} > 0 ) {
+        $self->{confidence_index} -= 1;
     }
     return $self->get_text_by_index;
 }
 
 sub get_next_text {
     my ($self) = @_;
-    if ( $self->{proof_list_indexer} < $#{ $self->{proof_list} } ) {
-        $self->{proof_list_indexer} += 1;
+    if ( $self->{confidence_index} < $#{ $self->{confidence_list} } ) {
+        $self->{confidence_index} += 1;
     }
     return $self->get_text_by_index;
 }
 
 sub get_last_text {
     my ($self) = @_;
-    $self->{proof_list_indexer} = $#{ $self->{proof_list} };
+    $self->{confidence_index} = $#{ $self->{confidence_list} };
     return $self->get_text_by_index;
 }
 
 sub get_text_by_index {
     my ($self) = @_;
-    return $self->{proof_list}[ $self->{proof_list_indexer} ][0];
+    return $self->{confidence_list}[ $self->{confidence_index} ][0];
 }
 
-# FIXME: replace this linear search with a hash lookup after finding a way to
-# keep a hash up to date.
+# FIXME: bbox should have its own class, the bbox knows its confidence, and we
+# don't need to pass it here.
 
 sub update_index_by_text {
-    my ( $self, $text ) = @_;
-    for my $i ( 0 .. $#{ $self->{proof_list} } ) {
-        if ( $self->{proof_list}->[$i][0] == $text ) {
-            $self->{proof_list_indexer} = $i;
+    my ( $self, $text, $confidence ) = @_;
+
+    # There may be multiple boxes with the same confidence, so use a binary
+    # search to find the next smallest confidence, and then a linear search to
+    # find the box
+    my $l =
+      confidence_binary_search( $self->{confidence_list}, $confidence - 1 );
+    for my $i ( $l .. $#{ $self->{confidence_list} } ) {
+        if ( $self->{confidence_list}->[$i][0] == $text ) {
+            $self->{confidence_index} = $i;
             return $i;
         }
     }
-    delete $self->{proof_list_indexer};
+    delete $self->{confidence_index};
     return;
 }
 
@@ -293,7 +299,7 @@ sub _boxed_text {
     # and receives any mouse clicks
     my $confidence =
       defined $box->{confidence} ? $box->{confidence} : $_100_PERCENT;
-    $confidence = $confidence > 64    ## no critic (ProhibitMagicNumbers)
+    $confidence = $confidence > 64           ## no critic (ProhibitMagicNumbers)
       ? 2 * int( ( $confidence - 65 ) / 12 ) ## no critic (ProhibitMagicNumbers)
       + 10                                   ## no critic (ProhibitMagicNumbers)
       : 0;
@@ -341,8 +347,8 @@ sub _boxed_text {
             'font'       => 'Sans',
             'fill-color' => $text_color,
         );
-        add_box_to_proof_list( $options{proof_list}, $text,
-            $box->{confidence} );
+        add_box_to_confidence_list( $options{confidence_list},
+            $text, $box->{confidence} );
 
         my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
         my $bounds = $text->get_bounds;
@@ -377,13 +383,13 @@ sub _boxed_text {
     if ( $box->{contents} ) {
         for my $child ( @{ $box->{contents} } ) {
             my %noptions = (
-                root           => $g,
-                box            => $child,
-                transformation => [ $textangle + $rotation, $x1, $y1 ],
-                edit_callback  => $edit_callback,
-                text_color     => $text_color,
-                idle           => $idle,
-                proof_list     => $options{proof_list},
+                root            => $g,
+                box             => $child,
+                transformation  => [ $textangle + $rotation, $x1, $y1 ],
+                edit_callback   => $edit_callback,
+                text_color      => $text_color,
+                idle            => $idle,
+                confidence_list => $options{confidence_list},
             );
             if ($idle) {
                 $old_idles{$child} = Glib::Idle->add(
@@ -425,30 +431,38 @@ sub _boxed_text {
     return;
 }
 
-# insert into list sorted by confidence level using a binary search
+# Return index of confidence using binary search
 # https://en.wikipedia.org/wiki/Binary_search_algorithm#Alternative_procedure
 
-sub add_box_to_proof_list {
-    my ( $proof_list, $text, $confidence ) = @_;
-    if ( not @{$proof_list} ) {
-        push @{$proof_list}, [ $text, $confidence ];
-        return;
-    }
+sub confidence_binary_search {
+    my ( $confidence_list, $confidence ) = @_;
     my $l = 0;
-    my $r = $#{$proof_list};
+    my $r = $#{$confidence_list};
     while ( $l != $r ) {
         my $m = ceil( ( $l + $r ) / 2 );
-        if ( $proof_list->[$m][1] > $confidence ) {
+        if ( $confidence_list->[$m][1] > $confidence ) {
             $r = $m - 1;
         }
         else {
             $l = $m;
         }
     }
-    if ( $proof_list->[$l][1] < $confidence ) {
+    if ( $confidence_list->[$l][1] < $confidence ) {
         $l += 1;
     }
-    splice @{$proof_list}, $l, 0, [ $text, $confidence ];
+    return $l;
+}
+
+# insert into list sorted by confidence level using a binary search
+
+sub add_box_to_confidence_list {
+    my ( $confidence_list, $text, $confidence ) = @_;
+    if ( not @{$confidence_list} ) {
+        push @{$confidence_list}, [ $text, $confidence ];
+        return;
+    }
+    my $i = confidence_binary_search( $confidence_list, $confidence );
+    splice @{$confidence_list}, $i, 0, [ $text, $confidence ];
     return;
 }
 
@@ -463,9 +477,9 @@ sub delete_box {    #FIXME: bbox should have its own class
             last;
         }
     }
-    splice @{ $self->{proof_list} }, $self->{proof_list_indexer}, 1;
-    if ( $self->{proof_list_indexer} > $#{ $self->{proof_list} } ) {
-        $self->{proof_list_indexer} = $#{ $self->{proof_list} };
+    splice @{ $self->{confidence_list} }, $self->{confidence_index}, 1;
+    if ( $self->{confidence_index} > $#{ $self->{confidence_list} } ) {
+        $self->{confidence_index} = $#{ $self->{confidence_list} };
     }
     return;
 }
@@ -501,6 +515,11 @@ sub update_box {    #FIXME: bbox should have its own class
 
             _transform_text( $g, $widget, $scale, $angle );
         }
+
+        # move position in confidence_list
+        splice @{ $self->{confidence_list} }, $self->{confidence_index}, 1;
+        add_box_to_confidence_list( $self->{confidence_list},
+            $widget, $g->{confidence} );
     }
     else {
         $self->delete_box($widget);
@@ -534,7 +553,7 @@ sub hocr {
     my ($self) = @_;
     if ( not defined $self->get_pixbuf_size ) { return }
     my ( $x, $y, $w, $h ) = $self->get_bounds;
-    my $root = $self->get_root_item;
+    my $root   = $self->get_root_item;
     my $string = _group2hocr( $root, 2 );
     return <<"EOS";
 <?xml version="1.0" encoding="UTF-8"?>
@@ -670,7 +689,7 @@ sub _button_pressed {
         # only the value since the last event is required.
         my ( $screen, $x, $y ) = $device->get_position;
         $self->{drag_start} = { x => $x, y => $y };
-        $self->{dragging} = TRUE;
+        $self->{dragging}   = TRUE;
 
         #    $self->update_cursor( $event->x, $event->y );
     }
