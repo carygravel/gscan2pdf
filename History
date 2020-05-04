@@ -10,6 +10,7 @@
 * When editing OCR text, display bounding box on image and allow it to be
   adjusted.
 * + buttons to navigate between OCR text boxes, sorted by confidence level.
+* Zoom to text when editing OCR
 * Fix error running File/Compress temporary files.
 
 

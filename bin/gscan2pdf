@@ -136,6 +136,7 @@ Readonly my $HELP_WINDOW_DIVIDER_POS => 200;
 Readonly my $_1KB                    => 1024;
 Readonly my $_1MB                    => $_1KB * $_1KB;
 Readonly my $_100_000MB              => 100_000;
+Readonly my $ZOOM_CONTEXT_FACTOR     => 0.5;
 
 Glib::set_application_name('gscan2pdf');
 
@@ -1907,6 +1908,8 @@ sub edit_ocr_text {
         height => $y2 - $y1,
     );
     $view->set_selection( \%box );
+    $view->set_zoom_to_fit(FALSE);
+    $view->zoom_to_selection($ZOOM_CONTEXT_FACTOR);
 
     if ($ev) {
         $canvas->pointer_ungrab( $widget, $ev->time );

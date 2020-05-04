@@ -418,7 +418,7 @@ sub _draw {
 sub _configure_event {
     my ( $self, $event ) = @_;
     if ( $self->get_zoom_to_fit ) {
-        $self->_calculate_zoom_to_fit;
+        $self->zoom_to_box( $self->get_pixbuf_size );
     }
     return;
 }
@@ -497,23 +497,31 @@ sub set_zoom_to_fit {
     my ( $self, $zoom_to_fit ) = @_;
     $self->set( 'zoom-to-fit', $zoom_to_fit );
     if ( not $zoom_to_fit ) { return }
-    $self->_calculate_zoom_to_fit;
+    $self->zoom_to_box( $self->get_pixbuf_size );
     return;
 }
 
-sub _calculate_zoom_to_fit {
-    my ($self) = @_;
-    my $pixbuf_size = $self->get_pixbuf_size;
-    if ( not defined $pixbuf_size ) { return }
+sub zoom_to_box {
+    my ( $self, $box, $additional_factor ) = @_;
+    if ( not defined $box ) { return }
+    if ( not defined $box->{x} )          { $box->{x}          = 0 }
+    if ( not defined $box->{y} )          { $box->{y}          = 0 }
+    if ( not defined $additional_factor ) { $additional_factor = 1 }
     my $allocation  = $self->get_allocation;
     my $ratio       = $self->get_resolution_ratio;
-    my $sc_factor_w = $allocation->{width} / $pixbuf_size->{width} * $ratio;
-    my $sc_factor_h = $allocation->{height} / $pixbuf_size->{height};
+    my $sc_factor_w = $allocation->{width} / $box->{width} * $ratio;
+    my $sc_factor_h = $allocation->{height} / $box->{height};
     $self->_set_zoom_with_center(
-        min( $sc_factor_w, $sc_factor_h ),
-        $pixbuf_size->{width} / $ratio / 2,
-        $pixbuf_size->{height} / 2
+        min( $sc_factor_w, $sc_factor_h ) * $additional_factor,
+        ( $box->{x} + $box->{width} / 2 ) / $ratio,
+        $box->{y} + $box->{height} / 2
     );
+    return;
+}
+
+sub zoom_to_selection {
+    my ( $self, $context_factor ) = @_;
+    $self->zoom_to_box( $self->get_selection, $context_factor );
     return;
 }
 
@@ -648,7 +656,7 @@ sub set_resolution_ratio {
     my ( $self, $ratio ) = @_;
     $self->set( 'resolution-ratio', $ratio );
     if ( $self->get_zoom_to_fit ) {
-        $self->_calculate_zoom_to_fit;
+        $self->zoom_to_box( $self->get_pixbuf_size );
     }
     return;
 }
