@@ -257,11 +257,11 @@ my (
     $windowudt, $save_button, $window,  $thbox,   $tpbar,
     $tcbutton, $spbar, $shbox, $scbutton, $unpaper, $hpaned,
     @undo_buffer,
-    @redo_buffer,    @undo_selection, @redo_selection, %dependencies,
-    $menubar,        $toolbar,
-    @ocr_engine,     $clipboard,
-    $windowr,        $view,           $windowp,        $message_dialog,
-    $print_settings, $windowc,        $current_page,   $gconftool,
+    @redo_buffer, @undo_selection, @redo_selection, %dependencies,
+    $menubar,     $toolbar,
+    @ocr_engine,  $clipboard,
+    $windowr,     $view,           $windowp,        $message_dialog,
+    $print_settings, $windowc, $current_page,
 
     # Goo::Canvas for OCR output
     $canvas, $vpaned, $ocr_text_hbox, $ocr_textbuffer, $ocr_text_widget,
@@ -3196,73 +3196,6 @@ sub save_hocr {
     return;
 }
 
-sub mua {
-    my ( $parent, $attachment ) = @_;
-
-    # Check for thunderbird
-    my ($client);
-    if ( defined $ENV{KDE_FULL_SESSION}
-        and $ENV{KDE_FULL_SESSION} eq 'true' )
-    {
-        ( undef, $client ) = Gscan2pdf::Document::exec_command(
-            [
-"kreadconfig --file emaildefaults --group PROFILE_Default --key EmailClient| cut -d ' ' -f 1"
-            ]
-        );
-    }
-    elsif (
-        (
-            defined $ENV{GNOME_DESKTOP_SESSION_ID}
-            and $ENV{GNOME_DESKTOP_SESSION_ID} ne $EMPTY
-        )
-        or ( defined $ENV{XDG_CURRENT_DESKTOP}
-            and $ENV{XDG_CURRENT_DESKTOP} =~ /(:?XFCE|GNOME)/xsm )
-      )
-    {
-        if ( not defined $gconftool ) {
-            for (qw(gconftool gconftool-2)) {
-                if ( Gscan2pdf::Document::check_command($_) ) {
-                    $gconftool = $_;
-                    last;
-                }
-            }
-            if ( not defined $gconftool ) {
-                show_message_dialog(
-                    parent  => $parent,
-                    type    => 'error',
-                    buttons => 'close',
-                    text    => __(
-'You seem to be using Gnome or XFCE, but do not have gconftool installed. Unable to determine email client.'
-                    )
-                );
-                return;
-            }
-        }
-
-        ( undef, $client ) = Gscan2pdf::Document::exec_command(
-            [
-"$gconftool --get /desktop/gnome/url-handlers/mailto/command | cut -d ' ' -f 1"
-            ]
-        );
-    }
-    else {
-        show_message_dialog(
-            parent  => $parent,
-            type    => 'error',
-            buttons => 'close',
-            text    => __(
-'Unable to determine your desktop enviroment, and therefore your email client.'
-            )
-        );
-        return;
-    }
-
-    if ( $client =~ /(thunderbird|icedove)/smx ) {
-        return [ $1, '-compose', "attachment=file://$attachment" ];
-    }
-    return [ 'xdg-email', '--attach', $attachment, 'x@y' ];
-}
-
 # Display page selector and email.
 
 sub email {
@@ -3352,8 +3285,6 @@ sub email {
             );
             if ( $filename =~ /^\s+$/xsm ) { $filename = 'document' }
             $pdf = "$session/$filename.pdf";
-            my $mua = mua( $windowe, $pdf );
-            if ( not defined $mua or not @{$mua} ) { return }
 
             # Create the PDF
             my ( $signal, $pid );
@@ -3391,7 +3322,8 @@ sub email {
                     {
                         system "xdg-open \"$pdf\" &";
                     }
-                    my $status = Gscan2pdf::Document::exec_command($mua);
+                    my $status = Gscan2pdf::Document::exec_command(
+                        [ 'xdg-email', '--attach', $pdf, 'x@y' ] );
                     if ($status) {
                         show_message_dialog(
                             parent  => $window,

@@ -12,6 +12,8 @@
 * + buttons to navigate between OCR text boxes, sorted by confidence level.
 * Zoom to text when editing OCR
 * Fix error running File/Compress temporary files.
+* Use only xdg-email for creating email. Closes feature request #112
+  (Use gsettings and xdg-email instead of gconftool for sending e-mails)
 
 
 2.6.7 (08.04.2020):
