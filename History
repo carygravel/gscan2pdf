@@ -14,6 +14,7 @@
 * Fix error running File/Compress temporary files.
 * Use only xdg-email for creating email. Closes feature request #112
   (Use gsettings and xdg-email instead of gconftool for sending e-mails)
+* Update to French translation (thanks to Jean-Marc)
 
 
 2.6.7 (08.04.2020):
