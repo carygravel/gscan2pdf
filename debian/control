@@ -1,7 +1,7 @@
 Source: gscan2pdf
 Section: utils
 Priority: optional
-Build-Depends: debhelper-compat (= 12)
+Build-Depends: debhelper-compat (= 13)
 Build-Depends-Indep: perl (>= 5.8.0-7), gettext, libtest-pod-perl,
  libgtk3-simplelist-perl, libimage-sane-perl, liblocale-gettext-perl (>= 1.05),
  sane-utils (>= 1.0.17), libtiff-tools, libpdf-api2-perl,
