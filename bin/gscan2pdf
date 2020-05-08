@@ -2432,10 +2432,10 @@ sub save_pdf {
                 and $SETTING{'view files toggle'} )
             {
                 if ( defined $options{ps} ) {
-                    system "xdg-open \"$options{ps}\" &";
+                    launch_default_for_file( $options{ps} );
                 }
                 else {
-                    system "xdg-open \"$filename\" &";
+                    launch_default_for_file($filename);
                 }
             }
             $logger->debug("Finished saving $filename");
@@ -2443,6 +2443,14 @@ sub save_pdf {
         error_callback => \&error_callback
     );
     return;
+}
+
+sub launch_default_for_file {
+    my ($filename) = @_;
+    my $uri = Glib->filename_to_uri( File::Spec->rel2abs($filename), undef );
+    $logger->info("Opening $uri via default launcher");
+    my $context = Glib::IO::AppLaunchContext->new;
+    return Glib::IO::AppInfo::launch_default_for_uri( $uri, $context );
 }
 
 # Display page selector and on save a fileselector.
@@ -2991,7 +2999,7 @@ sub save_image {
                 if ( defined $SETTING{'view files toggle'}
                     and $SETTING{'view files toggle'} )
                 {
-                    system "xdg-open \"$filename\" &";
+                    launch_default_for_file($filename);
                 }
                 $logger->debug("Finished saving $filename");
             },
@@ -3045,7 +3053,7 @@ sub save_tiff {
             if ( defined $SETTING{'view files toggle'}
                 and $SETTING{'view files toggle'} )
             {
-                system "xdg-open \"$filename\" &";
+                launch_default_for_file($filename);
             }
             $logger->debug("Finished saving $filename");
         },
@@ -3102,7 +3110,7 @@ sub save_djvu {
             if ( defined $SETTING{'view files toggle'}
                 and $SETTING{'view files toggle'} )
             {
-                system "xdg-open \"$filename\" &";
+                launch_default_for_file($filename);
             }
             $logger->debug("Finished saving $filename");
         },
@@ -3145,7 +3153,7 @@ sub save_text {
             if ( defined $SETTING{'view files toggle'}
                 and $SETTING{'view files toggle'} )
             {
-                system "xdg-open \"$filename\" &";
+                launch_default_for_file($filename);
             }
             $logger->debug("Finished saving $filename");
         },
@@ -3187,7 +3195,7 @@ sub save_hocr {
             if ( defined $SETTING{'view files toggle'}
                 and $SETTING{'view files toggle'} )
             {
-                system "xdg-open \"$filename\" &";
+                launch_default_for_file($filename);
             }
             $logger->debug("Finished saving $filename");
         },
@@ -3320,7 +3328,7 @@ sub email {
                     if ( defined $SETTING{'view files toggle'}
                         and $SETTING{'view files toggle'} )
                     {
-                        system "xdg-open \"$pdf\" &";
+                        launch_default_for_file($pdf);
                     }
                     my $status = Gscan2pdf::Document::exec_command(
                         [ 'xdg-email', '--attach', $pdf, 'x@y' ] );
@@ -5726,12 +5734,16 @@ sub view_html {
 
     # At the moment, we have no translations,
     # but when we do, replace C with $locale
-    my $html = "/usr/share/help/C/$prog_name/documentation.html";
-    if ( not -e $html ) {
-        $html = 'http://gscan2pdf.sf.net';
+    my $uri = "/usr/share/help/C/$prog_name/documentation.html";
+    if ( not -e $uri ) {
+        $uri = 'http://gscan2pdf.sf.net';
     }
-    $logger->info("Opening $html in default webbrowser via xdg-open");
-    Gscan2pdf::Document::exec_command( [ 'xdg-open', $html ] );
+    else {
+        $uri = Glib->filename_to_uri( $uri, undef );    # undef => no hostname
+    }
+    $logger->info("Opening $uri via default launcher");
+    my $context = Glib::IO::AppLaunchContext->new;
+    Glib::IO::AppInfo::launch_default_for_uri( $uri, $context );
     return;
 }
 

@@ -14,6 +14,7 @@
 * Fix error running File/Compress temporary files.
 * Use only xdg-email for creating email. Closes feature request #112
   (Use gsettings and xdg-email instead of gconftool for sending e-mails)
+* Use GTK functionality instead of xdg-open for launching file viewer.
 * Update to French translation (thanks to Jean-Marc)
 
 
