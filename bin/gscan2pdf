@@ -6969,9 +6969,9 @@ and lo and behold, you can install the nice shiny new version.
 
 From the command line:
 
-C<sudo apt-get update>
+C<sudo apt update>
 
-C<sudo apt-get install gscan2pdf>
+C<sudo apt install gscan2pdf>
 
 =head2 RPMs
 
