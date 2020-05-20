@@ -5,6 +5,7 @@ use warnings;
 use feature 'switch';
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use GooCanvas2;
+use Gscan2pdf::Canvas::Bbox;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use HTML::Entities;
 use Carp;
@@ -13,7 +14,6 @@ use Readonly;
 Readonly my $_100_PERCENT       => 100;
 Readonly my $_360_DEGREES       => 360;
 Readonly my $FULLPAGE_OCR_SCALE => 0.8;
-my $SPACE = q{ };
 my $EMPTY = q{};
 my $device;
 my %old_idles;
@@ -80,7 +80,7 @@ sub INIT_INSTANCE {
     $self->{offset}{y} = 0;
 
     # allow the widget to accessed via CSS
-    $self->set_name('gscan2pdf-ocr-output');
+    $self->set_name('gscan2pdf-ocr-canvas');
     return $self;
 }
 
@@ -113,7 +113,7 @@ sub SET_PROPERTY {
     return;
 }
 
-sub set_text {
+sub set_text {    # FIXME: why is this called twice when running OCR from tools?
     my ( $self, $page, $edit_callback, $idle ) = @_;
     if ( not defined $idle ) {
         $idle = TRUE;
@@ -146,76 +146,73 @@ sub set_text {
     $self->{confidence_list} = [];
     for my $box ( @{ $page->boxes } ) {
         my %options = (
-            root            => $root,
-            box             => $box,
-            transformation  => [ 0, 0, 0 ],
-            edit_callback   => $edit_callback,
-            text_color      => $color_hex,
-            idle            => $idle,
-            confidence_list => $self->{confidence_list},
+            parent         => $root,
+            box            => $box,
+            transformation => [ 0, 0, 0 ],
+            edit_callback  => $edit_callback,
+            text_color     => $color_hex,
+            idle           => $idle,
         );
         if ($idle) {
             $old_idles{$box} = Glib::Idle->add(
                 sub {
-                    _boxed_text(%options);
+                    $self->_boxed_text(%options);
                     delete $old_idles{$box};
                     return Glib::SOURCE_REMOVE;
                 }
             );
         }
         else {
-            _boxed_text(%options);
+            $self->_boxed_text(%options);
         }
     }
     return;
 }
 
-sub get_first_text {
+sub get_first_bbox {
     my ($self) = @_;
     $self->{confidence_index} = 0;
-    return $self->get_text_by_index;
+    return $self->get_bbox_by_index;
 }
 
-sub get_previous_text {
+sub get_previous_bbox {
     my ($self) = @_;
     if ( $self->{confidence_index} > 0 ) {
         $self->{confidence_index} -= 1;
     }
-    return $self->get_text_by_index;
+    return $self->get_bbox_by_index;
 }
 
-sub get_next_text {
+sub get_next_bbox {
     my ($self) = @_;
     if ( $self->{confidence_index} < $#{ $self->{confidence_list} } ) {
         $self->{confidence_index} += 1;
     }
-    return $self->get_text_by_index;
+    return $self->get_bbox_by_index;
 }
 
-sub get_last_text {
+sub get_last_bbox {
     my ($self) = @_;
     $self->{confidence_index} = $#{ $self->{confidence_list} };
-    return $self->get_text_by_index;
+    return $self->get_bbox_by_index;
 }
 
-sub get_text_by_index {
+sub get_bbox_by_index {
     my ($self) = @_;
     return $self->{confidence_list}[ $self->{confidence_index} ][0];
 }
 
-# FIXME: bbox should have its own class, the bbox knows its confidence, and we
-# don't need to pass it here.
-
-sub update_index_by_text {
-    my ( $self, $text, $confidence ) = @_;
+sub set_index_by_bbox {
+    my ( $self, $bbox ) = @_;
 
     # There may be multiple boxes with the same confidence, so use a binary
     # search to find the next smallest confidence, and then a linear search to
     # find the box
+    my $confidence = $bbox->get('confidence');
     my $l =
       confidence_binary_search( $self->{confidence_list}, $confidence - 1 );
     for my $i ( $l .. $#{ $self->{confidence_list} } ) {
-        if ( $self->{confidence_list}->[$i][0] == $text ) {
+        if ( $self->{confidence_list}->[$i][0] == $bbox ) {
             $self->{confidence_index} = $i;
             return $i;
         }
@@ -277,8 +274,8 @@ sub get_offset {
 # Draw text on the canvas with a box around it
 
 sub _boxed_text {
-    my (%options)      = @_;
-    my $root           = $options{root};
+    my ( $self, %options ) = @_;
+    my $parent         = $options{parent};
     my $box            = $options{box};
     my $transformation = $options{transformation};
     my $edit_callback  = $options{edit_callback};
@@ -286,95 +283,41 @@ sub _boxed_text {
     my $idle           = $options{idle};
     my ( $rotation, $x0, $y0 ) = @{$transformation};
     my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
-    my $x_size = abs $x2 - $x1;
-    my $y_size = abs $y2 - $y1;
-    my $g      = GooCanvas2::CanvasGroup->new( parent => $root );
-    $g->translate( $x1 - $x0, $y1 - $y0 );
     my $textangle = $box->{textangle} || 0;
 
-    # add box properties to group properties
-    map { $g->{$_} = $box->{$_}; } keys %{$box};
-
-    # draw the rect first to make sure the text goes on top
-    # and receives any mouse clicks
-    my $confidence =
-      defined $box->{confidence} ? $box->{confidence} : $_100_PERCENT;
-    $confidence = $confidence > 64           ## no critic (ProhibitMagicNumbers)
-      ? 2 * int( ( $confidence - 65 ) / 12 ) ## no critic (ProhibitMagicNumbers)
-      + 10                                   ## no critic (ProhibitMagicNumbers)
-      : 0;
-    my $color = defined $box->{confidence}
-      ? sprintf(
-        '#%xfff%xfff%xfff',
-        0xf - int( $confidence / 10 ),       ## no critic (ProhibitMagicNumbers)
-        $confidence, $confidence
-      )
-      : '#7fff7fff7fff';
-    my $rect = GooCanvas2::CanvasRect->new(
-        parent         => $g,
-        x              => 0,
-        y              => 0,
-        width          => $x_size,
-        height         => $y_size,
-        'stroke-color' => $color,
-        'line-width'   => ( $box->{text} ? 2 : 1 )
+    my %options2 = (
+        parent => $options{parent},
+        bbox   => {
+            x      => $x1,
+            y      => $y1,
+            width  => abs $x2 - $x1,
+            height => abs $y2 - $y1
+        },
+        transformation => $options{transformation},
+        textangle      => $textangle,
     );
 
-    # show text baseline (currently of no use)
-    #if ( $box->{baseline} ) {
-    #    my ( $slope, $offs ) = @{ $box->{baseline} }[-2,-1];
-    #    # "real" baseline with slope
-    #    $rect = GooCanvas2::CanvasPolyline->new_line( $g,
-    #        0, $y_size + $offs, $x_size, $y_size + $offs + $x_size * $slope,
-    #        'stroke-color' => 'green' );
-    #    # virtual, horizontally aligned baseline
-    #    my $y_offs = $y_size + $offs + 0.5 * $x_size * $slope;
-    #    $rect = GooCanvas2::CanvasPolyline->new_line( $g,
-    #        0, $y_offs, $x_size, $y_offs,
-    #        'stroke-color' => 'orange' );
-    #}
+    for my $key (qw(baseline confidence id text textangle type)) {
+        if ( defined $box->{$key} ) {
+            $options2{$key} = $box->{$key};
+        }
+    }
+    my $bbox = Gscan2pdf::Canvas::Bbox->new(%options2);
 
     if ( $box->{text} ) {
 
-        # create text and then scale, shift & rotate it into the bounding box
-        my $text = GooCanvas2::CanvasText->new(
-            parent       => $g,
-            text         => $box->{text},
-            x            => ( $x_size / 2 ),
-            y            => ( $y_size / 2 ),
-            width        => -1,
-            anchor       => 'center',
-            'font'       => 'Sans',
-            'fill-color' => $text_color,
-        );
-        add_box_to_confidence_list( $options{confidence_list},
-            $text, $box->{confidence} );
+        $self->add_box_to_index($bbox);
 
-        my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
-        my $bounds = $text->get_bounds;
-        if ( ( $bounds->x2 - $bounds->x1 ) == 0 ) {
-            Glib->warning( __PACKAGE__,
-                "text $box->{text} has no width, skipping" );
-            return;
-        }
-        my $scale =
-          ( $angle ? $y_size : $x_size ) / ( $bounds->x2 - $bounds->x1 );
-
-        # gocr case: gocr creates text only which we treat as page text
-        if ( $box->{type} eq 'page' ) {
-            $scale *= $FULLPAGE_OCR_SCALE;
-        }
-
-        _transform_text( $g, $text, $scale, $angle );
+        my $angle = -( $textangle + $rotation ) % $_360_DEGREES;
 
         # clicking text box produces a dialog to edit the text
         if ($edit_callback) {
-            $text->signal_connect(
+            $bbox->signal_connect(
                 'button-press-event' => sub {
                     my ( $widget, $target, $event ) = @_;
                     if ( $event->button == 1 ) {
-                        $root->get_parent->{dragging} = FALSE;
-                        $edit_callback->( $widget, $target, $event, $g );
+                        $parent->get_parent->{dragging} = FALSE;
+                        $edit_callback->( $widget, $target, $event, $bbox );
                     }
                 }
             );
@@ -382,26 +325,25 @@ sub _boxed_text {
     }
     if ( $box->{contents} ) {
         for my $child ( @{ $box->{contents} } ) {
-            my %noptions = (
-                root            => $g,
-                box             => $child,
-                transformation  => [ $textangle + $rotation, $x1, $y1 ],
-                edit_callback   => $edit_callback,
-                text_color      => $text_color,
-                idle            => $idle,
-                confidence_list => $options{confidence_list},
+            my %options3 = (
+                parent         => $bbox,
+                box            => $child,
+                transformation => [ $textangle + $rotation, $x1, $y1 ],
+                edit_callback  => $edit_callback,
+                text_color     => $text_color,
+                idle           => $idle,
             );
             if ($idle) {
                 $old_idles{$child} = Glib::Idle->add(
                     sub {
-                        _boxed_text(%noptions);
+                        $self->_boxed_text(%options3);
                         delete $old_idles{$child};
                         return Glib::SOURCE_REMOVE;
                     }
                 );
             }
             else {
-                _boxed_text(%noptions);
+                $self->_boxed_text(%options3);
             }
         }
     }
@@ -455,94 +397,23 @@ sub confidence_binary_search {
 
 # insert into list sorted by confidence level using a binary search
 
-sub add_box_to_confidence_list {
-    my ( $confidence_list, $text, $confidence ) = @_;
-    if ( not @{$confidence_list} ) {
-        push @{$confidence_list}, [ $text, $confidence ];
+sub add_box_to_index {
+    my ( $self, $bbox ) = @_;
+    my $confidence = $bbox->get('confidence');
+    if ( not @{ $self->{confidence_list} } ) {
+        push @{ $self->{confidence_list} }, [ $bbox, $confidence ];
         return;
     }
-    my $i = confidence_binary_search( $confidence_list, $confidence );
-    splice @{$confidence_list}, $i, 0, [ $text, $confidence ];
+    my $i = confidence_binary_search( $self->{confidence_list}, $confidence );
+    splice @{ $self->{confidence_list} }, $i, 0, [ $bbox, $confidence ];
     return;
 }
 
-sub delete_box {    #FIXME: bbox should have its own class
-    my ( $self, $widget ) = @_;
-    my $g      = $widget->get_property('parent');
-    my $parent = $g->get_property('parent');
-    for my $i ( 0 .. $parent->get_n_children - 1 ) {
-        my $group = $parent->get_child($i);
-        if ( $group eq $g ) {
-            $parent->remove_child($i);
-            last;
-        }
-    }
+sub remove_current_box_from_index {
+    my ($self) = @_;
     splice @{ $self->{confidence_list} }, $self->{confidence_index}, 1;
     if ( $self->{confidence_index} > $#{ $self->{confidence_list} } ) {
         $self->{confidence_index} = $#{ $self->{confidence_list} };
-    }
-    return;
-}
-
-# Set the text in the given widget
-
-sub update_box {    #FIXME: bbox should have its own class
-    my ( $self, $widget, $text, $selection ) = @_;
-
-    # per above: group = text's parent, group's 1st child = rect
-    my $g    = $widget->get_property('parent');
-    my $rect = $g->get_child(0);
-    if ( length $text ) {
-        $widget->set( text => $text );
-        $g->{text}       = $text;
-        $g->{confidence} = $_100_PERCENT;
-
-        # color for 100% confidence
-        $rect->set_property( 'stroke-color' => '#efffefffefff' );
-
-        # re-adjust text size & position
-        if ( $g->{type} ne 'page' ) {
-            my ( $x1, $y1 ) = ( $selection->{x}, $selection->{y} );
-            my ( $x2, $y2 ) =
-              ( $x1 + $selection->{width}, $y1 + $selection->{height} );
-            $g->{bbox} = [ $x1, $y1, $x2, $y2 ];
-            $widget->set_simple_transform( 0, 0, 1, 0 );
-            my $bounds = $widget->get_bounds;
-            my $angle  = $g->{_angle} || 0;
-            my $scale =
-              ( $angle ? $selection->{height} : $selection->{width} ) /
-              ( $bounds->x2 - $bounds->x1 );
-
-            _transform_text( $g, $widget, $scale, $angle );
-        }
-
-        # move position in confidence_list
-        splice @{ $self->{confidence_list} }, $self->{confidence_index}, 1;
-        add_box_to_confidence_list( $self->{confidence_list},
-            $widget, $g->{confidence} );
-    }
-    else {
-        $self->delete_box($widget);
-    }
-    return;
-}
-
-# scale, rotate & shift text
-
-sub _transform_text {
-    my ( $g, $text, $scale, $angle ) = @_;
-    $angle ||= 0;
-
-    if ( $g->{bbox} && $g->{text} ) {
-        my ( $x1, $y1, $x2, $y2 ) = @{ $g->{bbox} };
-        my $x_size = abs $x2 - $x1;
-        my $y_size = abs $y2 - $y1;
-        $g->{_angle} = $angle;
-        $text->set_simple_transform( 0, 0, $scale, $angle );
-        my $bounds   = $text->get_bounds;
-        my $x_offset = ( $x1 + $x2 - $bounds->x1 - $bounds->x2 ) / 2;
-        my $y_offset = ( $y1 + $y2 - $bounds->y1 - $bounds->y2 ) / 2;
-        $text->set_simple_transform( $x_offset, $y_offset, $scale, $angle );
     }
     return;
 }
@@ -554,7 +425,7 @@ sub hocr {
     if ( not defined $self->get_pixbuf_size ) { return }
     my ( $x, $y, $w, $h ) = $self->get_bounds;
     my $root   = $self->get_root_item;
-    my $string = _group2hocr( $root, 2 );
+    my $string = $root->get_child(0)->to_hocr(2);
     return <<"EOS";
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -566,77 +437,9 @@ sub hocr {
   <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocr_word'/>
  </head>
  <body>
-$string
- </body>
+$string </body>
 </html>
 EOS
-}
-
-sub _group2hocr {
-    my ( $parent, $indent ) = @_;
-    my $string = $EMPTY;
-
-    for my $i ( 0 .. $parent->get_n_children - 1 ) {
-        my $group = $parent->get_child($i);
-
-        if ( ref($group) eq 'GooCanvas2::CanvasGroup' ) {
-
-            # try to preserve as much information as possible
-            if ( $group->{bbox} and $group->{type} ) {
-
-                # determine hOCR element types & mapping to HTML tags
-                my $type = 'ocr_' . $group->{type};
-                my $tag  = 'span';
-                given ( $group->{type} ) {
-                    when ('page') {
-                        $tag = 'div';
-                    }
-                    when (/^(?:carea|column)$/xsm) {
-                        $type = 'ocr_carea';
-                        $tag  = 'div';
-                    }
-                    when ('para') {
-                        $type = 'ocr_par';
-                        $tag  = 'p';
-                    }
-                }
-
-                # build properties of hOCR elements
-                my $id = $group->{id} ? "id='$group->{id}'" : $EMPTY;
-                my $title =
-                    'title=' . q{'} . 'bbox '
-                  . join( $SPACE, @{ $group->{bbox} } )
-                  . (
-                      $group->{textangle} ? '; textangle ' . $group->{textangle}
-                    : $EMPTY
-                  )
-                  . (
-                    $group->{baseline}
-                    ? '; baseline ' . join( $SPACE, @{ $group->{baseline} } )
-                    : $EMPTY
-                  )
-                  . (
-                      $group->{confidence} ? '; x_wconf ' . $group->{confidence}
-                    : $EMPTY
-                  ) . q{'};
-
-                # append to output (recurse to nested levels)
-                if ( $string ne $EMPTY ) { $string .= "\n" }
-                $string .=
-                    $SPACE x $indent
-                  . "<$tag class='$type' "
-                  . join( $SPACE, $id, $title ) . '>'
-                  . (
-                    $group->{text}
-                    ? HTML::Entities::encode( $group->{text}, "<>&\"'" )
-                    : "\n"
-                      . _group2hocr( $group, $indent + 1 ) . "\n"
-                      . $SPACE x $indent
-                  ) . "</$tag>";
-            }
-        }
-    }
-    return $string;
 }
 
 # convert x, y in widget distance to image distance

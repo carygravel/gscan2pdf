@@ -27,6 +27,7 @@ icons/stock-rotate-270.svg
 icons/stock-rotate-90.svg
 icons/stock-selection-all-16.png
 lib/Gscan2pdf/Canvas.pm
+lib/Gscan2pdf/Canvas/Bbox.pm
 lib/Gscan2pdf/ComboBoxText.pm
 lib/Gscan2pdf/Config.pm
 lib/Gscan2pdf/Cuneiform.pm

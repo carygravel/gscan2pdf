@@ -264,7 +264,7 @@ my (
     $print_settings, $windowc, $current_page,
 
     # Goo::Canvas for OCR output
-    $canvas, $vpaned, $ocr_text_hbox, $ocr_textbuffer, $ocr_text_widget,
+    $canvas, $vpaned, $ocr_text_hbox, $ocr_textbuffer, $ocr_bbox,
 
     # Notebook, split panes for detail view and OCR output
     $vnotebook, $hpanei,
@@ -431,28 +431,28 @@ sub populate_main_window {
         Gtk3::Image->new_from_stock( 'gtk-goto-first', 'button' ) );
     $ocr_text_fbutton->set_tooltip_text( __('Go to least confident text') );
     $ocr_text_fbutton->signal_connect(
-        clicked => sub { edit_ocr_text( $canvas->get_first_text ) } );
+        clicked => sub { edit_ocr_text( $canvas->get_first_bbox ) } );
 
     my $ocr_text_pbutton = Gtk3::Button->new;
     $ocr_text_pbutton->set_image(
         Gtk3::Image->new_from_stock( 'gtk-go-back', 'button' ) );
     $ocr_text_pbutton->set_tooltip_text( __('Go to previous text') );
     $ocr_text_pbutton->signal_connect(
-        clicked => sub { edit_ocr_text( $canvas->get_previous_text ) } );
+        clicked => sub { edit_ocr_text( $canvas->get_previous_bbox ) } );
 
     my $ocr_text_nbutton = Gtk3::Button->new;
     $ocr_text_nbutton->set_image(
         Gtk3::Image->new_from_stock( 'gtk-go-forward', 'button' ) );
     $ocr_text_nbutton->set_tooltip_text( __('Go to next text') );
     $ocr_text_nbutton->signal_connect(
-        clicked => sub { edit_ocr_text( $canvas->get_next_text ) } );
+        clicked => sub { edit_ocr_text( $canvas->get_next_bbox ) } );
 
     my $ocr_text_lbutton = Gtk3::Button->new;
     $ocr_text_lbutton->set_image(
         Gtk3::Image->new_from_stock( 'gtk-goto-last', 'button' ) );
     $ocr_text_lbutton->set_tooltip_text( __('Go to most confident text') );
     $ocr_text_lbutton->signal_connect(
-        clicked => sub { edit_ocr_text( $canvas->get_last_text ) } );
+        clicked => sub { edit_ocr_text( $canvas->get_last_bbox ) } );
 
     my $ocr_text_obutton = Gtk3::Button->new;
     $ocr_text_obutton->set_image(
@@ -460,10 +460,10 @@ sub populate_main_window {
     $ocr_text_obutton->set_tooltip_text( __('Accept corrections') );
     $ocr_text_obutton->signal_connect(
         clicked => sub {
-            $canvas->update_box( $ocr_text_widget, $ocr_textbuffer->get('text'),
+            $ocr_bbox->update_box( $ocr_textbuffer->get('text'),
                 $view->get_selection );
             $current_page->{hocr} = $canvas->hocr;
-            edit_ocr_text( $canvas->get_next_text );
+            edit_ocr_text( $canvas->get_next_bbox );
         }
     );
 
@@ -483,8 +483,8 @@ sub populate_main_window {
     $ocr_text_dbutton->set_tooltip_text( __('Delete text') );
     $ocr_text_dbutton->signal_connect(
         clicked => sub {
-            $canvas->delete_box($ocr_text_widget);
-            edit_ocr_text( $canvas->get_text_by_index );
+            $ocr_bbox->delete_box;
+            edit_ocr_text( $canvas->get_bbox_by_index );
         }
     );
 
@@ -1892,28 +1892,20 @@ sub create_canvas {
 }
 
 sub edit_ocr_text {
-    my ( $widget, $target, $ev, $g ) = @_;
-    $ocr_text_widget = $widget;
-    $ocr_textbuffer->set( text => $widget->get('text') );
-    $ocr_text_hbox->show_all;
-
-    if ( not $g ) {
-        $g = $widget->get_property('parent');
+    my ( $widget, $target, $ev, $bbox ) = @_;
+    if ( not $ev ) {
+        $bbox = $widget;
     }
-    my ( $x1, $y1, $x2, $y2 ) = @{ $g->{bbox} };
-    my %box = (
-        x      => $x1,
-        y      => $y1,
-        width  => $x2 - $x1,
-        height => $y2 - $y1,
-    );
-    $view->set_selection( \%box );
+    $ocr_bbox = $bbox;
+    $ocr_textbuffer->set( text => $bbox->get('text') );
+    $ocr_text_hbox->show_all;
+    $view->set_selection( $bbox->get('bbox') );
     $view->set_zoom_to_fit(FALSE);
     $view->zoom_to_selection($ZOOM_CONTEXT_FACTOR);
 
     if ($ev) {
         $canvas->pointer_ungrab( $widget, $ev->time );
-        $canvas->update_index_by_text( $widget, $g->{confidence} );
+        $canvas->set_index_by_bbox($bbox);
     }
     return TRUE;
 }
