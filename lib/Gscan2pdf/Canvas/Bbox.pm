@@ -11,6 +11,17 @@ use Carp;
 use POSIX qw/ceil/;
 use Readonly;
 Readonly my $FULLPAGE_OCR_SCALE => 0.8;
+Readonly my $MAX_CONFIDENCE     => 95;
+Readonly my $MAX_COLOR          => 'black';
+Readonly my $MIN_CONFIDENCE     => 50;
+Readonly my $MIN_COLOR          => 'red';
+Readonly my $MAX_COLOR_INT      => 65_535;
+Readonly my $COLOR_TOLERANCE    => 0.00001;
+Readonly my $COLOR_GREEN        => 2;
+Readonly my $COLOR_CYAN         => 3;
+Readonly my $COLOR_BLUE         => 4;
+Readonly my $COLOR_YELLOW       => 6;
+Readonly my $_60_DEGREES        => 60;
 
 my ( $EMPTY, $_100_PERCENT, $_360_DEGREES );
 
@@ -108,21 +119,17 @@ sub new {
     # draw the rect first to make sure the text goes on top
     # and receives any mouse clicks
     my $confidence = $self->get('confidence');
-    $confidence = $confidence > 64    ## no critic (ProhibitMagicNumbers)
-      ? 2 * int( ( $confidence - 65 ) / 12 ) ## no critic (ProhibitMagicNumbers)
-      + 10                                   ## no critic (ProhibitMagicNumbers)
-      : 0;
-    my $color = sprintf '#%xfff%xfff%xfff',
-      0xf - int( $confidence / 10 ),         ## no critic (ProhibitMagicNumbers)
-      $confidence, $confidence;
-    my $rect = GooCanvas2::CanvasRect->new(
+    my $rect       = GooCanvas2::CanvasRect->new(
         parent         => $self,
         x              => 0,
         y              => 0,
         width          => $width,
         height         => $height,
-        'stroke-color' => $color,
-        'line-width'   => ( $self->{text} ? 2 : 1 )
+        'stroke-color' => confidence2color(
+            $confidence,     $MAX_CONFIDENCE, $MAX_COLOR,
+            $MIN_CONFIDENCE, $MIN_COLOR
+        ),
+        'line-width' => ( $self->{text} ? 2 : 1 )
     );
 
     # show text baseline (currently of no use)
@@ -150,7 +157,10 @@ sub new {
             width        => -1,
             anchor       => 'center',
             'font'       => 'Sans',
-            'fill-color' => $color,
+            'fill-color' => confidence2color(
+                $confidence,     $MAX_CONFIDENCE, $MAX_COLOR,
+                $MIN_CONFIDENCE, $MIN_COLOR
+            ),
         );
         my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
         my $bounds = $text->get_bounds;
@@ -170,6 +180,161 @@ sub new {
     }
 
     return $self;
+}
+
+# Convert confidence percentage into colour
+# Any confidence level greater than max_conf is treated as max_conf and given
+# max_color. Any confidence level less than min_conf is treated as min_conf and
+# given min_color. Anything inbetween is appropriately interpolated in HSV space.
+
+sub confidence2color {
+    my ( $confidence, $max_conf, $max_color, $min_conf, $min_color ) = @_;
+    if ( $confidence >= $max_conf ) {
+        return $max_color;
+    }
+    if ( $confidence <= $min_conf ) {
+        return $min_color;
+    }
+    my ( %max_rgb, %min_rgb );
+    ( $max_rgb{r}, $max_rgb{g}, $max_rgb{b} ) = string2rgb($max_color);
+    ( $min_rgb{r}, $min_rgb{g}, $min_rgb{b} ) = string2rgb($min_color);
+    my %max_hsv = rgb2hsv(%max_rgb);
+    my %min_hsv = rgb2hsv(%min_rgb);
+    my $m       = ( $confidence - $min_conf ) / ( $max_conf - $min_conf );
+    my %hsv;
+    ( $hsv{h}, $hsv{s}, $hsv{v}, ) = (
+        linear_interpolation( $min_hsv{h}, $max_hsv{h}, $m ),
+        linear_interpolation( $min_hsv{s}, $max_hsv{s}, $m ),
+        linear_interpolation( $min_hsv{v}, $max_hsv{v}, $m ),
+    );
+    my %rgb = hsv2rgb(%hsv);
+    my $hex = sprintf '#%04x%04x%04x', $rgb{r}, $rgb{g}, $rgb{b};
+    return $hex;
+}
+
+sub linear_interpolation {
+    my ( $x1, $x2, $m ) = @_;
+    return $x1 * ( 1 - $m ) + $x2 * $m;
+}
+
+sub string2rgb {
+    my ($spec) = @_;
+    my $color = Gtk3::Gdk::Color::parse($spec)->to_string;
+    my @color = unpack 'xA4A4A4', $color;
+    for (@color) { $_ = hex }
+    return @color;
+}
+
+sub rgb2hsv {
+    my (%in) = @_;
+    ( $in{r}, $in{g}, $in{b}, ) = (
+        $in{r} / $MAX_COLOR_INT,
+        $in{g} / $MAX_COLOR_INT,
+        $in{b} / $MAX_COLOR_INT,
+    );
+
+    my $min = $in{r} < $in{g} ? $in{r} : $in{g};
+    $min = $min < $in{b} ? $min : $in{b};
+
+    my $max = $in{r} > $in{g} ? $in{r} : $in{g};
+    $max = $max > $in{b} ? $max : $in{b};
+
+    my %out;
+    $out{v} = $max;
+    my $delta = $max - $min;
+    if ( $delta < $COLOR_TOLERANCE ) {
+        $out{s} = 0;
+        $out{h} = 0;    # undefined, maybe nan?
+        return %out;
+    }
+    if ( $max > 0 ) {    # NOTE: if Max is == 0, this divide would cause a crash
+        $out{s} = ( $delta / $max );
+    }
+    else {
+        # if max is 0, then r = g = b = 0
+        # s = 0, h is undefined
+        $out{s} = 0;
+        $out{h} = 0;    # undefined
+        return %out;
+    }
+    if ( $in{r} >= $max ) {    # > is bogus, just keeps compiler happy
+        $out{h} =
+          ( ( $in{g} - $in{b} ) / $delta )
+          % $COLOR_YELLOW;     # between yellow & magenta
+    }
+    elsif ( $in{g} >= $max ) {
+        $out{h} =
+          $COLOR_GREEN + ( $in{b} - $in{r} ) / $delta;   # between cyan & yellow
+    }
+    else {
+        $out{h} =
+          $COLOR_BLUE + ( $in{r} - $in{g} ) / $delta;   # between magenta & cyan
+    }
+    $out{h} *= $_60_DEGREES;
+
+    if ( $out{h} < 0.0 ) {
+        $out{h} += $_360_DEGREES;
+    }
+    return %out;
+}
+
+sub hsv2rgb {
+    my (%in) = @_;
+
+    my %out;
+    if ( $in{s} <= 0.0 ) {    # < is bogus, just shuts up warnings
+        $out{r} = $in{v};
+        $out{g} = $in{v};
+        $out{b} = $in{v};
+        return %out;
+    }
+    my $hh = $in{h};
+    if ( $hh >= $_360_DEGREES ) { $hh = 0.0 }
+    $hh /= $_60_DEGREES;
+    my $i  = $hh;
+    my $ff = $hh - $i;
+    my $p  = $in{v} * ( 1.0 - $in{s} );
+    my $q  = $in{v} * ( 1.0 - ( $in{s} * $ff ) );
+    my $t  = $in{v} * ( 1.0 - ( $in{s} * ( 1.0 - $ff ) ) );
+
+    given ($i) {
+        when (0) {
+            $out{r} = $in{v};
+            $out{g} = $t;
+            $out{b} = $p;
+        }
+        when (1) {
+            $out{r} = $q;
+            $out{g} = $in{v};
+            $out{b} = $p;
+        }
+        when ($COLOR_GREEN) {
+            $out{r} = $p;
+            $out{g} = $in{v};
+            $out{b} = $t;
+        }
+        when ($COLOR_CYAN) {
+            $out{r} = $p;
+            $out{g} = $q;
+            $out{b} = $in{v};
+        }
+        when ($COLOR_BLUE) {
+            $out{r} = $t;
+            $out{g} = $p;
+            $out{b} = $in{v};
+        }
+        default {
+            $out{r} = $in{v};
+            $out{g} = $p;
+            $out{b} = $q;
+        }
+    }
+    ( $out{r}, $out{g}, $out{b}, ) = (
+        $out{r} * $MAX_COLOR_INT,
+        $out{g} * $MAX_COLOR_INT,
+        $out{b} * $MAX_COLOR_INT,
+    );
+    return %out;
 }
 
 sub get_box_widget {

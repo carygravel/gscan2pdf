@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 25;
+use Test::More tests => 28;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -292,6 +292,15 @@ $expected = <<"EOS";
 EOS
 
 is( $canvas->hocr, $expected, 'canvas2hocr from simple text' );
+
+#########################
+
+is Gscan2pdf::Canvas::Bbox::confidence2color( 100, 90, 'black', 50, 'red' ),
+  'black', '> max';
+is Gscan2pdf::Canvas::Bbox::confidence2color( 70, 90, 'black', 50, 'red' ),
+  '#7fff3fff3fff', 'mid way';
+is Gscan2pdf::Canvas::Bbox::confidence2color( 40, 90, 'black', 50, 'red' ),
+  'red', '< min';
 
 #########################
 
