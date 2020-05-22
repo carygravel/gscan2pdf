@@ -6,18 +6,28 @@ use feature 'switch';
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use GooCanvas2;
 use Gscan2pdf::Canvas::Bbox;
-use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
+use Glib 1.220 ':constants';
 use HTML::Entities;
 use Carp;
 use POSIX qw/ceil/;
 use Readonly;
-Readonly my $_100_PERCENT       => 100;
-Readonly my $_360_DEGREES       => 360;
-Readonly my $FULLPAGE_OCR_SCALE => 0.8;
-my $EMPTY = q{};
+Readonly my $_360_DEGREES    => 360;
+Readonly my $MAX_COLOR_INT   => 65_535;
+Readonly my $COLOR_TOLERANCE => 0.00001;
+Readonly my $COLOR_GREEN     => 2;
+Readonly my $COLOR_BLUE      => 4;
+Readonly my $COLOR_YELLOW    => 6;
+Readonly my $_60_DEGREES     => 60;
 my $device;
 my %old_idles;
 
+my ( $_100_PERCENT, $MAX_CONFIDENCE_DEFAULT, $MIN_CONFIDENCE_DEFAULT );
+
+BEGIN {
+    Readonly $_100_PERCENT           => 100;
+    Readonly $MAX_CONFIDENCE_DEFAULT => 95;
+    Readonly $MIN_CONFIDENCE_DEFAULT => 50;
+}
 our $VERSION = '2.7.0';
 
 use Glib::Object::Subclass GooCanvas2::Canvas::, signals => {
@@ -33,7 +43,51 @@ use Glib::Object::Subclass GooCanvas2::Canvas::, signals => {
         'offset',                                       # name
         'Image offset',                                 # nick
         'Gdk::Rectangle hash of x, y',                  # blurb
-        [qw/readable writable/]                         # flags
+        G_PARAM_READWRITE                               # flags
+    ),
+    Glib::ParamSpec->string(
+        'max-color',                                    # name
+        'Maximum color',                                # nick
+        'Color for maximum confidence',                 # blurb
+        'black',                                        # default
+        G_PARAM_READWRITE,                              # flags
+    ),
+    Glib::ParamSpec->scalar(
+        'max-color-hsv',                                # name
+        'Maximum color (HSV)',                          # nick
+        'HSV Color for maximum confidence',             # blurb
+        G_PARAM_READWRITE,                              # flags
+    ),
+    Glib::ParamSpec->string(
+        'min-color',                                    # name
+        'Minimum color',                                # nick
+        'Color for minimum confidence',                 # blurb
+        'red',                                          # default
+        G_PARAM_READWRITE,                              # flags
+    ),
+    Glib::ParamSpec->scalar(
+        'min-color-hsv',                                # name
+        'Minimum color (HSV)',                          # nick
+        'HSV Color for minimum confidence',             # blurb
+        G_PARAM_READWRITE,                              # flags
+    ),
+    Glib::ParamSpec->int(
+        'max-confidence',                               # name
+        'Maximum confidence',                           # nick
+        'Confidence threshold for max-color',           # blurb
+        0,                                              # min
+        $_100_PERCENT,                                  # max
+        $MAX_CONFIDENCE_DEFAULT,                        # default
+        G_PARAM_READWRITE,                              # flags
+    ),
+    Glib::ParamSpec->int(
+        'min-confidence',                               # name
+        'Minimum confidence',                           # nick
+        'Confidence threshold for min-color',           # blurb
+        0,                                              # min
+        $_100_PERCENT,                                  # max
+        $MIN_CONFIDENCE_DEFAULT,                        # default
+        G_PARAM_READWRITE,                              # flags
     ),
   ];
 
@@ -103,6 +157,14 @@ sub SET_PROPERTY {
                         $newval->{y} );
                 }
             }
+            when ('max_color') {
+                $self->{$name} = $newval;
+                $self->{max_color_hsv} = string2hsv($newval);
+            }
+            when ('min_color') {
+                $self->{$name} = $newval;
+                $self->{min_color_hsv} = string2hsv($newval);
+            }
             default {
                 $self->{$name} = $newval;
 
@@ -111,6 +173,94 @@ sub SET_PROPERTY {
         }
     }
     return;
+}
+
+sub get_max_color_hsv {
+    my ($self) = @_;
+    my $val = $self->{max_color_hsv};
+    if ( not defined $val ) {
+        $self->{max_color_hsv} = string2hsv( $self->get('max-color') );
+        return $self->{max_color_hsv};
+    }
+    return $val;
+}
+
+sub get_min_color_hsv {
+    my ($self) = @_;
+    my $val = $self->{min_color_hsv};
+    if ( not defined $val ) {
+        $self->{min_color_hsv} = string2hsv( $self->get('min-color') );
+        return $self->{min_color_hsv};
+    }
+    return $val;
+}
+
+sub rgb2hsv {
+    my (%in) = @_;
+    ( $in{r}, $in{g}, $in{b}, ) = (
+        $in{r} / $MAX_COLOR_INT,
+        $in{g} / $MAX_COLOR_INT,
+        $in{b} / $MAX_COLOR_INT,
+    );
+
+    my $min = $in{r} < $in{g} ? $in{r} : $in{g};
+    $min = $min < $in{b} ? $min : $in{b};
+
+    my $max = $in{r} > $in{g} ? $in{r} : $in{g};
+    $max = $max > $in{b} ? $max : $in{b};
+
+    my %out;
+    $out{v} = $max;
+    my $delta = $max - $min;
+    if ( $delta < $COLOR_TOLERANCE ) {
+        $out{s} = 0;
+        $out{h} = 0;    # undefined, maybe nan?
+        return %out;
+    }
+    if ( $max > 0 ) {    # NOTE: if Max is == 0, this divide would cause a crash
+        $out{s} = ( $delta / $max );
+    }
+    else {
+        # if max is 0, then r = g = b = 0
+        # s = 0, h is undefined
+        $out{s} = 0;
+        $out{h} = 0;    # undefined
+        return %out;
+    }
+    if ( $in{r} >= $max ) {    # > is bogus, just keeps compiler happy
+        $out{h} =
+          ( ( $in{g} - $in{b} ) / $delta )
+          % $COLOR_YELLOW;     # between yellow & magenta
+    }
+    elsif ( $in{g} >= $max ) {
+        $out{h} =
+          $COLOR_GREEN + ( $in{b} - $in{r} ) / $delta;   # between cyan & yellow
+    }
+    else {
+        $out{h} =
+          $COLOR_BLUE + ( $in{r} - $in{g} ) / $delta;   # between magenta & cyan
+    }
+    $out{h} *= $_60_DEGREES;
+
+    if ( $out{h} < 0.0 ) {
+        $out{h} += $_360_DEGREES;
+    }
+    return %out;
+}
+
+sub string2hsv {
+    my ($spec) = @_;
+    my %rgb;
+    ( $rgb{r}, $rgb{g}, $rgb{b} ) = string2rgb($spec);
+    return { rgb2hsv(%rgb) };
+}
+
+sub string2rgb {
+    my ($spec) = @_;
+    my $color = Gtk3::Gdk::Color::parse($spec)->to_string;
+    my @color = unpack 'xA4A4A4', $color;
+    for (@color) { $_ = hex }
+    return @color;
 }
 
 sub set_text {    # FIXME: why is this called twice when running OCR from tools?
@@ -135,13 +285,6 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
     $self->{pixbuf_size} = { width => $width, height => $height };
     $self->set_bounds( 0, 0, $width, $height );
 
-    my $style        = $self->get_style_context;
-    my $color_string = $style->get_color('normal')->to_string;
-    my $color_hex    = 'black';
-    if ( $color_string =~ /^rgb[(](\d+),(\d+),(\d+)[)]$/smx ) {
-        $color_hex = sprintf '#%02x%02x%02x', ( $1, $2, $3 );
-    }
-
     # Attach the text to the canvas
     $self->{confidence_list} = [];
     for my $box ( @{ $page->boxes } ) {
@@ -150,7 +293,6 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
             box            => $box,
             transformation => [ 0, 0, 0 ],
             edit_callback  => $edit_callback,
-            text_color     => $color_hex,
             idle           => $idle,
         );
         if ($idle) {
@@ -286,17 +428,25 @@ sub _boxed_text {
     my $textangle = $box->{textangle} || 0;
 
     my %options2 = (
-        parent => $options{parent},
-        bbox   => {
+        bbox => {
             x      => $x1,
             y      => $y1,
             width  => abs $x2 - $x1,
             height => abs $y2 - $y1
         },
-        transformation => $options{transformation},
-        textangle      => $textangle,
     );
 
+    # copy parameters from box from method arguments
+    for my $key (
+        qw(parent transformation max-color min-color max-confidence max-confidence)
+      )
+    {
+        if ( defined $options{$key} ) {
+            $options2{$key} = $options{$key};
+        }
+    }
+
+    # copy parameters from box from OCR output
     for my $key (qw(baseline confidence id text textangle type)) {
         if ( defined $box->{$key} ) {
             $options2{$key} = $box->{$key};

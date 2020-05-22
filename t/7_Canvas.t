@@ -135,6 +135,17 @@ is_deeply(
 
 #########################
 
+$group->set( 'confidence', 100 );
+$canvas->set( 'max-confidence', 90 );
+$canvas->set( 'min-confidence', 50 );
+is $group->confidence2color, 'black', '> max';
+$group->set( 'confidence', 70 );
+is $group->confidence2color, '#7fff3fff3fff', 'mid way';
+$group->set( 'confidence', 40 );
+is $group->confidence2color, 'red', '< min';
+
+#########################
+
 $group->update_box( '<em>No</em>',
     { x => 2, y => 15, width => 74, height => 32 } );
 
@@ -292,15 +303,6 @@ $expected = <<"EOS";
 EOS
 
 is( $canvas->hocr, $expected, 'canvas2hocr from simple text' );
-
-#########################
-
-is Gscan2pdf::Canvas::Bbox::confidence2color( 100, 90, 'black', 50, 'red' ),
-  'black', '> max';
-is Gscan2pdf::Canvas::Bbox::confidence2color( 70, 90, 'black', 50, 'red' ),
-  '#7fff3fff3fff', 'mid way';
-is Gscan2pdf::Canvas::Bbox::confidence2color( 40, 90, 'black', 50, 'red' ),
-  'red', '< min';
 
 #########################
 
