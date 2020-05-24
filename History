@@ -1,6 +1,7 @@
 2.7.1 (08.06.2020):
 
 * Interpolate colours according to OCR confidence in HSV space.
+* Update to Hungarian translation (thanks to csola)
 
 
 2.7.0 (08.05.2020):
