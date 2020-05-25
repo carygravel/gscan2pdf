@@ -12,6 +12,7 @@ use Carp;
 use Readonly;
 Readonly my $HALF          => 0.5;
 Readonly my $CURSOR_PIXELS => 5;
+Readonly my $MAX_ZOOM      => 100;
 
 our $VERSION = '2.7.0';
 
@@ -72,8 +73,8 @@ use Glib::Object::Subclass Gtk3::DrawingArea::, signals => {
         'zoom',                             # name
         'zoom',                             # nick
         'zoom level',                       # blurb
-        0.0001,                             # minimum
-        1000.0,                             # maximum
+        0.001,                              # minimum
+        100.0,                              # maximum
         1.0,                                # default_value
         [qw/readable writable/]             # flags
     ),
@@ -434,6 +435,7 @@ sub set_zoom {
 
 sub _set_zoom {
     my ( $self, $zoom ) = @_;
+    if ( $zoom > $MAX_ZOOM ) { $zoom = $MAX_ZOOM }
     $self->set( 'zoom', $zoom );
     return;
 }

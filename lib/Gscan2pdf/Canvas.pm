@@ -18,6 +18,7 @@ Readonly my $COLOR_GREEN     => 2;
 Readonly my $COLOR_BLUE      => 4;
 Readonly my $COLOR_YELLOW    => 6;
 Readonly my $_60_DEGREES     => 60;
+Readonly my $MAX_ZOOM        => 100;
 my $device;
 my %old_idles;
 
@@ -602,6 +603,7 @@ sub _to_image_distance {
 # set zoom with centre in image coordinates
 sub _set_zoom_with_center {
     my ( $self, $zoom, $center_x, $center_y ) = @_;
+    if ( $zoom > $MAX_ZOOM ) { $zoom = $MAX_ZOOM }
     my $allocation = $self->get_allocation;
     my $offset_x   = $allocation->{width} / 2 / $zoom - $center_x;
     my $offset_y   = $allocation->{height} / 2 / $zoom - $center_y;
