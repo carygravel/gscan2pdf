@@ -330,7 +330,16 @@ sub update_box {
     my ( $self, $text, $selection ) = @_;
 
     my $rect_w = $self->get_box_widget;
-    $rect_w->set_property( 'stroke-color' => 'black' );
+    $rect_w->set_property(
+        'stroke-color' => 'black',
+        width          => $selection->{width},
+        height         => $selection->{height},
+    );
+
+    my $old_box = $self->get('bbox');
+    $self->translate( $selection->{x} - $old_box->{x},
+        $selection->{y} - $old_box->{y} );
+
     my $text_w = $self->get_text_widget;
     if ( length $text ) {
         $text_w->set( text => $text );
