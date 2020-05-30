@@ -414,52 +414,51 @@ sub get_offset {
     return $self->get('offset');
 }
 
-# Draw text on the canvas with a box around it
+sub add_box {
+    my ( $self, $text, $selection, $edit_callback, %options ) = @_;
 
-sub _boxed_text {
-    my ( $self, %options ) = @_;
-    my $parent         = $options{parent};
-    my $box            = $options{box};
-    my $transformation = $options{transformation};
-    my $edit_callback  = $options{edit_callback};
-    my $text_color     = $options{text_color};
-    my $idle           = $options{idle};
-    my ( $rotation, $x0, $y0 ) = @{$transformation};
-    my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
-    my $textangle = $box->{textangle} || 0;
+    my $parent = $options{parent};
+    if ( not defined $parent ) {
+        my $x = $selection->{x} + $selection->{width} / 2;
+        my $y = $selection->{y} + $selection->{height} / 2;
+        $parent = $self->get_item_at( $x, $y, FALSE );
+        while ( defined $parent
+            and not $parent->isa('Gscan2pdf::Canvas::Bbox') )
+        {
+            $parent = $parent->get_property('parent');
+        }
+        if ( not defined $parent ) { return }
+    }
 
+    my @transformation = ( 0, 0, 0 );
+    if ( $parent->isa('Gscan2pdf::Canvas::Bbox') ) {
+        my $parent_box = $parent->get('bbox');
+        @transformation = ( 0, $parent_box->{x}, $parent_box->{y} );
+    }
     my %options2 = (
-        bbox => {
-            x      => $x1,
-            y      => $y1,
-            width  => abs $x2 - $x1,
-            height => abs $y2 - $y1
-        },
+        parent         => $parent,
+        bbox           => $selection,
+        transformation => \@transformation,
     );
+    if ( defined $text and $text ne q{} ) { $options2{text} = $text }
 
-    # copy parameters from box from method arguments
-    for my $key (
-        qw(parent transformation max-color min-color max-confidence max-confidence)
-      )
-    {
+    # copy parameters from box from OCR output
+    for my $key (qw(baseline confidence id text textangle type)) {
         if ( defined $options{$key} ) {
             $options2{$key} = $options{$key};
         }
     }
-
-    # copy parameters from box from OCR output
-    for my $key (qw(baseline confidence id text textangle type)) {
-        if ( defined $box->{$key} ) {
-            $options2{$key} = $box->{$key};
-        }
+    if ( not defined $options2{textangle} ) { $options2{textangle} = 0 }
+    if ( not defined $options2{type} )      { $options2{type}      = 'word' }
+    if ( not defined $options2{confidence} and $options2{type} eq 'word' ) {
+        $options2{confidence} = $_100_PERCENT;
     }
+
     my $bbox = Gscan2pdf::Canvas::Bbox->new(%options2);
 
-    if ( $box->{text} ) {
+    if ($text) {
 
         $self->add_box_to_index($bbox);
-
-        my $angle = -( $textangle + $rotation ) % $_360_DEGREES;
 
         # clicking text box produces a dialog to edit the text
         if ($edit_callback) {
@@ -474,6 +473,46 @@ sub _boxed_text {
             );
         }
     }
+    return $bbox;
+}
+
+# Draw text on the canvas with a box around it
+
+sub _boxed_text {
+    my ( $self, %options ) = @_;
+    my $parent         = $options{parent};
+    my $box            = $options{box};
+    my $transformation = $options{transformation};
+    my $edit_callback  = $options{edit_callback};
+    my $idle           = $options{idle};
+    my ( $rotation, $x0, $y0 ) = @{$transformation};
+    my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
+    my $textangle = $box->{textangle} || 0;
+
+    # copy box parameters from method arguments
+    my %options2;
+    for my $key (qw(parent transformation)) {
+        if ( defined $options{$key} ) {
+            $options2{$key} = $options{$key};
+        }
+    }
+
+    # copy parameters from box from OCR output
+    for my $key (qw(baseline confidence id textangle type)) {
+        if ( defined $box->{$key} ) {
+            $options2{$key} = $box->{$key};
+        }
+    }
+
+    my %bbox = (
+        x      => $x1,
+        y      => $y1,
+        width  => abs $x2 - $x1,
+        height => abs $y2 - $y1,
+    );
+    my $bbox =
+      $self->add_box( $box->{text}, \%bbox, $edit_callback, %options2 );
+
     if ( $box->{contents} ) {
         for my $child ( @{ $box->{contents} } ) {
             my %options3 = (
@@ -481,7 +520,6 @@ sub _boxed_text {
                 box            => $child,
                 transformation => [ $textangle + $rotation, $x1, $y1 ],
                 edit_callback  => $edit_callback,
-                text_color     => $text_color,
                 idle           => $idle,
             );
             if ($idle) {
@@ -574,7 +612,6 @@ sub remove_current_box_from_index {
 sub hocr {
     my ($self) = @_;
     if ( not defined $self->get_pixbuf_size ) { return }
-    my ( $x, $y, $w, $h ) = $self->get_bounds;
     my $root   = $self->get_root_item;
     my $string = $root->get_child(0)->to_hocr(2);
     return <<"EOS";

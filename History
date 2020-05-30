@@ -1,9 +1,10 @@
-2.7.1 (08.06.2020):
+2.8.0 (08.06.2020):
 
 * Interpolate colours according to OCR confidence in HSV space.
 * Limit zoom to 100 to avoid errors like:
   "drawing failure for widget 'GtkBox': error occurred in libfreetype"
 * Also update text position and rectangle when updating bounding box.
+* + button to add to text layer
 * Update to Hungarian translation (thanks to csola)
 
 

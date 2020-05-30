@@ -391,8 +391,10 @@ sub delete_box {
 sub recthash2bboxarray {
     my ($rect) = @_;
     return [
-        $rect->{x},                  $rect->{y},
-        $rect->{x} + $rect->{width}, $rect->{y} + $rect->{height}
+        int $rect->{x},
+        int $rect->{y},
+        int( $rect->{x} + $rect->{width} ),
+        int( $rect->{y} + $rect->{height} )
     ];
 }
 

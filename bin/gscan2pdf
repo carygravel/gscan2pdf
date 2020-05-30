@@ -463,7 +463,7 @@ sub populate_main_window {
             $ocr_bbox->update_box( $ocr_textbuffer->get('text'),
                 $view->get_selection );
             $current_page->{hocr} = $canvas->hocr;
-            edit_ocr_text( $canvas->get_next_bbox );
+            edit_ocr_text($ocr_bbox);
         }
     );
 
@@ -474,6 +474,22 @@ sub populate_main_window {
     $ocr_text_cbutton->signal_connect(
         clicked => sub {
             $ocr_text_hbox->hide;
+        }
+    );
+
+    my $ocr_text_abutton = Gtk3::Button->new;
+    $ocr_text_abutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-add', 'button' ) );
+    $ocr_text_abutton->set_tooltip_text( __('Add text') );
+    $ocr_text_abutton->signal_connect(
+        clicked => sub {
+            my $text = $ocr_textbuffer->get('text');
+            if ( not defined $text or $text eq $EMPTY ) {
+                $text = __('my-new-word');
+            }
+            my $bbox = $canvas->add_box( $text, $view->get_selection );
+            $current_page->{hocr} = $canvas->hocr;
+            edit_ocr_text($bbox);
         }
     );
 
@@ -496,6 +512,7 @@ sub populate_main_window {
     $ocr_text_hbox->pack_end( $ocr_text_dbutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_end( $ocr_text_cbutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_end( $ocr_text_obutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_end( $ocr_text_abutton, FALSE, FALSE, 0 );
 
     pack_viewer_tools();
 

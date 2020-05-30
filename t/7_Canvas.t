@@ -85,6 +85,8 @@ $group = $group->get_child(0);
 
 $group->update_box( 'No', { x => 2, y => 15, width => 74, height => 32 } );
 
+$canvas->add_box( 'foo', { x => 250, y => 15, width => 74, height => 32 } );
+
 my $expected = <<"EOS";
 <\?xml version="1.0" encoding="UTF-8"\?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -102,6 +104,7 @@ my $expected = <<"EOS";
      <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>No</span>
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
      <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
+     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
     </span>
    </div>
   </div>
@@ -166,6 +169,7 @@ $expected = <<"EOS";
      <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>&lt;em&gt;No&lt;/em&gt;</span>
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
      <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
+     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
     </span>
    </div>
   </div>
