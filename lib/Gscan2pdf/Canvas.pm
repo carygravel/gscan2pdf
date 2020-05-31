@@ -19,6 +19,7 @@ Readonly my $COLOR_BLUE      => 4;
 Readonly my $COLOR_YELLOW    => 6;
 Readonly my $_60_DEGREES     => 60;
 Readonly my $MAX_ZOOM        => 100;
+Readonly my $EMPTY_LIST      => -1;
 my $device;
 my %old_idles;
 
@@ -342,7 +343,10 @@ sub get_last_bbox {
 
 sub get_bbox_by_index {
     my ($self) = @_;
-    return $self->{confidence_list}[ $self->{confidence_index} ][0];
+    if ( $self->{confidence_index} > $EMPTY_LIST ) {
+        return $self->{confidence_list}[ $self->{confidence_index} ][0];
+    }
+    return;
 }
 
 sub set_index_by_bbox {
