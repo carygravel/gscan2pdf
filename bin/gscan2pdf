@@ -970,19 +970,7 @@ sub check_dependencies {
     # Build a look-up table of all true-type fonts installed
     my ( undef, $stdout ) =
       Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
-    $stdout = Encode::decode_utf8($stdout);
-    for ( split /\n/sm, $stdout ) {
-        if (/ttf:[ ]/xsm) {
-            my ( $file, $family, $style ) = split /:/xsm;
-            chomp $style;
-            $family =~ s/^[ ]//xsm;
-            $family =~ s/,.*$//xsm;
-            $style =~ s/^style=//xsm;
-            $style =~ s/,.*$//xsm;
-            $fonts->{by_file}{$file} = [ $family, $style ];
-            $fonts->{by_family}{$family}{$style} = $file;
-        }
-    }
+    $fonts = Gscan2pdf::Document::parse_truetype_fonts($stdout);
     return;
 }
 

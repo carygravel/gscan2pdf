@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 61;
+use Test::More tests => 62;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -493,5 +493,27 @@ is( Gscan2pdf::Document::font_can_char( $font, decode_utf8('ö') ),
     TRUE, '_font_can_char ö' );
 is( Gscan2pdf::Document::font_can_char( $font, decode_utf8('п') ),
     FALSE, '_font_can_char п' );
+
+#########################
+
+my $fclist = <<'EOS';
+/usr/local/share/fonts/Cairo-ExtraLight.ttf: Cairo,Cairo ExtraLight:style=ExtraLight,Regular
+/usr/local/share/fonts/FaustinaVFBeta-Italic.ttf: Faustina VF Beta
+EOS
+is_deeply Gscan2pdf::Document::parse_truetype_fonts($fclist),
+  {
+    'by_family' => {
+        'Cairo' => {
+            'ExtraLight' => '/usr/local/share/fonts/Cairo-ExtraLight.ttf'
+        }
+    },
+    'by_file' => {
+        '/usr/local/share/fonts/Cairo-ExtraLight.ttf' =>
+          [ 'Cairo', 'ExtraLight' ]
+    }
+  },
+  'parse_truetype_fonts() only returns fonts for which we have a style';
+
+#########################
 
 __END__

@@ -5247,6 +5247,29 @@ sub _thread_paper_sizes {
     return;
 }
 
+# Build a look-up table of all true-type fonts installed
+
+sub parse_truetype_fonts {
+    my ($fclist) = @_;
+    my %fonts;
+    $fclist = Encode::decode_utf8($fclist);
+    for ( split /\n/sm, $fclist ) {
+        if (/ttf:[ ]/xsm) {
+            my ( $file, $family, $style ) = split /:/xsm;
+            if ( $file and $family and $style ) {
+                chomp $style;
+                $family =~ s/^[ ]//xsm;
+                $family =~ s/,.*$//xsm;
+                $style  =~ s/^style=//xsm;
+                $style  =~ s/,.*$//xsm;
+                $fonts{by_file}{$file} = [ $family, $style ];
+                $fonts{by_family}{$family}{$style} = $file;
+            }
+        }
+    }
+    return \%fonts;
+}
+
 1;
 
 __END__
