@@ -3570,23 +3570,24 @@ sub scan_dialog {
 }
 
 sub changed_device_callback {
-    my ( $widget, $device ) = @_;
+    my ( $widget, $device ) = @_;    # $widget is $windows
     if ( defined $device and $device ne $EMPTY ) {
         $logger->info("signal 'changed-device' emitted with data: '$device'");
         $SETTING{device} = $device;
+
+        # Can't set the profile until the options have been loaded. This
+        # should only be called the first time after loading the available
+        # options
+        $widget->{reloaded_signal} = $widget->signal_connect(
+            'reloaded-scan-options' => \&reloaded_scan_options_callback );
     }
     else {
         $logger->info("signal 'changed-device' emitted with data: undef");
     }
-
-    # Can't set the profile until the options have been loaded. This
-    # should only be called the first time after loading the available options
-    $windows->{reloaded_signal} = $windows->signal_connect(
-        'reloaded-scan-options' => \&reloaded_scan_options_callback );
     return;
 }
 
-sub changed_device_list_callback {
+sub changed_device_list_callback {    # $widget is $windows
     my ( $widget, $device_list ) = @_;
     $logger->info( "signal 'changed-device-list' emitted with data: "
           . Dumper($device_list) );
@@ -3610,7 +3611,7 @@ sub changed_device_list_callback {
                 }
             }
             if ( @device_list < @{$device_list} ) {
-                $windows->set( 'device-list', \@device_list );
+                $widget->set( 'device-list', \@device_list );
                 return;
             }
         }
@@ -3622,12 +3623,12 @@ sub changed_device_list_callback {
         if ( defined $SETTING{device} and not @device ) {
             for ( @{$device_list} ) {
                 if ( $SETTING{device} eq $_->{name} ) {
-                    $windows->set( 'device', $SETTING{device} );
+                    $widget->set( 'device', $SETTING{device} );
                     return;
                 }
             }
         }
-        $windows->set( 'device', $device_list->[0]{name} );
+        $widget->set( 'device', $device_list->[0]{name} );
     }
     else {
         undef $windows;
@@ -3638,32 +3639,33 @@ sub changed_device_list_callback {
 sub changed_side_to_scan_callback {
     my ( $widget, $side ) = @_;
     if ( $#{ $slist->{data} } > $EMPTY_LIST ) {
-        $windows->set( 'page-number-start',
+        $widget->set( 'page-number-start',
             $slist->{data}[ $#{ $slist->{data} } ][0] + 1 );
     }
     else {
-        $windows->set( 'page-number-start', 1 );
+        $widget->set( 'page-number-start', 1 );
     }
     return;
 }
 
 # This should only be called the first time after loading the available options
 sub reloaded_scan_options_callback {
-    $windows->signal_handler_disconnect( $windows->{reloaded_signal} );
+    my ( $widget, $side ) = @_;    # $widget is $windows
+    $widget->signal_handler_disconnect( $widget->{reloaded_signal} );
 
     my @profiles = keys %{ $SETTING{profile} };
     if ( defined $SETTING{'default profile'} ) {
-        $windows->set( 'profile', $SETTING{'default profile'} );
+        $widget->set( 'profile', $SETTING{'default profile'} );
     }
     elsif ( defined $SETTING{'default-scan-options'} ) {
-        $windows->set_current_scan_options(
+        $widget->set_current_scan_options(
             Gscan2pdf::Scanner::Profile->new_from_data(
                 $SETTING{'default-scan-options'}
             )
         );
     }
     elsif (@profiles) {
-        $windows->set( 'profile', $profiles[0] );
+        $widget->set( 'profile', $profiles[0] );
     }
     update_postprocessing_options_callback();
     return;
