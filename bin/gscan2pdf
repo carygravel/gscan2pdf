@@ -3560,7 +3560,7 @@ sub scan_dialog {
         }
         $windows->set( 'device-list', \@device_list );
     }
-    elsif ( @{ $SETTING{'device list'} } ) {
+    elsif ( $SETTING{'cache-device-list'} and @{ $SETTING{'device list'} } ) {
         $windows->set( 'device-list', $SETTING{'device list'} );
     }
     else {
@@ -3616,7 +3616,9 @@ sub changed_device_list_callback {    # $widget is $windows
             }
         }
 
-        $SETTING{'device list'} = $device_list;
+        if ( $SETTING{'cache-device-list'} ) {
+            $SETTING{'device list'} = $device_list;
+        }
 
        # Only set default device if it hasn't been specified on the command line
        # and it is in the the device list
@@ -3753,7 +3755,57 @@ sub process_error_callback {
     $shbox->hide;
 
     if ( $process eq 'open_device' and $msg =~ /Invalid[ ]argument/xsm ) {
-        undef $windows;
+        my $error_name = 'error opening device';
+        my $response;
+        if ( defined $SETTING{message}{$error_name} ) {
+            $response = $SETTING{message}{$error_name}{response};
+        }
+        else {
+            my $dialog =
+              Gtk3::MessageDialog->new( $window,
+                [ 'destroy-with-parent', 'modal' ],
+                'question', 'ok' );
+            $dialog->set_title( __('Error opening the last device used.') );
+            my $area  = $dialog->get_message_area;
+            my $label = Gtk3::Label->new(
+                __('There was an error opening the last device used.') );
+            $area->add($label);
+            my $radio1 = Gtk3::RadioButton->new_with_label( undef,
+                __('Whoops! I forgot to turn it on. Try again now.') );
+            $area->add($radio1);
+            my $radio2 = Gtk3::RadioButton->new_with_label_from_widget( $radio1,
+                __("Just ignore the error. I don't need the scanner yet.") );
+            $area->add($radio2);
+            my $radio3 = Gtk3::RadioButton->new_with_label_from_widget( $radio2,
+                __('Rescan for devices') );
+            $area->add($radio3);
+            my $cb_cache_device_list =
+              Gtk3::CheckButton->new_with_label( __('Cache device list') );
+            $cb_cache_device_list->set_active( $SETTING{'cache-device-list'} );
+            $area->add($cb_cache_device_list);
+            my $cb = Gtk3::CheckButton->new_with_label(
+                __("Don't show this message again") );
+            $area->add($cb);
+            $dialog->show_all;
+            $dialog->run;
+            $dialog->destroy;
+            if    ( $radio1->get_active ) { $response = 'reopen' }
+            elsif ( $radio2->get_active ) { $response = 'ignore' }
+            else                          { $response = 'rescan' }
+
+            if ( $cb->get_active ) {
+                $SETTING{message}{$error_name}{response} = $response;
+            }
+        }
+
+        if ( $response eq 'reopen' ) {
+            $widget->set( 'device-list', $SETTING{'device list'} );
+            changed_device_list_callback( $widget, $SETTING{'device list'} );
+        }
+        elsif ( $response eq 'rescan' ) { $widget->get_devices }
+
+        # for ignore, we do nothing
+        return;
     }
 
     show_message_dialog(
@@ -5968,9 +6020,13 @@ sub preferences {
     my $notebook = Gtk3::Notebook->new;
     $vbox->pack_start( $notebook, TRUE, TRUE, 0 );
 
-    my ( $vbox1, $frontends, $combob, $preentry, $cbc, $cbo,
-        $blacklist, $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages,
-        $cb_ignore_duplex )
+    my (
+        $vbox1,               $frontends,        $combob,
+        $preentry,            $cbc,              $cbo,
+        $blacklist,           $cbcsh,            $cb_batch_flatbed,
+        $cb_cancel_btw_pages, $cb_adf_all_pages, $cb_cache_device_list,
+        $cb_ignore_duplex
+      )
       = _preferences_scan_options( $windowr->style_get('content-area-border') );
     $notebook->append_page( $vbox1, Gtk3::Label->new( __('Scan options') ) );
 
@@ -6053,6 +6109,9 @@ sub preferences {
             $SETTING{'cycle sane handle'}    = $cbcsh->get_active;
             $SETTING{'allow-batch-flatbed'}  = $cb_batch_flatbed->get_active;
             $SETTING{'cancel-between-pages'} = $cb_cancel_btw_pages->get_active;
+            $SETTING{'adf-defaults-scan-all-pages'} =
+              $cb_adf_all_pages->get_active;
+            $SETTING{'cache-device-list'} = $cb_cache_device_list->get_active;
             $SETTING{'ignore-duplex-capabilities'} =
               $cb_ignore_duplex->get_active;
             $SETTING{'default filename'} = $fileentry->get_text;
@@ -6238,6 +6297,20 @@ sub _preferences_scan_options {
     $cb_adf_all_pages->set_active( $SETTING{'adf-defaults-scan-all-pages'} );
     $vbox->pack_start( $cb_adf_all_pages, FALSE, FALSE, 0 );
 
+    # Cache device list
+    my $cb_cache_device_list =
+      Gtk3::CheckButton->new_with_label( __('Cache device list') );
+    $cb_cache_device_list->set_tooltip_text(
+        __(
+'If this option is enabled, opening the scanner is quicker, as gscan2pdf does not first search for available devices.'
+          )
+          . __(
+'This is only effective if the device names do not change between sessions.'
+          )
+    );
+    $cb_cache_device_list->set_active( $SETTING{'cache-device-list'} );
+    $vbox->pack_start( $cb_cache_device_list, FALSE, FALSE, 0 );
+
     # scan command prefix
     my $hboxp = Gtk3::HBox->new;
     $vbox->pack_start( $hboxp, FALSE, FALSE, 0 );
@@ -6369,7 +6442,8 @@ sub _preferences_scan_options {
     );
     $combob->set_active_index( $SETTING{frontend} );
     return $vbox, \@frontends, $combob, $preentry, $cbc, $cbo, $blacklist,
-      $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages, $cb_ignore_duplex;
+      $cbcsh, $cb_batch_flatbed, $cb_cancel_btw_pages, $cb_adf_all_pages,
+      $cb_cache_device_list, $cb_ignore_duplex;
 }
 
 sub _preferences_general_options {

@@ -5,6 +5,8 @@
   "drawing failure for widget 'GtkBox': error occurred in libfreetype"
 * Also update text position and rectangle when updating bounding box.
 * + button to add to text layer
+* + preference to disable device list cache
+* + mini-wizard if device not found
 * Update to Hungarian translation (thanks to csola)
 
 

@@ -204,15 +204,10 @@ sub read_config {
     }
 
     _pre_151( $version, \%SETTING );
-
     _pre_171( $version, \%SETTING );
-
     _pre_181( $version, \%SETTING );
-
     _pre_184( $version, \%SETTING );
-
     _pre_200( $version, \%SETTING );
-
     _pre_223( $version, \%SETTING );
 
     $logger->debug( Dumper( \%SETTING ) );
@@ -281,6 +276,7 @@ sub add_defaults {
         quality                             => 75,
         'image type'                        => undef,
         device                              => undef,
+        'cache-device-list'                 => TRUE,
         'device list'                       => [],
         'device blacklist'                  => undef,
         frontend                            => 'libimage-sane-perl',
