@@ -35,7 +35,7 @@
 # 6. create version directory in https://sourceforge.net/projects/gscan2pdf/files/gscan2pdf
 #     make file_releases
 # 7. Build packages for Debian & Ubuntu
-#    name the release -0~ppa1<release>, where release is groovy, focal (dh12), eoan, bionic (dh11, no tests), xenial (dh9, defined in debian/compat, removing the -compat), trusty (< v2), precise (< v2), etc
+#    name the release -0~ppa1<release>, where release is groovy, focal (dh12), eoan, bionic (dh11, no tests), xenial (dh9, defined in debian/compat, removing the -compat)
 #     debuild -S -sa
 #     dput ftp-master .changes
 #     dput gscan2pdf-ppa .changes
