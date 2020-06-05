@@ -3297,13 +3297,13 @@ sub _thread_save_pdf {
         _thread_throw_error(
             $self, $options{uuid}, $options{page}{uuid},
             'Save file', sprintf __('Caught error creating PDF %s: %s'),
-            $filename, $_
+            $filename,   $_
         );
         $error = TRUE;
     };
     if ($error) { return 1 }
 
-    if ( defined $options{metadata} ) {
+    if ( defined $options{metadata} and not defined $options{options}{ps} ) {
         my $metadata = prepare_output_metadata( 'PDF', $options{metadata} );
         $pdf->info( %{$metadata} );
     }
@@ -3357,8 +3357,9 @@ sub _thread_save_pdf {
         return if _encrypt_pdf( $self, $filename, %options );
     }
 
-    if ( defined $options{options}{set_timestamp}
-        and $options{options}{set_timestamp} )
+    if (    defined $options{options}{set_timestamp}
+        and $options{options}{set_timestamp}
+        and not defined $options{options}{ps} )
     {
         _set_timestamp( $self, $filename, $options{uuid},
             %{ $options{metadata} } );
@@ -4183,12 +4184,7 @@ sub _thread_save_tiff {
     }
     if ( defined $options{options}{ps} ) {
         $self->{message} = __('Converting to PS');
-
-        # Note: -a option causes tiff2ps to generate multiple output
-        # pages, one for each page in the input TIFF file.  Without it, it
-        # only generates output for the first page.
-        @cmd =
-          ( 'tiff2ps', '-a', $options{path}, '-O', $options{options}{ps} );
+        @cmd = ( 'tiff2ps', '-1', $options{path}, '-O', $options{options}{ps} );
         ( $status, undef, $error ) = exec_command( \@cmd, $options{pidfile} );
         if ( $status or $error ) {
             $logger->info($error);

@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -69,5 +69,6 @@ $dialog = Gscan2pdf::Dialog::Save->new(
 );
 $dialog->add_metadata;
 $dialog->add_image_type;
+is $dialog->get('ps-backend'), 'pdftops', 'default ps backend';
 
 __END__

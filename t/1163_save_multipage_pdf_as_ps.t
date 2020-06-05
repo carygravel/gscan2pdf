@@ -34,11 +34,15 @@ SKIP: {
                 path => 'test.pdf',
                 list_of_pages =>
                   [ $slist->{data}[0][2]{uuid}, $slist->{data}[1][2]{uuid} ],
-                options => {
+
+                # metadata and timestamp should be ignored: debian #962151
+                metadata => {},
+                options  => {
                     ps                     => 'te st.ps',
                     pstool                 => 'pdf2ps',
                     post_save_hook         => 'cp %i test2.ps',
                     post_save_hook_options => 'fg',
+                    set_timestamp          => 1,
                 },
                 finished_callback => sub { Gtk3->main_quit }
             );

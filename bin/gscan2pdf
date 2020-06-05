@@ -2757,6 +2757,7 @@ sub save_button_clicked_callback {
         }
         when ('ps') {
             $SETTING{ps_backend} = $windowi->get('ps-backend');
+            $logger->info("Selected '$SETTING{ps_backend}' as ps backend");
 
             # cd back to cwd to save
             chdir $SETTING{cwd};

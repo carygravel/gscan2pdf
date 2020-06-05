@@ -7,6 +7,8 @@
 * + button to add to text layer
 * + preference to disable device list cache
 * + mini-wizard if device not found
+* Fix save as PS. Closes Debian bug #962151
+ (Failure to save: unitialized value $SETTINGS{"ps_backend"})
 * Update to Hungarian translation (thanks to csola)
 
 

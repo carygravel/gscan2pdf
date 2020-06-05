@@ -24,37 +24,34 @@ my $slist = Gscan2pdf::Document->new;
 my $dir = File::Temp->newdir;
 $slist->set_dir($dir);
 
-SKIP: {
-    skip 'tiff2ps throwing errors', 2;
-    $slist->import_files(
-        paths             => [ 'test.pnm', 'test.pnm' ],
-        finished_callback => sub {
-            $slist->save_tiff(
-                path => 'test.tif',
-                list_of_pages =>
-                  [ $slist->{data}[0][2]{uuid}, $slist->{data}[1][2]{uuid} ],
-                options => {
-                    ps                     => 'te st.ps',
-                    post_save_hook         => 'convert %i test2.png',
-                    post_save_hook_options => 'fg',
-                },
-                finished_callback => sub { Gtk3->main_quit }
-            );
-        }
-    );
-    Gtk3->main;
+$slist->import_files(
+    paths             => [ 'test.pnm', 'test.pnm' ],
+    finished_callback => sub {
+        $slist->save_tiff(
+            path => 'test.tif',
+            list_of_pages =>
+              [ $slist->{data}[0][2]{uuid}, $slist->{data}[1][2]{uuid} ],
+            options => {
+                ps                     => 'te st.ps',
+                post_save_hook         => 'convert %i test2.png',
+                post_save_hook_options => 'fg',
+            },
+            finished_callback => sub { Gtk3->main_quit }
+        );
+    }
+);
+Gtk3->main;
 
-    like(
-        `identify 'te st.ps'`,
-        qr/te st.ps PS 70x46 70x46\+0\+0 16-bit sRGB 256B/,
-        'valid postscript created'
-    );
-    is(
-        `identify test2.png`,
-        "test2.png PNG 70x46 70x46+0+0 8-bit sRGB 7.12KB 0.000u 0:00.000\n",
-        'ran post-save hook'
-    );
-}
+like(
+    `identify 'te st.ps'`,
+    qr/te st.ps PS 70x46.+\d+x\d+\+0\+0 16-bit sRGB \d+B/,
+    'valid postscript created'
+);
+like(
+    `identify test2.png`,
+    qr/test2.png PNG \d+x\d+ \d+x\d+\+0\+0 \d+-bit sRGB \d+B/,
+    'ran post-save hook'
+);
 
 #########################
 

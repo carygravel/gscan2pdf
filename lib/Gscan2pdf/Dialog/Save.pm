@@ -580,7 +580,18 @@ sub add_image_type {
     my @ps_backend =
       @{ filter_table( \@backends, @{ $self->get('ps-backends') } ) };
     my $combops = Gscan2pdf::ComboBoxText->new_from_array(@ps_backend);
-    $combops->set_active_index( $self->get('ps-backend') );
+    $combops->signal_connect(
+        changed => sub {
+            my $ps_backend = $combops->get_active_index;
+            $self->set( 'ps-backend', $ps_backend );
+        }
+    );
+
+    # FIXME: this is defaulting to undef, despite the default being defined in
+    # the subclassing call
+    my $ps_backend = $self->get('ps-backend');
+    if ( not defined $ps_backend ) { $ps_backend = 'pdftops' }
+    $combops->set_active_index($ps_backend);
     $hboxps->pack_end( $combops, TRUE, TRUE, 0 );
 
     my @tiff_compression = (
