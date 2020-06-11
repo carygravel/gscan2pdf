@@ -10,6 +10,7 @@
 * Fix save as PS. Closes Debian bug #962151
  (Failure to save: unitialized value $SETTINGS{"ps_backend"})
 * Update to Hungarian translation (thanks to csola)
+* Update to Ukrainian translation (thanks to Yuri Chornoivan)
 
 
 2.7.0 (08.05.2020):
