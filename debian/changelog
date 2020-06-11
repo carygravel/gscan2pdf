@@ -4,7 +4,7 @@ gscan2pdf (2.8.0-1) unstable; urgency=low
     Closes: #962151
     (Failure to save: unitialized value $SETTINGS{"ps_backend"})
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Wed, 10 Jun 2020 23:08:36 +0200
 
 gscan2pdf (2.7.0-1) unstable; urgency=low
 

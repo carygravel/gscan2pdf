@@ -7,7 +7,7 @@ use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Readonly;
 Readonly my $NO_INDEX => -1;
 
-our $VERSION = '2.7.0';
+our $VERSION = '2.8.0';
 
 use Glib::Object::Subclass Gtk3::ComboBoxText::, properties => [
     Glib::ParamSpec->int(

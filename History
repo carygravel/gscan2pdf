@@ -1,4 +1,4 @@
-2.8.0 (08.06.2020):
+2.8.0 (11.06.2020):
 
 * Interpolate colours according to OCR confidence in HSV space.
 * Limit zoom to 100 to avoid errors like:
