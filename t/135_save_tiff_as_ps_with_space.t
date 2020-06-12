@@ -33,7 +33,7 @@ $slist->import_files(
               [ $slist->{data}[0][2]{uuid}, $slist->{data}[1][2]{uuid} ],
             options => {
                 ps                     => 'te st.ps',
-                post_save_hook         => 'convert %i test2.png',
+                post_save_hook         => 'ps2pdf %i test.pdf',
                 post_save_hook_options => 'fg',
             },
             finished_callback => sub { Gtk3->main_quit }
@@ -42,18 +42,12 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like(
-    `identify 'te st.ps'`,
-    qr/te st.ps PS 70x46.+\d+x\d+\+0\+0 16-bit sRGB \d+B/,
-    'valid postscript created'
-);
-like(
-    `identify test2.png`,
-    qr/test2.png PNG \d+x\d+ \d+x\d+\+0\+0 \d+-bit sRGB \d+B/,
-    'ran post-save hook'
-);
+is `file 'te st.ps'`,
+"te st.ps: PostScript document text conforming DSC level 3.0, type EPS, Level 1\n",
+  'valid postscript created';
+like `pdfinfo test.pdf`, qr/tiff2ps/, 'ran post-save hook';
 
 #########################
 
-unlink 'test.pnm', 'test.tif', 'test2.png', 'te st.ps';
+unlink 'test.pnm', 'test.tif', 'test.pdf', 'te st.ps';
 Gscan2pdf::Document->quit();
