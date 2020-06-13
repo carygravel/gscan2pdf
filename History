@@ -2,6 +2,7 @@
 
 * Pass resolution to tesseract to avoid messages like
   "Warning! Invalid resolution 0 dpi. Using 70 instead"
+* Update to Hungarian translation (thanks to csola)
 
 
 2.8.0 (11.06.2020):
