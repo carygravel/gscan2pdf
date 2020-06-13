@@ -4843,7 +4843,8 @@ sub _thread_tesseract {
             language  => $options{language},
             logger    => $logger,
             threshold => $options{threshold},
-            pidfile   => $options{pidfile}
+            dpi       => $options{page}{xresolution},
+            pidfile   => $options{pidfile},
         );
     }
     catch {

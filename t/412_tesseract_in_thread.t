@@ -21,7 +21,9 @@ SKIP: {
 
     # Create test image
     # Deliberately not setting -units to provoke
-    # "Invalid resolution 0 dpi. Using 70 instead." warning from tesseract
+    # "Invalid resolution 0 dpi. Using 70 instead." warning from tesseract,
+    # which should no longer occur, since v2.8.1 added --dpi to the tesseract
+    # call
     system(
 'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.png'
     );

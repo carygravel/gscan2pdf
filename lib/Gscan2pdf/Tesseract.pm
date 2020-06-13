@@ -246,8 +246,11 @@ sub hocr {
     }
     if ( version->parse("v$version") >= version->parse('v3.02.02') ) {
         $cmd = [
-            'tesseract',        $tif, $path . $name, '-l',
-            $options{language}, '-c', 'tessedit_create_hocr=1'
+            'tesseract',        $tif,
+            $path . $name,      '--dpi',
+            $options{dpi},      '-l',
+            $options{language}, '-c',
+            'tessedit_create_hocr=1'
         ];
     }
     elsif ( version->parse("v$version") >= version->parse('v3') ) {

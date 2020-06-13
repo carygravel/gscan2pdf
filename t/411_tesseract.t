@@ -87,7 +87,8 @@ SKIP: {
     my ( $got, $messages ) = Gscan2pdf::Tesseract->hocr(
         file     => 'test.png',
         language => 'eng',
-        logger   => $logger
+        logger   => $logger,
+        dpi      => 300,
     );
 
     like( $got, qr/T[hn]e/,  'Tesseract returned "The"' );
@@ -104,7 +105,8 @@ SKIP: {
         file      => 'test.png',
         language  => 'eng',
         logger    => $logger,
-        threshold => 95
+        threshold => 95,
+        dpi       => 300,
     );
 
     like( $got, qr/The/,     'After thresholding, Tesseract returned "The"' );
@@ -124,7 +126,8 @@ SKIP: {
     ( $got, $messages ) = Gscan2pdf::Tesseract->hocr(
         file     => 'test.png',
         language => 'deu',
-        logger   => $logger
+        logger   => $logger,
+        dpi      => 300,
     );
     is( Encode::is_utf8( $got, 1 ), 1, "Tesseract returned UTF8" );
     for my $c (qw( ö ä ü ß )) {
