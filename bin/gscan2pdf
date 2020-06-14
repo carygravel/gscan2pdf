@@ -3359,7 +3359,7 @@ sub scan_dialog {
 
     if ( is_not_an_empty_hashref($windows) ) {
         $windows->show_all;
-        update_postprocessing_options_callback();
+        update_postprocessing_options_callback($windows);
         return;
     }
 
@@ -3552,7 +3552,7 @@ sub scan_dialog {
 
     if ( not $hidden ) { $windows->show_all }
 
-    update_postprocessing_options_callback();
+    update_postprocessing_options_callback($windows);
 
     if (@device) {
         my @device_list;
@@ -3670,7 +3670,7 @@ sub reloaded_scan_options_callback {
     elsif (@profiles) {
         $widget->set( 'profile', $profiles[0] );
     }
-    update_postprocessing_options_callback();
+    update_postprocessing_options_callback($widget);
     return;
 }
 
@@ -3822,8 +3822,9 @@ sub process_error_callback {
 }
 
 sub update_postprocessing_options_callback {
-    my $options   = $windows->get('available-scan-options');
-    my $increment = $windows->get('page-number-increment');
+    my ($widget)  = @_;                                    # $widget is $windows
+    my $options   = $widget->get('available-scan-options');
+    my $increment = $widget->get('page-number-increment');
     if ( defined $options ) {
         if ( $increment != 1 or $options->can_duplex ) {
             $rotate_side_cmbx->show;
