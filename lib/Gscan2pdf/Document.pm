@@ -1051,6 +1051,20 @@ sub add_page {
     return $page[0];
 }
 
+sub remove_corrupted_pages {
+    my ($self) = @_;
+    my $i = 0;
+    while ( $i < @{ $self->{data} } ) {
+        if ( not defined $self->{data}[$i][2] ) {
+            splice @{ $self->{data} }, $i, 1;
+        }
+        else {
+            $i++;
+        }
+    }
+    return;
+}
+
 # Helpers:
 sub compare_numeric_col { ## no critic (RequireArgUnpacking, RequireFinalReturn)
     $_[0] <=> $_[1];
@@ -1064,6 +1078,8 @@ sub compare_text_col {    ## no critic (RequireArgUnpacking, RequireFinalReturn)
 
 sub manual_sort_by_column {
     my ( $self, $sortcol ) = @_;
+
+    $self->remove_corrupted_pages;
 
     # The sort function depends on the column type
     my %sortfuncs = (
@@ -1772,6 +1788,7 @@ sub user_defined {
 
 sub save_session {
     my ( $self, $filename ) = @_;
+    $self->remove_corrupted_pages;
 
     my ( %session, @filenamelist );
     for my $i ( 0 .. $#{ $self->{data} } ) {

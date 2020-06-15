@@ -20,16 +20,14 @@ my $dir   = File::Temp->newdir;
 $slist->set_dir($dir);
 $slist->open_session_file( info => 'test.gs2p' );
 
-like(
-    `file $slist->{data}[0][2]{filename}`,
-    qr/PNG image data, 70 x 46, 8-bit\/color RGB, non-interlaced/,
-    'PNG extracted with expected size'
-);
-is(
-    $slist->{data}[0][2]{hocr},
-    'The quick brown fox',
-    'Basic OCR output extracted'
-);
+like `file $slist->{data}[0][2]{filename}`,
+  qr/PNG image data, 70 x 46, 8-bit\/color RGB, non-interlaced/,
+  'PNG extracted with expected size';
+is $slist->{data}[0][2]{hocr}, 'The quick brown fox',
+  'Basic OCR output extracted';
+
+# deliberately corrupt the data model to check we can still cope
+push @{ $slist->{data} }, [ 0, undef, undef ];
 
 # Add another image to test behaviour with multiple saves
 system('convert rose: test.pnm');

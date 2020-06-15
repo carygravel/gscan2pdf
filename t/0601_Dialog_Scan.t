@@ -54,6 +54,7 @@ is $dialog->get('num-pages'), 2,
   'with no source, num-pages not affected by allow-batch-flatbed';
 ok $dialog->{framen}->is_sensitive, 'with no source, num-page gui not ghosted';
 
+Gscan2pdf::Document->setup($logger);
 my $slist = Gscan2pdf::Document->new;
 $dialog = Gscan2pdf::Dialog::Scan->new(
     title           => 'title',
@@ -61,15 +62,29 @@ $dialog = Gscan2pdf::Dialog::Scan->new(
     'document'      => $slist,
     'logger'        => $logger,
 );
-@{ $slist->{data} } = (
-    [ 1, undef, undef ],
-    [ 2, undef, undef ],
-    [ 4, undef, undef ],
-    [ 5, undef, undef ]
+system('convert rose: test.pnm');
+my $dir     = File::Temp->newdir;
+my %options = (
+    filename    => 'test.pnm',
+    xresolution => 72,
+    yresolution => 72,
+    page        => 1,
+    dir         => $dir,
 );
-is $dialog->get('page-number-start'), 3,
-  'adding pages should update page-number-start';
-is $dialog->get('num-pages'), 1, 'adding pages should update num-pages';
+$slist->import_scan(%options);
+$options{page} = 2;
+$slist->import_scan(%options);
+$options{page} = 4;
+$slist->import_scan(%options);
+$options{page}              = 5;
+$options{finished_callback} = sub {
+    is $dialog->get('page-number-start'), 3,
+      'adding pages should update page-number-start';
+    is $dialog->get('num-pages'), 1, 'adding pages should update num-pages';
+    Gtk3->main_quit;
+};
+$slist->import_scan(%options);
+Gtk3->main;
 
 # v2.6.3 had the bug where scanning 10 pages on single-sided, followed by
 # 10 pages double-sided reverse resulted in the reverse pages being numbered:
@@ -84,5 +99,9 @@ is $dialog->get('num-pages'), 3,
   'selecting reverse should automatically limit the number of pages to scan';
 is $dialog->get('max-pages'), 3,
 'selecting reverse should automatically limit the max number of pages to scan';
+
+unlink 'test.pnm';
+rmdir $dir;
+Gscan2pdf::Document->quit();
 
 __END__
