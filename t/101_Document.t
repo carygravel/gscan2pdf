@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 62;
+use Test::More tests => 63;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -105,6 +105,11 @@ is_deeply(
 );
 is( $slist->pages_possible( 2, 1 ),
     4, 'pages_possible finite forwards starting in middle of range2' );
+
+#########################
+
+is $slist->find_page_by_uuid('someuuid'),
+  undef, "no warning if a page has no uuid for some reason";
 
 #########################
 

@@ -933,7 +933,11 @@ sub find_page_by_uuid {
         return;
     }
     my $i = 0;
-    while ( $i <= $#{ $self->{data} } and $self->{data}[$i][2]{uuid} ne $uuid )
+    while (
+        $i <= $#{ $self->{data} }
+        and ( not defined $self->{data}[$i][2]{uuid}
+            or $self->{data}[$i][2]{uuid} ne $uuid )
+      )
     {
         $i++;
     }
