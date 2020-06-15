@@ -6861,6 +6861,8 @@ sub ask_question {
         )
       )
     {
+        $logger->debug( "Skipped MessageDialog with '$options{text}', " +
+              "automatically replying '$SETTING{message}{$text}{response}'" );
         return $SETTING{message}{$text}{response};
     }
 
@@ -6869,6 +6871,7 @@ sub ask_question {
       Gtk3::MessageDialog->new( $options{parent},
         [ 'destroy-with-parent', 'modal' ],
         $options{type}, $options{buttons}, $options{text} );
+    $logger->debug("Displayed MessageDialog with '$options{text}'");
     if ( $options{'store-response'} ) {
         $cb = Gtk3::CheckButton->new_with_label(
             __("Don't show this message again") );
@@ -6895,6 +6898,7 @@ sub ask_question {
             $SETTING{message}{$text}{response} = $response;
         }
     }
+    $logger->debug("Replied '$response'");
     return $response;
 }
 
