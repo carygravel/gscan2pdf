@@ -6871,8 +6871,8 @@ sub ask_question {
         )
       )
     {
-        $logger->debug( "Skipped MessageDialog with '$options{text}', " +
-              "automatically replying '$SETTING{message}{$text}{response}'" );
+        $logger->debug( "Skipped MessageDialog with '$options{text}', "
+              . "automatically replying '$SETTING{message}{$text}{response}'" );
         return $SETTING{message}{$text}{response};
     }
 
