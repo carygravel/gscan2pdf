@@ -5288,6 +5288,17 @@ sub parse_truetype_fonts {
     return \%fonts;
 }
 
+# If user selects session dir as tmp dir, return parent dir
+
+sub get_tmp_dir {
+    my ( $dir, $pattern ) = @_;
+    if ( not defined $dir ) { return }
+    while ( $dir =~ /$pattern/xsm ) {
+        $dir = dirname($dir);
+    }
+    return $dir;
+}
+
 1;
 
 __END__

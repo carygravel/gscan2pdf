@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 63;
+use Test::More tests => 65;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -518,6 +518,16 @@ is_deeply Gscan2pdf::Document::parse_truetype_fonts($fclist),
     }
   },
   'parse_truetype_fonts() only returns fonts for which we have a style';
+
+#########################
+
+is Gscan2pdf::Document::get_tmp_dir(
+    '/tmp/gscan2pdf-wxyz/gscan2pdf-wxyz/gscan2pdf-wxyz',
+    'gscan2pdf-\w\w\w\w'
+  ),
+  '/tmp', 'get_tmp_dir';
+is Gscan2pdf::Document::get_tmp_dir( undef, 'gscan2pdf-\w\w\w\w' ), undef,
+  'get_tmp_dir undef';
 
 #########################
 

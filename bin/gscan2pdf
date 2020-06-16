@@ -1716,26 +1716,20 @@ sub drag_motion_callback {
 }
 
 sub create_temp_directory {
+    $tmpdir = Gscan2pdf::Document::get_tmp_dir( $SETTING{TMPDIR},
+        'gscan2pdf-\w\w\w\w' );
     find_crashed_sessions();
 
     # Create temporary directory if necessary
     if ( not defined $session ) {
-        if ( defined $SETTING{TMPDIR} and $SETTING{TMPDIR} ne $EMPTY ) {
-            if ( not -d $SETTING{TMPDIR} ) { mkdir $SETTING{TMPDIR} }
+        if ( defined $tmpdir and $tmpdir ne $EMPTY ) {
+            if ( not -d $tmpdir ) { mkdir $tmpdir }
             try {
                 $session =
-                  File::Temp->newdir( 'gscan2pdf-XXXX',
-                    DIR => $SETTING{TMPDIR} );
+                  File::Temp->newdir( 'gscan2pdf-XXXX', DIR => $tmpdir );
             }
             catch {
                 $session = File::Temp->newdir( 'gscan2pdf-XXXX', TMPDIR => 1 );
-                $logger->warn(
-                    sprintf __(
-'Warning: unable to use %s for temporary storage. Defaulting to %s instead.'
-                    ),
-                    $SETTING{TMPDIR},
-                    dirname($session)
-                );
             };
         }
         else {
@@ -1748,6 +1742,18 @@ sub create_temp_directory {
         flock $lockfh, LOCK_EX or die "Cannot lock file\n";
         $slist->save_session;
         $logger->info("Using $session for temporary files");
+
+        $tmpdir = dirname($session);
+        if ( $SETTING{TMPDIR} ne $tmpdir ) {
+            $logger->warn(
+                sprintf __(
+'Warning: unable to use %s for temporary storage. Defaulting to %s instead.'
+                ),
+                $SETTING{TMPDIR},
+                $tmpdir
+            );
+            $SETTING{TMPDIR} = $tmpdir;
+        }
     }
     return;
 }
@@ -1755,10 +1761,7 @@ sub create_temp_directory {
 sub find_crashed_sessions {
 
     # Look for crashed sessions
-    if ( defined $SETTING{TMPDIR} and $SETTING{TMPDIR} ne $EMPTY ) {
-        $tmpdir = $SETTING{TMPDIR};
-    }
-    else {
+    if ( not defined $tmpdir or $tmpdir eq $EMPTY ) {
         $tmpdir = File::Spec->tmpdir;
     }
     $logger->info("Checking $tmpdir for crashed sessions");
@@ -6148,7 +6151,9 @@ sub preferences {
             my $tmp = File::Spec->catdir(@tmpdirs);
 
             # Expand tildes in the filename
-            my $newdir = expand_tildes( $tmpentry->get_text );
+            my $newdir = Gscan2pdf::Document::get_tmp_dir(
+                expand_tildes( $tmpentry->get_text ),
+                'gscan2pdf-\w\w\w\w' );
 
             if ( $newdir ne $tmp ) {
                 $SETTING{TMPDIR} = $newdir;
@@ -6538,7 +6543,12 @@ EOS
             );
             $file_chooser->set_current_folder( $tmpentry->get_text );
             if ( 'ok' eq $file_chooser->run ) {
-                $tmpentry->set_text( $file_chooser->get_filename );
+                $tmpentry->set_text(
+                    Gscan2pdf::Document::get_tmp_dir(
+                        $file_chooser->get_filename,
+                        'gscan2pdf-\w\w\w\w'
+                    )
+                );
             }
             $file_chooser->destroy;
         }
