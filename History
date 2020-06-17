@@ -3,6 +3,7 @@
 * Pass resolution to tesseract to avoid messages like
   "Warning! Invalid resolution 0 dpi. Using 70 instead"
 * Cope better if data model becomes corrupted
+* + restart option to 'device not found' mini-wizard & if tmp directory changed.
 * Update to Hungarian translation (thanks to csola)
 
 

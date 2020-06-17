@@ -157,8 +157,9 @@ my $PERCENT  = q{%};
 my $ASTERISK = q{*};
 my $d_sane   = Locale::gettext->domain('sane-backends');
 my (
-    $test,   $help,       $log,    $log_level, @device,
-    $locale, $test_image, $logger, $import,    $import_all
+    $test,   $help,       $log,        $log_level,
+    @device, $locale,     $test_image, $logger,
+    $import, $import_all, @orig_args,
 );
 parse_arguments();
 
@@ -597,6 +598,7 @@ sub pack_viewer_tools {
 ### Subroutines
 
 sub parse_arguments {
+    @orig_args = @ARGV;
     my @args = (
         'device=s'      => \@device,
         'test=s%'       => \$test,
@@ -655,6 +657,8 @@ EOS
     $logger = Log::Log4perl::get_logger();
 
     $logger->info("Starting $prog_name $VERSION");
+    @orig_args = get_calling_arguments();
+    $logger->info( 'Called with ' . join $SPACE, @orig_args );
     $logger->info("Log level $log_level");
 
     if ( defined $locale ) {
@@ -684,6 +688,25 @@ EOS
     }
 
     return;
+}
+
+sub get_calling_arguments {
+    unshift @orig_args, abs_path($PROGRAM_NAME);
+    if ( defined $ENV{'PERL5LIB'} and $ENV{'PERL5LIB'} ne $EMPTY ) {
+        for my $path ( split /:/xsm, $ENV{'PERL5LIB'} ) {
+            my $abspath = abs_path($path);
+            if ( defined $abspath ) {
+                unshift @orig_args, '-I', abs_path($path);
+            }
+        }
+        unshift @orig_args, 'perl';
+    }
+    for my $arg (@orig_args) {
+        if ( $arg =~ /^--log=/xsm ) {
+            $arg = "--log=$log";
+        }
+    }
+    return @orig_args;
 }
 
 sub read_config {
@@ -3761,7 +3784,9 @@ sub process_error_callback {
     if ( $process eq 'open_device' and $msg =~ /Invalid[ ]argument/xsm ) {
         my $error_name = 'error opening device';
         my $response;
-        if ( defined $SETTING{message}{$error_name} ) {
+        if ( defined $SETTING{message}{$error_name}
+            and $SETTING{message}{$error_name}{response} eq 'ignore' )
+        {
             $response = $SETTING{message}{$error_name}{response};
         }
         else {
@@ -3778,11 +3803,14 @@ sub process_error_callback {
                 __('Whoops! I forgot to turn it on. Try again now.') );
             $area->add($radio1);
             my $radio2 = Gtk3::RadioButton->new_with_label_from_widget( $radio1,
-                __("Just ignore the error. I don't need the scanner yet.") );
-            $area->add($radio2);
-            my $radio3 = Gtk3::RadioButton->new_with_label_from_widget( $radio2,
                 __('Rescan for devices') );
+            $area->add($radio2);
+            my $radio3 = Gtk3::RadioButton->new_with_label_from_widget( $radio1,
+                __('Restart gscan2pdf.') );
             $area->add($radio3);
+            my $radio4 = Gtk3::RadioButton->new_with_label_from_widget( $radio1,
+                __("Just ignore the error. I don't need the scanner yet.") );
+            $area->add($radio4);
             my $cb_cache_device_list =
               Gtk3::CheckButton->new_with_label( __('Cache device list') );
             $cb_cache_device_list->set_active( $SETTING{'cache-device-list'} );
@@ -3794,7 +3822,8 @@ sub process_error_callback {
             $dialog->run;
             $dialog->destroy;
             if    ( $radio1->get_active ) { $response = 'reopen' }
-            elsif ( $radio2->get_active ) { $response = 'ignore' }
+            elsif ( $radio3->get_active ) { $response = 'restart' }
+            elsif ( $radio4->get_active ) { $response = 'ignore' }
             else                          { $response = 'rescan' }
 
             if ( $cb->get_active ) {
@@ -3806,7 +3835,8 @@ sub process_error_callback {
             $widget->set( 'device-list', $SETTING{'device list'} );
             changed_device_list_callback( $widget, $SETTING{'device list'} );
         }
-        elsif ( $response eq 'rescan' ) { $widget->get_devices }
+        elsif ( $response eq 'rescan' )  { $widget->get_devices }
+        elsif ( $response eq 'restart' ) { restart() }
 
         # for ignore, we do nothing
         return;
@@ -3822,6 +3852,11 @@ sub process_error_callback {
         'store-response' => TRUE
     );
     return;
+}
+
+sub restart {
+    quit();
+    exec @orig_args;
 }
 
 sub update_postprocessing_options_callback {
@@ -6146,6 +6181,14 @@ sub preferences {
                 $windowi->set( 'include-time', $SETTING{use_time} );
             }
 
+            $SETTING{'available-tmp-warning'} = $spinbuttonw->get_value;
+            $SETTING{'Blank threshold'}       = $spinbuttonb->get_value;
+            $SETTING{'Dark threshold'}        = $spinbuttond->get_value;
+            $SETTING{'OCR output'}            = $comboo->get_active_index;
+
+            # Store viewer preferences
+            $SETTING{'view files toggle'} = $cbv->get_active;
+
             my @tmpdirs = File::Spec->splitdir($session);
             pop @tmpdirs;    # Remove the top level
             my $tmp = File::Spec->catdir(@tmpdirs);
@@ -6157,22 +6200,18 @@ sub preferences {
 
             if ( $newdir ne $tmp ) {
                 $SETTING{TMPDIR} = $newdir;
-                show_message_dialog(
+                my $response = ask_question(
                     parent  => $window,
-                    type    => 'warning',
-                    buttons => 'close',
+                    type    => 'question',
+                    buttons => 'ok-cancel',
                     text    => __(
-'You will have to restart gscanp2df for changes to the temporary directory to take effect.'
-                    )
+'Changes will only take effect after restarting gscan2pdf.'
+                      )
+                      . $SPACE
+                      . __('Restart gscan2pdf now?')
                 );
+                if ( $response eq 'ok' ) { restart() }
             }
-            $SETTING{'available-tmp-warning'} = $spinbuttonw->get_value;
-            $SETTING{'Blank threshold'}       = $spinbuttonb->get_value;
-            $SETTING{'Dark threshold'}        = $spinbuttond->get_value;
-            $SETTING{'OCR output'}            = $comboo->get_active_index;
-
-            # Store viewer preferences
-            $SETTING{'view files toggle'} = $cbv->get_active;
         },
         'gtk-cancel',
         sub {

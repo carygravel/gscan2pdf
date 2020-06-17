@@ -99,8 +99,10 @@ sub _monitor_process {
 
 sub quit {
     _enqueue_request('quit');
-    $_self->{thread}->join();
-    $_self->{thread} = undef;
+    if ( defined $_self->{thread} ) {
+        $_self->{thread}->join();
+        $_self->{thread} = undef;
+    }
     return;
 }
 
