@@ -1815,6 +1815,7 @@ sub find_crashed_sessions {
         }
     }
     if (@missing) {
+        $logger->info( 'Unrestorable sessions: ' . join $SPACE, @missing );
         my $dialog = Gtk3::Dialog->new(
             __('Crashed sessions'),
             $window, 'modal',
@@ -1824,22 +1825,34 @@ sub find_crashed_sessions {
         my $text = Gtk3::TextView->new;
         $text->set_wrap_mode('word');
         $text->get_buffer->set_text(
-            __(
-                    'The following list of sessions cannot be restored.'
-                  . ' Please retrieve any images you require from them.'
-                  . ' Selected sessions will be deleted.'
-            )
-        );
+                __('The following list of sessions cannot be restored.')
+              . $SPACE
+              . __('Please retrieve any images you require from them.')
+              . $SPACE
+              . __('Selected sessions will be deleted.') );
         $dialog->get_content_area->add($text);
         my $sessionlist = Gtk3::SimpleList->new( __('Session') => 'text', );
+        $sessionlist->get_selection->set_mode('multiple');
         push @{ $sessionlist->{data} }, @missing;
         $dialog->get_content_area->add($sessionlist);
+        my ($button) = $dialog->get_action_area->get_children();
+        $sessionlist->get_selection->signal_connect(
+            changed => sub {
+                $button->set_sensitive(
+                    scalar $sessionlist->get_selected_indices > 0 );
+            }
+        );
+        $sessionlist->get_selection->select_all;
         $dialog->show_all;
 
         if ( $dialog->run eq 'ok' ) {
             my @selected = $sessionlist->get_selected_indices;
             for (@selected) { $_ = $missing[$_] }
+            $logger->info( 'Selected for deletion: ' . join $SPACE, @selected );
             if (@selected) { remove_tree(@selected) }
+        }
+        else {
+            $logger->info('None selected');
         }
         $dialog->destroy;
     }
