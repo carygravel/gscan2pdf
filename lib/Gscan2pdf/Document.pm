@@ -1810,6 +1810,9 @@ sub save_session {
         my $tar = Archive::Tar->new;
         $tar->add_files(@filenamelist);
         $tar->write( $filename, TRUE, $EMPTY );
+        for my $i ( 0 .. $#{ $self->{data} } ) {
+            $self->{data}[$i][2]->{saved} = TRUE;
+        }
     }
     return;
 }

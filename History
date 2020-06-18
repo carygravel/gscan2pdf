@@ -4,6 +4,8 @@
   "Warning! Invalid resolution 0 dpi. Using 70 instead"
 * Cope better if data model becomes corrupted
 * + restart option to 'device not found' mini-wizard & if tmp directory changed.
+* When saving a session file, note that pages have been saved to avoid
+  'Some pages have not been saved. Do you really want to quit?' message.
 * Update to Hungarian translation (thanks to csola)
 
 

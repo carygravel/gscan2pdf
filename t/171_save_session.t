@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 2;
+use Test::More tests => 3;
 use File::Basename;    # Split filename into dir, file, ext
 
 BEGIN {
@@ -26,6 +26,7 @@ $slist->import_files(
     finished_callback => sub {
         $slist->{data}[0][2]{hocr} = 'The quick brown fox';
         $slist->save_session('test.gs2p');
+        is $slist->scans_saved, 1, 'pages tagged as saved';
         Gtk3->main_quit;
     }
 );
