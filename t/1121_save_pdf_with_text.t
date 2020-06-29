@@ -28,7 +28,7 @@ $slist->set_dir($dir);
 $slist->import_files(
     paths             => ['test.pnm'],
     finished_callback => sub {
-        $slist->{data}[0][2]{hocr} = 'The quick brown fox';
+        $slist->{data}[0][2]->import_text('The quick brown fox');
         $slist->save_pdf(
             path              => 'test.pdf',
             list_of_pages     => [ $slist->{data}[0][2]{uuid} ],

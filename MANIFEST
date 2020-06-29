@@ -26,6 +26,7 @@ icons/stock-rotate-180.svg
 icons/stock-rotate-270.svg
 icons/stock-rotate-90.svg
 icons/stock-selection-all-16.png
+lib/Gscan2pdf/Bboxtree.pm
 lib/Gscan2pdf/Canvas.pm
 lib/Gscan2pdf/Canvas/Bbox.pm
 lib/Gscan2pdf/ComboBoxText.pm
@@ -302,6 +303,8 @@ t/172_open_session.t
 t/173_open_multiple_session.t
 t/174_open_crashed_session.t
 t/175_open_session2.t
+t/176_save_session_bboxtree.t
+t/177_open_session_bboxtree.t
 t/211_rotate.t
 t/212_cancel_rotate.t
 t/213_rotate_with_error.t
@@ -368,6 +371,7 @@ t/52_process_chain_udt.t
 t/53_process_chain.t
 t/65_imageview.t
 t/6_PageRange.t
+t/75_Bboxtree.t
 t/7_Canvas.t
 t/8_Config.t
 t/90_MANIFEST.t

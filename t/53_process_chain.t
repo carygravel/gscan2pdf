@@ -49,16 +49,12 @@ SKIP: {
         engine            => 'tesseract',
         language          => 'eng',
         finished_callback => sub {
-            like( $slist->{data}[0][2]{filename},
-                qr/png$/, 'convert PNM to PNG' );
-            like( $slist->{data}[0][2]{hocr},
-                qr/T[hn]e/, 'Tesseract returned "The"' );
-            like( $slist->{data}[0][2]{hocr},
-                qr/quick/, 'Tesseract returned "quick"' );
-            like( $slist->{data}[0][2]{hocr},
-                qr/brown/, 'Tesseract returned "brown"' );
-            like( $slist->{data}[0][2]{hocr},
-                qr/f(o|0)x/, 'Tesseract returned "fox"' );
+            like $slist->{data}[0][2]{filename}, qr/png$/, 'convert PNM to PNG';
+            my $hocr = $slist->{data}[0][2]->export_hocr;
+            like $hocr, qr/T[hn]e/,  'Tesseract returned "The"';
+            like $hocr, qr/quick/,   'Tesseract returned "quick"';
+            like $hocr, qr/brown/,   'Tesseract returned "brown"';
+            like $hocr, qr/f(o|0)x/, 'Tesseract returned "fox"';
             Gtk3->main_quit;
         }
     );

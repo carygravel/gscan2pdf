@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use utf8;
 use Test::More tests => 1;
 
 BEGIN {
@@ -33,9 +34,8 @@ $slist->set_dir($dir);
 $slist->import_files(
     paths             => ['test.pnm'],
     finished_callback => sub {
-        use utf8;
-        $slist->{data}[0][2]{hocr} =
-          'пени способствовала сохранению';
+        $slist->{data}[0][2]->import_text(
+            'пени способствовала сохранению');
         $slist->save_pdf(
             path              => 'test.pdf',
             list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
@@ -46,11 +46,10 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like(
-    `pdftotext test.pdf -`,
-    qr/пени способствовала сохранению/,
-    'PDF with expected text'
-);
+my $out = `pdftotext test.pdf -`;
+utf8::decode($out);
+like $out, qr/пени способствовала сохранению/,
+  'PDF with expected text';
 
 #########################
 

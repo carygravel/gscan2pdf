@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
-use Test::More tests => 4;
+use Test::More tests => 2;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -24,29 +24,7 @@ like `file $slist->{data}[0][2]{filename}`,
   qr/PNG image data, 70 x 46, 8-bit\/color RGB, non-interlaced/,
   'PNG extracted with expected size';
 is $slist->{data}[0][2]->export_text, 'The quick brown fox',
-  'Basic OCR output extracted from pre-2.8.1 session';
-
-# deliberately corrupt the data model to check we can still cope
-push @{ $slist->{data} }, [ 0, undef, undef ];
-
-# Add another image to test behaviour with multiple saves
-system('convert rose: test.pnm');
-
-$slist->import_files(
-    paths             => ['test.pnm'],
-    finished_callback => sub {
-        $slist->save_session('test2.gs2p');
-        Gtk3->main_quit;
-    }
-);
-Gtk3->main;
-
-like(
-    `file test2.gs2p`,
-    qr/test2.gs2p: gzip compressed data(?:, original size 17920)?/,
-    'Session file created'
-);
-cmp_ok( -s 'test2.gs2p', '>', 0, 'Non-empty Session file created' );
+  'Basic OCR output extracted from bboxtree';
 
 #########################
 

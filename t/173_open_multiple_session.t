@@ -31,7 +31,7 @@ like(
     'PNG extracted with expected size'
 );
 is(
-    $slist->{data}[0][2]{hocr},
+    $slist->{data}[0][2]->export_text,
     'The quick brown fox',
     'Basic OCR output extracted'
 );

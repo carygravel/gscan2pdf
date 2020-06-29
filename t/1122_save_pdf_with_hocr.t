@@ -58,7 +58,7 @@ EOS
 $slist->import_files(
     paths             => ['test.png'],
     finished_callback => sub {
-        $slist->{data}[0][2]{hocr} = $hocr;
+        $slist->{data}[0][2]->import_hocr($hocr);
         $slist->save_pdf(
             path              => 'test.pdf',
             list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
@@ -72,7 +72,7 @@ $slist->import_files(
                         # round-trip the text layer. Here, at least we can check
                         # that we have scaled the page size correctly.
                         like(
-                            $slist->{data}[1][2]{hocr},
+                            $slist->{data}[1][2]->export_hocr,
                             qr/bbox\s0\s0\s$width\s$height/xsm,
                             'import text layer'
                         );

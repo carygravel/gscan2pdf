@@ -51,8 +51,8 @@ $slist->import_files(
         );
       SKIP: {
             skip 'Tesseract not installed', 1 unless $tess_installed;
-            like( $slist->{data}[0][2]{hocr},
-                qr/quick/xsm, 'import text layer' );
+            like $slist->{data}[0][2]->export_hocr,
+              qr/quick/xsm, 'import text layer';
         }
         is( dirname("$slist->{data}[0][2]{filename}"),
             "$dir", 'using session directory' );

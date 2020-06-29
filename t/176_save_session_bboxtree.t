@@ -1,6 +1,7 @@
 use warnings;
 use strict;
-use Test::More tests => 1;
+use Test::More tests => 3;
+use File::Basename;    # Split filename into dir, file, ext
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -19,30 +20,26 @@ Gscan2pdf::Document->setup($logger);
 system('convert rose: test.pnm');
 
 my $slist = Gscan2pdf::Document->new;
-
-# dir for temporary files
-my $dir = File::Temp->newdir;
-$slist->set_dir($dir);
-
+$slist->set_dir( File::Temp->newdir );
 $slist->import_files(
     paths             => ['test.pnm'],
     finished_callback => sub {
-        $slist->{data}[0][2]->import_text(
-            'пени способствовала сохранению');
-        $slist->save_text(
-            path              => 'test.txt',
-            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
-            finished_callback => sub { Gtk3->main_quit }
-        );
+        $slist->{data}[0][2]->import_text('The quick brown fox');
+        $slist->save_session('test.gs2p');
+        is $slist->scans_saved, 1, 'pages tagged as saved';
+        Gtk3->main_quit;
     }
 );
 Gtk3->main;
 
-is( `cat test.txt`,
-    'пени способствовала сохранению',
-    'saved UTF8' );
+like(
+    `file test.gs2p`,
+    qr/test.gs2p: gzip compressed data(?:, original size 9728)?/,
+    'Session file created'
+);
+cmp_ok( -s 'test.gs2p', '>', 0, 'Non-empty Session file created' );
 
 #########################
 
-unlink 'test.pnm', 'test.txt';
 Gscan2pdf::Document->quit();
+unlink 'test.pnm';

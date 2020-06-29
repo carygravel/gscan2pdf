@@ -463,7 +463,8 @@ sub populate_main_window {
         clicked => sub {
             $ocr_bbox->update_box( $ocr_textbuffer->get('text'),
                 $view->get_selection );
-            $current_page->{hocr} = $canvas->hocr;
+            $current_page->{bboxtree} = Gscan2pdf::Bboxtree->new;
+            $current_page->{bboxtree}->from_hocr( $canvas->hocr );
             edit_ocr_text($ocr_bbox);
         }
     );
@@ -489,7 +490,8 @@ sub populate_main_window {
                 $text = __('my-new-word');
             }
             my $bbox = $canvas->add_box( $text, $view->get_selection );
-            $current_page->{hocr} = $canvas->hocr;
+            $current_page->{bboxtree} = Gscan2pdf::Bboxtree->new;
+            $current_page->{bboxtree}->from_hocr( $canvas->hocr );
             edit_ocr_text($bbox);
         }
     );
@@ -501,6 +503,8 @@ sub populate_main_window {
     $ocr_text_dbutton->signal_connect(
         clicked => sub {
             $ocr_bbox->delete_box;
+            $current_page->{bboxtree} = Gscan2pdf::Bboxtree->new;
+            $current_page->{bboxtree}->from_hocr( $canvas->hocr );
             edit_ocr_text( $canvas->get_bbox_by_index );
         }
     );
@@ -1920,8 +1924,8 @@ sub display_image {
     }
 
     # Convert hocr output to Goo:Canvas if defined
-    if   ( defined $current_page->{hocr} ) { create_canvas($current_page) }
-    else                                   { $canvas->clear_text }
+    if   ( defined $current_page->{bboxtree} ) { create_canvas($current_page) }
+    else                                       { $canvas->clear_text }
     return;
 }
 
@@ -2911,7 +2915,7 @@ sub file_chooser_response_callback {
                 }
             }
             when ('gs2p') {
-                $slist->save_session($filename);
+                $slist->save_session( $filename, $VERSION );
             }
         }
         if ( defined $windowi and $SETTING{close_dialog_on_save} ) {
@@ -4444,7 +4448,7 @@ sub select_modified_since_ocr {
 sub select_no_ocr {
     my @selection;
     for ( 0 .. $#{ $slist->{data} } ) {
-        if ( not defined $slist->{data}[$_][2]{hocr} ) {
+        if ( not defined $slist->{data}[$_][2]{bboxtree} ) {
             push @selection, $_;
         }
     }
@@ -4466,7 +4470,7 @@ sub clear_ocr {
 
     my @selection = $slist->get_selected_indices;
     for (@selection) {
-        delete $slist->{data}[$_][2]{hocr};
+        delete $slist->{data}[$_][2]{bboxtree};
     }
     $slist->save_session;
     return;

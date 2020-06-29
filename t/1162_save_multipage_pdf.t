@@ -40,7 +40,7 @@ $slist->import_files(
     finished_callback => sub {
         my @pages;
         for my $i ( 1 .. $n ) {
-            $slist->{data}[ $i - 1 ][2]{hocr} = 'hello world';
+            $slist->{data}[ $i - 1 ][2]->import_text('hello world');
             push @pages, $slist->{data}[ $i - 1 ][2]{uuid};
         }
         $slist->save_pdf(

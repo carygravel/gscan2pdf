@@ -112,7 +112,7 @@ EOS
             );
             is( dirname("$slist->{data}[0][2]{filename}"),
                 "$dir", 'using session directory' );
-            is( $slist->{data}[0][2]{hocr}, $expected, 'hocr layer' );
+            is( $slist->{data}[0][2]->export_hocr, $expected, 'hocr layer' );
             Gtk3->main_quit;
         }
     );

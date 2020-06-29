@@ -289,26 +289,28 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
 
     # Attach the text to the canvas
     $self->{confidence_list} = [];
-    for my $box ( @{ $page->boxes } ) {
-        my %options = (
-            parent         => $root,
-            box            => $box,
-            transformation => [ 0, 0, 0 ],
-            edit_callback  => $edit_callback,
-            idle           => $idle,
+    my $iter = $page->{bboxtree}->get_bbox_iter;
+    my $box  = $iter->();
+    if ( not defined $box ) { return }
+    my %options = (
+        iter            => $iter,
+        box             => $box,
+        parents         => [$root],
+        transformations => [ [ 0, 0, 0 ] ],
+        edit_callback   => $edit_callback,
+        idle            => $idle,
+    );
+    if ($idle) {
+        $old_idles{$box} = Glib::Idle->add(
+            sub {
+                $self->_boxed_text(%options);
+                delete $old_idles{$box};
+                return Glib::SOURCE_REMOVE;
+            }
         );
-        if ($idle) {
-            $old_idles{$box} = Glib::Idle->add(
-                sub {
-                    $self->_boxed_text(%options);
-                    delete $old_idles{$box};
-                    return Glib::SOURCE_REMOVE;
-                }
-            );
-        }
-        else {
-            $self->_boxed_text(%options);
-        }
+    }
+    else {
+        $self->_boxed_text(%options);
     }
     return;
 }
@@ -484,22 +486,22 @@ sub add_box {
 
 sub _boxed_text {
     my ( $self, %options ) = @_;
-    my $parent         = $options{parent};
-    my $box            = $options{box};
-    my $transformation = $options{transformation};
-    my $edit_callback  = $options{edit_callback};
-    my $idle           = $options{idle};
+    my $box           = $options{box};
+    my $edit_callback = $options{edit_callback};
+
+    # each call should use own copy of arrays to prevent race conditions
+    my @transformations = @{ $options{transformations} };
+    my @parents         = @{ $options{parents} };
+    my $transformation  = $transformations[ $box->{depth} ];
     my ( $rotation, $x0, $y0 ) = @{$transformation};
     my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
     my $textangle = $box->{textangle} || 0;
 
     # copy box parameters from method arguments
-    my %options2;
-    for my $key (qw(parent transformation)) {
-        if ( defined $options{$key} ) {
-            $options2{$key} = $options{$key};
-        }
-    }
+    my %options2 = (
+        parent         => $parents[ $box->{depth} ],
+        transformation => $transformation
+    );
 
     # copy parameters from box from OCR output
     for my $key (qw(baseline confidence id textangle type)) {
@@ -517,28 +519,37 @@ sub _boxed_text {
     my $bbox =
       $self->add_box( $box->{text}, \%bbox, $edit_callback, %options2 );
 
-    if ( $box->{contents} ) {
-        for my $child ( @{ $box->{contents} } ) {
-            my %options3 = (
-                parent         => $bbox,
-                box            => $child,
-                transformation => [ $textangle + $rotation, $x1, $y1 ],
-                edit_callback  => $edit_callback,
-                idle           => $idle,
-            );
-            if ($idle) {
-                $old_idles{$child} = Glib::Idle->add(
-                    sub {
-                        $self->_boxed_text(%options3);
-                        delete $old_idles{$child};
-                        return Glib::SOURCE_REMOVE;
-                    }
-                );
-            }
-            else {
+    # always one more parent, as the page has a root
+    if ( $box->{depth} + 1 > $#parents ) {
+        push @parents, $bbox;
+    }
+    else {
+        $parents[ $box->{depth} + 1 ] = $bbox;
+    }
+
+    push @transformations, [ $textangle + $rotation, $x1, $y1 ];
+    my $child = $options{iter}->();
+    if ( not defined $child ) { return }
+
+    my %options3 = (
+        box             => $child,
+        iter            => $options{iter},
+        parents         => \@parents,
+        transformations => \@transformations,
+        edit_callback   => $edit_callback,
+        idle            => $options{idle},
+    );
+    if ( $options{idle} ) {
+        $old_idles{$child} = Glib::Idle->add(
+            sub {
                 $self->_boxed_text(%options3);
+                delete $old_idles{$child};
+                return Glib::SOURCE_REMOVE;
             }
-        }
+        );
+    }
+    else {
+        $self->_boxed_text(%options3);
     }
 
     # $rect->signal_connect(

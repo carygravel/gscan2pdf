@@ -15,10 +15,10 @@ use Image::Magick;
 use Encode qw(decode_utf8 encode_utf8);
 use POSIX qw(locale_h);
 use Data::UUID;
-use Text::Balanced qw ( extract_bracketed );
 use English qw( -no_match_vars );    # for $ERRNO
 use Try::Tiny;
 use Gscan2pdf::Document;
+use Gscan2pdf::Bboxtree;
 use Gscan2pdf::Translation '__';     # easier to extract strings with xgettext
 use Readonly;
 Readonly my $CM_PER_INCH    => 2.54;
@@ -26,7 +26,6 @@ Readonly my $MM_PER_CM      => 10;
 Readonly my $MM_PER_INCH    => $CM_PER_INCH * $MM_PER_CM;
 Readonly my $PAGE_TOLERANCE => 0.02;
 Readonly my $EMPTY_LIST     => -1;
-Readonly my $HALF           => 0.5;
 my $EMPTY         = q{};
 my $SPACE         = q{ };
 my $DOUBLE_QUOTES = q{"};
@@ -175,433 +174,59 @@ sub thaw {
     return $new;
 }
 
-# returns array of boxes with OCR text
-
-sub boxes {
-    my ($self) = @_;
-    my $hocr = $self->{hocr};
-    if ( $hocr =~ /<body>([\s\S]*)<\/body>/xsm ) {
-        my $boxes = _hocr2boxes($hocr);
-        _prune_empty_branches($boxes);
-        return $boxes;
-    }
-    return [
-        {
-            type => 'page',
-            bbox => [ 0, 0, $self->{width}, $self->{height} ],
-            text => _decode_hocr($hocr)
-        }
-    ];
-}
-
-# Unfortunately, there seems to be a case (tested in t/31_ocropus_utf8.t)
-# where decode_entities doesn't work cleanly, so encode/decode to finally
-# get good UTF-8
-
-sub _decode_hocr {
-    my ($hocr) = @_;
-    return decode_utf8( encode_utf8( HTML::Entities::decode_entities($hocr) ) );
-}
-
-sub _hocr2boxes {
-    my ($hocr) = @_;
-    my $p = HTML::TokeParser->new( \$hocr );
-    my ( $data, @stack, $boxes );
-    while ( my $token = $p->get_token ) {
-        given ( $token->[0] ) {
-            when ('S') {
-                my ( $tag, %attrs ) = ( $token->[1], %{ $token->[2] } );
-
-                # new data point
-                $data = {};
-
-                if ( defined $attrs{class} and defined $attrs{title} ) {
-                    _parse_tag_data( $attrs{title}, $data );
-                    given ( $attrs{class} ) {
-                        when (/_page$/xsm) {
-                            $data->{type} = 'page';
-                            push @{$boxes}, $data;
-                        }
-                        when (/_carea$/xsm) {
-                            $data->{type} = 'column';
-                        }
-                        when (/_par$/xsm) {
-                            $data->{type} = 'para';
-                        }
-                        when (/_line$/xsm) {
-                            $data->{type} = 'line';
-                        }
-                        when (/_word$/xsm) {
-                            $data->{type} = 'word';
-                        }
-                    }
-
-                    # pick up previous pointer to add style
-                    if ( not defined $data->{type} ) {
-                        $data = $stack[-1];
-                    }
-
-                    # put information xocr_word information in parent ocr_word
-                    if (    $data->{type} eq 'word'
-                        and $stack[-1]{type} eq 'word' )
-                    {
-                        for ( keys %{$data} ) {
-                            if ( not defined $stack[-1]{$_} ) {
-                                $stack[-1]{$_} = $data->{$_};
-                            }
-                            elsif ( $_ ne 'type' ) {
-                                $logger->warn("Ignoring $_=$data->{$_}");
-                            }
-                        }
-
-                        # pick up previous pointer to add any later text
-                        $data = $stack[-1];
-                    }
-                    else {
-                        if ( defined $attrs{id} ) {
-                            $data->{id} = $attrs{id};
-                        }
-
-                        # if we have previous data, add the new data to the
-                        # contents of the previous data point
-                        if (    defined $stack[-1]
-                            and $data != $stack[-1]
-                            and defined $data->{bbox} )
-                        {
-                            push @{ $stack[-1]{contents} }, $data;
-                        }
-                    }
-                }
-
-                # pick up previous pointer
-                # so that unknown tags don't break the chain
-                else {
-                    $data = $stack[-1];
-                }
-                if ( defined $data ) {
-                    if ( $tag eq 'strong' ) { push @{ $data->{style} }, 'Bold' }
-                    if ( $tag eq 'em' ) { push @{ $data->{style} }, 'Italic' }
-                }
-
-                # put the new data point on the stack
-                push @stack, $data;
-            }
-            when ('T') {
-                if ( $token->[1] !~ /^\s*$/xsm ) {
-                    $data->{text} = _decode_hocr( $token->[1] );
-                    chomp $data->{text};
-                }
-            }
-            when ('E') {
-
-                # up a level
-                $data = pop @stack;
-            }
-        }
-
-    }
-    return $boxes;
-}
-
-sub _parse_tag_data {
-    my ( $title, $data ) = @_;
-    if ( $title =~ /\bbbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/xsm ) {
-        if ( $1 != $3 and $2 != $4 ) { $data->{bbox} = [ $1, $2, $3, $4 ] }
-    }
-    if ( $title =~ /\btextangle\s+(\d+)/xsm ) { $data->{textangle}  = $1 }
-    if ( $title =~ /\bx_wconf\s+(-?\d+)/xsm ) { $data->{confidence} = $1 }
-    if ( $title =~ /\bbaseline\s+((?:-?\d+(?:[.]\d+)?\s+)*-?\d+)/xsm ) {
-        my @values = split /\s+/sm, $1;
-
-        # make sure we at least have 2 coefficients
-        if ( $#values <= 0 ) { unshift @values, 0; }
-        $data->{baseline} = \@values;
-    }
+sub import_hocr {
+    my ( $self, $hocr ) = @_;
+    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
+    $self->{bboxtree}->from_hocr($hocr);
     return;
 }
 
-sub _prune_empty_branches {
-    my ($boxes) = @_;
-    if ( defined $boxes ) {
-        my $i = 0;
-        while ( $i <= $#{$boxes} ) {
-            my $child = $boxes->[$i];
-            _prune_empty_branches( $child->{contents} );
-            if ( $#{ $child->{contents} } == $EMPTY_LIST ) {
-                delete $child->{contents};
-            }
-            if ( $#{$boxes} > $EMPTY_LIST
-                and not( defined $child->{contents} or defined $child->{text} )
-              )
-            {
-                splice @{$boxes}, $i, 1;
-            }
-            else {
-                $i++;
-            }
-        }
+sub export_hocr {
+    my ($self) = @_;
+    if ( defined $self->{bboxtree} ) {
+        return $self->{bboxtree}->to_hocr;
     }
     return;
-}
-
-sub _pdftotext2boxes {
-    my ( $self, $html ) = @_;
-    my $p = HTML::TokeParser->new( \$html );
-    my ( $xresolution, $yresolution ) = $self->get_resolution;
-    my ( $data, @stack, $boxes );
-    while ( my $token = $p->get_token ) {
-        given ( $token->[0] ) {
-            when ('S') {
-                my ( $tag, %attrs ) = ( $token->[1], %{ $token->[2] } );
-
-                # new data point
-                $data = {};
-
-                if ( $tag eq 'page' ) {
-                    $data->{type} = $tag;
-                    if ( defined $attrs{width} and defined $attrs{height} ) {
-                        $data->{bbox} = [
-                            0, 0,
-                            scale( $attrs{width},  $xresolution ),
-                            scale( $attrs{height}, $yresolution )
-                        ];
-                    }
-                    push @{$boxes}, $data;
-                }
-                elsif ( $tag eq 'word' ) {
-                    $data->{type} = $tag;
-                    if (    defined $attrs{xmin}
-                        and defined $attrs{ymin}
-                        and defined $attrs{xmax}
-                        and defined $attrs{ymax} )
-                    {
-                        $data->{bbox} = [
-                            scale( $attrs{xmin}, $xresolution ),
-                            scale( $attrs{ymin}, $yresolution ),
-                            scale( $attrs{xmax}, $xresolution ),
-                            scale( $attrs{ymax}, $yresolution )
-                        ];
-                    }
-                }
-
-                # if we have previous data, add the new data to the
-                # contents of the previous data point
-                if (    defined $stack[-1]
-                    and $data != $stack[-1]
-                    and defined $data->{bbox} )
-                {
-                    push @{ $stack[-1]{contents} }, $data;
-                }
-
-                # put the new data point on the stack
-                if ( defined $data->{bbox} ) { push @stack, $data }
-            }
-            when ('T') {
-                if ( $token->[1] !~ /^\s*$/xsm ) {
-                    $data->{text} = _decode_hocr( $token->[1] );
-                    chomp $data->{text};
-                }
-            }
-            when ('E') {
-
-                # up a level
-                $data = pop @stack;
-            }
-        }
-
-    }
-    return $boxes;
-}
-
-sub scale {
-    my ( $f, $resolution ) = @_;
-    return
-      int( $f * $resolution / $Gscan2pdf::Document::POINTS_PER_INCH + $HALF );
-}
-
-# return hocr output as string
-
-sub string {
-    my ($self) = @_;
-    return _boxes2string( $self->boxes );
-}
-
-sub _boxes2string {
-    my ($boxes) = @_;
-    my $string  = $EMPTY;
-    my $para    = FALSE;
-
-    for my $box ( @{$boxes} ) {
-        if ( defined $box->{contents} ) {
-            $string .= _boxes2string( $box->{contents} );
-            if ( $box->{type} eq 'line' ) { $string .= $SPACE }
-            if ( $box->{type} eq 'para' ) {
-                $string .= "\n\n";
-                $para = TRUE;
-            }
-            else {
-                $para = FALSE;
-            }
-        }
-        if ( defined $box->{text} ) { $string .= $box->{text} . $SPACE }
-    }
-
-    # squashes whitespace at the end of the string
-    if ( not $para ) { $string =~ s/\s+\z//xsm }
-    return $string;
-}
-
-sub djvu_text {
-    my ($self) = @_;
-    my $boxes = $self->boxes;
-    if ( defined $boxes and $#{$boxes} > $EMPTY_LIST ) {
-        my $h =
-          ( $boxes->[0]{type} eq 'page' )
-          ? $boxes->[0]{bbox}[-1]
-          : $self->{height};
-        return _boxes2djvu( $boxes, 0, $h );
-    }
-    return $EMPTY;
-}
-
-sub _boxes2djvu {
-    my ( $pointer, $indent, $h ) = @_;
-    my $string = $EMPTY;
-
-    # Write the text boxes
-    for my $box ( @{$pointer} ) {
-        my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
-        if ( $indent != 0 ) { $string .= "\n" }
-        for ( 1 .. $indent ) { $string .= $SPACE }
-        $string .= sprintf "($box->{type} %d %d %d %d", $x1, $h - $y2, $x2,
-          $h - $y1;
-        if ( defined $box->{text} ) {
-            $string .= $SPACE . _escape_text( $box->{text} );
-        }
-        if ( defined $box->{contents} ) {
-            $string .= _boxes2djvu( $box->{contents}, $indent + 2, $h );
-        }
-        $string .= ')';
-    }
-    if ( $indent == 0 ) { $string .= "\n" }
-    return $string;
-}
-
-sub _boxes2hocr {
-    my ( $pointer, $indent ) = @_;
-    my $string = $EMPTY;
-    if ( not defined $indent ) { $indent = 0 }
-    if ( $indent == 0 ) {
-        $string .= <<"EOS";
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
- <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Page::VERSION' />
-  <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocr_word'/>
- </head>
- <body>
-EOS
-    }
-
-    # Write the text boxes
-    for my $box ( @{$pointer} ) {
-        my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
-        my $type = 'ocr_' . $box->{type};
-        my $tag  = 'span';
-        given ( $box->{type} ) {
-            when ('page') {
-                $tag = 'div';
-            }
-            when (/^(?:carea|column)$/xsm) {
-                $type = 'ocr_carea';
-                $tag  = 'div';
-            }
-            when ('para') {
-                $type = 'ocr_par';
-                $tag  = 'p';
-            }
-        }
-        $string .=
-            $SPACE x ( 2 + $indent )
-          . "<$tag class='$type' title='bbox $x1 $y1 $x2 $y2'>"
-          . (
-            defined $box->{text}
-            ? HTML::Entities::encode( $box->{text}, "<>&\"'" )
-            : $EMPTY
-          )
-          . (
-            defined $box->{contents}
-            ? "\n"
-              . _boxes2hocr( $box->{contents}, $indent + 1 )
-              . $SPACE x ( 2 + $indent )
-            : $EMPTY
-          ) . "</$tag>" . "\n";
-    }
-
-    if ( $indent == 0 ) { $string .= " </body>\n</html>\n" }
-    return $string;
-}
-
-sub _djvu2boxes {
-    my ( $text, $h ) = @_;
-    my @boxes;
-
-    while ( defined $text and $text !~ /\A\s*\z/xsm ) {
-        my @result = extract_bracketed( $text, '(")' );
-        if ( not defined $result[0] ) {
-            croak "Error parsing brackets in $text";
-        }
-        if ( $result[0] =~
-            /^\s*[(](\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(.*)[)]$/xsm )
-        {
-            my $box = {};
-            $box->{type} = $1;
-            if ( $1 eq 'page' ) { $h = $5 }
-            $box->{bbox} = [ $2, $h - $5, $4, $h - $3 ];
-            my $rest = $6;
-            if ( $rest =~ /\A\s*[(].*[)]\s*\z/xsm ) {
-                $box->{contents} = _djvu2boxes( $rest, $h );
-            }
-            elsif ( $rest =~ /\A\s*"(.*)"\s*\z/xsm ) {
-                $box->{text} = $1;
-            }
-            else {
-                croak "Error parsing djvu text $rest";
-            }
-            push @boxes, $box;
-        }
-        else {
-            croak "Error parsing djvu text $result[0]";
-        }
-        $text = $result[1];
-    }
-    return \@boxes;
 }
 
 sub import_djvutext {
+    my ( $self, $djvu ) = @_;
+    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
+    $self->{bboxtree}->from_djvu($djvu);
+    return;
+}
+
+sub export_djvutext {
+    my ($self) = @_;
+    if ( defined $self->{bboxtree} ) {
+        return $self->{bboxtree}->to_djvu;
+    }
+    return;
+}
+
+sub import_text {
     my ( $self, $text ) = @_;
-    my $boxes = _djvu2boxes($text);
-    $self->{hocr} = _boxes2hocr($boxes);
+    if ( not defined $self->{width} ) {
+        $self->get_size;
+    }
+    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
+    $self->{bboxtree}->from_text( $text, $self->{width}, $self->{height} );
+    return;
+}
+
+sub export_text {
+    my ($self) = @_;
+    if ( defined $self->{bboxtree} ) {
+        return $self->{bboxtree}->to_text;
+    }
     return;
 }
 
 sub import_pdftotext {
     my ( $self, $html ) = @_;
-    my $boxes = $self->_pdftotext2boxes($html);
-    $self->{hocr} = _boxes2hocr($boxes);
+    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
+    $self->{bboxtree}->from_pdftotext( $html, $self->get_resolution() );
     return;
-}
-
-# Escape backslashes and inverted commas
-# Surround with inverted commas
-sub _escape_text {
-    my ($txt) = @_;
-    $txt =~ s/\\/\\\\/gxsm;
-    $txt =~ s/"/\\\"/gxsm;
-    return "$DOUBLE_QUOTES$txt$DOUBLE_QUOTES";
 }
 
 sub to_png {
@@ -625,7 +250,7 @@ sub to_png {
         width       => $self->{width},
         height      => $self->{height},
     );
-    if ( defined $self->{hocr} ) { $new->{hocr} = $self->{hocr} }
+    if ( defined $self->{bboxtree} ) { $new->{bboxtree} = $self->{bboxtree} }
     return $new;
 }
 

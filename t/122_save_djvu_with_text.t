@@ -31,7 +31,7 @@ SKIP: {
     $slist->import_files(
         paths             => ['test.pnm'],
         finished_callback => sub {
-            $slist->{data}[0][2]{hocr} = 'The quick brown fox';
+            $slist->{data}[0][2]->import_text('The quick brown fox');
             $slist->save_djvu(
                 path              => 'test.djvu',
                 list_of_pages     => [ $slist->{data}[0][2]{uuid} ],

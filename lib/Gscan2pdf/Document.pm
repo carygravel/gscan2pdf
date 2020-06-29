@@ -1785,9 +1785,11 @@ sub user_defined {
 
 # Dump $self to a file.
 # If a filename is given, zip it up as a session file
+# Pass version to allow us to mock different session version and to be able to
+# test opening old sessions.
 
 sub save_session {
-    my ( $self, $filename ) = @_;
+    my ( $self, $filename, $version ) = @_;
     $self->remove_corrupted_pages;
 
     my ( %session, @filenamelist );
@@ -1805,6 +1807,7 @@ sub save_session {
     push @filenamelist, File::Spec->catfile( $self->{dir}, 'session' );
     my @selection = $self->get_selected_indices;
     @{ $session{selection} } = @selection;
+    if ( defined $version ) { $session{version} = $version }
     store( \%session, File::Spec->catfile( $self->{dir}, 'session' ) );
     if ( defined $filename ) {
         my $tar = Archive::Tar->new;
@@ -1857,7 +1860,31 @@ sub open_session {
         return;
     }
     my $sessionref = retrieve($sessionfile);
-    my %session    = %{$sessionref};
+
+    # hocr -> bboxtree
+    if ( not defined $sessionref->{version} ) {
+        $logger->info('Restoring pre-2.8.1 session file.');
+        for my $key ( keys %{$sessionref} ) {
+            if ( ref( $sessionref->{$key} ) eq 'HASH'
+                and defined $sessionref->{$key}{hocr} )
+            {
+                $sessionref->{$key}{bboxtree} = Gscan2pdf::Bboxtree->new();
+                if ( $sessionref->{$key}{hocr} =~ /<body>[\s\S]*<\/body>/xsm ) {
+                    $sessionref->{$key}{bboxtree}
+                      ->from_hocr( $sessionref->{$key}{hocr} );
+                }
+                else {
+                    $sessionref->{$key}{bboxtree}
+                      ->from_text( $sessionref->{$key}{hocr} );
+                }
+                delete $sessionref->{$key}{hocr};
+            }
+        }
+    }
+    else {
+        $logger->info("Restoring v$sessionref->{version} session file.");
+    }
+    my %session = %{$sessionref};
 
     # Block the row-changed signal whilst adding the scan (row) and sorting it.
     if ( defined $self->{row_changed_signal} ) {
@@ -1865,6 +1892,7 @@ sub open_session {
     }
     my @selection = @{ $session{selection} };
     delete $session{selection};
+    if ( defined $session{version} ) { delete $session{version} }
     for my $pagenum ( sort { $a <=> $b } ( keys %session ) ) {
 
         # don't reuse session directory
@@ -3579,10 +3607,9 @@ sub _add_page_to_pdf {
     my $page = $pdf->page;
     $page->mediabox( $w * $POINTS_PER_INCH, $h * $POINTS_PER_INCH );
 
-    if ( defined( $pagedata->{hocr} ) ) {
+    if ( defined( $pagedata->{bboxtree} ) ) {
         $logger->info('Embedding OCR output behind image');
-        _add_text_to_pdf( $page, $pagedata, $pagedata->boxes, $cache->{ttf},
-            $cache->{core} );
+        _add_text_to_pdf( $page, $pagedata, $cache->{ttf}, $cache->{core} );
     }
 
     # Add scan
@@ -3759,19 +3786,16 @@ sub _write_image_object {
 # Add OCR as text behind the scan
 
 sub _add_text_to_pdf {
-    my ( $pdf_page, $gs_page, $boxes, $ttfcache, $corecache ) = @_;
+    my ( $pdf_page, $gs_page, $ttfcache, $corecache ) = @_;
     my $xresolution = $gs_page->{xresolution};
     my $yresolution = $gs_page->{yresolution};
     my $w           = $gs_page->{width} / $gs_page->{xresolution};
     my $h           = $gs_page->{height} / $gs_page->{yresolution};
     my $font;
     my $text = $pdf_page->text;
-    for my $box ( @{$boxes} ) {
+    my $iter = $gs_page->{bboxtree}->get_bbox_iter();
 
-        if ( defined $box->{contents} ) {
-            _add_text_to_pdf( $pdf_page, $gs_page, $box->{contents}, $ttfcache,
-                $corecache );
-        }
+    while ( my $box = $iter->() ) {
         my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
         my $txt = $box->{text};
         if ( not defined $txt ) { next }
@@ -4039,13 +4063,12 @@ sub _write_file {
 
 sub _add_text_to_djvu {
     my ( $self, $djvu, $dir, $pagedata, $uuid ) = @_;
-    if ( defined( $pagedata->{hocr} ) ) {
-        my $txt = $pagedata->djvu_text;
+    if ( defined( $pagedata->{bboxtree} ) ) {
+        my $txt = $pagedata->export_djvutext;
         if ( $txt eq $EMPTY ) { return }
 
         # Write djvusedtxtfile
         my $djvusedtxtfile = File::Temp->new( DIR => $dir, SUFFIX => '.txt' );
-        $logger->debug( $pagedata->{hocr} );
         $logger->debug($txt);
         open my $fh, '>:encoding(UTF8)', $djvusedtxtfile
           or croak( sprintf __("Can't open file: %s"), $djvusedtxtfile );
@@ -4361,7 +4384,7 @@ sub _thread_save_text {
     my $string = $EMPTY;
 
     for my $page ( @{$list_of_pages} ) {
-        $string .= $page->string;
+        $string .= $page->export_text;
         return if $_self->{cancel};
     }
     if ( not open $fh, '>', $path ) {
@@ -4397,7 +4420,9 @@ sub _thread_save_hocr {
 
     my $written_header = FALSE;
     for ( @{$list_of_pages} ) {
-        if ( $_->{hocr} =~ /([\s\S]*<body>)([\s\S]*)<\/body>/xsm ) {
+        my $hocr = $_->export_hocr;
+        if ( defined $hocr and $hocr =~ /([\s\S]*<body>)([\s\S]*)<\/body>/xsm )
+        {
             my $header    = $1;
             my $hocr_page = $2;
             if ( not $written_header ) {
@@ -4860,9 +4885,9 @@ sub _thread_to_png {
 
 sub _thread_tesseract {
     my ( $self, %options ) = @_;
-    my ( $error, $stderr );
+    my ( $error, $stdout, $stderr, $new );
     try {
-        ( $options{page}{hocr}, $stderr ) = Gscan2pdf::Tesseract->hocr(
+        ( $stdout, $stderr ) = Gscan2pdf::Tesseract->hocr(
             file      => $options{page}{filename},
             language  => $options{language},
             logger    => $logger,
@@ -4870,6 +4895,8 @@ sub _thread_tesseract {
             dpi       => $options{page}{xresolution},
             pidfile   => $options{pidfile},
         );
+        $new = $options{page}->clone;
+        $new->import_hocr($stdout);
     }
     catch {
         $logger->error("Error processing with tesseract: $_");
@@ -4890,7 +4917,7 @@ sub _thread_tesseract {
         {
             type => 'page',
             uuid => $options{uuid},
-            page => $options{page},
+            page => $new->freeze,
             info => { replace => $options{page}{uuid} }
         }
     );
@@ -4906,12 +4933,15 @@ sub _thread_tesseract {
 
 sub _thread_ocropus {
     my ( $self, %options ) = @_;
-    $options{page}{hocr} = Gscan2pdf::Ocropus->hocr(
-        file      => $options{page}{filename},
-        language  => $options{language},
-        logger    => $logger,
-        pidfile   => $options{pidfile},
-        threshold => $options{threshold}
+    my $new = $options{page}->clone;
+    $new->import_hocr(
+        Gscan2pdf::Ocropus->hocr(
+            file      => $options{page}{filename},
+            language  => $options{language},
+            logger    => $logger,
+            pidfile   => $options{pidfile},
+            threshold => $options{threshold}
+        )
     );
     return if $_self->{cancel};
     $options{page}{ocr_flag} = 1;    #FlagOCR
@@ -4921,7 +4951,7 @@ sub _thread_ocropus {
         {
             type => 'page',
             uuid => $options{uuid},
-            page => $options{page},
+            page => $new->freeze,
             info => { replace => $options{page}{uuid} }
         }
     );
@@ -4937,12 +4967,15 @@ sub _thread_ocropus {
 
 sub _thread_cuneiform {
     my ( $self, %options ) = @_;
-    $options{page}{hocr} = Gscan2pdf::Cuneiform->hocr(
-        file      => $options{page}{filename},
-        language  => $options{language},
-        logger    => $logger,
-        pidfile   => $options{pidfile},
-        threshold => $options{threshold}
+    my $new = $options{page}->clone;
+    $new->import_hocr(
+        Gscan2pdf::Cuneiform->hocr(
+            file      => $options{page}{filename},
+            language  => $options{language},
+            logger    => $logger,
+            pidfile   => $options{pidfile},
+            threshold => $options{threshold}
+        )
     );
     return if $_self->{cancel};
     $options{page}{ocr_flag} = 1;    #FlagOCR
@@ -4952,7 +4985,7 @@ sub _thread_cuneiform {
         {
             type => 'page',
             uuid => $options{uuid},
-            page => $options{page},
+            page => $new->freeze,
             info => { replace => $options{page}{uuid} }
         }
     );
@@ -5004,7 +5037,9 @@ sub _thread_gocr {
     # Using temporary txt file, as perl munges charset encoding
     # if text is passed by stdin/stdout
     exec_command( [ 'gocr', $pnm, '-o', $txt ], $pidfile );
-    ( $page->{hocr}, undef ) = slurp($txt);
+    ( my $stdout, undef ) = slurp($txt);
+    my $new = $page->clone;
+    $new->import_text($stdout);
 
     return if $_self->{cancel};
     $page->{ocr_flag} = 1;              #FlagOCR
@@ -5013,7 +5048,7 @@ sub _thread_gocr {
         {
             type => 'page',
             uuid => $uuid,
-            page => $page,
+            page => $new->freeze,
             info => { replace => $page->{uuid} }
         }
     );

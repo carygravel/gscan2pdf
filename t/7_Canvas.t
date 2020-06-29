@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 28;
+use Test::More tests => 29;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -27,7 +27,7 @@ my $page = Gscan2pdf::Page->new(
     dir        => File::Temp->newdir,
 );
 
-$page->{hocr} = <<'EOS';
+$page->import_hocr( <<'EOS');
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -188,7 +188,7 @@ $page = Gscan2pdf::Page->new(
     dir        => File::Temp->newdir,
 );
 
-$page->{hocr} = <<'EOS';
+$page->import_hocr( <<'EOS');
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -259,6 +259,18 @@ is( $canvas->hocr, $expected, 'updated hocr with extended hOCR properties' );
 
 #########################
 
+$bbox = $canvas->get_first_bbox;
+$bbox->delete_box;
+$bbox = $canvas->get_next_bbox;
+$bbox->delete_box;
+$bbox = $canvas->get_next_bbox;
+$bbox->delete_box;
+$bbox = $canvas->get_next_bbox;
+$bbox->delete_box;
+is $canvas->get_last_bbox, undef, 'get_last_bbox() returns undef if no boxes';
+
+#########################
+
 SKIP: {
     skip 'GooCanvas2::Canvas::get_transform() returns undef', 6;
     $group = $canvas->get_root_item;
@@ -285,8 +297,7 @@ $page = Gscan2pdf::Page->new(
     resolution => 72,
     dir        => File::Temp->newdir,
 );
-
-$page->{hocr} = 'The quick brown fox';
+$page->import_text('The quick brown fox');
 
 $canvas = Gscan2pdf::Canvas->new;
 $canvas->set_text( $page, undef, FALSE );
