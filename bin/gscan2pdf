@@ -1771,7 +1771,7 @@ sub create_temp_directory {
         $logger->info("Using $session for temporary files");
 
         $tmpdir = dirname($session);
-        if ( $SETTING{TMPDIR} ne $tmpdir ) {
+        if ( defined $SETTING{TMPDIR} and $SETTING{TMPDIR} ne $tmpdir ) {
             $logger->warn(
                 sprintf __(
 'Warning: unable to use %s for temporary storage. Defaulting to %s instead.'
