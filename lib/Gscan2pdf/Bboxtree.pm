@@ -9,6 +9,7 @@ use Encode qw(decode_utf8 encode_utf8);
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Document;
 use Carp;
+use JSON::PP;
 
 #use Text::Balanced qw ( extract_bracketed );
 use Readonly;
@@ -34,9 +35,22 @@ BEGIN {
 our @EXPORT_OK;
 
 sub new {
-    my ($class) = @_;
+    my ( $class, $json ) = @_;
     my $self = [];
+    if ( defined $json ) {
+        $self = JSON::PP->new->allow_nonref->decode($json);
+    }
     return bless $self, $class;
+}
+
+sub json {
+    my ($self) = @_;
+    my @boxes;
+    for my $box ( @{$self} ) {
+        push @boxes, JSON::PP->new->convert_blessed->encode($box);
+    }
+    my $json = join q{,}, @boxes;
+    return "[$json]";
 }
 
 sub from_hocr {

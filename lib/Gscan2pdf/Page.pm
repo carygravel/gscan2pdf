@@ -176,30 +176,32 @@ sub thaw {
 
 sub import_hocr {
     my ( $self, $hocr ) = @_;
-    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
-    $self->{bboxtree}->from_hocr($hocr);
+    my $bboxtree = Gscan2pdf::Bboxtree->new;
+    $bboxtree->from_hocr($hocr);
+    $self->{bboxtree} = $bboxtree->json;
     return;
 }
 
 sub export_hocr {
     my ($self) = @_;
     if ( defined $self->{bboxtree} ) {
-        return $self->{bboxtree}->to_hocr;
+        return Gscan2pdf::Bboxtree->new( $self->{bboxtree} )->to_hocr;
     }
     return;
 }
 
 sub import_djvutext {
     my ( $self, $djvu ) = @_;
-    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
-    $self->{bboxtree}->from_djvu($djvu);
+    my $tree = Gscan2pdf::Bboxtree->new;
+    $tree->from_djvu($djvu);
+    $self->{bboxtree} = $tree->json;
     return;
 }
 
 sub export_djvutext {
     my ($self) = @_;
     if ( defined $self->{bboxtree} ) {
-        return $self->{bboxtree}->to_djvu;
+        return Gscan2pdf::Bboxtree->new( $self->{bboxtree} )->to_djvu;
     }
     return;
 }
@@ -209,23 +211,25 @@ sub import_text {
     if ( not defined $self->{width} ) {
         $self->get_size;
     }
-    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
-    $self->{bboxtree}->from_text( $text, $self->{width}, $self->{height} );
+    my $tree = Gscan2pdf::Bboxtree->new;
+    $tree->from_text( $text, $self->{width}, $self->{height} );
+    $self->{bboxtree} = $tree->json;
     return;
 }
 
 sub export_text {
     my ($self) = @_;
     if ( defined $self->{bboxtree} ) {
-        return $self->{bboxtree}->to_text;
+        return Gscan2pdf::Bboxtree->new( $self->{bboxtree} )->to_text;
     }
     return;
 }
 
 sub import_pdftotext {
     my ( $self, $html ) = @_;
-    $self->{bboxtree} = Gscan2pdf::Bboxtree->new;
-    $self->{bboxtree}->from_pdftotext( $html, $self->get_resolution() );
+    my $tree = Gscan2pdf::Bboxtree->new;
+    $tree->from_pdftotext( $html, $self->get_resolution );
+    $self->{bboxtree} = $tree->json;
     return;
 }
 

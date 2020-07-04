@@ -1868,15 +1868,14 @@ sub open_session {
             if ( ref( $sessionref->{$key} ) eq 'HASH'
                 and defined $sessionref->{$key}{hocr} )
             {
-                $sessionref->{$key}{bboxtree} = Gscan2pdf::Bboxtree->new();
+                my $tree = Gscan2pdf::Bboxtree->new();
                 if ( $sessionref->{$key}{hocr} =~ /<body>[\s\S]*<\/body>/xsm ) {
-                    $sessionref->{$key}{bboxtree}
-                      ->from_hocr( $sessionref->{$key}{hocr} );
+                    $tree->from_hocr( $sessionref->{$key}{hocr} );
                 }
                 else {
-                    $sessionref->{$key}{bboxtree}
-                      ->from_text( $sessionref->{$key}{hocr} );
+                    $tree->from_text( $sessionref->{$key}{hocr} );
                 }
+                $sessionref->{$key}{bboxtree} = $tree->json;
                 delete $sessionref->{$key}{hocr};
             }
         }
@@ -3793,7 +3792,8 @@ sub _add_text_to_pdf {
     my $h           = $gs_page->{height} / $gs_page->{yresolution};
     my $font;
     my $text = $pdf_page->text;
-    my $iter = $gs_page->{bboxtree}->get_bbox_iter();
+    my $iter =
+      Gscan2pdf::Bboxtree->new( $gs_page->{bboxtree} )->get_bbox_iter();
 
     while ( my $box = $iter->() ) {
         my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
@@ -4885,7 +4885,7 @@ sub _thread_to_png {
 
 sub _thread_tesseract {
     my ( $self, %options ) = @_;
-    my ( $error, $stdout, $stderr, $new );
+    my ( $error, $stdout, $stderr );
     try {
         ( $stdout, $stderr ) = Gscan2pdf::Tesseract->hocr(
             file      => $options{page}{filename},
@@ -4895,8 +4895,7 @@ sub _thread_tesseract {
             dpi       => $options{page}{xresolution},
             pidfile   => $options{pidfile},
         );
-        $new = $options{page}->clone;
-        $new->import_hocr($stdout);
+        $options{page}->import_hocr($stdout);
     }
     catch {
         $logger->error("Error processing with tesseract: $_");
@@ -4917,7 +4916,7 @@ sub _thread_tesseract {
         {
             type => 'page',
             uuid => $options{uuid},
-            page => $new->freeze,
+            page => $options{page},
             info => { replace => $options{page}{uuid} }
         }
     );
@@ -4933,8 +4932,7 @@ sub _thread_tesseract {
 
 sub _thread_ocropus {
     my ( $self, %options ) = @_;
-    my $new = $options{page}->clone;
-    $new->import_hocr(
+    $options{page}->import_hocr(
         Gscan2pdf::Ocropus->hocr(
             file      => $options{page}{filename},
             language  => $options{language},
@@ -4951,7 +4949,7 @@ sub _thread_ocropus {
         {
             type => 'page',
             uuid => $options{uuid},
-            page => $new->freeze,
+            page => $options{page},
             info => { replace => $options{page}{uuid} }
         }
     );
@@ -4967,8 +4965,7 @@ sub _thread_ocropus {
 
 sub _thread_cuneiform {
     my ( $self, %options ) = @_;
-    my $new = $options{page}->clone;
-    $new->import_hocr(
+    $options{page}->import_hocr(
         Gscan2pdf::Cuneiform->hocr(
             file      => $options{page}{filename},
             language  => $options{language},
@@ -4985,7 +4982,7 @@ sub _thread_cuneiform {
         {
             type => 'page',
             uuid => $options{uuid},
-            page => $new->freeze,
+            page => $options{page},
             info => { replace => $options{page}{uuid} }
         }
     );
@@ -5038,8 +5035,7 @@ sub _thread_gocr {
     # if text is passed by stdin/stdout
     exec_command( [ 'gocr', $pnm, '-o', $txt ], $pidfile );
     ( my $stdout, undef ) = slurp($txt);
-    my $new = $page->clone;
-    $new->import_text($stdout);
+    $page->import_text($stdout);
 
     return if $_self->{cancel};
     $page->{ocr_flag} = 1;              #FlagOCR
@@ -5048,7 +5044,7 @@ sub _thread_gocr {
         {
             type => 'page',
             uuid => $uuid,
-            page => $new->freeze,
+            page => $page,
             info => { replace => $page->{uuid} }
         }
     );

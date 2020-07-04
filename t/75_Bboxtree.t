@@ -109,7 +109,7 @@ my $expected = <<"EOS";
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
  <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Page::VERSION' />
+  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Bboxtree::VERSION' />
   <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocr_word'/>
  </head>
  <body>
@@ -243,7 +243,7 @@ $expected = <<"EOS";
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
  <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Page::VERSION' />
+  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Bboxtree::VERSION' />
   <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocr_word'/>
  </head>
  <body>

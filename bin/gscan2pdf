@@ -463,8 +463,7 @@ sub populate_main_window {
         clicked => sub {
             $ocr_bbox->update_box( $ocr_textbuffer->get('text'),
                 $view->get_selection );
-            $current_page->{bboxtree} = Gscan2pdf::Bboxtree->new;
-            $current_page->{bboxtree}->from_hocr( $canvas->hocr );
+            $current_page->import_hocr( $canvas->hocr );
             edit_ocr_text($ocr_bbox);
         }
     );
@@ -490,8 +489,7 @@ sub populate_main_window {
                 $text = __('my-new-word');
             }
             my $bbox = $canvas->add_box( $text, $view->get_selection );
-            $current_page->{bboxtree} = Gscan2pdf::Bboxtree->new;
-            $current_page->{bboxtree}->from_hocr( $canvas->hocr );
+            $current_page->import_hocr( $canvas->hocr );
             edit_ocr_text($bbox);
         }
     );
@@ -503,8 +501,7 @@ sub populate_main_window {
     $ocr_text_dbutton->signal_connect(
         clicked => sub {
             $ocr_bbox->delete_box;
-            $current_page->{bboxtree} = Gscan2pdf::Bboxtree->new;
-            $current_page->{bboxtree}->from_hocr( $canvas->hocr );
+            $current_page->import_hocr( $canvas->hocr );
             edit_ocr_text( $canvas->get_bbox_by_index );
         }
     );

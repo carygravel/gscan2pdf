@@ -71,11 +71,9 @@ $slist->import_files(
                         # in the original, we cannot expect to be able to
                         # round-trip the text layer. Here, at least we can check
                         # that we have scaled the page size correctly.
-                        like(
-                            $slist->{data}[1][2]->export_hocr,
-                            qr/bbox\s0\s0\s$width\s$height/xsm,
-                            'import text layer'
-                        );
+                        like $slist->{data}[1][2]->export_hocr,
+                          qr/bbox\s0\s0\s$width\s$height/xsm,
+                          'import text layer';
                         Gtk3->main_quit;
                     }
                 );
