@@ -7,6 +7,7 @@
 * When saving a session file, note that pages have been saved to avoid
   'Some pages have not been saved. Do you really want to quit?' message.
 * Improvements to the Crashed sessions dialog to make it more intuitive.
+* Update position of OCR text when cropping
 * Update to Hungarian translation (thanks to csola)
 
 

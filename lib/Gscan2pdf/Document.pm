@@ -4832,6 +4832,33 @@ sub _thread_crop {
     $options{page}{width}      = $options{w};
     $options{page}{height}     = $options{h};
     $options{page}{dirty_time} = timestamp();           #flag as dirty
+
+    if ( $options{page}{bboxtree} ) {
+        my $bboxtree = Gscan2pdf::Bboxtree->new( $options{page}{bboxtree} );
+        my $i        = 0;
+        while ( $i <= $#{$bboxtree} ) {
+            my $bbox = $bboxtree->[$i];
+            my ( $text_x1, $text_y1, $text_x2, $text_y2 ) = @{ $bbox->{bbox} };
+            ( $text_x1, $text_x2 ) =
+              _crop_axis( $text_x1, $text_x2, $options{x},
+                $options{x} + $options{w} );
+            ( $text_y1, $text_y2 ) =
+              _crop_axis( $text_y1, $text_y2, $options{y},
+                $options{y} + $options{h} );
+
+            # cropped outside box, so remove box
+            if ( not defined $text_x1 or not defined $text_y1 ) {
+                splice @{$bboxtree}, $i, 1;
+                next;
+            }
+
+            # update box
+            $bbox->{bbox} = [ $text_x1, $text_y1, $text_x2, $text_y2 ];
+            $i++;
+        }
+        $options{page}{bboxtree} = $bboxtree->json;
+    }
+
     $self->{return}->enqueue(
         {
             type => 'page',
@@ -4848,6 +4875,41 @@ sub _thread_crop {
         }
     );
     return;
+}
+
+# More trouble that it's worth to refactor this as a dispatch table, as it would
+# require converting the inequalities into a string of binaries, which would be
+# less easy to understand. In this case the ifelse cascade is better.
+
+sub _crop_axis {
+    my ( $text1, $text2, $crop1, $crop2 ) = @_;
+    if ( $text1 > $crop2 or $text2 < $crop1 ) { return }
+
+    # crop inside edges of box
+    if ( $text1 < $crop1 and $text2 > $crop2 )
+    {    ## no critic (ProhibitCascadingIfElse)
+        $text1 = 0;
+        $text2 = $crop2 - $crop1;
+    }
+
+    # crop outside edges of box
+    elsif ( $text1 > $crop1 and $text2 < $crop2 ) {
+        $text1 -= $crop1;
+        $text2 -= $crop1;
+    }
+
+    # crop over 2nd edge of box
+    elsif ( $text2 > $crop1 and $text2 < $crop2 ) {
+        $text1 = 0;
+        $text2 -= $crop1;
+    }
+
+    # crop over 1st edge of box
+    elsif ( $text1 > $crop1 and $text1 < $crop2 ) {
+        $text1 -= $crop1;
+        $text2 = $crop2 - $crop1;
+    }
+    return $text1, $text2;
 }
 
 sub _thread_to_png {
