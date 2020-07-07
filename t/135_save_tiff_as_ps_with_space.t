@@ -43,7 +43,7 @@ $slist->import_files(
 Gtk3->main;
 
 is `file 'te st.ps'`,
-"te st.ps: PostScript document text conforming DSC level 3.0, type EPS, Level 1\n",
+"te st.ps: PostScript document text conforming DSC level 3.0, type EPS, Level 3\n",
   'valid postscript created';
 like `pdfinfo test.pdf`, qr/tiff2ps/, 'ran post-save hook';
 

@@ -8,6 +8,7 @@
   'Some pages have not been saved. Do you really want to quit?' message.
 * Improvements to the Crashed sessions dialog to make it more intuitive.
 * Update position of OCR text when cropping
+* Create PS level 3 instead of 1.
 * Update to Hungarian translation (thanks to csola)
 
 

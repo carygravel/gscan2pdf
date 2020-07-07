@@ -4231,7 +4231,7 @@ sub _thread_save_tiff {
     }
     if ( defined $options{options}{ps} ) {
         $self->{message} = __('Converting to PS');
-        @cmd = ( 'tiff2ps', '-1', $options{path}, '-O', $options{options}{ps} );
+        @cmd = ( 'tiff2ps', '-3', $options{path}, '-O', $options{options}{ps} );
         ( $status, undef, $error ) = exec_command( \@cmd, $options{pidfile} );
         if ( $status or $error ) {
             $logger->info($error);
