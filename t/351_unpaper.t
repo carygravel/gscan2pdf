@@ -104,13 +104,13 @@ SKIP: {
 
 my $unpaper =
   Gscan2pdf::Unpaper->new( { 'output-pages' => 2, layout => 'double' } );
-$Gscan2pdf::Unpaper::UNPAPER_VERSION = 0.3;
+$Gscan2pdf::Unpaper::UNPAPER_VERSION = version->parse('0.3');
 is(
     $unpaper->get_cmdline,
 'unpaper --black-threshold 0.33 --deskew-scan-direction left,right --layout double --output-pages 2 --white-threshold 0.9 --overwrite --input-file-sequence %s --output-file-sequence %s %s',
     'cmdline v0.3'
 );
-$Gscan2pdf::Unpaper::UNPAPER_VERSION = 0.4;
+$Gscan2pdf::Unpaper::UNPAPER_VERSION = version->parse('0.4');
 is(
     $unpaper->get_cmdline,
 'unpaper --black-threshold 0.33 --deskew-scan-direction left,right --layout double --output-pages 2 --white-threshold 0.9 --overwrite %s %s %s',

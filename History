@@ -9,6 +9,8 @@
 * Improvements to the Crashed sessions dialog to make it more intuitive.
 * Update position of OCR text when cropping
 * Create PS level 3 instead of 1.
+* Fix check for unpaper version. Closes #285 (Scan fails if unpaper is not
+  installed but selected in post processing)
 * Update to Hungarian translation (thanks to csola)
 
 

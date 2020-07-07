@@ -1,7 +1,8 @@
 use warnings;
 use strict;
+use version;
 use Sub::Override;
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 BEGIN {
     use_ok('Gscan2pdf::Unpaper');
@@ -11,7 +12,7 @@ BEGIN {
 
 #########################
 
-my $unpaper_version = 0.3;
+my $unpaper_version = version->parse('0.3');
 my $override        = Sub::Override->new;
 $override->replace(
     'Gscan2pdf::Unpaper::version' => sub { return $unpaper_version } );
@@ -29,7 +30,7 @@ is(
     'Basic functionality 0.3'
 );
 
-$unpaper_version = 0.6;
+$unpaper_version = version->parse('0.6');
 is(
     $unpaper->get_cmdline,
 'unpaper --black-threshold 0.33 --border-margin 0,0 --deskew-scan-direction left,right --layout single --output-pages 1 --white-threshold 0.9 --overwrite %s %s %s',
@@ -90,10 +91,12 @@ $unpaper = Gscan2pdf::Unpaper->new( { layout => 'double' } );
 $unpaper->add_options($vbox);
 $unpaper->set_options( { 'output-pages' => 2 } );
 
-is(
-    $unpaper->get_cmdline,
+is $unpaper->get_cmdline,
 'unpaper --black-threshold 0.33 --border-margin 0,0 --deskew-scan-direction left,right --layout double --output-pages 2 --white-threshold 0.9 --overwrite %s %s %s',
-    'output-pages = 2'
-);
+  'output-pages = 2';
+
+is $Gscan2pdf::Unpaper::VERSION_03->is_strict, 1, '0.3 strict';
+
+is $Gscan2pdf::Unpaper::VERSION_03->is_lax, 1, '0.3 lax';
 
 __END__

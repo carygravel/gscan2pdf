@@ -11,6 +11,8 @@ use Gtk3;
 use version;
 use Gscan2pdf::Document;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
+use Readonly;
+Readonly my $NOT_FOUND => -1;
 
 BEGIN {
     use Exporter ();
@@ -29,7 +31,8 @@ our @EXPORT_OK;
 
 my $COMMA = q{,};
 my $SPACE = q{ };
-our ($UNPAPER_VERSION);
+our $UNPAPER_VERSION;
+our $VERSION_03 = version->parse('0.3');
 
 sub new {
     my ( $class, $default ) = @_;
@@ -658,7 +661,7 @@ sub get_cmdline {
     }
     my $cmd = 'unpaper ' . join( $SPACE, @items ) . ' --overwrite ';
     $cmd .=
-      version->parse( 'v' . $self->version ) > version->parse('v0.3')
+      $self->version > $VERSION_03
       ? '%s %s %s'
       : '--input-file-sequence %s --output-file-sequence %s %s';
     return $cmd;
@@ -666,9 +669,13 @@ sub get_cmdline {
 
 sub version {
     if ( not defined $UNPAPER_VERSION ) {
-        $UNPAPER_VERSION =
+        my $version =
           Gscan2pdf::Document::program_version( 'stdout', qr/([\d.]+)/xsm,
             [ 'unpaper', '--version' ] );
+        if ( $version ne $NOT_FOUND ) {
+            if ( $version !~ /^\d+[.]\d+$/xsm ) { $version = 'v' . $version }
+            $UNPAPER_VERSION = version->parse($version);
+        }
     }
     return $UNPAPER_VERSION;
 }
