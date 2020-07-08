@@ -427,14 +427,18 @@ is_deeply(
 
 my $filename = 'test.txt';
 system("touch $filename");
-my %metadata = ( datetime => [ 2016, 2, 10, 0, 0, 0 ], );
-Gscan2pdf::Document::_set_timestamp( undef, $filename, undef, %metadata );
+my %options = (
+    path     => $filename,
+    options  => { set_timestamp => TRUE },
+    metadata => { datetime => [ 2016, 2, 10, 0, 0, 0 ], }
+);
+Gscan2pdf::Document::_set_timestamp( undef, %options );
 my $sb = stat($filename);
 is_deeply [ Time_to_Date( $sb->mtime ) ], [ 2016, 2, 10, 0, 0, 0 ],
   'timestamp no timezone';
 
-$metadata{tz} = [ undef, undef, undef, 14, 0, undef, undef ],
-  Gscan2pdf::Document::_set_timestamp( undef, $filename, undef, %metadata );
+$options{metadata}{tz} = [ undef, undef, undef, 14, 0, undef, undef ];
+Gscan2pdf::Document::_set_timestamp( undef, %options );
 $sb = stat($filename);
 is_deeply [ Time_to_Date( $sb->mtime ) ], [ 2016, 2, 9, 10, 0, 0 ],
   'timestamp with timezone';

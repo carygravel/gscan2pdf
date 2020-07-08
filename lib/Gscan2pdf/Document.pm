@@ -3402,19 +3402,11 @@ sub _thread_save_pdf {
         return if _append_pdf( $self, $filename, %options );
     }
 
-    if (   defined $options{options}{'user-password'}
-        or defined $options{options}{'owner-password'} )
-    {
+    if ( defined $options{options}{'user-password'} ) {
         return if _encrypt_pdf( $self, $filename, %options );
     }
 
-    if (    defined $options{options}{set_timestamp}
-        and $options{options}{set_timestamp}
-        and not defined $options{options}{ps} )
-    {
-        _set_timestamp( $self, $filename, $options{uuid},
-            %{ $options{metadata} } );
-    }
+    _set_timestamp( $self, %options );
 
     if ( defined $options{options}{ps} ) {
         $self->{message} = __('Converting to PS');
@@ -3453,7 +3445,6 @@ sub _need_temp_pdf {
           or defined $options{options}{append}
           or defined $options{options}{ps}
           or defined $options{options}{'user-password'}
-          or defined $options{options}{'owner-password'}
     );
 }
 
@@ -3499,9 +3490,6 @@ sub _encrypt_pdf {
     if ( defined $options{options}{'user-password'} ) {
         push @cmd, 'user_pw', $options{options}{'user-password'};
     }
-    if ( defined $options{options}{'owner-password'} ) {
-        push @cmd, 'owner_pw', $options{options}{'owner-password'};
-    }
     ( my $status, undef, my $error ) =
       exec_command( \@cmd, $options{pidfile} );
     if ( $status or $error ) {
@@ -3513,10 +3501,18 @@ sub _encrypt_pdf {
 }
 
 sub _set_timestamp {
-    my ( $self, $filename, $uuid, %metadata ) = @_;
-    my @datetime = @{ $metadata{datetime} };
-    if ( defined $metadata{tz} ) {
-        my @tz = @{ $metadata{tz} };
+    my ( $self, %options ) = @_;
+
+    if (   not defined $options{options}{set_timestamp}
+        or not $options{options}{set_timestamp}
+        or defined $options{options}{ps} )
+    {
+        return;
+    }
+
+    my @datetime = @{ $options{metadata}{datetime} };
+    if ( defined $options{metadata}{tz} ) {
+        my @tz = @{ $options{metadata}{tz} };
         splice @tz, 0, 2;
         splice @tz, $LAST_ELEMENT, 1;
         for (@tz) {
@@ -3531,12 +3527,12 @@ sub _set_timestamp {
     }
     try {
         my $time = Date_to_Time(@datetime);
-        utime $time, $time, $filename;
+        utime $time, $time, $options{path};
     }
     catch {
         $logger->error('Unable to set file timestamp for dates prior to 1970');
         _thread_throw_error(
-            $self, $uuid, undef,
+            $self, $options{uuid}, undef,
             'Set timestamp',
             __('Unable to set file timestamp for dates prior to 1970')
         );
@@ -3946,12 +3942,7 @@ sub _thread_save_djvu {
     }
     _add_metadata_to_djvu( $self, %options );
 
-    if ( defined $options{options}{set_timestamp}
-        and $options{options}{set_timestamp} )
-    {
-        _set_timestamp( $self, $options{path}, $options{uuid},
-            %{ $options{metadata} } );
-    }
+    _set_timestamp( $self, %options );
 
     _post_save_hook( $options{path}, %{ $options{options} } );
 
