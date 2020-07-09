@@ -15,8 +15,7 @@ our $VERSION = '2.8.0';
 my $EMPTY = q{};
 my $COMMA = q{,};
 
-my ( %languages, $installed, $setup, $version, $tessdata, $datasuffix,
-    $logger );
+my ( %languages, $installed, $setup, $version, $logger );
 
 sub setup {
     ( my $class, $logger ) = @_;
@@ -27,7 +26,7 @@ sub setup {
     return if ( not defined $exe or $exe eq $EMPTY );
     $installed = 1;
 
-    # if we have 3.02.01 or better,
+    # Only support 3.02.01 or better, so that
     # we can use --list-langs and not bother with tessdata
     ( undef, my $out, my $err ) =
       Gscan2pdf::Document::exec_command( [ 'tesseract', '-v' ] );
@@ -37,75 +36,17 @@ sub setup {
     elsif ( $out =~ /^tesseract[ ]([\d.]+)/xsm ) {
         $version = $1;
     }
-    if ( $version and version->parse("v$version") > version->parse('v3.02') ) {
+    if ( not $version ) { return }
+    if ( $version !~ /^\d+[.]\d+$/xsm ) { $version = 'v' . $version }
+    $version = version->parse($version);
+    if ( $version > version->parse('v3.02.00') ) {
         $logger->info("Found tesseract version $version.");
         $setup = 1;
         return $installed;
     }
 
-    ( $out, $err ) =
-      Gscan2pdf::Document::exec_command( ["tesseract '' '' -l ''"] );
-    ( $tessdata, $version, $datasuffix ) = parse_tessdata( $out . $err );
-
-    if ( not defined $tessdata ) {
-        if ( $version
-            and version->parse("v$version") > version->parse('v3.01') )
-        {
-            ( undef, my $lib ) =
-              Gscan2pdf::Document::exec_command( [ 'ldd', $exe ] );
-            if ( $lib =~ /libtesseract[.]so[.]\d+[ ]=>[ ]([\/\w\-.]+)[ ]/xsm ) {
-                ( undef, $out ) =
-                  Gscan2pdf::Document::exec_command( [ 'strings', $1 ] );
-                $tessdata = parse_strings($out);
-            }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
-        }
-    }
-
-    $logger->info(
-        "Found tesseract version $version. Using tessdata at $tessdata");
-    $setup = 1;
-    return $installed;
-}
-
-sub parse_tessdata {
-    my @output = @_;
-    my $output = join $COMMA, @output;
-    my ( $v, $suffix );
-    if ( $output =~ /[ ]v(\d[.]\d\d)[ ]/xsm ) {
-        $v = $1;
-    }
-    if ( $output =~ /Unable[ ]to[ ]load[ ]unicharset[ ]file[ ]([^\n]+)/xsm ) {
-        $output = $1;
-        if ( not defined $v ) { $v = '2' }
-        $suffix = '.unicharset';
-    }
-    elsif ( $output =~ /Error[ ]openn?ing[ ]data[ ]file[ ]([^\n]+)/xsm ) {
-        $output = $1;
-        if ( not defined $v ) { $v = '3' }
-        $suffix = '.traineddata';
-    }
-    elsif ( defined $v and version->parse("v$v") > version->parse('v3.01') ) {
-        return ( undef, $v + 0, '.traineddata' );
-    }
-    else {
-        return;
-    }
-    $output =~ s/\/ $suffix $//xsm;
-    return $output, $v + 0, $suffix;
-}
-
-sub parse_strings {
-    my ($strings) = @_;
-    my @strings = split /\n/xsm, $strings;
-    for (@strings) {
-        return $_ . 'tessdata' if (/\/ share \//xsm);
-    }
+    $logger->error("Tesseract version $version found.");
+    $logger->error('Versions older than 3.02 are not supported');
     return;
 }
 
@@ -159,25 +100,11 @@ sub languages {
         );
 
         my @codes;
-        if ( version->parse("v$version") > version->parse('v3.02') ) {
-            my ( undef, $out, $err ) =
-              Gscan2pdf::Document::exec_command(
-                [ 'tesseract', '--list-langs' ] );
-            @codes = split /\n/xsm, $err ? $err : $out;
-            if ( $codes[0] =~ /^List[ ]of[ ]available[ ]languages/xsm ) {
-                shift @codes;
-            }
-        }
-        else {
-            for ( glob "$tessdata/*$datasuffix" ) {
-
-                # Weed out the empty language files
-                if ( not -z ) {
-                    if (/ ([\w\-]*) $datasuffix $/xsm) {
-                        push @codes, $1;
-                    }
-                }
-            }
+        my ( undef, $out, $err ) =
+          Gscan2pdf::Document::exec_command( [ 'tesseract', '--list-langs' ] );
+        @codes = split /\n/xsm, $err ? $err : $out;
+        if ( $codes[0] =~ /^List[ ]of[ ]available[ ]languages/xsm ) {
+            shift @codes;
         }
 
         for (@codes) {
@@ -198,28 +125,18 @@ sub hocr {
     my ( $tif, $cmd, $name, $path, $txt );
     if ( not $setup ) { Gscan2pdf::Tesseract->setup( $options{logger} ) }
 
-    if ( version->parse("v$version") >= version->parse('v3.03') ) {
+    if ( $version >= version->parse('v3.03.00') ) {
         $name = 'stdout';
         $path = $EMPTY;
     }
     else {
         # Temporary filename for output
-        my $suffix = '.txt';
-        if ( version->parse("v$version") >= version->parse('v3') ) {
-            $suffix = '.html';
-        }
+        my $suffix = '.html';
         $txt = File::Temp->new( SUFFIX => $suffix );
         ( $name, $path, undef ) = fileparse( $txt, $suffix );
     }
 
-    if (
-        (
-            version->parse("v$version") < version->parse('v3')
-            and $options{file} !~ /[.]tif$/xsm
-        )
-        or ( defined $options{threshold} and $options{threshold} )
-      )
-    {
+    if ( defined $options{threshold} and $options{threshold} ) {
 
         # Temporary filename for new file
         $tif = File::Temp->new( SUFFIX => '.tif' );
@@ -244,26 +161,20 @@ sub hocr {
     else {
         $tif = $options{file};
     }
-    if ( version->parse("v$version") >= version->parse('v3.02.02') ) {
+    if ( $version > version->parse('v3.05.00') ) {
         $cmd = [
-            'tesseract',        $tif,
-            $path . $name,      '--dpi',
-            $options{dpi},      '-l',
+            'tesseract', $tif,
+            $path . $name,      '--dpi', $options{dpi}, '-l',
             $options{language}, '-c',
-            'tessedit_create_hocr=1'
+            'tessedit_create_hocr=1',
+
         ];
     }
-    elsif ( version->parse("v$version") >= version->parse('v3') ) {
-        $cmd =
-          [
-"echo tessedit_create_hocr 1 > hocr.config;tesseract $tif $path$name -l $options{language} +hocr.config;rm hocr.config"
-          ];
-    }
-    elsif ( $options{language} ) {
-        $cmd = [ 'tesseract', $tif, $path . $name, '-l', $options{language} ];
-    }
     else {
-        $cmd = [ 'tesseract', $tif, $path . $name ];
+        $cmd = [
+            'tesseract',        $tif, $path . $name, '-l',
+            $options{language}, '-c', 'tessedit_create_hocr=1',
+        ];
     }
 
     my ( undef, $out, $err ) =

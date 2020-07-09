@@ -11,6 +11,7 @@
 * Create PS level 3 instead of 1.
 * Fix check for unpaper version. Closes #285 (Scan fails if unpaper is not
   installed but selected in post processing)
+* Fix check for tesseract version. Remove support for tesseract < 3.04.00.
 * Update to Hungarian translation (thanks to csola)
 
 
