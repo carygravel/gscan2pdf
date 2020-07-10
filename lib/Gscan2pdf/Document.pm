@@ -4700,7 +4700,7 @@ sub _thread_unsharp {
     if ("$e") { $logger->warn($e) }
 
     # Unsharp the image
-    if ( version->parse("v$version") > version->parse('v7') ) {
+    if ( version->parse("v$version") >= version->parse('v7.0.0') ) {
         $e = $image->UnsharpMask(
             radius    => $options{radius},
             sigma     => $options{sigma},

@@ -31,7 +31,7 @@ my $EMPTY = q{};
 
 sub _pre_151 {
     my ( $version, $SETTING ) = @_;
-    if ( version->parse($version) < version->parse('1.5.1') ) {
+    if ( $version < version->parse('v1.5.1') ) {
         if ( defined $SETTING->{profile}
             and ref( $SETTING->{profile} ) eq 'HASH' )
         {
@@ -72,7 +72,7 @@ sub _pre_151 {
 
 sub _pre_171 {
     my ( $version, $SETTING ) = @_;
-    if ( version->parse($version) < version->parse('1.7.1') ) {
+    if ( $version < version->parse('v1.7.1') ) {
         if ( defined $SETTING->{'keyword-suggestions'} ) {
             $SETTING->{'keywords-suggestions'} =
               $SETTING->{'keyword-suggestions'};
@@ -84,7 +84,7 @@ sub _pre_171 {
 
 sub _pre_181 {
     my ( $version, $SETTING ) = @_;
-    if ( version->parse($version) < version->parse('1.8.1') ) {
+    if ( $version < version->parse('v1.8.1') ) {
         if ( defined $SETTING->{'default filename'} ) {
             $SETTING->{'default filename'} =~ s/%a/%Da/gsm;
             $SETTING->{'default filename'} =~ s/%t/%Dt/gsm;
@@ -101,7 +101,7 @@ sub _pre_181 {
 
 sub _pre_184 {
     my ( $version, $SETTING ) = @_;
-    if ( version->parse($version) < version->parse('1.8.4') ) {
+    if ( $version < version->parse('v1.8.4') ) {
         if ( defined $SETTING->{'frontend'}
             and $SETTING->{'frontend'} eq 'libsane-perl' )
         {
@@ -113,7 +113,7 @@ sub _pre_184 {
 
 sub _pre_200 {
     my ( $version, $SETTING ) = @_;
-    if ( version->parse($version) < version->parse('2.0.0') ) {
+    if ( $version < version->parse('v2.0.0') ) {
         if ( defined $SETTING->{selection}
             and ref( $SETTING->{selection} ) eq 'ARRAY' )
         {
@@ -130,7 +130,7 @@ sub _pre_200 {
 
 sub _pre_223 {
     my ( $version, $SETTING ) = @_;
-    if ( version->parse($version) < version->parse('2.2.3') ) {
+    if ( $version < version->parse('v2.2.3') ) {
         if ( defined $SETTING->{'date offset'} ) {
             $SETTING->{'datetime offset'} =
               [ $SETTING->{'date offset'}, 0, 0, 0 ];
@@ -152,11 +152,11 @@ sub read_config {
     my $config  = Gscan2pdf::Document::slurp($filename);
     my $version = '2';
     if ( $config =~ /^\s*"?version"?\s*[=:]\s*"?([\d.]+)"?/xsm ) {
-        $version = $1;
+        $version = version->parse("v$1");
     }
     $logger->info("Config file version $version");
 
-    if ( version->parse($version) < version->parse('1.3.3') ) {
+    if ( $version < version->parse('v1.3.3') ) {
         try {
             $conf = Config::General->new(
                 -ConfigFile  => $filename,
