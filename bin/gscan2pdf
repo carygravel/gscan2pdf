@@ -4626,6 +4626,7 @@ Jonatan Nyberg
 Berov
 Utku BERBEROĞLU
 Arthur Rodrigues
+Matthias Sprau
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
