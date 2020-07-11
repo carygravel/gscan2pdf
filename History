@@ -13,6 +13,7 @@
   installed but selected in post processing)
 * Fix check for tesseract version. Remove support for tesseract < 3.04.00.
 * Update to Hungarian translation (thanks to csola)
+* Update to Brazilian Portuguese translation (thanks to Arthur Rodrigues)
 
 
 2.8.0 (11.06.2020):

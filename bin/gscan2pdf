@@ -4625,6 +4625,7 @@ Stephan Woidowski
 Jonatan Nyberg
 Berov
 Utku BERBEROĞLU
+Arthur Rodrigues
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
