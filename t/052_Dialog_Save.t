@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
 use Scalar::Util;
@@ -62,13 +62,21 @@ $dialog = Gscan2pdf::Dialog::Save->new(
 $dialog->add_metadata;
 is_deeply( $dialog->get('meta-datetime'), [Today_and_Now], 'now' );
 
+# Build a look-up table of all true-type fonts installed
+my ( undef, $stdout ) =
+  Gscan2pdf::Document::exec_command( ['fc-list : family style file'] );
+my $fonts = Gscan2pdf::Document::parse_truetype_fonts($stdout);
+
 $dialog = Gscan2pdf::Dialog::Save->new(
-    'transient-for' => $window,
-    'image-types'   => [qw(pdf gif jpg png pnm ps tif txt hocr session)],
-    'ps-backends'   => [qw(libtiff pdf2ps pdftops)],
+    'transient-for'   => $window,
+    'image-types'     => [qw(pdf gif jpg png pnm ps tif txt hocr session)],
+    'ps-backends'     => [qw(libtiff pdf2ps pdftops)],
+    'available-fonts' => $fonts,
+    'pdf-font'        => '/does/not/exist',
 );
 $dialog->add_metadata;
 $dialog->add_image_type;
-is $dialog->get('ps-backend'), 'pdftops', 'default ps backend';
+is $dialog->get('ps-backend'), 'pdftops',         'default ps backend';
+isnt $dialog->get('pdf-font'), '/does/not/exist', 'correct non-existant font';
 
 __END__

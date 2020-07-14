@@ -174,25 +174,25 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, properties => [
         [qw/readable writable/]                              # flags
     ),
     Glib::ParamSpec->string(
-        'pdf-font',                                           # name
-        'PDF font',                                           # nick
-        'Font with with to write hidden OCR layer of PDF',    # blurb
-        undef,                                                # default
-        [qw/readable writable/]                               # flags
+        'pdf-font',                                            # name
+        'PDF font',                                            # nick
+        'Font with which to write hidden OCR layer of PDF',    # blurb
+        undef,                                                 # default
+        [qw/readable writable/]                                # flags
     ),
     Glib::ParamSpec->boolean(
-        'can-encrypt-pdf',                                    # name
-        'Can encrypt PDF',                                    # nick
-        'Backend is capable of encrypting the PDF',           # blurb
-        FALSE,                                                # default
-        [qw/readable writable/]                               # flags
+        'can-encrypt-pdf',                                     # name
+        'Can encrypt PDF',                                     # nick
+        'Backend is capable of encrypting the PDF',            # blurb
+        FALSE,                                                 # default
+        [qw/readable writable/]                                # flags
     ),
     Glib::ParamSpec->string(
-        'pdf-user-password',                                  # name
-        'PDF user password',                                  # nick
-        'PDF user password',                                  # blurb
-        undef,                                                # default
-        [qw/readable writable/]                               # flags
+        'pdf-user-password',                                   # name
+        'PDF user password',                                   # nick
+        'PDF user password',                                   # blurb
+        undef,                                                 # default
+        [qw/readable writable/]                                # flags
     ),
 ];
 
@@ -839,18 +839,76 @@ sub add_pdf_options {
     );
     $hbox->pack_end( $combob, FALSE, FALSE, 0 );
 
+    $self->add_font_button($vboxp);
+
+    if ( $self->get('can-encrypt-pdf') ) {
+        my $passb = Gtk3::Button->new( __('Encrypt PDF') );
+        $vboxp->pack_start( $passb, TRUE, TRUE, 0 );
+        $passb->signal_connect(
+            clicked => sub {
+                my $passwin = Gscan2pdf::Dialog->new(
+                    'transient-for' => $self,
+                    title           => __('Set password'),
+                );
+                $passwin->set_modal(TRUE);
+                my $passvbox = $passwin->get_content_area;
+                my $grid     = Gtk3::Grid->new;
+                my $row      = 0;
+                $passvbox->pack_start( $grid, TRUE, TRUE, 0 );
+
+                $hbox  = Gtk3::HBox->new;
+                $label = Gtk3::Label->new( __('User password') );
+                $hbox->pack_start( $label, FALSE, FALSE, 0 );
+                $grid->attach( $hbox, 0, $row, 1, 1 );
+                my $userentry = Gtk3::Entry->new;
+                if ( defined $self->get('pdf-user-password') ) {
+                    $userentry->set_text( $self->get('pdf-user-password') );
+                }
+                $grid->attach( $userentry, 1, $row++, 1, 1 );
+                $passwin->add_actions(
+                    'gtk-ok',
+                    sub {
+                        $self->set( 'pdf-user-password', $userentry->get_text );
+                        $passwin->destroy;
+                    },
+                    'gtk-cancel',
+                    sub { $passwin->destroy }
+                );
+                $passwin->show_all;
+            }
+        );
+    }
+
+    $vboxp->show_all;
+    $hboxq->set_no_show_all(TRUE);
+    $vboxp->set_no_show_all(TRUE);
+
+    # do this after show all and set_no_show_all
+    # to make sure child widgets are shown.
+    $combob->set_active_index( $self->get('pdf-compression') );
+
+    return $vboxp, $hboxq;
+}
+
+sub add_font_button {
+    my ( $self, $vboxp ) = @_;
+
     # It would be nice to use a Gtk3::FontButton here, but as we can only use
     # TTF, and we have to know the filename of the font, we must filter the
     # list of fonts, and so we must use a Gtk3::FontChooserDialog
     my $hboxf = Gtk3::HBox->new;
     $vboxp->pack_start( $hboxf, TRUE, TRUE, 0 );
-    $label = Gtk3::Label->new( __('Font for non-ASCII text') );
+    my $label = Gtk3::Label->new( __('Font for non-ASCII text') );
     $hboxf->pack_start( $label, FALSE, FALSE, 0 );
     my $fontb = Gtk3::Button->new('Font name goes here');
     $hboxf->pack_end( $fontb, FALSE, TRUE, 0 );
 
     my $ttffile = $self->get('pdf-font');
     my $fonts   = $self->get('available-fonts');
+    if ( not defined $ttffile or not -e $ttffile ) {
+        $ttffile = ( keys %{ $fonts->{by_file} } )[0];
+        $self->set( 'pdf-font', $ttffile );
+    }
     if (    defined $ttffile
         and defined $fonts
         and defined $fonts->{by_file}{$ttffile} )
@@ -906,54 +964,7 @@ sub add_pdf_options {
             $fontwin->destroy;
         }
     );
-
-    if ( $self->get('can-encrypt-pdf') ) {
-        my $passb = Gtk3::Button->new( __('Encrypt PDF') );
-        $vboxp->pack_start( $passb, TRUE, TRUE, 0 );
-        $passb->signal_connect(
-            clicked => sub {
-                my $passwin = Gscan2pdf::Dialog->new(
-                    'transient-for' => $self,
-                    title           => __('Set password'),
-                );
-                $passwin->set_modal(TRUE);
-                my $passvbox = $passwin->get_content_area;
-                my $grid     = Gtk3::Grid->new;
-                my $row      = 0;
-                $passvbox->pack_start( $grid, TRUE, TRUE, 0 );
-
-                $hbox  = Gtk3::HBox->new;
-                $label = Gtk3::Label->new( __('User password') );
-                $hbox->pack_start( $label, FALSE, FALSE, 0 );
-                $grid->attach( $hbox, 0, $row, 1, 1 );
-                my $userentry = Gtk3::Entry->new;
-                if ( defined $self->get('pdf-user-password') ) {
-                    $userentry->set_text( $self->get('pdf-user-password') );
-                }
-                $grid->attach( $userentry, 1, $row++, 1, 1 );
-                $passwin->add_actions(
-                    'gtk-ok',
-                    sub {
-                        $self->set( 'pdf-user-password', $userentry->get_text );
-                        $passwin->destroy;
-                    },
-                    'gtk-cancel',
-                    sub { $passwin->destroy }
-                );
-                $passwin->show_all;
-            }
-        );
-    }
-
-    $vboxp->show_all;
-    $hboxq->set_no_show_all(TRUE);
-    $vboxp->set_no_show_all(TRUE);
-
-    # do this after show all and set_no_show_all
-    # to make sure child widgets are shown.
-    $combob->set_active_index( $self->get('pdf-compression') );
-
-    return $vboxp, $hboxq;
+    return;
 }
 
 1;
