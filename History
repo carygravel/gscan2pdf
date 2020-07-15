@@ -1,6 +1,8 @@
 2.8.2 (11.08.2020):
 
 * If previously used font no longer exists, automatically pick another one.
+* Delete temporary files that fall off the undo buffer. Closes #350
+  (When delete photos the files in /tmp are not deleted)
 
 
 2.8.1 (11.07.2020):

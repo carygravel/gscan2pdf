@@ -5858,10 +5858,28 @@ sub view_html {
 
 sub take_snapshot {
 
+    my @old_undo_files = map { "$_->[2]{filename}" } @undo_buffer;
+
     # Deep copy the tied data. Otherwise, very bad things happen.
     @undo_buffer = map { [ @{$_} ] } @{ $slist->{data} };
     @undo_selection = $slist->get_selected_indices;
     $logger->debug( Dumper( \@undo_buffer ) );
+
+    # Clean up files that fall off the undo buffer
+    my %undo_files;
+    for (@undo_buffer) {
+        $undo_files{"$_->[2]{filename}"} = TRUE;
+    }
+    my @delete_files;
+    for my $file (@old_undo_files) {
+        if ( not $undo_files{$file} ) {
+            push @delete_files, $file;
+        }
+    }
+    if (@delete_files) {
+        $logger->info("Cleaning up @delete_files");
+        unlink @delete_files;
+    }
 
     # Unghost Undo/redo
     $uimanager->get_widget('/MenuBar/Edit/Undo')->set_sensitive(TRUE);
