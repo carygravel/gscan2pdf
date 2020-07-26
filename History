@@ -3,6 +3,8 @@
 * If previously used font no longer exists, automatically pick another one.
 * Delete temporary files that fall off the undo buffer. Closes #350
   (When delete photos the files in /tmp are not deleted)
+* Fix reload-recursion-limit problems after device-not-found mini-wizard.
+  Closes Debian bug #965153 ("fails to open device" for Epson NX100)
 
 
 2.8.1 (11.07.2020):

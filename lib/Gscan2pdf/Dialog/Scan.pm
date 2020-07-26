@@ -625,38 +625,8 @@ sub INIT_INSTANCE {
     $self->{setting_profile}              = [];
     $self->{setting_current_scan_options} = [];
 
-    # If we get an error opening a device, add it to a session-only blacklist,
-    # removing it from the device list
-    $self->{device_blacklist} = [];
-    $self->signal_connect( 'process-error' => \&process_error_callback );
-
     $self->set( 'cursor', 'default' );
     return $self;
-}
-
-sub process_error_callback {
-    my ( $self, $process, $msg ) = @_;
-    if ( $process =~ /^(?:get_devices|open_device|find_scan_options)$/xsm ) {
-        my $device = $self->get('device');
-        if ( defined $device and $device ne $EMPTY ) {
-            $logger->warn("adding device '$device' to session blacklist");
-            push @{ $self->{device_blacklist} }, $device;
-            my $device_list = $self->get('device-list');
-            my @device_list;
-            for my $dev ( @{$device_list} ) {
-                my $found = FALSE;
-                for ( @{ $self->{device_blacklist} } ) {
-                    if ( $_ eq $dev->{name} ) {
-                        $found = TRUE;
-                        last;
-                    }
-                }
-                if ( not $found ) { push @device_list, $dev }
-            }
-            $self->set( 'device-list', \@device_list );
-        }
-    }
-    return;
 }
 
 sub _add_device_combobox {

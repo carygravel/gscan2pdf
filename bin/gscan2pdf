@@ -3395,7 +3395,7 @@ sub email {
 # Scan
 
 sub scan_dialog {
-    my ( $action, $hidden ) = @_;
+    my ( $action, $hidden, $scan ) = @_;
 
     if ( is_not_an_empty_hashref($windows) ) {
         $windows->show_all;
@@ -3601,7 +3601,10 @@ sub scan_dialog {
         }
         $windows->set( 'device-list', \@device_list );
     }
-    elsif ( $SETTING{'cache-device-list'} and @{ $SETTING{'device list'} } ) {
+    elsif ( not $scan
+        and $SETTING{'cache-device-list'}
+        and @{ $SETTING{'device list'} } )
+    {
         $windows->set( 'device-list', $SETTING{'device list'} );
     }
     else {
@@ -3845,11 +3848,13 @@ sub process_error_callback {
             }
         }
 
+        undef $windows;    # force scan dialog to be rebuilt
         if ( $response eq 'reopen' ) {
-            $widget->set( 'device-list', $SETTING{'device list'} );
-            changed_device_list_callback( $widget, $SETTING{'device list'} );
+            scan_dialog();
         }
-        elsif ( $response eq 'rescan' )  { $widget->get_devices }
+        elsif ( $response eq 'rescan' ) {
+            scan_dialog( undef, undef, TRUE );
+        }
         elsif ( $response eq 'restart' ) { restart() }
 
         # for ignore, we do nothing
