@@ -5,6 +5,7 @@
   (When delete photos the files in /tmp are not deleted)
 * Fix reload-recursion-limit problems after device-not-found mini-wizard.
   Closes Debian bug #965153 ("fails to open device" for Epson NX100)
+* Update to German translation (thanks to Matthias Sprau)
 
 
 2.8.1 (11.07.2020):
