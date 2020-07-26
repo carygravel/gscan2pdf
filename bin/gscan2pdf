@@ -3489,51 +3489,7 @@ sub scan_dialog {
         'changed-progress' => \&changed_progress_callback );
 
     $windows->signal_connect(
-        'finished-process' => sub {
-            my ( $widget, $process, $button_signal ) = @_;
-            $logger->debug(
-                "signal 'finished-process' emitted with data: $process");
-            if ( defined $button_signal ) {
-                $scbutton->signal_handler_disconnect($button_signal);
-            }
-            $shbox->hide;
-            if (    $process eq 'scan_pages'
-                and $windows->get('sided') eq 'double' )
-            {
-                Glib::Idle->add(
-                    sub {
-                        my ( $message, $next );
-                        if ( $windows->get('side-to-scan') eq 'facing' ) {
-                            $message =
-                              __(
-'Finished scanning facing pages. Scan reverse pages?'
-                              );
-                            $next = 'reverse';
-                        }
-                        else {
-                            $message =
-                              __(
-'Finished scanning reverse pages. Scan facing pages?'
-                              );
-                            $next = 'facing';
-                        }
-                        my $response = ask_question(
-                            parent             => $windows,
-                            type               => 'question',
-                            buttons            => 'ok-cancel',
-                            text               => $message,
-                            'default-response' => 'ok',
-                            'store-response'   => TRUE,
-                            'stored-responses' => ['ok']
-                        );
-                        if ( $response eq 'ok' ) {
-                            $windows->set( 'side-to-scan', $next );
-                        }
-                    }
-                );
-            }
-        }
-    );
+        'finished-process' => \&finished_process_callback );
 
     $windows->signal_connect(
         'process-error' => \&process_error_callback,
@@ -3870,6 +3826,47 @@ sub process_error_callback {
         text             => $msg,
         'store-response' => TRUE
     );
+    return;
+}
+
+sub finished_process_callback {
+    my ( $widget, $process, $button_signal ) = @_;
+    $logger->debug("signal 'finished-process' emitted with data: $process");
+    if ( defined $button_signal ) {
+        $scbutton->signal_handler_disconnect($button_signal);
+    }
+    $shbox->hide;
+    if (    $process eq 'scan_pages'
+        and $windows->get('sided') eq 'double' )
+    {
+        Glib::Idle->add(
+            sub {
+                my ( $message, $next );
+                if ( $windows->get('side-to-scan') eq 'facing' ) {
+                    $message =
+                      __('Finished scanning facing pages. Scan reverse pages?');
+                    $next = 'reverse';
+                }
+                else {
+                    $message =
+                      __('Finished scanning reverse pages. Scan facing pages?');
+                    $next = 'facing';
+                }
+                my $response = ask_question(
+                    parent             => $windows,
+                    type               => 'question',
+                    buttons            => 'ok-cancel',
+                    text               => $message,
+                    'default-response' => 'ok',
+                    'store-response'   => TRUE,
+                    'stored-responses' => ['ok']
+                );
+                if ( $response eq 'ok' ) {
+                    $windows->set( 'side-to-scan', $next );
+                }
+            }
+        );
+    }
     return;
 }
 
