@@ -3,7 +3,7 @@ gscan2pdf (2.8.2-1) unstable; urgency=low
   * New upstream release
     Closes: #965153 ("fails to open device" for Epson NX100)
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 25 Jul 2020 18:38:25 +0200
 
 gscan2pdf (2.8.1-1) unstable; urgency=low
 

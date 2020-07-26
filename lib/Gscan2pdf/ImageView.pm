@@ -14,7 +14,7 @@ Readonly my $HALF          => 0.5;
 Readonly my $CURSOR_PIXELS => 5;
 Readonly my $MAX_ZOOM      => 100;
 
-our $VERSION = '2.8.1';
+our $VERSION = '2.8.2';
 
 my %cursorhash = (
     left => {
