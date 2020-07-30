@@ -65,7 +65,10 @@ use Gscan2pdf::Config;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Image::Sane ':all';             # To get SANE_* enums
 use Image::Magick;
-use Gscan2pdf::ImageView;
+use Gtk3::ImageView;
+use Gtk3::ImageView::Tool::Selector;
+use Gtk3::ImageView::Tool::Dragger;
+use Gtk3::ImageView::Tool::SelectorDragger;
 use Gtk3::SimpleList;
 
 # -init should not be necessary, as we use $app->run, but without it,
@@ -120,9 +123,6 @@ Readonly my $MAX_SIGMA               => 5;
 Readonly my $_90_DEGREES             => 90;
 Readonly my $_180_DEGREES            => 180;
 Readonly my $_270_DEGREES            => 270;
-Readonly my $DRAGGER_TOOL            => 10;
-Readonly my $SELECTOR_TOOL           => 20;
-Readonly my $PAINTER_TOOL            => 30;
 Readonly my $TABBED_VIEW             => 100;
 Readonly my $SPLIT_VIEW              => 101;
 Readonly my $EMPTY_LIST              => -1;
@@ -208,7 +208,7 @@ $logger->info("Gscan2pdf::Document version $Gscan2pdf::Document::VERSION");
 
 #$logger->info( 'Using GtkImageView version ',
 #    Gtk3::ImageView->library_version );
-#$logger->info("Using Gtk3::ImageView version $Gtk3::ImageView::VERSION");
+$logger->info("Using Gtk3::ImageView version $Gtk3::ImageView::VERSION");
 $logger->info("Using PDF::Builder version $PDF::Builder::VERSION");
 $logger->info( 'Using Sane version ' . join $DOT, Image::Sane->get_version );
 $logger->info("Using libimage-sane-perl version $Image::Sane::VERSION");
@@ -352,7 +352,9 @@ sub populate_main_window {
     $hpanei->show;
 
     # ImageView for detail view
-    $view = Gscan2pdf::ImageView->new;
+    $view = Gtk3::ImageView->new;
+    $view->set_tool(Gtk3::ImageView::Tool::SelectorDragger->new($view));
+#    Gtk3::ImageView::Tool::Selector->new($view);
 
     $view->signal_connect(
         button_press_event => sub {
@@ -4849,7 +4851,7 @@ sub handle_clicks {
     my ( $widget, $event ) = @_;
 
     if ( $event->button == $RIGHT_MOUSE_BUTTON ) {
-        if ( $widget->isa('Gscan2pdf::ImageView') ) {    # main image
+        if ( $widget->isa('Gtk3::ImageView') ) {    # main image
             $uimanager->get_widget('/Detail_Popup')
               ->popup( undef, undef, undef, undef, $event->button,
                 $event->time );
