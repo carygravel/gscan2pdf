@@ -123,6 +123,9 @@ Readonly my $MAX_SIGMA               => 5;
 Readonly my $_90_DEGREES             => 90;
 Readonly my $_180_DEGREES            => 180;
 Readonly my $_270_DEGREES            => 270;
+Readonly my $DRAGGER_TOOL            => 10;
+Readonly my $SELECTOR_TOOL           => 20;
+Readonly my $SELECTORDRAGGER_TOOL    => 30;
 Readonly my $TABBED_VIEW             => 100;
 Readonly my $SPLIT_VIEW              => 101;
 Readonly my $EMPTY_LIST              => -1;
@@ -250,6 +253,7 @@ init_icons(
     [ 'selection',   "$iconpath/stock-selection-all-16.png" ],
     [ 'hand-tool',   "$iconpath/hand-tool.svg" ],
     [ 'mail-attach', "$iconpath/mail-attach.svg" ],
+    [ 'crop',        "$iconpath/crop.svg" ],
 );
 
 # Define application-wide variables here so that they can be referenced
@@ -353,8 +357,9 @@ sub populate_main_window {
 
     # ImageView for detail view
     $view = Gtk3::ImageView->new;
-    $view->set_tool(Gtk3::ImageView::Tool::SelectorDragger->new($view));
-#    Gtk3::ImageView::Tool::Selector->new($view);
+    $view->set_tool( Gtk3::ImageView::Tool::SelectorDragger->new($view) );
+
+    #    Gtk3::ImageView::Tool::Selector->new($view);
 
     $view->signal_connect(
         button_press_event => sub {
@@ -1258,7 +1263,7 @@ sub create_menu_bar {
             __('Crop pages'), \&crop_dialog
         ],
         [
-            'CropSelection',      'selection',
+            'CropSelection',      'crop',
             __('_Crop'),          undef,
             __('Crop selection'), \&crop_selection
         ],
@@ -1291,6 +1296,26 @@ sub create_menu_bar {
         [ 'About', 'gtk-about', __('_About'), undef, __('_About'), \&about ],
     );
 
+    my @image_tools = (
+        [
+            'DraggerTool',           'hand-tool',
+            __('_Drag'),             undef,
+            __('Use the hand tool'), $DRAGGER_TOOL
+        ],
+        [
+            'SelectorTool',                           'selection',
+            __('_Select'),                            undef,
+            __('Use the rectangular selection tool'), $SELECTOR_TOOL
+        ],
+        [
+            'SelectorDraggerTool',
+            'gtk-media-play',
+            __('_Select & drag'),
+            undef,
+            __('Use the combined select and drag tool'),
+            $SELECTORDRAGGER_TOOL
+        ],
+    );
     my @viewer_tools = (
         [
             'Tabbed', undef, __('_Tabbed'), undef,
@@ -1344,6 +1369,10 @@ sub create_menu_bar {
    <menuitem action='Preferences'/>
   </menu>
   <menu action='View'>
+   <menuitem action='DraggerTool'/>
+   <menuitem action='SelectorTool'/>
+   <menuitem action='SelectorDraggerTool'/>
+   <separator/>
    <menuitem action='Tabbed'/>
    <menuitem action='Split'/>
    <separator/>
@@ -1393,6 +1422,10 @@ sub create_menu_bar {
   <toolitem action='Renumber'/>
   <toolitem action='Select All'/>
   <separator/>
+  <toolitem action='DraggerTool'/>
+  <toolitem action='SelectorTool'/>
+  <toolitem action='SelectorDraggerTool'/>
+  <separator/>
   <toolitem action='Zoom 100'/>
   <toolitem action='Zoom to fit'/>
   <toolitem action='Zoom in'/>
@@ -1408,6 +1441,10 @@ sub create_menu_bar {
   <toolitem action='Quit'/>
  </toolbar>
  <popup name='Detail_Popup'>
+  <menuitem action='DraggerTool'/>
+  <menuitem action='SelectorTool'/>
+  <menuitem action='SelectorDraggerTool'/>
+  <separator/>
   <menuitem action='Zoom 100'/>
   <menuitem action='Zoom to fit'/>
   <menuitem action='Zoom in'/>
@@ -1458,6 +1495,8 @@ EOS
     # and fill it with Gtk3::Action instances
     my $actions_basic = Gtk3::ActionGroup->new('actions_basic');
     $actions_basic->add_actions( \@action_items, undef );
+    $actions_basic->add_radio_actions( \@image_tools, $DRAGGER_TOOL,
+        \&change_image_tool_cb );
     $actions_basic->add_radio_actions( \@viewer_tools, $SETTING{viewer_tools},
         \&change_view_cb );
 
@@ -1588,6 +1627,9 @@ EOS
 
 sub update_uimanager {
     my @widgets = (
+        '/MenuBar/View/DraggerTool',
+        '/MenuBar/View/SelectorTool',
+        '/MenuBar/View/SelectorDraggerTool',
         '/MenuBar/View/Tabbed',
         '/MenuBar/View/Split',
         '/MenuBar/View/Zoom 100',
@@ -1607,6 +1649,9 @@ sub update_uimanager {
         '/MenuBar/Tools/OCR',
         '/MenuBar/Tools/User-defined',
 
+        '/ToolBar/DraggerTool',
+        '/ToolBar/SelectorTool',
+        '/ToolBar/SelectorDraggerTool',
         '/ToolBar/Zoom 100',
         '/ToolBar/Zoom to fit',
         '/ToolBar/Zoom in',
@@ -1616,6 +1661,9 @@ sub update_uimanager {
         '/ToolBar/Rotate 270',
         '/ToolBar/CropSelection',
 
+        '/Detail_Popup/DraggerTool',
+        '/Detail_Popup/SelectorTool',
+        '/Detail_Popup/SelectorDraggerTool',
         '/Detail_Popup/Zoom 100',
         '/Detail_Popup/Zoom to fit',
         '/Detail_Popup/Zoom in',
@@ -5239,6 +5287,30 @@ sub unsharp {
         sub { $windowum->destroy }
     );
     $windowum->show_all;
+    return;
+}
+
+# Callback for tool-changed signal Gtk3::ImageView
+
+sub change_image_tool_cb {
+    my ( $action, $current ) = @_;
+    my $value = $current->get_current_value();
+
+    my $tool = 'selector';
+    if ( $value == $DRAGGER_TOOL ) {
+        $tool = 'dragger';
+    }
+    elsif ( $value == $SELECTORDRAGGER_TOOL ) {
+        $tool = Gtk3::ImageView::Tool::SelectorDragger->new($view);
+    }
+    $view->set_tool($tool);
+    if (   $value == $SELECTOR_TOOL
+        or $value == $SELECTORDRAGGER_TOOL and defined $SETTING{selection} )
+    {
+        $view->signal_handler_block( $view->{selection_changed_signal} );
+        $view->set_selection( $SETTING{selection} );
+        $view->signal_handler_unblock( $view->{selection_changed_signal} );
+    }
     return;
 }
 
