@@ -7,15 +7,45 @@ use Carp;
 use Encode;
 use File::Temp;    # To create temporary files
 use File::Basename;
-use Gscan2pdf::Document;             # for slurp
+use Gscan2pdf::Document;    # for slurp
 use version;
 use English qw( -no_match_vars );    # for $PROCESS_ID
+use Gscan2pdf::Translation '__';     # easier to extract strings with xgettext
+use Locale::Language;
 
 our $VERSION = '2.8.2';
 my $EMPTY = q{};
 my $COMMA = q{,};
 
-my ( %languages, $installed, $setup, $version, $logger );
+my ( %languages, %installable_languages, $installed, $setup, $version,
+    $logger );
+
+# Taken from
+# https://github.com/tesseract-ocr/tesseract/blob/master/doc/tesseract.1.asc#languages
+my @installable_languages =
+  qw(afr amh ara asm aze aze-cyrl bel ben bod bos bre bul cat ceb ces chi-sim chi-sim-vert chi-tra chi-tra-vert chr cos cym dan dan-frak deu deu-frak div dzo ell eng enm epo equ est eus fao fas fil fin fra frk frm fry gla gle gle-uncial glg grc guj hat heb hin hrv hun hye iku ind isl ita ita-old jav jpn jpn-vert kan kat kat-old kaz khm kir kmr kor kor-vert lao lat lav lit ltz mal mar mkd mlt mon mri msa mya nep nld nor oci ori pan pol por pus que ron rus san sin slk slk-frak slv snd spa spa_old sqi srp srp_latn sun swa swe swe-frak syr tam tat tel tgk tgl tha tir ton tur uig ukr urd uzb uzb_cyrl vie yid yor);
+my %non_iso639_3 = (
+    'aze-cyrl'     => 'Azerbaijani (Cyrillic)',
+    'chi-sim'      => 'Simplified Chinese',
+    'chi-sim-vert' => 'Chinese - Simplified (vertical)',
+    'chi-tra'      => 'Traditional Chinese',
+    'chi-tra-vert' => 'Traditional Chinese (vertical)',
+    'dan-frak'     => 'Danish (Fraktur)',
+    'deu-frak'     => 'German (Fraktur)',
+    equ            => 'equations',
+    'gle-uncial'   => 'Irish (Uncial)',
+    'ita-old'      => 'Italian - Old',
+    'jpn-vert'     => 'Japanese (vertical)',
+    'kat-old'      => 'Old Georgian',
+    'kor-vert'     => 'Korean (vertical)',
+    osd            => 'Orientation, script, direction',
+    'slk-frak'     => 'Slovak (Fraktur)',
+    spa_old        => 'Spanish (Castilian - Old)',
+    srp_latn       => 'Serbian - Latin',
+    'swe-frak'     => 'Swedish (Fraktur)',
+    uzb_cyrl       => 'Uzbek - Cyrilic',
+);
+my %non_iso639_1 = ( zh => 'chi-sim', );
 
 sub setup {
     ( my $class, $logger ) = @_;
@@ -36,7 +66,7 @@ sub setup {
     elsif ( $out =~ /^tesseract[ ]([\d.]+)/xsm ) {
         $version = $1;
     }
-    if ( not $version ) { return }
+    if ( not $version )                 { return }
     if ( $version !~ /^\d+[.]\d+$/xsm ) { $version = 'v' . $version }
     $version = version->parse($version);
     if ( $version > version->parse('v3.02.00') ) {
@@ -52,142 +82,6 @@ sub setup {
 
 sub languages {
     if ( not %languages ) {
-
-        # Taken from
-        # https://github.com/tesseract-ocr/tesseract/blob/master/doc/tesseract.1.asc#languages
-        my %iso639 = (
-            afr            => 'Afrikaans',
-            amh            => 'Amharic',
-            ara            => 'Arabic',
-            asm            => 'Assamese',
-            aze            => 'Azerbaijani',
-            'aze-cyrl'     => 'Azerbaijani (Cyrillic)',
-            bel            => 'Belarusian',
-            ben            => 'Bengali',
-            bod            => 'Tibetan Standard',
-            bos            => 'Bosnian',
-            bre            => 'Breton',
-            bul            => 'Bulgarian',
-            cat            => 'Catalan',
-            ceb            => 'Cebuano',
-            ces            => 'Czech',
-            'chi-sim'      => 'Simplified Chinese',
-            'chi-sim-vert' => 'Chinese - Simplified (vertical)',
-            'chi-tra'      => 'Traditional Chinese',
-            'chi-tra-vert' => 'Traditional Chinese (vertical)',
-            chr            => 'Cherokee',
-            cos            => 'Corsican',
-            cym            => 'Welsh',
-            dan            => 'Danish',
-            'dan-frak'     => 'Danish (Fraktur)',
-            deu            => 'German',
-            'deu-frak'     => 'German (Fraktur)',
-            div            => 'Divehi',
-            dzo            => 'Dzongkha',
-            ell            => 'Greek',
-            eng            => 'English',
-            enm            => 'English, Middle (1100-1500)',
-            epo            => 'Esperanto',
-            equ            => 'equations',
-            est            => 'Estonian',
-            eus            => 'Basque',
-            fao            => 'Faroese',
-            fas            => 'Persian',
-            fil            => 'Filipino',
-            fin            => 'Finish',
-            fra            => 'French',
-            frk            => 'German (Fraktur)',
-            frm            => 'French, Middle (ca.1400-1600)',
-            fry            => 'Frisian (Western)',
-            gla            => 'Gaelic (Scots)',
-            gle            => 'Irish',
-            'gle-uncial'   => 'Irish (Uncial)',
-            glg            => 'Galician',
-            grc            => 'Greek, Ancient (to 1453)',
-            guj            => 'Gujarati',
-            hat            => 'Haitian',
-            heb            => 'Hebrew',
-            hin            => 'Hindi',
-            hrv            => 'Croatian',
-            hun            => 'Hungarian',
-            hye            => 'Armenian',
-            iku            => 'Inuktitut',
-            ind            => 'Indonesian',
-            isl            => 'Icelandic',
-            ita            => 'Italian',
-            'ita-old'      => 'Italian - Old',
-            jav            => 'Javanese',
-            jpn            => 'Japanese',
-            'jpn-vert'     => 'Japanese (vertical)',
-            kan            => 'Kannada',
-            kat            => 'Georgian',
-            'kat-old'      => 'Old Georgian',
-            kaz            => 'Kazakh',
-            khm            => 'Khmer',
-            kir            => 'Kyrgyz',
-            kmr            => 'Kurmanji (Latin)',
-            kor            => 'Korean',
-            'kor-vert'     => 'Korean (vertical)',
-            lao            => 'Lao',
-            lat            => 'Latin',
-            lav            => 'Latvian',
-            lit            => 'Lithuanian',
-            ltz            => 'Luxembourgish',
-            mal            => 'Malayalam',
-            mar            => 'Marathi',
-            mkd            => 'Macedonian',
-            mlt            => 'Maltese',
-            mon            => 'Mongolian',
-            mri            => 'Maori',
-            msa            => 'Malay',
-            mya            => 'Burmese',
-            nep            => 'Nepali',
-            nld            => 'Dutch',
-            nor            => 'Norwegian',
-            oci            => 'Occitan (post 1500)',
-            ori            => 'Oriya',
-            pan            => 'Punjabi',
-            pol            => 'Polish',
-            por            => 'Portuguese',
-            pus            => 'Pashto',
-            que            => 'Quechua',
-            ron            => 'Romanian',
-            rus            => 'Russian',
-            san            => 'Sanskrit',
-            sin            => 'Sinhalese',
-            slk            => 'Slovak',
-            'slk-frak'     => 'Slovak (Fraktur)',
-            slv            => 'Slovenian',
-            snd            => 'Sindhi',
-            spa            => 'Spanish',
-            spa_old        => 'Spanish (Castilian - Old)',
-            sqi            => 'Albanian',
-            srp            => 'Serbian',
-            srp_latn       => 'Serbian - Latin',
-            sun            => 'Sundanese',
-            swa            => 'Swahili',
-            swe            => 'Swedish',
-            'swe-frak'     => 'Swedish (Fraktur)',
-            syr            => 'Syriac',
-            tam            => 'Tamil',
-            tat            => 'Tatar',
-            tel            => 'Telugu',
-            tgk            => 'Tajik',
-            tgl            => 'Tagalog',
-            tha            => 'Thai',
-            tir            => 'Tigrinya',
-            ton            => 'Tonga',
-            tur            => 'Turkish',
-            uig            => 'Uighur',
-            ukr            => 'Ukranian',
-            urd            => 'Urdu',
-            uzb            => 'Uzbek',
-            uzb_cyrl       => 'Uzbek - Cyrilic',
-            vie            => 'Vietnamese',
-            yid            => 'Yiddish',
-            yor            => 'Yoruba',
-        );
-
         my @codes;
         my ( undef, $out, $err ) =
           Gscan2pdf::Document::exec_command( [ 'tesseract', '--list-langs' ] );
@@ -195,18 +89,72 @@ sub languages {
         if ( $codes[0] =~ /^List[ ]of[ ]available[ ]languages/xsm ) {
             shift @codes;
         }
-
-        for (@codes) {
-            $logger->info("Found tesseract language $_");
-            if ( defined $iso639{$_} ) {
-                $languages{$_} = $iso639{$_};
+        for my $code (@codes) {
+            my $name = code2language( $code, 'term' );
+            if ( not defined $name ) {
+                $name = $non_iso639_3{$code};
             }
-            else {
-                $languages{$_} = $_;
+            if ( not defined $name ) {
+                $name = $code;
             }
+            $logger->info("Found tesseract language $code ($name)");
+            $languages{$code} = $name;
         }
     }
     return \%languages;
+}
+
+sub installable_languages {
+    if ( not %installable_languages ) {
+        %installable_languages = %non_iso639_3;
+        for my $code (@installable_languages) {
+            my $language = code2language( $code, 'term' );
+            if ( not defined $language ) {
+                $language = $non_iso639_3{$code};
+            }
+            $installable_languages{$code} = $language;
+        }
+    }
+    return \%installable_languages;
+}
+
+sub _iso639_1to3 {
+    my ($code1) = @_;
+    my $code3 = $non_iso639_1{$code1};
+    if ($code3) { return $code3 }
+    return language_code2code( $code1, 'alpha-2', 'term' );
+}
+
+sub locale_installed {
+    my ( $class, $locale ) = @_;
+    my $code1     = lc substr $locale, 0, 2;
+    my $code3     = _iso639_1to3($code1);
+    my $languages = languages();
+    if ( not defined $code3 ) {
+        return
+          sprintf( __("You are using locale '%s'."), $locale ) . q{ }
+          . __(
+'gscan2pdf does not currently know which tesseract language package would be necessary for that locale.'
+          )
+          . q{ }
+          . __('Please contact the developers to add support for that locale.');
+    }
+    if ( defined $languages->{$code3} ) {
+        return 1;
+    }
+    $languages = installable_languages();
+    if ( defined $languages->{$code3} ) {
+        return
+          sprintf( __("You are using locale '%s'."), $locale ) . q{ }
+          . sprintf __(
+"Please install tesseract package 'tesseract-ocr-%s' and restart gscan2pdf for OCR for %s with tesseract."
+          ), $code3, $languages->{$code3};
+    }
+    return
+        sprintf( __("You are using locale '%s'."), $locale ) . q{ }
+      . sprintf __('There is no tesseract package for %s'),
+      code2language( $code3, 'term' ) . '. '
+      . 'If this is in error, please contact the gscan2pdf developers.';
 }
 
 sub hocr {

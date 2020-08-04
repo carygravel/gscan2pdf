@@ -1516,6 +1516,15 @@ EOS
     if ( not $dependencies{ocr} ) {
         $msg .= __("OCR requires gocr, tesseract, ocropus, or cuneiform\n");
     }
+    if ( $dependencies{tesseract} ) {
+        my $lang_msg = Gscan2pdf::Tesseract->locale_installed( $ENV{LANGUAGE} );
+        if ( $lang_msg ne '1' ) { $msg .= $lang_msg }
+        else {
+            $logger->info(
+"Using GUI language $ENV{LANGUAGE}, for which a tesseract language package is present"
+            );
+        }
+    }
 
     if ( not $dependencies{pdftk} ) {
         $msg .= __("PDF encryption requires pdftk\n");
