@@ -1248,6 +1248,11 @@ sub create_menu_bar {
             __('Clean up scanned images with unpaper'), \&unpaper
         ],
         [
+            'split', undef, __('_Split'), undef,
+            __('Split pages horizontally or vertically'),
+            \&split_dialog
+        ],
+        [
             'OCR', undef, __('_OCR'), undef,
             __('Optical Character Recognition'),
             \&ocr_dialog
@@ -1339,6 +1344,7 @@ sub create_menu_bar {
    <menuitem action='Unsharp'/>
    <menuitem action='CropDialog'/>
    <separator/>
+   <menuitem action='split'/>
    <menuitem action='unpaper'/>
    <menuitem action='OCR'/>
    <separator/>
@@ -1493,11 +1499,14 @@ EOS
     $uimanager->get_widget('/MenuBar/Tools/Unsharp')->set_sensitive(FALSE);
     $uimanager->get_widget('/MenuBar/Tools/CropDialog')->set_sensitive(FALSE);
     $uimanager->get_widget('/MenuBar/Tools/User-defined')->set_sensitive(FALSE);
+    $uimanager->get_widget('/MenuBar/Tools/split')->set_sensitive(FALSE);
 
     # Ghost rotations and unpaper if perlmagick not available
     if ( not $dependencies{perlmagick} ) {
         $msg .=
-          __("The rotating options and unpaper support require perlmagick\n");
+          __(
+"The rotating, crop, unsharp, split and unpaper tools require perlmagick\n"
+          );
     }
 
     if ( not $dependencies{unpaper} ) {
@@ -1571,6 +1580,7 @@ sub update_uimanager {
         '/MenuBar/Tools/Unsharp',
         '/MenuBar/Tools/CropDialog',
         '/MenuBar/Tools/unpaper',
+        '/MenuBar/Tools/split',
         '/MenuBar/Tools/OCR',
         '/MenuBar/Tools/User-defined',
 
@@ -1628,6 +1638,7 @@ sub update_uimanager {
         $uimanager->get_widget('/Thumb_Popup/Rotate 180')->set_sensitive(FALSE);
         $uimanager->get_widget('/Thumb_Popup/Rotate 270')->set_sensitive(FALSE);
         $uimanager->get_widget('/MenuBar/Tools/unpaper')->set_sensitive(FALSE);
+        $uimanager->get_widget('/MenuBar/Tools/split')->set_sensitive(FALSE);
     }
 
     # Ghost unpaper item if unpaper not available
@@ -5385,6 +5396,169 @@ sub crop_selection {
             },
         );
     }
+    return;
+}
+
+# Display page selector and on apply crop accordingly
+
+sub split_dialog {
+    my ($action) = @_;
+
+    # Until we have a separate tool for the divider, kill the whole
+    #        sub { $windowsp->hide }
+    #    if ( defined $windowsp ) {
+    #        $windowsp->present;
+    #        return;
+    #    }
+    my $windowsp = Gscan2pdf::Dialog->new(
+        'transient-for'  => $window,
+        title            => __('Split'),
+        'hide-on-delete' => TRUE,
+    );
+
+    # Frame for page range
+    $windowsp->add_page_range;
+
+    my $hbox = Gtk3::HBox->new;
+    my $vbox = $windowsp->get_content_area;
+    $vbox->pack_start( $hbox, FALSE, FALSE, 0 );
+    my $label = Gtk3::Label->new( __('Direction') );
+    $hbox->pack_start( $label, FALSE, TRUE, 0 );
+    my @direction = (
+        [
+            'v', __('Vertically'),
+            __('Split the page vertically into left and right pages.')
+        ],
+        [
+            'h', __('Horizontally'),
+            __('Split the page horizontally into top and bottom pages.')
+        ],
+    );
+    my $combob = Gscan2pdf::ComboBoxText->new_from_array(@direction);
+    my ( $width, $height ) = $current_page->get_size;
+    my $sb_pos = Gtk3::SpinButton->new_with_range( 0, $width, 1 );
+    $combob->signal_connect(
+        changed => sub {
+            if ( $direction[ $combob->get_active ]->[0] eq 'v' ) {
+                $sb_pos->set_range( 0, $width );
+            }
+            else {
+                $sb_pos->set_range( 0, $height );
+            }
+            update_view_position( $direction[ $combob->get_active ]->[0],
+                $sb_pos->get_value, $width, $height );
+        }
+    );
+    $combob->set_active_index('v');
+    $hbox->pack_end( $combob, FALSE, TRUE, 0 );
+
+    # SpinButton for position
+    $hbox = Gtk3::HBox->new;
+    $vbox->pack_start( $hbox, FALSE, TRUE, 0 );
+    $label = Gtk3::Label->new( __('Position') );
+    $hbox->pack_start( $label, FALSE, TRUE, 0 );
+    $hbox->pack_end( $sb_pos, FALSE, TRUE, 0 );
+
+    # Callback if the spinbutton changes
+    $sb_pos->signal_connect(
+        'value-changed' => sub {
+            update_view_position( $direction[ $combob->get_active ]->[0],
+                $sb_pos->get_value, $width, $height );
+        }
+    );
+    $sb_pos->set_value( $width / 2 );
+
+    # Callback if the selection changes
+    $view->{position_changed_signal} = $view->signal_connect(
+        'selection-changed' => sub {
+            my ( $widget, $sel ) = @_;
+            if ( defined $sel ) {
+                if ( $direction[ $combob->get_active ]->[0] eq 'v' ) {
+                    $sb_pos->set_value( $sel->{x} + $sel->{width} );
+                }
+                else {
+                    $sb_pos->set_value( $sel->{y} + $sel->{height} );
+                }
+            }
+        }
+    );
+
+    $windowsp->add_actions(
+        'gtk-apply',
+        sub {
+
+            # Update undo/redo buffers
+            take_snapshot();
+
+            $SETTING{'split-direction'} =
+              $direction[ $combob->get_active ]->[0];
+            $SETTING{'split-position'} = $sb_pos->get_value;
+
+            $SETTING{'Page range'} = $windowsp->get('page-range');
+            my @pagelist =
+              $slist->get_page_index( $SETTING{'Page range'},
+                \&error_callback );
+            if ( not @pagelist ) { return }
+            my $page = 0;
+            for my $i (@pagelist) {
+                $page++;
+                my ( $signal, $pid );
+                $pid = $slist->split_page(
+                    direction       => $SETTING{'split-direction'},
+                    position        => $SETTING{'split-position'},
+                    page            => $slist->{data}[$i][2]->{uuid},
+                    queued_callback => sub {
+                        return update_tpbar(@_);
+                    },
+                    started_callback => sub {
+                        my ( $thread, $process, $completed, $total ) = @_;
+                        $signal =
+                          setup_tpbar( $thread, $process, $completed, $total,
+                            $pid );
+                        return TRUE if ( defined $signal );
+                    },
+                    finished_callback => sub {
+                        my ( $new_page, $pending ) = @_;
+                        if ( not $pending ) { $thbox->hide }
+                        if ( defined $signal ) {
+                            $tcbutton->signal_handler_disconnect($signal);
+                        }
+                        $slist->save_session;
+                    },
+                    error_callback   => \&error_callback,
+                    display_callback => sub {
+                        my ($new_page) = @_;
+                        display_image($new_page);
+                    },
+                );
+            }
+        },
+        'gtk-cancel',
+
+        # Until we have a separate tool for the divider, kill the whole
+        #        sub { $windowsp->hide }
+        sub {
+            $view->signal_handler_disconnect(
+                $view->{position_changed_signal} );
+            $windowsp->destroy;
+        }
+    );
+    $windowsp->show_all;
+    return;
+}
+
+sub update_view_position {
+    my ( $direction, $position, $width, $height ) = @_;
+    my %selection = ( x => 0, y => 0 );
+    if ( $direction eq 'v' ) {
+        $selection{width}  = $position;
+        $selection{height} = $height;
+    }
+    else {
+        $selection{width}  = $width;
+        $selection{height} = $position;
+    }
+    $view->set_selection( \%selection );
     return;
 }
 

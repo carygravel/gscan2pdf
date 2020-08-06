@@ -326,6 +326,7 @@ t/271_crop.t
 t/272_cancel_crop.t
 t/273_crop_with_error.t
 t/274_crop_corrupt_image.t
+t/275_split.t
 t/281_to_png.t
 t/282_cancel_to_png.t
 t/283_to_png_with_error.t

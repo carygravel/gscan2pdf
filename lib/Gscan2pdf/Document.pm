@@ -1595,6 +1595,25 @@ sub crop {
     );
 }
 
+sub split_page {
+    my ( $self, %options ) = @_;
+    my $uuid     = $self->_note_callbacks(%options);
+    my $sentinel = _enqueue_request(
+        'split',
+        {
+            page      => $options{page},
+            direction => $options{direction},
+            position  => $options{position},
+            dir       => "$self->{dir}",
+            uuid      => $uuid,
+        }
+    );
+    return $self->_monitor_process(
+        sentinel => $sentinel,
+        uuid     => $uuid,
+    );
+}
+
 sub to_png {
     my ( $self, %options ) = @_;
     my $uuid     = $self->_note_callbacks(%options);
@@ -2505,6 +2524,17 @@ sub _thread_main {
                     h    => $request->{h},
                     dir  => $request->{dir},
                     uuid => $request->{uuid},
+                );
+            }
+
+            when ('split') {
+                _thread_split(
+                    $self,
+                    page      => $request->{page},
+                    direction => $request->{direction},
+                    position  => $request->{position},
+                    dir       => $request->{dir},
+                    uuid      => $request->{uuid},
                 );
             }
 
@@ -4826,28 +4856,9 @@ sub _thread_crop {
 
     if ( $options{page}{bboxtree} ) {
         my $bboxtree = Gscan2pdf::Bboxtree->new( $options{page}{bboxtree} );
-        my $i        = 0;
-        while ( $i <= $#{$bboxtree} ) {
-            my $bbox = $bboxtree->[$i];
-            my ( $text_x1, $text_y1, $text_x2, $text_y2 ) = @{ $bbox->{bbox} };
-            ( $text_x1, $text_x2 ) =
-              _crop_axis( $text_x1, $text_x2, $options{x},
-                $options{x} + $options{w} );
-            ( $text_y1, $text_y2 ) =
-              _crop_axis( $text_y1, $text_y2, $options{y},
-                $options{y} + $options{h} );
-
-            # cropped outside box, so remove box
-            if ( not defined $text_x1 or not defined $text_y1 ) {
-                splice @{$bboxtree}, $i, 1;
-                next;
-            }
-
-            # update box
-            $bbox->{bbox} = [ $text_x1, $text_y1, $text_x2, $text_y2 ];
-            $i++;
-        }
-        $options{page}{bboxtree} = $bboxtree->json;
+        $options{page}{bboxtree} =
+          $bboxtree->crop( $options{x}, $options{y}, $options{w}, $options{h} )
+          ->json;
     }
 
     $self->{return}->enqueue(
@@ -4868,39 +4879,138 @@ sub _thread_crop {
     return;
 }
 
-# More trouble that it's worth to refactor this as a dispatch table, as it would
-# require converting the inequalities into a string of binaries, which would be
-# less easy to understand. In this case the ifelse cascade is better.
+sub _thread_split {
+    my ( $self, %options ) = @_;
+    my $filename  = $options{page}{filename};
+    my $filename2 = $filename;
 
-sub _crop_axis {
-    my ( $text1, $text2, $crop1, $crop2 ) = @_;
-    if ( $text1 > $crop2 or $text2 < $crop1 ) { return }
+    my $image = Image::Magick->new;
+    my $e     = $image->Read($filename);
+    return if $_self->{cancel};
+    if ("$e") { $logger->warn($e) }
+    my $image2 = $image->Clone;
 
-    # crop inside edges of box
-    if ( $text1 < $crop1 and $text2 > $crop2 )
-    {    ## no critic (ProhibitCascadingIfElse)
-        $text1 = 0;
-        $text2 = $crop2 - $crop1;
+    # split the image
+    my ( $w, $h, $x2, $y2, $w2, $h2 );
+    if ( $options{direction} eq 'v' ) {
+        $w  = $options{position};
+        $h  = $image->Get('height');
+        $x2 = $w;
+        $y2 = 0;
+        $w2 = $image->Get('width') - $w;
+        $h2 = $h;
+    }
+    else {
+        $w  = $image->Get('width');
+        $h  = $options{position};
+        $x2 = 0;
+        $y2 = $h;
+        $w2 = $w;
+        $h2 = $image->Get('height') - $h;
     }
 
-    # crop outside edges of box
-    elsif ( $text1 > $crop1 and $text2 < $crop2 ) {
-        $text1 -= $crop1;
-        $text2 -= $crop1;
+    $e = $image->Crop( $w . "x$h+0+0" );
+    if ("$e") {
+        $logger->error($e);
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'crop', $e );
+        return;
+    }
+    $image->Set( page => '0x0+0+0' );
+    $e = $image2->Crop( $w2 . "x$h2+$x2+$y2" );
+    if ("$e") {
+        $logger->error($e);
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'crop', $e );
+        return;
+    }
+    $image2->Set( page => '0x0+0+0' );
+    return if $_self->{cancel};
+
+    # Write it
+    my $error;
+    try {
+        my $suffix;
+        if ( $filename =~ /[.](\w*)$/xsm ) { $suffix = $1 }
+        $filename = File::Temp->new(
+            DIR    => $options{dir},
+            SUFFIX => ".$suffix",
+            UNLINK => FALSE
+        );
+        $e = $image->Write( filename => $filename );
+        if ("$e") { $logger->warn($e) }
+        $filename2 = File::Temp->new(
+            DIR    => $options{dir},
+            SUFFIX => ".$suffix",
+            UNLINK => FALSE
+        );
+        $e = $image2->Write( filename => $filename2 );
+        if ("$e") { $logger->warn($e) }
+    }
+    catch {
+        $logger->error("Error cropping: $_");
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'crop', $_ );
+        $error = TRUE;
+    };
+    if ($error) { return }
+    $logger->info(
+"Splitting in direction $options{direction} @ $options{position} -> $filename + $filename2"
+    );
+    return if $_self->{cancel};
+
+    $options{page}{filename}   = $filename->filename;
+    $options{page}{width}      = $image->Get('width');
+    $options{page}{height}     = $image->Get('height');
+    $options{page}{dirty_time} = timestamp();             #flag as dirty
+
+    my $new2 = Gscan2pdf::Page->new(
+        filename => $filename2,
+        dir      => $options{dir},
+        delete   => TRUE,
+        format   => $image2->Get('format'),
+    );
+
+    if ( $options{page}{bboxtree} ) {
+        my $bboxtree  = Gscan2pdf::Bboxtree->new( $options{page}{bboxtree} );
+        my $bboxtree2 = Gscan2pdf::Bboxtree->new( $options{page}{bboxtree} );
+        $options{page}{bboxtree} = $bboxtree->crop( 0, 0, $w, $h )->json;
+        $new2->{bboxtree} = $bboxtree2->crop( $x2, $y2, $w2, $h2 )->json;
     }
 
-    # crop over 2nd edge of box
-    elsif ( $text2 > $crop1 and $text2 < $crop2 ) {
-        $text1 = 0;
-        $text2 -= $crop1;
+    # crop doesn't change the resolution, so we can safely copy it
+    if ( defined $options{page}{xresolution} ) {
+        $new2->{xresolution} = $options{page}{xresolution};
+        $new2->{yresolution} = $options{page}{yresolution};
     }
 
-    # crop over 1st edge of box
-    elsif ( $text1 > $crop1 and $text1 < $crop2 ) {
-        $text1 -= $crop1;
-        $text2 = $crop2 - $crop1;
-    }
-    return $text1, $text2;
+    $new2->{dirty_time} = timestamp();    #flag as dirty
+    $self->{return}->enqueue(
+        {
+            type => 'page',
+            uuid => $options{uuid},
+            page => $new2->freeze,
+            info => { 'insert-after' => $options{page}{uuid} }
+        }
+    );
+
+    $self->{return}->enqueue(
+        {
+            type => 'page',
+            uuid => $options{uuid},
+            page => $options{page},
+            info => { replace => $options{page}{uuid} }
+        }
+    );
+
+    $self->{return}->enqueue(
+        {
+            type    => 'finished',
+            process => 'crop',
+            uuid    => $options{uuid},
+        }
+    );
+    return;
 }
 
 sub _thread_to_png {
