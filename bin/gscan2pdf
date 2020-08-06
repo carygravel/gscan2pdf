@@ -3812,11 +3812,14 @@ sub process_error_callback {
                 __("Don't show this message again") );
             $area->add($cb);
             $dialog->show_all;
-            $dialog->run;
+            $response = $dialog->run;
             $dialog->destroy;
-            if    ( $radio1->get_active ) { $response = 'reopen' }
+
+            if ( $response ne 'ok' or $radio4->get_active ) {
+                $response = 'ignore';
+            }
+            elsif ( $radio1->get_active ) { $response = 'reopen' }
             elsif ( $radio3->get_active ) { $response = 'restart' }
-            elsif ( $radio4->get_active ) { $response = 'ignore' }
             else                          { $response = 'rescan' }
 
             if ( $cb->get_active ) {
