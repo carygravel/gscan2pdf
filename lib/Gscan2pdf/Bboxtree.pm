@@ -55,7 +55,7 @@ sub json {
 
 sub from_hocr {
     my ( $self, $hocr ) = @_;
-    if ( $hocr !~ /<body>[\s\S]*<\/body>/xsm ) { return }
+    if ( not defined $hocr or $hocr !~ /<body>[\s\S]*<\/body>/xsm ) { return }
     my $box_tree = _hocr2boxes($hocr);
     _prune_empty_branches($box_tree);
     if ( $#{$box_tree} > $EMPTY_LIST ) {
