@@ -4,6 +4,7 @@
 * + split tool
 * If device-not-found mini-wizard is exited via cancel or by destroying it,
   use ignore response.
+* Fix bug manually adding first OCR word to page.
 * Update to Hungarian translation (thanks to csola)
 
 

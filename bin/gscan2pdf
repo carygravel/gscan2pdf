@@ -488,9 +488,25 @@ sub populate_main_window {
             if ( not defined $text or $text eq $EMPTY ) {
                 $text = __('my-new-word');
             }
-            my $bbox = $canvas->add_box( $text, $view->get_selection );
-            $current_page->import_hocr( $canvas->hocr );
-            edit_ocr_text($bbox);
+
+            # If we don't yet have a canvas, create one
+            my $selection = $view->get_selection;
+            if ( defined $current_page->{bboxtree} ) {
+                my $bbox = $canvas->add_box( $text, $view->get_selection );
+                $current_page->import_hocr( $canvas->hocr );
+                edit_ocr_text($bbox);
+            }
+            else {
+                $current_page->{bboxtree} =
+                  sprintf
+'[{"type":"page","bbox":[0,0,%d,%d],"depth":0},{"type":"word","bbox":[%d,%d,%d,%d],"text":"%s","depth":1}]',
+                  $current_page->{width}, $current_page->{height},
+                  $selection->{x},        $selection->{y},
+                  $selection->{x} + $selection->{width},
+                  $selection->{y} + $selection->{height}, $text;
+
+                create_canvas($current_page);
+            }
         }
     );
 
