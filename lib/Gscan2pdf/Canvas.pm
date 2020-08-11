@@ -18,7 +18,7 @@ Readonly my $COLOR_GREEN     => 2;
 Readonly my $COLOR_BLUE      => 4;
 Readonly my $COLOR_YELLOW    => 6;
 Readonly my $_60_DEGREES     => 60;
-Readonly my $MAX_ZOOM        => 100;
+Readonly my $MAX_ZOOM        => 15;
 Readonly my $EMPTY_LIST      => -1;
 my $device;
 my %old_idles;
