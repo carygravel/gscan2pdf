@@ -43,6 +43,20 @@ sub new {
     return bless $self, $class;
 }
 
+sub valid {
+    my ( $class, $json ) = @_;
+    my $self = $class->new($json);
+    my $iter = $self->get_bbox_iter();
+    while ( my $bbox = $iter->() ) {
+        my ( $x1, $y1, $x2, $y2 ) = @{ $bbox->{bbox} };
+        if ( $bbox->{type} eq 'page' ) {
+            if ( $x2 == 0 or $y2 == 0 ) { return FALSE }
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 sub json {
     my ($self) = @_;
     my @boxes;

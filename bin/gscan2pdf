@@ -1956,6 +1956,12 @@ sub display_image {
         $view->set_selection( $SETTING{selection} );
     }
 
+    # Delete OCR output if it has become corrupted
+    $logger->fatal("bboxtree: $current_page->{bboxtree}");
+    if ( not Gscan2pdf::Bboxtree->valid( $current_page->{bboxtree} ) ) {
+        delete $current_page->{bboxtree};
+    }
+
     # Convert hocr output to Goo:Canvas if defined
     if   ( defined $current_page->{bboxtree} ) { create_canvas($current_page) }
     else                                       { $canvas->clear_text }
