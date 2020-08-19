@@ -2803,9 +2803,21 @@ sub _thread_get_file_info {
         when (/DjVu/xsm) {
 
             # Dig out the number of pages
-            ( undef, my $info ) =
+            ( undef, my $info, my $err ) =
               exec_command( [ 'djvudump', $options{filename} ],
                 $options{pidfile} );
+            if ( $err =~ /command[ ]not[ ]found/xsm ) {
+                _thread_throw_error(
+                    $self,
+                    $options{uuid},
+                    $options{page}{uuid},
+                    'Open file',
+                    __(
+'Please install djvulibre-bin in order to open DjVu files.'
+                    )
+                );
+                return;
+            }
             $logger->info($info);
             return if $_self->{cancel};
 

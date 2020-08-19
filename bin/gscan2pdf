@@ -2104,7 +2104,10 @@ sub error_callback {
         text             => $message,
         'store-response' => TRUE,
     );
-    my $page = $slist->find_page_by_uuid($page_uuid);
+    my $page;
+    if ( defined $page_uuid ) {
+        $page = $slist->find_page_by_uuid($page_uuid);
+    }
     if ( defined $page ) {
         $options{page} = $slist->{data}[$page][0];
     }
