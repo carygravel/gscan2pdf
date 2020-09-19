@@ -9,6 +9,7 @@
   "pango_font_description_set_size: assertion 'size >= 0' failed"
 * Fix bug finding page by number
 * Update to Hungarian translation (thanks to csola)
+* Update to Turkish translation (thanks to Buckethead)
 
 
 2.8.2 (25.07.2020):

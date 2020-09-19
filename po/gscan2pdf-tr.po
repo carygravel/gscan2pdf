@@ -7,63 +7,103 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gscan2pdf\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-03-06 16:14+0100\n"
-"PO-Revision-Date: 2020-03-29 15:08+0000\n"
-"Last-Translator: Utku BERBEROĞLU <Unknown>\n"
+"POT-Creation-Date: 2020-07-25 18:35+0200\n"
+"PO-Revision-Date: 2020-07-28 19:32+0000\n"
+"Last-Translator: Buckethead <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-04-05 09:48+0000\n"
-"X-Generator: Launchpad (build a296f04231dee355be5db73cc878b9e21689a253)\n"
+"X-Launchpad-Export-Date: 2020-09-18 13:24+0000\n"
+"X-Generator: Launchpad (build 83bdf6c8a3a5f87722c8927e54838522f3e57504)\n"
 
-#: bin/gscan2pdf:480
+#: bin/gscan2pdf:427
+msgid "OCR text"
+msgstr "OKT metni"
+
+#: bin/gscan2pdf:433
+msgid "Go to least confident text"
+msgstr "En az güvenilir metne git"
+
+#: bin/gscan2pdf:440
+msgid "Go to previous text"
+msgstr "Önceki metne git"
+
+#: bin/gscan2pdf:447
+msgid "Go to next text"
+msgstr "Sonraki metne git"
+
+#: bin/gscan2pdf:454
+msgid "Go to most confident text"
+msgstr "En güvenilir metne git"
+
+#: bin/gscan2pdf:461
+msgid "Accept corrections"
+msgstr "Düzenlemeleri kabul et"
+
+#: bin/gscan2pdf:474
+msgid "Cancel corrections"
+msgstr "Düzenlemeleri iptal et"
+
+#: bin/gscan2pdf:484
+msgid "Add text"
+msgstr "Metin ekle"
+
+#: bin/gscan2pdf:489
+msgid "my-new-word"
+msgstr ""
+
+#: bin/gscan2pdf:500
+msgid "Delete text"
+msgstr "Metni sil"
+
+#: bin/gscan2pdf:585
 msgid "Image"
 msgstr "Görüntü"
 
-#: bin/gscan2pdf:482
+#: bin/gscan2pdf:587
 msgid "OCR Output"
-msgstr "OKT çıktısı"
+msgstr "OKT Çıktısı"
 
-#: bin/gscan2pdf:548
+#: bin/gscan2pdf:654
 msgid "Error displaying help"
 msgstr "Yardım görüntülemede hata"
 
-#: bin/gscan2pdf:628 bin/gscan2pdf:649
+#: bin/gscan2pdf:758 bin/gscan2pdf:779
 #, perl-format
 msgid "Cannot read file: %s"
 msgstr "Dosya okunamıyor: %s"
 
-#: bin/gscan2pdf:779
+#: bin/gscan2pdf:909
 msgid "GraphicsMagick is being used in ImageMagick compatibility mode."
-msgstr ""
+msgstr "GraphicsMagick, ImageMagick uyumluluk kipinde kullanılıyor."
 
-#: bin/gscan2pdf:782
+#: bin/gscan2pdf:912
 msgid "Whilst this might work, it is not currently supported."
 msgstr "Bu çalışabilir ama desteklenmemektedir."
 
-#: bin/gscan2pdf:784
+#: bin/gscan2pdf:914
 msgid "Please switch to ImageMagick in case of problems."
 msgstr "Sorunlarla karşılaşıldığında lütfen ImageMagick'e geçiş yapın."
 
-#: bin/gscan2pdf:821
+#: bin/gscan2pdf:951
 msgid ""
 "pdftk is installed, but cannot access the directory used for temporary files."
 msgstr "pdftk kurulu ama geçici dosyalar için kullanılan dizine erişemiyor."
 
-#: bin/gscan2pdf:824
+#: bin/gscan2pdf:954
 msgid "One reason for this might be that pdftk was installed via snap."
-msgstr "Bunun bir nedeni pdftk'nın snap ile yüklenmesi olabilir."
+msgstr "Bunun nedeni pdftk'nin snap ile kurulması olabilir."
 
-#: bin/gscan2pdf:827
+#: bin/gscan2pdf:957
 msgid ""
 "In this case, removing pdftk, and reinstalling without using snap would "
 "allow gscan2pdf to use pdftk."
 msgstr ""
-"Bu durumda, pdftk'yi kaldırmak ve snap olmadan yüklemek, gscan2pdf'nin "
-"pdftk'yi kullanabilmesini sağlayacakır."
+"Bu durumda pdftk'yi kaldırmak ve snap olmadan kurmak, gscan2pdf'nin pdftk'yi "
+"kullanabilmesini sağlayacakır."
 
-#: bin/gscan2pdf:830
+#: bin/gscan2pdf:960
 msgid ""
 "Another workaround would be to select a temporary directory under your home "
 "directory in Edit/Preferences."
@@ -71,442 +111,442 @@ msgstr ""
 "Diğer bir çözüm yolu, Düzen/Tercihler'den, ev dizininiz altında bir geçici "
 "dizin seçmek olabilir."
 
-#: bin/gscan2pdf:847
+#: bin/gscan2pdf:977
 msgid "GOCR"
 msgstr "GOCR"
 
-#: bin/gscan2pdf:847
+#: bin/gscan2pdf:977
 msgid "Process image with GOCR."
 msgstr "Görüntüyü GOCR ile işle."
 
-#: bin/gscan2pdf:851
+#: bin/gscan2pdf:981
 msgid "Tesseract"
 msgstr "Tesseract"
 
-#: bin/gscan2pdf:851
+#: bin/gscan2pdf:981
 msgid "Process image with Tesseract."
 msgstr "Görüntüyü Tesseract ile işle."
 
-#: bin/gscan2pdf:856
+#: bin/gscan2pdf:986
 msgid "Ocropus"
 msgstr "Ocropus"
 
-#: bin/gscan2pdf:856
+#: bin/gscan2pdf:986
 msgid "Process image with Ocropus."
 msgstr "Görüntüyü Ocropus'la işle"
 
-#: bin/gscan2pdf:861
+#: bin/gscan2pdf:991
 msgid "Cuneiform"
 msgstr "Cuneiform"
 
-#: bin/gscan2pdf:861
+#: bin/gscan2pdf:991
 msgid "Process image with Cuneiform."
 msgstr "Görüntüyü Cuneiform ile işle"
 
-#: bin/gscan2pdf:900
+#: bin/gscan2pdf:1018
 msgid "_File"
 msgstr "_Dosya"
 
-#: bin/gscan2pdf:903
+#: bin/gscan2pdf:1021
 msgid "_New"
 msgstr "_Yeni"
 
-#: bin/gscan2pdf:904
+#: bin/gscan2pdf:1022
 msgid "Clears all pages"
 msgstr "Tüm sayfaları temizle"
 
-#: bin/gscan2pdf:908
+#: bin/gscan2pdf:1026
 msgid "_Open"
 msgstr "_Aç"
 
-#: bin/gscan2pdf:909
+#: bin/gscan2pdf:1027
 msgid "Open image file(s)"
-msgstr "Görüntü dosyasını(larını) aç"
+msgstr "Görüntü dosyalarını aç"
 
-#: bin/gscan2pdf:913
+#: bin/gscan2pdf:1031
 msgid "Open c_rashed session"
 msgstr "Çökmüş otu_rum aç"
 
-#: bin/gscan2pdf:914 bin/gscan2pdf:1967
+#: bin/gscan2pdf:1032 bin/gscan2pdf:2099
 msgid "Open crashed session"
 msgstr "Çökmüş oturum aç"
 
-#: bin/gscan2pdf:918
+#: bin/gscan2pdf:1036
 msgid "S_can"
 msgstr "_Tara"
 
-#: bin/gscan2pdf:919
+#: bin/gscan2pdf:1037
 msgid "Scan document"
 msgstr "Belge tara"
 
-#: bin/gscan2pdf:922 bin/gscan2pdf:923 bin/gscan2pdf:2368
+#: bin/gscan2pdf:1040 bin/gscan2pdf:1041 bin/gscan2pdf:2513
 msgid "Save"
 msgstr "Kaydet"
 
-#: bin/gscan2pdf:927
+#: bin/gscan2pdf:1045
 msgid "_Email as PDF"
 msgstr "Pdf olarak gönder"
 
-#: bin/gscan2pdf:928
+#: bin/gscan2pdf:1046
 msgid "Attach as PDF to a new email"
-msgstr "Yeni bir epostaya pdf olarak ekle"
+msgstr "Yeni e-postaya PDF olarak ekle"
 
-#: bin/gscan2pdf:931
+#: bin/gscan2pdf:1049
 msgid "_Print"
 msgstr "Ya_zdır"
 
-#: bin/gscan2pdf:932
+#: bin/gscan2pdf:1050
 msgid "Print"
 msgstr "Yazdır"
 
-#: bin/gscan2pdf:936
+#: bin/gscan2pdf:1054
 msgid "_Compress temporary files"
 msgstr "_Geçici dosyaları sıkıştır"
 
-#: bin/gscan2pdf:937
+#: bin/gscan2pdf:1055
 msgid "Compress temporary files"
 msgstr "Geçici dosyaları sıkıştır"
 
-#: bin/gscan2pdf:942
+#: bin/gscan2pdf:1060
 msgid "_Quit"
 msgstr "_Çık"
 
-#: bin/gscan2pdf:944
+#: bin/gscan2pdf:1062
 msgid "Quit"
 msgstr "Çık"
 
-#: bin/gscan2pdf:951
+#: bin/gscan2pdf:1069
 msgid "_Edit"
 msgstr "_Düzenle"
 
-#: bin/gscan2pdf:952
+#: bin/gscan2pdf:1070
 msgid "_Undo"
-msgstr "_Geri Al"
+msgstr "_Geri al"
 
-#: bin/gscan2pdf:952
+#: bin/gscan2pdf:1070
 msgid "Undo"
-msgstr "Geri Al"
+msgstr "Geri al"
 
-#: bin/gscan2pdf:955
+#: bin/gscan2pdf:1073
 msgid "_Redo"
 msgstr "_Yinele"
 
-#: bin/gscan2pdf:956
+#: bin/gscan2pdf:1074
 msgid "Redo"
 msgstr "Yinele"
 
-#: bin/gscan2pdf:960
+#: bin/gscan2pdf:1078
 msgid "Cu_t"
 msgstr "_Kes"
 
-#: bin/gscan2pdf:961
+#: bin/gscan2pdf:1079
 msgid "Cut selection"
 msgstr "Seçimi kes"
 
-#: bin/gscan2pdf:965
+#: bin/gscan2pdf:1083
 msgid "_Copy"
 msgstr "_Kopyala"
 
-#: bin/gscan2pdf:966
+#: bin/gscan2pdf:1084
 msgid "Copy selection"
 msgstr "Seçimi kopyala"
 
-#: bin/gscan2pdf:970
+#: bin/gscan2pdf:1088
 msgid "_Paste"
 msgstr "Yapıştır"
 
-#: bin/gscan2pdf:971
+#: bin/gscan2pdf:1089
 msgid "Paste selection"
 msgstr "Seçimi yapıştır"
 
-#: bin/gscan2pdf:975
+#: bin/gscan2pdf:1093
 msgid "_Delete"
 msgstr "_Sil"
 
-#: bin/gscan2pdf:976
+#: bin/gscan2pdf:1094
 msgid "Delete selected pages"
 msgstr "Seçili sayfaları sil"
 
-#: bin/gscan2pdf:980
+#: bin/gscan2pdf:1098
 msgid "_Renumber"
 msgstr "_Yeniden numaralandır"
 
-#: bin/gscan2pdf:981
+#: bin/gscan2pdf:1099
 msgid "Renumber pages"
 msgstr "Sayfaları yeniden numaralandır"
 
-#: bin/gscan2pdf:983
+#: bin/gscan2pdf:1101
 msgid "_Select"
 msgstr "_Seç"
 
-#: bin/gscan2pdf:986
+#: bin/gscan2pdf:1104
 msgid "_All"
 msgstr "_Tümü"
 
-#: bin/gscan2pdf:987
+#: bin/gscan2pdf:1105
 msgid "Select all pages"
-msgstr "Bütün sayfaları seç"
+msgstr "Tüm sayfaları seç"
 
-#: bin/gscan2pdf:990
+#: bin/gscan2pdf:1108
 msgid "_Odd"
-msgstr "_Tekleri"
+msgstr "_Tekler"
 
-#: bin/gscan2pdf:991
+#: bin/gscan2pdf:1109
 msgid "Select all odd-numbered pages"
 msgstr "Tüm tek numaralı sayfaları seç."
 
-#: bin/gscan2pdf:995
+#: bin/gscan2pdf:1113
 msgid "_Even"
-msgstr "_Çiftleri"
+msgstr "_Çiftler"
 
-#: bin/gscan2pdf:996
+#: bin/gscan2pdf:1114
 msgid "Select all evenly-numbered pages"
 msgstr "Tüm çift numaralı sayfaları seç."
 
-#: bin/gscan2pdf:1002
+#: bin/gscan2pdf:1120
 msgid "_Blank"
-msgstr "_boşları"
+msgstr "_Boşlar"
 
-#: bin/gscan2pdf:1004
+#: bin/gscan2pdf:1122
 msgid "Select pages with low standard deviation"
 msgstr "Sayfaları düşük standart sapma ile seç"
 
-#: bin/gscan2pdf:1009
+#: bin/gscan2pdf:1127
 msgid "_Dark"
 msgstr "_Karanlık"
 
-#: bin/gscan2pdf:1010
+#: bin/gscan2pdf:1128
 msgid "Select dark pages"
 msgstr "Karanlık sayfaları seç"
 
-#: bin/gscan2pdf:1015
+#: bin/gscan2pdf:1133
 msgid "_Modified"
-msgstr "_Değiştirilmişleri"
+msgstr "_Değiştirilen"
 
-#: bin/gscan2pdf:1017
+#: bin/gscan2pdf:1135
 msgid "Select modified pages since last OCR"
 msgstr "Son OKT işleminden beri değiştirilen sayfaları seç."
 
-#: bin/gscan2pdf:1022
+#: bin/gscan2pdf:1140
 msgid "_No OCR"
-msgstr "OKT yapma."
+msgstr "_OKT'siz"
 
-#: bin/gscan2pdf:1023
+#: bin/gscan2pdf:1141
 msgid "Select pages with no OCR output"
 msgstr "OKT çıktısı olmayan sayfaları seç"
 
-#: bin/gscan2pdf:1027
+#: bin/gscan2pdf:1145
 msgid "_Clear OCR"
-msgstr "_OKT'yi temizle."
+msgstr "OKT'y temizle"
 
-#: bin/gscan2pdf:1028
+#: bin/gscan2pdf:1146
 msgid "Clear OCR output from selected pages"
 msgstr "Seçili sayfalardan OKT çıktısını sil"
 
-#: bin/gscan2pdf:1032
+#: bin/gscan2pdf:1150
 msgid "Propert_ies"
 msgstr "Özellikler"
 
-#: bin/gscan2pdf:1033
+#: bin/gscan2pdf:1151
 msgid "Edit image properties"
 msgstr "Resim özelliklerini değiştir"
 
-#: bin/gscan2pdf:1037
+#: bin/gscan2pdf:1155
 msgid "Prefere_nces"
 msgstr "_Seçenekler"
 
-#: bin/gscan2pdf:1038
+#: bin/gscan2pdf:1156
 msgid "Edit preferences"
 msgstr "Tercihleri düzenle"
 
-#: bin/gscan2pdf:1042
+#: bin/gscan2pdf:1160
 msgid "_View"
 msgstr "Görünüm"
 
-#: bin/gscan2pdf:1045
+#: bin/gscan2pdf:1163
 msgid "Zoom _100%"
 msgstr "Tam _Boy Göster (%100)"
 
-#: bin/gscan2pdf:1046
+#: bin/gscan2pdf:1164
 msgid "Zoom to 100%"
 msgstr "Tam Boy Göster (100%)"
 
-#: bin/gscan2pdf:1050
+#: bin/gscan2pdf:1168
 msgid "Zoom to _fit"
 msgstr "Ekrana sığdır"
 
-#: bin/gscan2pdf:1051
+#: bin/gscan2pdf:1169
 msgid "Zoom to fit"
 msgstr "Ekrana sığdır"
 
-#: bin/gscan2pdf:1055
+#: bin/gscan2pdf:1173
 msgid "Zoom _in"
 msgstr "Yakı_nlaştır"
 
-#: bin/gscan2pdf:1056
+#: bin/gscan2pdf:1174
 msgid "Zoom in"
 msgstr "Yakınlaştır"
 
-#: bin/gscan2pdf:1060
+#: bin/gscan2pdf:1178
 msgid "Zoom _out"
 msgstr "Uzaklaştır"
 
-#: bin/gscan2pdf:1061
+#: bin/gscan2pdf:1179
 msgid "Zoom out"
 msgstr "Uzaklaştır"
 
-#: bin/gscan2pdf:1066 bin/gscan2pdf:1068
+#: bin/gscan2pdf:1184 bin/gscan2pdf:1186
 msgid "Rotate 90° clockwise"
 msgstr "Saat yönünde 90° döndür"
 
-#: bin/gscan2pdf:1077 bin/gscan2pdf:1079
+#: bin/gscan2pdf:1195 bin/gscan2pdf:1197
 msgid "Rotate 180°"
-msgstr ""
+msgstr "180° Döndür"
 
-#: bin/gscan2pdf:1088 bin/gscan2pdf:1090
+#: bin/gscan2pdf:1206 bin/gscan2pdf:1208
 msgid "Rotate 90° anticlockwise"
 msgstr "Saat yönünün tersinde 90° döndür"
 
-#: bin/gscan2pdf:1098
+#: bin/gscan2pdf:1216
 msgid "_Tools"
 msgstr "_Araçlar"
 
-#: bin/gscan2pdf:1100
+#: bin/gscan2pdf:1218
 msgid "_Threshold"
 msgstr "_Eşik"
 
-#: bin/gscan2pdf:1101
+#: bin/gscan2pdf:1219
 msgid "Change each pixel above this threshold to black"
 msgstr "Bu eşiğin üstündeki her pikseli siyaha dönüştür"
 
-#: bin/gscan2pdf:1106
+#: bin/gscan2pdf:1224
 msgid "_Brightness / Contrast"
-msgstr ""
+msgstr "_Parlaklık / Karşıtlık"
 
-#: bin/gscan2pdf:1107
+#: bin/gscan2pdf:1225
 msgid "Change brightness & contrast"
-msgstr ""
+msgstr "Parlaklık ve karşıtlığı değiştir"
 
-#: bin/gscan2pdf:1110
+#: bin/gscan2pdf:1228
 msgid "_Negate"
 msgstr "_Negatif"
 
-#: bin/gscan2pdf:1111
+#: bin/gscan2pdf:1229
 msgid "Converts black to white and vice versa"
 msgstr "Siyahı beyaza ve beyazı siyaha dönüştür."
 
-#: bin/gscan2pdf:1115
+#: bin/gscan2pdf:1233
 msgid "_Unsharp Mask"
 msgstr "_Bulanıklık maskesi"
 
-#: bin/gscan2pdf:1116
+#: bin/gscan2pdf:1234
 msgid "Apply an unsharp mask"
 msgstr "Bulanıklık maskesi uygula"
 
-#: bin/gscan2pdf:1120 bin/gscan2pdf:1125
+#: bin/gscan2pdf:1238 bin/gscan2pdf:1243
 msgid "_Crop"
 msgstr "Kır_p"
 
-#: bin/gscan2pdf:1121
+#: bin/gscan2pdf:1239
 msgid "Crop pages"
 msgstr "Sayfaları kırp"
 
-#: bin/gscan2pdf:1126
+#: bin/gscan2pdf:1244
 msgid "Crop selection"
-msgstr ""
+msgstr "Seçimi kırp"
 
-#: bin/gscan2pdf:1129
+#: bin/gscan2pdf:1247
 msgid "_Clean up"
 msgstr "_Düzelt"
 
-#: bin/gscan2pdf:1130 bin/gscan2pdf:3992
+#: bin/gscan2pdf:1248 bin/gscan2pdf:4148
 msgid "Clean up scanned images with unpaper"
 msgstr "Taranmış görüntüleri unpaper ile düzelt"
 
-#: bin/gscan2pdf:1133
+#: bin/gscan2pdf:1251
 msgid "_OCR"
 msgstr "_OKT"
 
-#: bin/gscan2pdf:1134
+#: bin/gscan2pdf:1252
 msgid "Optical Character Recognition"
 msgstr "Optik Karakter Tanıma"
 
-#: bin/gscan2pdf:1138
+#: bin/gscan2pdf:1256
 msgid "U_ser-defined"
 msgstr "Ku_llanıcı Tanımlı"
 
-#: bin/gscan2pdf:1139
+#: bin/gscan2pdf:1257
 msgid "Process images with user-defined tool"
-msgstr ""
+msgstr "Görüntüleri kullanıcı tanımlı araçla işle"
 
-#: bin/gscan2pdf:1144 bin/gscan2pdf:1146
+#: bin/gscan2pdf:1262 bin/gscan2pdf:1264
 msgid "_Help"
 msgstr "_Yardım"
 
-#: bin/gscan2pdf:1147
+#: bin/gscan2pdf:1265
 msgid "Help"
 msgstr "Yardım"
 
-#: bin/gscan2pdf:1149
+#: bin/gscan2pdf:1267
 msgid "_About"
 msgstr "_Hakkında"
 
-#: bin/gscan2pdf:1154
+#: bin/gscan2pdf:1272
 msgid "_Tabbed"
-msgstr ""
+msgstr "_Sekmeli"
 
-#: bin/gscan2pdf:1155
+#: bin/gscan2pdf:1273
 msgid "Arrange image and OCR viewers in tabs"
-msgstr ""
+msgstr "Görüntü ve OKT görüntüleyicileri sekmelere diz"
 
-#: bin/gscan2pdf:1158
+#: bin/gscan2pdf:1276
 msgid "_Split"
-msgstr ""
+msgstr "_Böl"
 
-#: bin/gscan2pdf:1159
+#: bin/gscan2pdf:1277
 msgid "Arrange image and OCR viewers in split screen"
-msgstr ""
+msgstr "Görüntü ve OKT görüntüleyicileri ekrana bölük diz"
 
-#: bin/gscan2pdf:1336
+#: bin/gscan2pdf:1454
 msgid "Save image and Save as PDF both require imagemagick\n"
 msgstr ""
 "Görüntü kaydetme ve PDF olarak kaydetme işlemleri imagemagick'e ihtiyaç "
 "duyar.\n"
 
-#: bin/gscan2pdf:1341
+#: bin/gscan2pdf:1459
 msgid "Save image requires libtiff\n"
 msgstr "Görüntü kaydetme işlemi libtiff kütüphanesini gerektirir.\n"
 
-#: bin/gscan2pdf:1346
+#: bin/gscan2pdf:1464
 msgid "Save as DjVu requires djvulibre-bin\n"
 msgstr "DjVu olarak kaydetmek için djvulibre-bin gerekir.\n"
 
-#: bin/gscan2pdf:1351
+#: bin/gscan2pdf:1469
 msgid "Email as PDF requires xdg-email\n"
 msgstr "PDF olarak göndermek için xdg-email gerektirir.\n"
 
-#: bin/gscan2pdf:1382
+#: bin/gscan2pdf:1500
 msgid "The rotating options and unpaper support require perlmagick\n"
 msgstr ""
 "Bu döndürme seçenekleri ve unpaper deşteği perlmagick gerektiriyor.\n"
 
-#: bin/gscan2pdf:1386
+#: bin/gscan2pdf:1504
 msgid "unpaper missing\n"
 msgstr "unpaper eksik\n"
 
-#: bin/gscan2pdf:1399
+#: bin/gscan2pdf:1517
 msgid "OCR requires gocr, tesseract, ocropus, or cuneiform\n"
 msgstr "OKT, gocr, tesseract,ocropus yada cuneiform gerektirir.\n"
 
-#: bin/gscan2pdf:1403
+#: bin/gscan2pdf:1521
 msgid "PDF encryption requires pdftk\n"
-msgstr ""
+msgstr "PDF şifreleme pdftk gerektirir\n"
 
-#: bin/gscan2pdf:1408
+#: bin/gscan2pdf:1526
 msgid "Warning: missing packages"
 msgstr "Uyarı: eksik paketler"
 
-#: bin/gscan2pdf:1640
+#: bin/gscan2pdf:1774
 #, perl-format
 msgid ""
 "Warning: unable to use %s for temporary storage. Defaulting to %s instead."
@@ -514,25 +554,31 @@ msgstr ""
 "Uyarı: %s geçici depolama için kullanılamıyor. %s yerine varsayılan "
 "ayarlanıyor."
 
-#: bin/gscan2pdf:1699
+#: bin/gscan2pdf:1821
 msgid "Crashed sessions"
-msgstr ""
+msgstr "Bozulmuş oturumlar"
 
-#: bin/gscan2pdf:1708
-msgid ""
-"The following list of sessions cannot be restored. Please retrieve any "
-"images you require from them. Selected sessions will be deleted."
-msgstr ""
+#: bin/gscan2pdf:1829
+msgid "The following list of sessions cannot be restored."
+msgstr "Şu listedeki oturumlar kurtarılamaz."
 
-#: bin/gscan2pdf:1714 bin/gscan2pdf:1738 lib/Gscan2pdf/Dialog/Save.pm:546
+#: bin/gscan2pdf:1831
+msgid "Please retrieve any images you require from them."
+msgstr "Bunlardan gereken tüm görüntüleri yeniden elde edin."
+
+#: bin/gscan2pdf:1833
+msgid "Selected sessions will be deleted."
+msgstr "Seçili oturumlar silinecek."
+
+#: bin/gscan2pdf:1835 bin/gscan2pdf:1872 lib/Gscan2pdf/Dialog/Save.pm:546
 msgid "Session"
 msgstr "Oturum"
 
-#: bin/gscan2pdf:1730 bin/gscan2pdf:1735
+#: bin/gscan2pdf:1864 bin/gscan2pdf:1869
 msgid "Pick crashed session to restore"
 msgstr "Kurtarmak için çökmüş oturumu seç"
 
-#: bin/gscan2pdf:1857
+#: bin/gscan2pdf:1983
 msgid ""
 "Some pages have not been saved.\n"
 "Do you really want to clear all pages?"
@@ -540,409 +586,431 @@ msgstr ""
 "Bazı sayfalar kaydedilmedi.\n"
 "Gerçekten tüm sayfaları temizlemeyi istiyor musunuz?"
 
-#: bin/gscan2pdf:2004 bin/gscan2pdf:2036
+#: bin/gscan2pdf:2136 bin/gscan2pdf:2168
 #, perl-format
 msgid "Process %i of %i (%s)"
 msgstr "İşleniyor %i/%i (%s)"
 
-#: bin/gscan2pdf:2043
+#: bin/gscan2pdf:2175
 #, perl-format
 msgid "Process %i of %i"
 msgstr "İşleniyor %i/%i"
 
-#: bin/gscan2pdf:2071
+#: bin/gscan2pdf:2203
 msgid "Open image"
 msgstr "Görüntü Aç"
 
-#: bin/gscan2pdf:2079 bin/gscan2pdf:2591 bin/gscan2pdf:2834
+#: bin/gscan2pdf:2211 bin/gscan2pdf:2736 bin/gscan2pdf:2980
 msgid "Image files"
 msgstr "Görüntü dosyaları"
 
-#: bin/gscan2pdf:2117
+#: bin/gscan2pdf:2249
 #, perl-format
 msgid "Enter user password for PDF %s"
-msgstr ""
+msgstr "%s PDF'si için kullanıcı parolasını gir"
 
-#: bin/gscan2pdf:2177
+#: bin/gscan2pdf:2309
 msgid "Pages to extract"
 msgstr "Ayıklanacak sayfalar"
 
-#: bin/gscan2pdf:2185
+#: bin/gscan2pdf:2317
 msgid "First page to extract"
 msgstr "Ayıklanacak ilk sayfa"
 
-#: bin/gscan2pdf:2192
+#: bin/gscan2pdf:2324
 msgid "Last page to extract"
 msgstr "Ayıklanacak son sayfa"
 
-#: bin/gscan2pdf:2255
+#: bin/gscan2pdf:2387
 #, perl-format
 msgid "%04d-%02d-%02d %02d:%02d:%02d is not a valid datetime."
-msgstr ""
+msgstr "%04d-%02d-%02d %02d:%02d:%02d geçerli tarih saat değildir."
 
-#: bin/gscan2pdf:2406
+#: bin/gscan2pdf:2551
 msgid "Post-save hook"
 msgstr ""
 
-#: bin/gscan2pdf:2409
+#: bin/gscan2pdf:2554
 #, perl-format
 msgid ""
 "Run command on saved file. The available commands are those user-defined "
 "tools that do not specify %o"
 msgstr ""
 
-#: bin/gscan2pdf:2424 bin/gscan2pdf:2425
+#: bin/gscan2pdf:2569 bin/gscan2pdf:2570
 msgid "Close dialog on save"
 msgstr ""
 
-#: bin/gscan2pdf:2492 bin/gscan2pdf:2514
+#: bin/gscan2pdf:2637 bin/gscan2pdf:2659
 msgid "PDF filename"
 msgstr "PDF dosyası adı"
 
-#: bin/gscan2pdf:2520
+#: bin/gscan2pdf:2665
 msgid "PDF files"
 msgstr "PDF dosyaları"
 
-#: bin/gscan2pdf:2544
+#: bin/gscan2pdf:2689
 msgid "DjVu filename"
 msgstr "DjVu dosyası adı"
 
-#: bin/gscan2pdf:2564
+#: bin/gscan2pdf:2709
 msgid "DjVu files"
 msgstr "DjVu dosyaları"
 
-#: bin/gscan2pdf:2584
+#: bin/gscan2pdf:2729
 msgid "TIFF filename"
 msgstr "TIFF dosyası adı"
 
-#: bin/gscan2pdf:2610
+#: bin/gscan2pdf:2755
 msgid "Text filename"
 msgstr "Metin dosyası adı"
 
-#: bin/gscan2pdf:2618
+#: bin/gscan2pdf:2763
 msgid "Text files"
 msgstr "Metin dosyaları"
 
-#: bin/gscan2pdf:2635
+#: bin/gscan2pdf:2780
 msgid "hOCR filename"
-msgstr ""
+msgstr "hOCR dosya adı"
 
-#: bin/gscan2pdf:2643
+#: bin/gscan2pdf:2788
 msgid "hOCR files"
-msgstr ""
+msgstr "hOCR dosyaları"
 
-#: bin/gscan2pdf:2661
+#: bin/gscan2pdf:2807
 msgid "PS filename"
 msgstr "PS dosyası adı"
 
-#: bin/gscan2pdf:2668
+#: bin/gscan2pdf:2814
 msgid "Postscript files"
 msgstr "Postscript dosyaları"
 
-#: bin/gscan2pdf:2686
+#: bin/gscan2pdf:2832
 msgid "gscan2pdf session filename"
 msgstr "gscan2pdf oturum dosyası adı"
 
-#: bin/gscan2pdf:2693
+#: bin/gscan2pdf:2839
 msgid "gscan2pdf session files"
 msgstr "gscan2pdf oturum dosyaları"
 
-#: bin/gscan2pdf:2797
+#: bin/gscan2pdf:2943
 #, perl-format
 msgid "Directory %s is read-only"
-msgstr ""
+msgstr "%s dizini salt-okunur"
 
-#: bin/gscan2pdf:2807
+#: bin/gscan2pdf:2953
 #, perl-format
 msgid "File %s is read-only"
 msgstr "%s dosyası salt-okunur"
 
-#: bin/gscan2pdf:2827
+#: bin/gscan2pdf:2973
 msgid "Image filename"
 msgstr "Görüntü dosyası adı"
 
-#: bin/gscan2pdf:3135
-msgid ""
-"You seem to be using Gnome or XFCE, but do not have gconftool installed. "
-"Unable to determine email client."
-msgstr ""
-
-#: bin/gscan2pdf:3154
-msgid ""
-"Unable to determine your desktop enviroment, and therefore your email client."
-msgstr ""
-
-#: bin/gscan2pdf:3177
+#: bin/gscan2pdf:3256
 msgid "Email as PDF"
 msgstr "PDF olarak gönder"
 
-#: bin/gscan2pdf:3300
+#: bin/gscan2pdf:3378
 msgid "Error creating email"
 msgstr "İleti oluşturmada hata"
 
-#: bin/gscan2pdf:3338
+#: bin/gscan2pdf:3416
 msgid "Scan Document"
 msgstr "Belge tara"
 
-#: bin/gscan2pdf:3431
+#: bin/gscan2pdf:3770
+msgid "Error opening the last device used."
+msgstr "Son kullanılan aygıt açılamadı."
+
+#: bin/gscan2pdf:3773
+msgid "There was an error opening the last device used."
+msgstr "Son kullanılan aygıtı açarken hata oluştu."
+
+#: bin/gscan2pdf:3776
+msgid "Whoops! I forgot to turn it on. Try again now."
+msgstr "Amanın! Açmayı unuttum. Şimdi yeniden deneyin."
+
+#: bin/gscan2pdf:3779 lib/Gscan2pdf/Dialog/Scan.pm:638
+msgid "Rescan for devices"
+msgstr "Aygıtler için yeniden tara"
+
+#: bin/gscan2pdf:3782
+msgid "Restart gscan2pdf."
+msgstr "gscan2pdf'yi yeniden başlat."
+
+#: bin/gscan2pdf:3785
+msgid "Just ignore the error. I don't need the scanner yet."
+msgstr "Hatayı göz ardı et. Henüz tarayıcıya gereksinmiyorum."
+
+#: bin/gscan2pdf:3788 bin/gscan2pdf:6384
+msgid "Cache device list"
+msgstr "Önbellek aygıtı listesi"
+
+#: bin/gscan2pdf:3792 bin/gscan2pdf:6962
+#: lib/Gscan2pdf/Dialog/MultipleMessage.pm:56
+msgid "Don't show this message again"
+msgstr "Bu iletiyi bir daha gösterme"
+
+#: bin/gscan2pdf:3847
 msgid "Finished scanning facing pages. Scan reverse pages?"
-msgstr ""
+msgstr "Ön yüz sayfaları tarama bitti. Arka yüz sayfalarını tara?"
 
-#: bin/gscan2pdf:3438
+#: bin/gscan2pdf:3852
 msgid "Finished scanning reverse pages. Scan facing pages?"
-msgstr ""
+msgstr "Arka yüz sayfaları tarama bitti. Ön yüz sayfaları tara?"
 
-#: bin/gscan2pdf:3743 bin/gscan2pdf:3768
+#: bin/gscan2pdf:3899 bin/gscan2pdf:3924
 msgid "Rotate"
 msgstr "Döndür"
 
-#: bin/gscan2pdf:3744 bin/gscan2pdf:3769
+#: bin/gscan2pdf:3900 bin/gscan2pdf:3925
 msgid "Rotate image after scanning"
 msgstr "Taramanın ardından görüntüyü döndür."
 
-#: bin/gscan2pdf:3747
+#: bin/gscan2pdf:3903
 msgid "Both sides"
 msgstr "Her iki tarafı"
 
-#: bin/gscan2pdf:3747
+#: bin/gscan2pdf:3903
 msgid "Both sides."
 msgstr "Her iki tarafı"
 
-#: bin/gscan2pdf:3748
+#: bin/gscan2pdf:3904
 msgid "Facing side"
 msgstr "Ön yüz"
 
-#: bin/gscan2pdf:3748
+#: bin/gscan2pdf:3904
 msgid "Facing side."
 msgstr "Ön yüz"
 
-#: bin/gscan2pdf:3749
+#: bin/gscan2pdf:3905
 msgid "Reverse side"
 msgstr "Arka yüz"
 
-#: bin/gscan2pdf:3749
+#: bin/gscan2pdf:3905
 msgid "Reverse side."
 msgstr "Arka yüz"
 
-#: bin/gscan2pdf:3752 bin/gscan2pdf:3773
+#: bin/gscan2pdf:3908 bin/gscan2pdf:3929
 msgid "Select side to rotate"
 msgstr "Çevirilecek yüzü seçiniz."
 
-#: bin/gscan2pdf:3755
+#: bin/gscan2pdf:3911
 msgid "90"
 msgstr "90"
 
-#: bin/gscan2pdf:3755
+#: bin/gscan2pdf:3911
 msgid "Rotate image 90 degrees clockwise."
 msgstr "Görüntüyü saat yönünde 90 derece döndür."
 
-#: bin/gscan2pdf:3756
+#: bin/gscan2pdf:3912
 msgid "180"
 msgstr "180"
 
-#: bin/gscan2pdf:3756
+#: bin/gscan2pdf:3912
 msgid "Rotate image 180 degrees clockwise."
 msgstr "Görüntüyü saat yönünde 180 derece döndür."
 
-#: bin/gscan2pdf:3758
+#: bin/gscan2pdf:3914
 msgid "270"
 msgstr "270"
 
-#: bin/gscan2pdf:3759
+#: bin/gscan2pdf:3915
 msgid "Rotate image 90 degrees anticlockwise."
 msgstr "Görüntüyü saatin tersi yönünde 90 derece döndür."
 
-#: bin/gscan2pdf:3763 bin/gscan2pdf:3776
+#: bin/gscan2pdf:3919 bin/gscan2pdf:3932
 msgid "Select direction of rotation"
 msgstr "Çevirme yönünü seçiniz."
 
-#: bin/gscan2pdf:3852
+#: bin/gscan2pdf:4008
 msgid "Process with user-defined tool"
-msgstr ""
+msgstr "Kullanıcı tanımlı araçla işle"
 
-#: bin/gscan2pdf:3854
+#: bin/gscan2pdf:4010
 msgid "Process scanned images with user-defined tool"
-msgstr ""
+msgstr "Taranan görüntüleri kullanıcı tanımlı araçla işle"
 
-#: bin/gscan2pdf:3882 bin/gscan2pdf:3883
+#: bin/gscan2pdf:4038 bin/gscan2pdf:4039
 msgid "OCR scanned pages"
 msgstr "Taranmış sayfalara OKT uygula"
 
-#: bin/gscan2pdf:3893
+#: bin/gscan2pdf:4049
 msgid "Select OCR engine"
 msgstr "OKT motorunu seç"
 
-#: bin/gscan2pdf:3938 bin/gscan2pdf:5516
+#: bin/gscan2pdf:4094 bin/gscan2pdf:5674
 msgid "Threshold before OCR"
 msgstr ""
 
-#: bin/gscan2pdf:3941 bin/gscan2pdf:5519
+#: bin/gscan2pdf:4097 bin/gscan2pdf:5677
 msgid ""
 "Threshold the image before performing OCR. This only affects the image "
 "passed to the OCR engine, and not the image stored."
 msgstr ""
 
-#: bin/gscan2pdf:3951 bin/gscan2pdf:4658 bin/gscan2pdf:4668 bin/gscan2pdf:4927
-#: bin/gscan2pdf:5532
+#: bin/gscan2pdf:4107 bin/gscan2pdf:4822 bin/gscan2pdf:4832 bin/gscan2pdf:5091
+#: bin/gscan2pdf:5690
 msgid "Threshold"
 msgstr "Eşik"
 
-#: bin/gscan2pdf:3978
+#: bin/gscan2pdf:4134
 msgid "Post-processing"
 msgstr "Tarama Sonrası İşlemler"
 
-#: bin/gscan2pdf:3991
+#: bin/gscan2pdf:4147
 msgid "Clean up images"
 msgstr "Görüntüleri düzelt"
 
-#: bin/gscan2pdf:4001
+#: bin/gscan2pdf:4157
 msgid "Options"
 msgstr "Seçenekler"
 
-#: bin/gscan2pdf:4002
+#: bin/gscan2pdf:4158
 msgid "Set unpaper options"
 msgstr "Unpaper seçeneklerini belirle"
 
-#: bin/gscan2pdf:4008
+#: bin/gscan2pdf:4164
 msgid "unpaper options"
 msgstr "unpaper seçenekleri"
 
-#: bin/gscan2pdf:4411
+#: bin/gscan2pdf:4571
 msgid "To aid the scan-to-PDF process"
 msgstr "PDF tarama sürecine yardımcı olmak için"
 
-#: bin/gscan2pdf:4412
+#: bin/gscan2pdf:4572
 msgid "Copyright 2006--2020 Jeffrey Ratcliffe"
-msgstr ""
+msgstr "Telif Hakkı 2006--2020 Jeffrey Ratcliffe"
 
-#: bin/gscan2pdf:4737
+#: bin/gscan2pdf:4901
 msgid "Brightness / Contrast"
-msgstr ""
+msgstr "Parlaklık / Karşıtlık"
 
-#: bin/gscan2pdf:4748
+#: bin/gscan2pdf:4912
 msgid "Brightness"
-msgstr ""
+msgstr "Parlaklık"
 
-#: bin/gscan2pdf:4759
+#: bin/gscan2pdf:4923
 msgid "Contrast"
-msgstr ""
+msgstr "Karşıtlık"
 
-#: bin/gscan2pdf:4828
+#: bin/gscan2pdf:4992
 msgid "Negate"
 msgstr "Negatif"
 
-#: bin/gscan2pdf:4890
+#: bin/gscan2pdf:5054
 msgid "Unsharp mask"
 msgstr "Bulanıklık maskesi"
 
-#: bin/gscan2pdf:4904
+#: bin/gscan2pdf:5068
 msgid "Radius"
 msgstr "Yarıçap"
 
-#: bin/gscan2pdf:4906 bin/gscan2pdf:4913 bin/gscan2pdf:5098
+#: bin/gscan2pdf:5070 bin/gscan2pdf:5077 bin/gscan2pdf:5259
 msgid "pixels"
 msgstr "benek"
 
-#: bin/gscan2pdf:4909
+#: bin/gscan2pdf:5073
 msgid ""
 "The radius of the Gaussian, in pixels, not counting the center pixel (0 = "
 "automatic)."
 msgstr ""
 "Gauss'un radiusu. pikseller içinde, merkez piksel sayılmaz.(0 = otomatik)"
 
-#: bin/gscan2pdf:4913
+#: bin/gscan2pdf:5077
 msgid "Sigma"
 msgstr "Sigma"
 
-#: bin/gscan2pdf:4915
+#: bin/gscan2pdf:5079
 msgid "The standard deviation of the Gaussian."
 msgstr "Gauss'un standatr sapması"
 
-#: bin/gscan2pdf:4918
+#: bin/gscan2pdf:5082
 msgid "Gain"
 msgstr ""
 
-#: bin/gscan2pdf:4923
+#: bin/gscan2pdf:5087
 msgid ""
 "The percentage of the difference between the original and the blur image "
 "that is added back into the original."
 msgstr "Orjinal resim ile eklenen bulanık arasındaki değişiklik yüzdesi."
 
-#: bin/gscan2pdf:4932
+#: bin/gscan2pdf:5096
 msgid ""
 "The threshold, as a fraction of QuantumRange, needed to apply the difference "
 "amount."
 msgstr ""
 
-#: bin/gscan2pdf:5053
+#: bin/gscan2pdf:5217
 msgid "Crop"
 msgstr "Kırp"
 
-#: bin/gscan2pdf:5070
+#: bin/gscan2pdf:5231
 msgid "x"
 msgstr "x"
 
-#: bin/gscan2pdf:5072
+#: bin/gscan2pdf:5233
 msgid "The x-position of the left hand edge of the crop."
 msgstr ""
 
-#: bin/gscan2pdf:5075
+#: bin/gscan2pdf:5236
 msgid "y"
 msgstr "y"
 
-#: bin/gscan2pdf:5076
+#: bin/gscan2pdf:5237
 msgid "The y-position of the top edge of the crop."
 msgstr ""
 
-#: bin/gscan2pdf:5078 lib/Gscan2pdf/Dialog/Scan.pm:1762
+#: bin/gscan2pdf:5239 lib/Gscan2pdf/Dialog/Scan.pm:1737
 msgid "Width"
 msgstr "Genişlik"
 
-#: bin/gscan2pdf:5078
+#: bin/gscan2pdf:5239
 msgid "The width of the crop."
 msgstr "Kırpık alanın eni"
 
-#: bin/gscan2pdf:5079 lib/Gscan2pdf/Dialog/Scan.pm:1763
+#: bin/gscan2pdf:5240 lib/Gscan2pdf/Dialog/Scan.pm:1738
 msgid "Height"
 msgstr "Yükseklik"
 
-#: bin/gscan2pdf:5079
+#: bin/gscan2pdf:5240
 msgid "The height of the crop."
 msgstr "Kırpık alanın yüksekliği"
 
-#: bin/gscan2pdf:5233
+#: bin/gscan2pdf:5391
 msgid "User-defined tools"
 msgstr "Kullanıcı tanımlı araçlar"
 
-#: bin/gscan2pdf:5243
+#: bin/gscan2pdf:5401
 msgid "Selected tool"
-msgstr ""
+msgstr "Seçili araç"
 
-#: bin/gscan2pdf:5364
+#: bin/gscan2pdf:5522
 msgid "unpaper"
 msgstr "unpaper"
 
-#: bin/gscan2pdf:5415 bin/gscan2pdf:5443
+#: bin/gscan2pdf:5573 bin/gscan2pdf:5601
 msgid "Language to recognise"
 msgstr "Tanınacak dil"
 
-#: bin/gscan2pdf:5426
+#: bin/gscan2pdf:5584
 msgid "English"
 msgstr "İngilizce"
 
-#: bin/gscan2pdf:5469
+#: bin/gscan2pdf:5627
 msgid "OCR"
 msgstr "OKT"
 
-#: bin/gscan2pdf:5480
+#: bin/gscan2pdf:5638
 msgid "OCR Engine"
 msgstr "OKT Motoru"
 
-#: bin/gscan2pdf:5546
+#: bin/gscan2pdf:5704
 msgid "Start OCR"
 msgstr "OKTyi başlat"
 
-#: bin/gscan2pdf:5641
+#: bin/gscan2pdf:5799
 msgid ""
 "Some pages have not been saved.\n"
 "Do you really want to quit?"
@@ -950,199 +1018,219 @@ msgstr ""
 "Bazı sayfalar kaydedilmedi.\n"
 "Gerçekten çıkmak istiyor musunuz?"
 
-#: bin/gscan2pdf:5717
+#: bin/gscan2pdf:5897
 #, perl-format
 msgid "%dMb free in %s."
-msgstr ""
+msgstr "%2$s içinde %1$dMb boş."
 
-#: bin/gscan2pdf:5853
+#: bin/gscan2pdf:6033
 msgid "This operation cannot be undone. Are you sure?"
-msgstr "Bu işlem geri alınamaz. Emimi misiniz?"
+msgstr "Bu işlem geri alınamaz. Emin misiniz?"
 
-#: bin/gscan2pdf:5910
+#: bin/gscan2pdf:6090
 msgid "Preferences"
 msgstr "Tercihler"
 
-#: bin/gscan2pdf:5923
+#: bin/gscan2pdf:6107
 msgid "Scan options"
-msgstr ""
+msgstr "Tarama seçenekleri"
 
-#: bin/gscan2pdf:5933
+#: bin/gscan2pdf:6117
 msgid "General options"
-msgstr ""
+msgstr "Genel seçenekler"
 
-#: bin/gscan2pdf:5985
+#: bin/gscan2pdf:6171
 msgid "Invalid regex. Try without special characters such as '*'"
-msgstr ""
+msgstr "Geçersiz düzenli ifade. '*' gibi özel karakterler olmadan deneyin."
 
-#: bin/gscan2pdf:6045
-msgid ""
-"You will have to restart gscanp2df for changes to the temporary directory to "
-"take effect."
-msgstr ""
-"Geçici dizin değişiminin etkili olabilmesi için gscanp2df'yi yeniden "
-"başlatmalısınız."
+#: bin/gscan2pdf:6244
+msgid "Changes will only take effect after restarting gscan2pdf."
+msgstr "Değişiklikler gscan2pdf yeniden başlatıldığında gerçekleşecek."
 
-#: bin/gscan2pdf:6072
+#: bin/gscan2pdf:6247
+msgid "Restart gscan2pdf now?"
+msgstr "Şimdi gscan2pdf'yi yeniden başlat?"
+
+#: bin/gscan2pdf:6267
 msgid "Open scanner at program start"
-msgstr ""
+msgstr "Program başlangıcında tarayıcıyı aç"
 
-#: bin/gscan2pdf:6075
+#: bin/gscan2pdf:6270
 msgid ""
 "Automatically open the scan dialog in the background at program start. This "
 "saves time clicking the scan button and waiting for the program to find the "
 "list of scanners"
 msgstr ""
+"Program başladığında tarama penceresini arka planda kendiliğinden aç. Bu, "
+"tarama düğmesine basma ve programın tarayıcı listesini bulmasından zaman "
+"kazanır."
 
-#: bin/gscan2pdf:6088
+#: bin/gscan2pdf:6283
 msgid "Frontend"
-msgstr "Önuç"
+msgstr "Ön uç"
 
-#: bin/gscan2pdf:6093
+#: bin/gscan2pdf:6288
 msgid "libimage-sane-perl"
-msgstr ""
+msgstr "libimage-sane-perl"
 
-#: bin/gscan2pdf:6094
+#: bin/gscan2pdf:6289
 msgid "Scan using the Perl bindings for SANE."
-msgstr ""
+msgstr "Sane için Perl bağlarını kullanarak tara"
 
-#: bin/gscan2pdf:6097
+#: bin/gscan2pdf:6292
 msgid "scanimage"
 msgstr "scanimage"
 
-#: bin/gscan2pdf:6098
+#: bin/gscan2pdf:6293
 msgid "Scan using the scanimage frontend."
-msgstr "Scanimage önucu kullanarak tara"
+msgstr "Scanimage ön ucunu kullanarak tara"
 
-#: bin/gscan2pdf:6103
+#: bin/gscan2pdf:6298
 msgid "scanadf"
 msgstr "scanadf"
 
-#: bin/gscan2pdf:6103
+#: bin/gscan2pdf:6298
 msgid "Scan using the scanadf frontend."
 msgstr "Scanadf'yi ön uç olarak kullanarak tara"
 
-#: bin/gscan2pdf:6106
+#: bin/gscan2pdf:6301
 msgid "Interface used for scanner access"
-msgstr ""
+msgstr "Tarayıcı erişiminde kullanılan arayüz"
 
-#: bin/gscan2pdf:6112
+#: bin/gscan2pdf:6307
 msgid "Device blacklist"
-msgstr ""
+msgstr "Aygıt engel listesi"
 
-#: bin/gscan2pdf:6116
+#: bin/gscan2pdf:6311
 msgid "Device blacklist (regular expression)"
-msgstr ""
+msgstr "Aygıt engel listesi (düzenli ifade)"
 
-#: bin/gscan2pdf:6124
+#: bin/gscan2pdf:6319
 msgid "Cycle SANE handle after scan"
-msgstr "Taramadan sonra SANE işlemesini yinele."
+msgstr "Taramadan sonra SANE işlemesini yinele"
 
-#: bin/gscan2pdf:6126
+#: bin/gscan2pdf:6321
 msgid "Some ADFs do not feed out the last page if this is not enabled"
 msgstr ""
 
-#: bin/gscan2pdf:6135
+#: bin/gscan2pdf:6330
 msgid "Allow batch scanning from flatbed"
-msgstr ""
+msgstr "Düz yataktan toplu taramaya izin ver"
 
-#: bin/gscan2pdf:6138
+#: bin/gscan2pdf:6333
 msgid ""
 "If not set, switching to a flatbed scanner will force # pages to 1 and "
 "single-sided mode."
 msgstr ""
+"Eğer ayarlanmazsa, düz yatak tarayıcıya geçiş  # sayfayı 1'e ve tek taraflı "
+"kipe zorlayacaktır."
 
-#: bin/gscan2pdf:6147
+#: bin/gscan2pdf:6342
 msgid "Ignore duplex capabilities of scanner"
 msgstr ""
 
-#: bin/gscan2pdf:6150
+#: bin/gscan2pdf:6345
 msgid ""
 "If set, any duplex capabilities are ignored, and facing/reverse widgets are "
 "displayed to allow manual interleaving of pages."
 msgstr ""
 
-#: bin/gscan2pdf:6159
+#: bin/gscan2pdf:6354
 msgid "Force new scan job between pages"
-msgstr ""
+msgstr "Sayfalar arasında yeni tarama işine zorla"
 
-#: bin/gscan2pdf:6162
+#: bin/gscan2pdf:6357
 msgid ""
 "Otherwise, some Brother scanners report out of documents, despite scanning "
 "from flatbed."
 msgstr ""
+"Yoksa bazı Brother tarayıcılar düz yataktan taramaya rağmen belgenin "
+"bittiğini söyleyebilir."
 
-#: bin/gscan2pdf:6178
+#: bin/gscan2pdf:6373
 msgid "Select # pages = all on selecting ADF"
 msgstr ""
 
-#: bin/gscan2pdf:6181
+#: bin/gscan2pdf:6376
 msgid ""
 "If this option is enabled, when switching to source=ADF, # pages = all is "
 "selected"
 msgstr ""
 
-#: bin/gscan2pdf:6190
+#: bin/gscan2pdf:6387
+msgid ""
+"If this option is enabled, opening the scanner is quicker, as gscan2pdf does "
+"not first search for available devices."
+msgstr ""
+"Eğer bu seçenek etkinse, gscan2pdf ilkin uygun aygıtları aramayacağı için "
+"tarayıcıyı açmak daha hızlı olur,"
+
+#: bin/gscan2pdf:6390
+msgid ""
+"This is only effective if the device names do not change between sessions."
+msgstr "Bu yalnızca oturumlar arasında aygıt adları değişmiyorsa etkindir."
+
+#: bin/gscan2pdf:6399
 msgid "Scan command prefix"
 msgstr "Tarama komutu öneki"
 
-#: bin/gscan2pdf:6200
+#: bin/gscan2pdf:6409
 msgid "Cache device-dependent options"
 msgstr "Aygıt-bağımlı seçenekleri önbelleğe al"
 
-#: bin/gscan2pdf:6206
+#: bin/gscan2pdf:6415
 msgid "Clear device-dependent options cache"
 msgstr "Aygıt-bağımlı seçenekler önbelleğini boşalt"
 
-#: bin/gscan2pdf:6216
+#: bin/gscan2pdf:6427
 msgid "Option visibility & control"
-msgstr ""
+msgstr "Seçenek görünürlüğü ve denetimi"
 
-#: bin/gscan2pdf:6225 lib/Gscan2pdf/Dialog/Save.pm:442
+#: bin/gscan2pdf:6436 lib/Gscan2pdf/Dialog/Save.pm:442
 msgid "Title"
 msgstr "Başlık"
 
-#: bin/gscan2pdf:6226
+#: bin/gscan2pdf:6437
 msgid "Type"
-msgstr ""
+msgstr "Tür"
 
-#: bin/gscan2pdf:6227 bin/gscan2pdf:6234
+#: bin/gscan2pdf:6438 bin/gscan2pdf:6445
 msgid "Show"
-msgstr ""
+msgstr "Göster"
 
-#: bin/gscan2pdf:6228
+#: bin/gscan2pdf:6439
 msgid "Reload"
-msgstr ""
+msgstr "Yeniden yükle"
 
-#: bin/gscan2pdf:6244 lib/Gscan2pdf/Dialog/MultipleMessage.pm:52
+#: bin/gscan2pdf:6455 lib/Gscan2pdf/Dialog/MultipleMessage.pm:52
 msgid "Hide"
-msgstr ""
+msgstr "Gizle"
 
-#: bin/gscan2pdf:6253
+#: bin/gscan2pdf:6464
 msgid "List current options"
-msgstr ""
+msgstr "Geçerli seçenekleri listele"
 
-#: bin/gscan2pdf:6273
+#: bin/gscan2pdf:6484
 msgid "No scanner currently open with command line frontend."
-msgstr ""
+msgstr "Şu anda komut satırı arka ucuyla açılmış tarayıcı yok."
 
-#: bin/gscan2pdf:6281
+#: bin/gscan2pdf:6492
 msgid "Show options not listed"
-msgstr ""
+msgstr "Listelenmemiş seçenekleri göster"
 
-#: bin/gscan2pdf:6326
+#: bin/gscan2pdf:6538
 msgid "Restore window settings on startup"
 msgstr "Pencere ayarlarını açılışta eskiye döndür"
 
-#: bin/gscan2pdf:6331
+#: bin/gscan2pdf:6543
 msgid "View files on saving"
 msgstr "Kaydederken dosyaları göster."
 
-#: bin/gscan2pdf:6338
+#: bin/gscan2pdf:6550
 msgid "Default PDF & DjVu filename"
-msgstr ""
+msgstr "Öntanımlı PDF ve DjVu dosya adı"
 
-#: bin/gscan2pdf:6343
+#: bin/gscan2pdf:6555
 msgid ""
 "strftime codes, e.g.:\n"
 "%Y\tcurrent year\n"
@@ -1158,98 +1246,98 @@ msgid ""
 "%Dd\tdocument day\n"
 msgstr ""
 
-#: bin/gscan2pdf:6362
+#: bin/gscan2pdf:6574
 msgid "Replace whitespace in filenames with underscores"
-msgstr ""
+msgstr "Dosya adlarındaki boşlukları alt çizgiyle değiştir"
 
-#: bin/gscan2pdf:6368
+#: bin/gscan2pdf:6580
 msgid "Use timezone from locale"
-msgstr ""
+msgstr "Yereldeki saat dilimini kullan"
 
-#: bin/gscan2pdf:6374
+#: bin/gscan2pdf:6586
 msgid "Specify time as well as date"
 msgstr ""
 
-#: bin/gscan2pdf:6380
+#: bin/gscan2pdf:6592
 msgid "Set access and modification times to metadata date"
 msgstr ""
 
-#: bin/gscan2pdf:6386
+#: bin/gscan2pdf:6598
 msgid "Convert scanned images to PNG before further processing"
-msgstr ""
+msgstr "Taranan görüntüleri ileri işlemeden önce PNG olarak kaydet"
 
-#: bin/gscan2pdf:6393
+#: bin/gscan2pdf:6605
 msgid "Temporary directory"
 msgstr "Geçici dizin"
 
-#: bin/gscan2pdf:6398
+#: bin/gscan2pdf:6610
 msgid "Browse"
-msgstr "Gözat"
+msgstr "Göz at"
 
-#: bin/gscan2pdf:6402
+#: bin/gscan2pdf:6614
 msgid "Select temporary directory"
 msgstr "Geçici dizini seç"
 
-#: bin/gscan2pdf:6419
+#: bin/gscan2pdf:6636
 msgid "Warn if available space less than (Mb)"
-msgstr ""
+msgstr "Kullanılabilir alan şundan az olursa uyar (Mb)"
 
-#: bin/gscan2pdf:6425
+#: bin/gscan2pdf:6642
 msgid ""
 "Warn if the available space in the temporary directory is less than this "
 "value"
-msgstr ""
+msgstr "Eğer geçici dizindeki kullanılabilir alan bu değerden azsa uyar"
 
-#: bin/gscan2pdf:6433
+#: bin/gscan2pdf:6650
 msgid "Blank threshold"
 msgstr "Boş sayfa eşik değeri"
 
-#: bin/gscan2pdf:6439
+#: bin/gscan2pdf:6656
 msgid "Threshold used for selecting blank pages"
 msgstr "Boş sayfaları seçmek için kullanılan eşik değeri"
 
-#: bin/gscan2pdf:6445
+#: bin/gscan2pdf:6662
 msgid "Dark threshold"
 msgstr "Karanlık-Belirsiz eşik değeri"
 
-#: bin/gscan2pdf:6451
+#: bin/gscan2pdf:6668
 msgid "Threshold used for selecting dark pages"
 msgstr "Karanlık-Belirsiz sayfaları seçmek için kullanılan eşik değeri"
 
-#: bin/gscan2pdf:6457
+#: bin/gscan2pdf:6674
 msgid "OCR output"
 msgstr "OKT çıktısı"
 
-#: bin/gscan2pdf:6462
+#: bin/gscan2pdf:6679
 msgid "Replace"
-msgstr "Üzerine Yaz"
+msgstr "Üstüne yaz"
 
-#: bin/gscan2pdf:6464
+#: bin/gscan2pdf:6681
 msgid ""
 "Replace the contents of the text buffer with that from the OCR output."
 msgstr "Metin arabelleğini OCR çıktısıyla değiştir."
 
-#: bin/gscan2pdf:6468
+#: bin/gscan2pdf:6685
 msgid "Prepend"
 msgstr "Başına ekle"
 
-#: bin/gscan2pdf:6469
+#: bin/gscan2pdf:6686
 msgid "Prepend the OCR output to the text buffer."
 msgstr "OKT çıktısını metin arabelleğinin başına ekle"
 
-#: bin/gscan2pdf:6472
+#: bin/gscan2pdf:6689
 msgid "Append"
-msgstr "Ekle"
+msgstr "Sonuna ekle"
 
-#: bin/gscan2pdf:6473
+#: bin/gscan2pdf:6690
 msgid "Append the OCR output to the text buffer."
 msgstr "OKT çıktısını metin arabelleğine ekle"
 
-#: bin/gscan2pdf:6481
+#: bin/gscan2pdf:6698
 msgid "Manage user-defined tools"
-msgstr ""
+msgstr "Kullanıcı tanımlı araçları yönet"
 
-#: bin/gscan2pdf:6568
+#: bin/gscan2pdf:6785
 msgid ""
 "Use %i and %o for the input and output filenames respectively, or a single "
 "%i if the image is to be modified in-place.\n"
@@ -1265,35 +1353,31 @@ msgstr ""
 "\n"
 "%r çözünürlük"
 
-#: bin/gscan2pdf:6620
+#: bin/gscan2pdf:6837
 msgid "Properties"
 msgstr "Özellikler"
 
-#: bin/gscan2pdf:6632 bin/gscan2pdf:6642
+#: bin/gscan2pdf:6849 bin/gscan2pdf:6859
 msgid "dpi"
-msgstr ""
+msgstr "dpi"
 
-#: bin/gscan2pdf:6742 lib/Gscan2pdf/Dialog/MultipleMessage.pm:56
-msgid "Don't show this message again"
-msgstr "Bu iletiyi bir daha gösterme"
-
-#: bin/gscan2pdf:6773
+#: bin/gscan2pdf:6994
 msgid "Messages"
-msgstr ""
+msgstr "İletiler"
 
-#: lib/Gscan2pdf/Config.pm:328
+#: lib/Gscan2pdf/Config.pm:325
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
-#: lib/Gscan2pdf/Config.pm:334
+#: lib/Gscan2pdf/Config.pm:331
 msgid "A4"
 msgstr "A4"
 
-#: lib/Gscan2pdf/Config.pm:340
+#: lib/Gscan2pdf/Config.pm:337
 msgid "US Letter"
 msgstr "US Letter"
 
-#: lib/Gscan2pdf/Config.pm:346
+#: lib/Gscan2pdf/Config.pm:343
 msgid "US Legal"
 msgstr "US Legal"
 
@@ -1303,15 +1387,15 @@ msgstr "Sayfa Aralığı"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:30
 msgid "Error"
-msgstr ""
+msgstr "Hata"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:31
 msgid "Warning"
-msgstr ""
+msgstr "Uyarı"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:43
 msgid "Page"
-msgstr ""
+msgstr "Sayfa"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:45
 msgid "Process"
@@ -1319,35 +1403,40 @@ msgstr ""
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:47
 msgid "Message type"
-msgstr ""
+msgstr "İleti türü"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:49
 msgid "Message"
-msgstr ""
+msgstr "İleti"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:112
 msgid "Don't show these messages again"
-msgstr ""
+msgstr "Bu iletileri yeniden gösterme"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:248
 msgid ""
 "This error is normally due to ImageMagick exceeding its resource limits."
 msgstr ""
+"Bu hata genellikle ImageMagick'in kaynak sınırlarını aştığından oluşur."
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:252
 msgid ""
 "These can be extended by editing its policy file, which on my system is "
 "found at /etc/ImageMagick-6/policy.xml"
 msgstr ""
+"Bunlar ilke dosyasını düzenlemekle genişletilebilir, /etc/ImageMagick-"
+"6/policy.xml sistem yolunda bulunabilir"
 
 #: lib/Gscan2pdf/Dialog/MultipleMessage.pm:256
 msgid ""
 "Please see https://imagemagick.org/script/resources.php for more information"
 msgstr ""
+"Lütfend aha çok bilgi için https://imagemagick.org/script/resources.php "
+"adresine bakın"
 
 #: lib/Gscan2pdf/Dialog/Renumber.pm:88 lib/Gscan2pdf/Dialog/Renumber.pm:187
 msgid "Renumber"
-msgstr ""
+msgstr "Yeniden Numaralandır"
 
 #: lib/Gscan2pdf/Dialog/Renumber.pm:112
 msgid "Page numbering"
@@ -1371,11 +1460,11 @@ msgstr ""
 
 #: lib/Gscan2pdf/Dialog/Save.pm:262 lib/Gscan2pdf/Dialog/Save.pm:312
 msgid "Now"
-msgstr ""
+msgstr "Şimdi"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:264 lib/Gscan2pdf/Dialog/Save.pm:314
 msgid "Use current date and time"
-msgstr ""
+msgstr "Geçerli tarih ve saati kullan"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:271 lib/Gscan2pdf/Dialog/Save.pm:407
 msgid "Today"
@@ -1383,23 +1472,23 @@ msgstr "Bugün"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:273
 msgid "Use today's date"
-msgstr ""
+msgstr "Bugünün tarihini kullan"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:289
 msgid "Document Metadata"
-msgstr ""
+msgstr "Belge Üst Verisi"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:301
 msgid "Date/Time"
-msgstr ""
+msgstr "Tarih/Saat"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:320
 msgid "Specify"
-msgstr ""
+msgstr "Belirt"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:321
 msgid "Specify date and time"
-msgstr ""
+msgstr "Tarih ve saat belirt"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:344
 msgid "Year-Month-Day"
@@ -1411,11 +1500,11 @@ msgstr "Tarihi Seçin"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:430
 msgid "Select date with calendar"
-msgstr ""
+msgstr "Tarihi takvimle seç"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:443
 msgid "Author"
-msgstr ""
+msgstr "Yazar"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:444
 msgid "Subject"
@@ -1427,7 +1516,7 @@ msgstr "Anahtar kelimeler"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:530
 msgid "Document type"
-msgstr ""
+msgstr "Belge türü"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:534
 msgid "PDF"
@@ -1445,8 +1534,8 @@ msgstr "GIF"
 msgid "CompuServe graphics interchange format"
 msgstr "CompuServe görüntü değiştirme biçimi"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:537 lib/Gscan2pdf/Dialog/Save.pm:594
-#: lib/Gscan2pdf/Dialog/Save.pm:797
+#: lib/Gscan2pdf/Dialog/Save.pm:537 lib/Gscan2pdf/Dialog/Save.pm:605
+#: lib/Gscan2pdf/Dialog/Save.pm:808
 msgid "JPEG"
 msgstr "JPEG"
 
@@ -1454,7 +1543,7 @@ msgstr "JPEG"
 msgid "Joint Photographic Experts Group JFIF format"
 msgstr "Joint Photographic Experts Group JFIF biçimi"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:540 lib/Gscan2pdf/Dialog/Save.pm:796
+#: lib/Gscan2pdf/Dialog/Save.pm:540 lib/Gscan2pdf/Dialog/Save.pm:807
 msgid "PNG"
 msgstr "PNG"
 
@@ -1496,11 +1585,11 @@ msgstr "Düz metin"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:545
 msgid "hOCR"
-msgstr ""
+msgstr "hOCR"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:545
 msgid "hOCR markup language"
-msgstr ""
+msgstr "hOCR işaretleme dili"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:546
 msgid "gscan2pdf session file"
@@ -1508,19 +1597,19 @@ msgstr "gscan2pdf oturum doyası"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:548
 msgid "Prepend to PDF"
-msgstr ""
+msgstr "PDF'nin başına ekle"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:548
 msgid "Prepend to an existing PDF"
-msgstr ""
+msgstr "Var olan PDF'nin başına ekle"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:550
 msgid "Append to PDF"
-msgstr ""
+msgstr "PDF'nin sonuna ekle"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:550
 msgid "Append to an existing PDF"
-msgstr ""
+msgstr "Var olan PDF'nin sonuna ekle"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:551
 msgid "DjVu"
@@ -1532,131 +1621,132 @@ msgstr "Deja Vu"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:563
 msgid "Postscript backend"
-msgstr ""
+msgstr "Postscript arka ucu"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:567
 msgid "LibTIFF"
-msgstr ""
+msgstr "LibTIFF"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:568
 msgid "Use LibTIFF (tiff2ps) to create Postscript files from TIFF."
-msgstr ""
+msgstr "TIFF'ten Postscript dosyaları oluşturmakta LibTIFF (tiff2ps) kullan."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:572
 msgid "Ghostscript"
-msgstr ""
+msgstr "Ghostscript"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:573
 msgid "Use Ghostscript (pdf2ps) to create Postscript files from PDF."
 msgstr ""
+"PDF'den Postscript dosyaları oluşturmakta Ghostscript (pdf2ps) kullan."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:576
 msgid "Poppler"
-msgstr ""
+msgstr "Poppler"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:577
 msgid "Use Poppler (pdftops) to create Postscript files from PDF."
-msgstr ""
+msgstr "PDF'den Postscript dosyaları oluşturmakta Poppler (pdftops) kullan."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:588 lib/Gscan2pdf/Dialog/Save.pm:784
+#: lib/Gscan2pdf/Dialog/Save.pm:599 lib/Gscan2pdf/Dialog/Save.pm:795
 msgid "LZW"
 msgstr "LZW"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:589 lib/Gscan2pdf/Dialog/Save.pm:785
+#: lib/Gscan2pdf/Dialog/Save.pm:600 lib/Gscan2pdf/Dialog/Save.pm:796
 msgid "Compress output with Lempel-Ziv & Welch encoding."
 msgstr "Çıktıyı Lempel-Ziv & Welch kodlaması ile sıkıştır."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:591 lib/Gscan2pdf/Dialog/Save.pm:787
+#: lib/Gscan2pdf/Dialog/Save.pm:602 lib/Gscan2pdf/Dialog/Save.pm:798
 msgid "Zip"
 msgstr "Zip"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:591 lib/Gscan2pdf/Dialog/Save.pm:787
+#: lib/Gscan2pdf/Dialog/Save.pm:602 lib/Gscan2pdf/Dialog/Save.pm:798
 msgid "Compress output with deflate encoding."
 msgstr "Çıktıyı deflate kodlaması ile sıkıştır."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:594 lib/Gscan2pdf/Dialog/Save.pm:797
+#: lib/Gscan2pdf/Dialog/Save.pm:605 lib/Gscan2pdf/Dialog/Save.pm:808
 msgid "Compress output with JPEG encoding."
 msgstr "Çıktıyı JPEG kodlamasıyla sıkıştır."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:596 lib/Gscan2pdf/Dialog/Save.pm:789
+#: lib/Gscan2pdf/Dialog/Save.pm:607 lib/Gscan2pdf/Dialog/Save.pm:800
 msgid "Packbits"
 msgstr "Packbits"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:597 lib/Gscan2pdf/Dialog/Save.pm:790
+#: lib/Gscan2pdf/Dialog/Save.pm:608 lib/Gscan2pdf/Dialog/Save.pm:801
 msgid "Compress output with Packbits encoding."
 msgstr "Çıktıyı Packbits kodlamasıyla sıkıştır."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:599
+#: lib/Gscan2pdf/Dialog/Save.pm:610
 msgid "G3"
 msgstr "G3"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:599
+#: lib/Gscan2pdf/Dialog/Save.pm:610
 msgid "Compress output with CCITT Group 3 encoding."
 msgstr "Çıktıyı CCITT Group 3 kodlamasıyla sıkıştır."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:600
+#: lib/Gscan2pdf/Dialog/Save.pm:611
 msgid "G4"
 msgstr "G4"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:600
+#: lib/Gscan2pdf/Dialog/Save.pm:611
 msgid "Compress output with CCITT Group 4 encoding."
 msgstr "Çıktıyı CCITT Group 4 kodlamasıyla sıkıştır."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:601 lib/Gscan2pdf/Dialog/Save.pm:798
+#: lib/Gscan2pdf/Dialog/Save.pm:612 lib/Gscan2pdf/Dialog/Save.pm:809
 msgid "None"
 msgstr "Yok"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:601 lib/Gscan2pdf/Dialog/Save.pm:798
+#: lib/Gscan2pdf/Dialog/Save.pm:612 lib/Gscan2pdf/Dialog/Save.pm:809
 msgid "Use no compression algorithm on output."
 msgstr "Çıktıda sıkıştırma algoritması kullanma."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:607 lib/Gscan2pdf/Dialog/Save.pm:804
+#: lib/Gscan2pdf/Dialog/Save.pm:618 lib/Gscan2pdf/Dialog/Save.pm:815
 msgid "Compression"
 msgstr "Sıkıştırma"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:736
+#: lib/Gscan2pdf/Dialog/Save.pm:747
 msgid "JPEG Quality"
 msgstr "JPEG Kalitesi"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:755
+#: lib/Gscan2pdf/Dialog/Save.pm:766
 msgid "Downsample to"
 msgstr "Önizlemesi"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:759
+#: lib/Gscan2pdf/Dialog/Save.pm:770
 msgid "PPI"
 msgstr "PPI"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:780
+#: lib/Gscan2pdf/Dialog/Save.pm:791
 msgid "Automatic"
 msgstr "Otomatik"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:781
+#: lib/Gscan2pdf/Dialog/Save.pm:792
 msgid "Let gscan2pdf which type of compression to use."
 msgstr "gscan2pdf'nin hangi sıkıştırma biçimini kullanacağını belirleyin."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:796
+#: lib/Gscan2pdf/Dialog/Save.pm:807
 msgid "Compress output with PNG encoding."
 msgstr "Çıktıyı PNG kodlamasıyla sıkıştır."
 
-#: lib/Gscan2pdf/Dialog/Save.pm:836
+#: lib/Gscan2pdf/Dialog/Save.pm:845
+msgid "Encrypt PDF"
+msgstr "PDF'yi şifrele"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:851
+msgid "Set password"
+msgstr "Parola belirle"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:860
+msgid "User password"
+msgstr "Kullanıcı parolası"
+
+#: lib/Gscan2pdf/Dialog/Save.pm:901
 msgid "Font for non-ASCII text"
 msgstr "non-ASCII metin için yazı tipi"
 
-#: lib/Gscan2pdf/Dialog/Save.pm:851
+#: lib/Gscan2pdf/Dialog/Save.pm:920
 msgid "Core"
-msgstr ""
-
-#: lib/Gscan2pdf/Dialog/Save.pm:900
-msgid "Encrypt PDF"
-msgstr ""
-
-#: lib/Gscan2pdf/Dialog/Save.pm:906
-msgid "Set password"
-msgstr ""
-
-#: lib/Gscan2pdf/Dialog/Save.pm:915
-msgid "User password"
-msgstr ""
+msgstr "Çekirdek"
 
 #: lib/Gscan2pdf/Dialog/Scan.pm:326
 msgid "Page Options"
@@ -1672,7 +1762,7 @@ msgstr "Tümü"
 
 #: lib/Gscan2pdf/Dialog/Scan.pm:346
 msgid "Scan all pages"
-msgstr "Bütün sayfaları tara"
+msgstr "Tüm sayfaları tara"
 
 #: lib/Gscan2pdf/Dialog/Scan.pm:359 lib/Gscan2pdf/Dialog/Scan.pm:364
 msgid "Set number of pages to scan"
@@ -1730,148 +1820,144 @@ msgstr "Tarama Profilleri"
 msgid "Scan"
 msgstr "Tara"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:665
+#: lib/Gscan2pdf/Dialog/Scan.pm:635
 msgid "Device"
 msgstr "Aygıt"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:668
-msgid "Rescan for devices"
-msgstr "Aygıtler için yeniden tara"
-
-#: lib/Gscan2pdf/Dialog/Scan.pm:705
+#: lib/Gscan2pdf/Dialog/Scan.pm:675
 msgid "Sets the device to be used for the scan"
 msgstr "Tarama için kullanılacak aygıtı belirle"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:714 lib/Gscan2pdf/Dialog/Scan.pm:720
+#: lib/Gscan2pdf/Dialog/Scan.pm:684 lib/Gscan2pdf/Dialog/Scan.pm:690
 msgid "Name of scan profile"
 msgstr "Tarama profilinin adı"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:736
+#: lib/Gscan2pdf/Dialog/Scan.pm:706
 #, perl-format
 msgid "Profile '%s' exists. Overwrite?"
-msgstr ""
+msgstr "'%s' profili var. Üstüne yaz?"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:775
+#: lib/Gscan2pdf/Dialog/Scan.pm:745
 msgid "Editing current scan options"
-msgstr ""
+msgstr "Geçerli tarama seçenekleri düzenleniyor"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:779
+#: lib/Gscan2pdf/Dialog/Scan.pm:749
 #, perl-format
 msgid "Editing scan profile \"%s\""
-msgstr ""
+msgstr "\"%s\" tarama profili düzenleniyor"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:829
+#: lib/Gscan2pdf/Dialog/Scan.pm:799
 msgid "Backend options"
-msgstr ""
+msgstr "Arka uç seçenekleri"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:830
+#: lib/Gscan2pdf/Dialog/Scan.pm:800
 msgid "Frontend options"
-msgstr ""
+msgstr "Ön uç seçenekleri"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1012 lib/Gscan2pdf/Dialog/Scan.pm:1177
-#: lib/Gscan2pdf/Dialog/Scan.pm:1352 lib/Gscan2pdf/Dialog/Scan.pm:1365
-#: lib/Gscan2pdf/Dialog/Scan.pm:1647
+#: lib/Gscan2pdf/Dialog/Scan.pm:982 lib/Gscan2pdf/Dialog/Scan.pm:1147
+#: lib/Gscan2pdf/Dialog/Scan.pm:1322 lib/Gscan2pdf/Dialog/Scan.pm:1335
+#: lib/Gscan2pdf/Dialog/Scan.pm:1617
 msgid "Manual"
-msgstr "Kullanım Klavuzu"
+msgstr "Elle"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1205
+#: lib/Gscan2pdf/Dialog/Scan.pm:1175
 #, perl-format
 msgid "Error: unknown device: %s"
-msgstr ""
+msgstr "Hata: bilinmeyen aygıt: %s"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1271
+#: lib/Gscan2pdf/Dialog/Scan.pm:1241
 msgid "pel"
-msgstr ""
+msgstr "pel"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1274
+#: lib/Gscan2pdf/Dialog/Scan.pm:1244
 msgid "bit"
-msgstr ""
+msgstr "bit"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1277
+#: lib/Gscan2pdf/Dialog/Scan.pm:1247
 msgid "mm"
-msgstr ""
+msgstr "mm"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1280
+#: lib/Gscan2pdf/Dialog/Scan.pm:1250
 msgid "ppi"
-msgstr ""
+msgstr "ppi"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1283
+#: lib/Gscan2pdf/Dialog/Scan.pm:1253
 msgid "%"
-msgstr ""
+msgstr "%"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1286
+#: lib/Gscan2pdf/Dialog/Scan.pm:1256
 msgid "μs"
-msgstr ""
+msgstr "μs"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1348
+#: lib/Gscan2pdf/Dialog/Scan.pm:1318
 msgid "Paper size"
 msgstr "Kağıt boyutu"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1353 lib/Gscan2pdf/Dialog/Scan.pm:1362
+#: lib/Gscan2pdf/Dialog/Scan.pm:1323 lib/Gscan2pdf/Dialog/Scan.pm:1332
 msgid "Edit"
 msgstr "Düzenle"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1355
+#: lib/Gscan2pdf/Dialog/Scan.pm:1325
 msgid "Selects or edits the paper size"
 msgstr "Kağıt boyunu seçin yada düzenleyin"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1469
+#: lib/Gscan2pdf/Dialog/Scan.pm:1439
 #, perl-format
 msgid ""
 "Reload recursion limit (%d) exceeded. Please file a bug, attaching a log "
 "file reproducing the problem."
 msgstr ""
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1745
+#: lib/Gscan2pdf/Dialog/Scan.pm:1720
 msgid "Edit paper size"
 msgstr "Kağıt boyutunu düzenle"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1761
+#: lib/Gscan2pdf/Dialog/Scan.pm:1736
 msgid "Name"
 msgstr "İsim"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1764 lib/Gscan2pdf/Unpaper.pm:151
-#: lib/Gscan2pdf/Unpaper.pm:181
+#: lib/Gscan2pdf/Dialog/Scan.pm:1739 lib/Gscan2pdf/Unpaper.pm:154
+#: lib/Gscan2pdf/Unpaper.pm:184
 msgid "Left"
 msgstr "Sol"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1765 lib/Gscan2pdf/Unpaper.pm:157
-#: lib/Gscan2pdf/Unpaper.pm:186
+#: lib/Gscan2pdf/Dialog/Scan.pm:1740 lib/Gscan2pdf/Unpaper.pm:160
+#: lib/Gscan2pdf/Unpaper.pm:189
 msgid "Top"
 msgstr "Üst"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1766
+#: lib/Gscan2pdf/Dialog/Scan.pm:1741
 msgid "Units"
 msgstr ""
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1818
+#: lib/Gscan2pdf/Dialog/Scan.pm:1793
 msgid "Cannot delete all paper sizes"
 msgstr "Tüm kağıt boyutlarını silemezsiniz."
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:1886
+#: lib/Gscan2pdf/Dialog/Scan.pm:1861
 msgid ""
 "The following paper sizes are too big to be scanned by the selected device:"
 msgstr "Seçilen kağıt boyutları seçilen cihazla taramak için çok büyük"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:2047
+#: lib/Gscan2pdf/Dialog/Scan.pm:2022
 msgid ""
 "Multiple unconstrained values are not currently supported. Please file a bug."
 msgstr ""
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:2061
+#: lib/Gscan2pdf/Dialog/Scan.pm:2036
 msgid ""
 "Multiple non-numerical values are not currently supported. Please file a bug."
 msgstr ""
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:2547
+#: lib/Gscan2pdf/Dialog/Scan.pm:2525
 #, perl-format
 msgid "Scanning page %d of %d"
-msgstr ""
+msgstr "%d / %d sayfa taranıyor"
 
-#: lib/Gscan2pdf/Dialog/Scan.pm:2549
+#: lib/Gscan2pdf/Dialog/Scan.pm:2527
 #, perl-format
 msgid "Scanning page %d"
-msgstr ""
+msgstr "Sayfa %d taranıyor"
 
 #: lib/Gscan2pdf/Dialog/Scan/CLI.pm:134
 #: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:93
@@ -1890,7 +1976,7 @@ msgstr "Seçenekler güncelleniyor"
 #: lib/Gscan2pdf/Dialog/Scan/CLI.pm:360
 #: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:225
 msgid "Scan Options"
-msgstr ""
+msgstr "Tarama Seçenekleri"
 
 #: lib/Gscan2pdf/Dialog/Scan/CLI.pm:850
 msgid "Must scan facing pages first"
@@ -1906,79 +1992,79 @@ msgstr ""
 
 #: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:180
 msgid "Error retrieving scanner options: "
-msgstr ""
+msgstr "Tarayıcı seçenekleri elde edilirken hata: "
 
 #: lib/Gscan2pdf/Dialog/Scan/Image_Sane.pm:188
 msgid "Error opening device: "
-msgstr ""
+msgstr "Aygıt açılırken hata: "
 
-#: lib/Gscan2pdf/Document.pm:133
+#: lib/Gscan2pdf/Document.pm:135
 msgid "Thumbnails"
 msgstr "Küçük Resimler"
 
-#: lib/Gscan2pdf/Document.pm:399
+#: lib/Gscan2pdf/Document.pm:401
 msgid "Error: cannot open a session file at the same time as another file."
 msgstr ""
 
-#: lib/Gscan2pdf/Document.pm:414
+#: lib/Gscan2pdf/Document.pm:416
 msgid "Error: importing a multipage file at the same time as another file."
 msgstr ""
 
-#: lib/Gscan2pdf/Document.pm:720
+#: lib/Gscan2pdf/Document.pm:727
 msgid "Unable to load image"
 msgstr "Resim yüklenemedi"
 
-#: lib/Gscan2pdf/Document.pm:1885
+#: lib/Gscan2pdf/Document.pm:1924
 #, perl-format
 msgid "Error importing page %d. Ignoring."
-msgstr ""
+msgstr "Sayfa %d içe aktarılırken hata. Göz ardı ediliyor."
 
-#: lib/Gscan2pdf/Document.pm:1997
+#: lib/Gscan2pdf/Document.pm:2036
 msgid "No pages to process"
-msgstr ""
+msgstr "İşleyecek sayfa yok"
 
-#: lib/Gscan2pdf/Document.pm:2004
+#: lib/Gscan2pdf/Document.pm:2043
 msgid "No pages selected"
-msgstr ""
+msgstr "Seçilmiş sayfa yok"
 
-#: lib/Gscan2pdf/Document.pm:2659
+#: lib/Gscan2pdf/Document.pm:2737
 #, perl-format
 msgid "File %s not found"
-msgstr ""
+msgstr "%s dosyası yok"
 
-#: lib/Gscan2pdf/Document.pm:2678
+#: lib/Gscan2pdf/Document.pm:2756
 #, perl-format
 msgid "Error importing zero-length file %s."
-msgstr ""
+msgstr "Sıfır genişlikteki %s dosyası içe aktarılırken hata."
 
-#: lib/Gscan2pdf/Document.pm:2724
+#: lib/Gscan2pdf/Document.pm:2806
 msgid "Unknown DjVu file structure. Please contact the author."
 msgstr "Bilinmeyen DjVu dosya yapısı. Lütfen yetkiliyle iletişime geçin."
 
-#: lib/Gscan2pdf/Document.pm:2820 lib/Gscan2pdf/Document.pm:2833
+#: lib/Gscan2pdf/Document.pm:2918 lib/Gscan2pdf/Document.pm:2931
 #, perl-format
 msgid "%s is not a recognised image type"
 msgstr "%s tanınmayan bir görüntü biçimi."
 
-#: lib/Gscan2pdf/Document.pm:2884 lib/Gscan2pdf/Document.pm:2971
-#: lib/Gscan2pdf/Document.pm:2994
+#: lib/Gscan2pdf/Document.pm:2986 lib/Gscan2pdf/Document.pm:3075
+#: lib/Gscan2pdf/Document.pm:3100
 #, perl-format
 msgid "Importing page %i of %i"
 msgstr "Sayfa içe aktarılıyor %i/%i"
 
-#: lib/Gscan2pdf/Document.pm:3141
+#: lib/Gscan2pdf/Document.pm:3255
 msgid "Error extracting images from PDF"
 msgstr "PDF'deki görüntüleri ayrıştırmada hata."
 
-#: lib/Gscan2pdf/Document.pm:3164
+#: lib/Gscan2pdf/Document.pm:3278
 msgid "Error extracting text layer from PDF"
-msgstr ""
+msgstr "PDF'den metin katmanı ayıklanırken hata"
 
-#: lib/Gscan2pdf/Document.pm:3193
+#: lib/Gscan2pdf/Document.pm:3307
 msgid "Error importing PDF"
-msgstr ""
+msgstr "PDF içe aktarırken hata"
 
-#: lib/Gscan2pdf/Document.pm:3201
+#: lib/Gscan2pdf/Document.pm:3315
 msgid ""
 "Warning: gscan2pdf expects one image per page, but this was not satisfied. "
 "It is probable that the PDF has not been correctly imported.\n"
@@ -1986,154 +2072,159 @@ msgid ""
 "If you wish to add scans to an existing PDF, use the prepend/append to PDF "
 "options in the Save dialogue.\n"
 msgstr ""
+"Uyarı: gscan2pdf sayfa başı tek resim bekledi, ancak olmadı. Bu, PDF'nin "
+"doğru içe aktarılmamasından olabilir.\n"
+"\n"
+"Eğer taramaları var olan PDF'ye eklemek istiyorsanız, Kaydetme pencereinde "
+"PDF'nin önüne/sonuna ekle seçeneklerini kullanın.\n"
 
-#: lib/Gscan2pdf/Document.pm:3224
+#: lib/Gscan2pdf/Document.pm:3338
 msgid "Setting up PDF"
 msgstr "PDF'yi Ayarlama"
 
-#: lib/Gscan2pdf/Document.pm:3236
+#: lib/Gscan2pdf/Document.pm:3350
 #, perl-format
 msgid "Caught error creating PDF %s: %s"
-msgstr ""
+msgstr "PDF %s oluşturulurken hata yakalandı: %s"
 
-#: lib/Gscan2pdf/Document.pm:3264
+#: lib/Gscan2pdf/Document.pm:3378
 #, perl-format
 msgid "Unable to find font '%s'. Defaulting to core font."
-msgstr ""
+msgstr "'%s' yazı tipi bulunamıyor. Çekirdek yazı tipe geçiliyor."
 
-#: lib/Gscan2pdf/Document.pm:3273
+#: lib/Gscan2pdf/Document.pm:3387
 #, perl-format
 msgid "Saving page %i of %i"
 msgstr "Sayfa kaydediliyor %i/%i"
 
-#: lib/Gscan2pdf/Document.pm:3280
+#: lib/Gscan2pdf/Document.pm:3394
 msgid "Closing PDF"
 msgstr ""
 
-#: lib/Gscan2pdf/Document.pm:3305 lib/Gscan2pdf/Document.pm:4115
+#: lib/Gscan2pdf/Document.pm:3412 lib/Gscan2pdf/Document.pm:4224
 msgid "Converting to PS"
 msgstr "PS'ye çeviriliyor."
 
-#: lib/Gscan2pdf/Document.pm:3315
+#: lib/Gscan2pdf/Document.pm:3422
 #, perl-format
 msgid "Error converting PDF to PS: %s"
-msgstr ""
+msgstr "PDF, PS'ye dönüştürülürken hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:3353
+#: lib/Gscan2pdf/Document.pm:3459
 #, perl-format
 msgid "Error prepending PDF: %s"
-msgstr ""
+msgstr "PDF başına eklenirken hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:3361
+#: lib/Gscan2pdf/Document.pm:3467
 #, perl-format
 msgid "Error appending PDF: %s"
-msgstr ""
+msgstr "PDF sonuna eklenirken hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:3367
+#: lib/Gscan2pdf/Document.pm:3473
 msgid "Error creating backup of PDF"
-msgstr ""
+msgstr "PDF'nin yedeğini oluştururken hata"
 
-#: lib/Gscan2pdf/Document.pm:3395
+#: lib/Gscan2pdf/Document.pm:3498
 #, perl-format
 msgid "Error encrypting PDF: %s"
-msgstr ""
+msgstr "PDF şifrelenirken hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:3426
+#: lib/Gscan2pdf/Document.pm:3537
 msgid "Unable to set file timestamp for dates prior to 1970"
-msgstr ""
+msgstr "Dosya zaman damgaları 1970 öncesine belirlenemez"
 
-#: lib/Gscan2pdf/Document.pm:3531
+#: lib/Gscan2pdf/Document.pm:3641
 #, perl-format
 msgid "Error creating PDF image object: %s"
 msgstr "PDF görüntü nesnesi oluşturmada hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:3547
+#: lib/Gscan2pdf/Document.pm:3657
 #, perl-format
 msgid "Error embedding file image in %s format to PDF: %s"
 msgstr "%s biçemli resim dosyası PDF'ye gömülürken hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:3634 lib/Gscan2pdf/Document.pm:4111
+#: lib/Gscan2pdf/Document.pm:3750 lib/Gscan2pdf/Document.pm:4220
 #, perl-format
 msgid "Error compressing image: %s"
 msgstr "Resmi sıkıştırmada hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:3780
+#: lib/Gscan2pdf/Document.pm:3895
 #, perl-format
 msgid "Writing page %i of %i"
 msgstr "Sayfa yazılıyor %i/%i"
 
-#: lib/Gscan2pdf/Document.pm:3810
+#: lib/Gscan2pdf/Document.pm:3925
 msgid "Error writing DjVu"
 msgstr "DjVu yazmada hata"
 
-#: lib/Gscan2pdf/Document.pm:3818
+#: lib/Gscan2pdf/Document.pm:3933
 msgid "Merging DjVu"
 msgstr ""
 
-#: lib/Gscan2pdf/Document.pm:3826
+#: lib/Gscan2pdf/Document.pm:3941
 msgid "Error merging DjVu"
 msgstr ""
 
-#: lib/Gscan2pdf/Document.pm:3937
+#: lib/Gscan2pdf/Document.pm:4047
 #, perl-format
 msgid "Can't write to file: %s"
-msgstr ""
+msgstr "Dosyaya yazılamıyor: %s"
 
-#: lib/Gscan2pdf/Document.pm:3956 lib/Gscan2pdf/Document.pm:3987
-#: lib/Gscan2pdf/Document.pm:4273 lib/Gscan2pdf/Document.pm:4298
+#: lib/Gscan2pdf/Document.pm:4065 lib/Gscan2pdf/Document.pm:4096
+#: lib/Gscan2pdf/Document.pm:4383 lib/Gscan2pdf/Document.pm:4408
 #, perl-format
 msgid "Can't open file: %s"
 msgstr "dosya açılamıyor: %s"
 
-#: lib/Gscan2pdf/Document.pm:3960 lib/Gscan2pdf/Document.pm:4007
-#: lib/Gscan2pdf/Document.pm:4279 lib/Gscan2pdf/Document.pm:4321
+#: lib/Gscan2pdf/Document.pm:4069 lib/Gscan2pdf/Document.pm:4116
+#: lib/Gscan2pdf/Document.pm:4389 lib/Gscan2pdf/Document.pm:4433
 #, perl-format
 msgid "Can't close file: %s"
-msgstr ""
+msgstr "Dosya kapatılamıyor: %s"
 
-#: lib/Gscan2pdf/Document.pm:3972
+#: lib/Gscan2pdf/Document.pm:4081
 msgid "Error adding text layer to DjVu"
 msgstr "DjVu'ya yazı katmanı ekmede hata"
 
-#: lib/Gscan2pdf/Document.pm:4018
+#: lib/Gscan2pdf/Document.pm:4127
 msgid "Error adding metadata to DjVu"
-msgstr ""
+msgstr "DjVu'ya üst veri eklenirken hata"
 
-#: lib/Gscan2pdf/Document.pm:4035
+#: lib/Gscan2pdf/Document.pm:4144
 #, perl-format
 msgid "Converting image %i of %i to TIFF"
 msgstr "Resim TIFF'e dönüştürülüyor. %i/%i"
 
-#: lib/Gscan2pdf/Document.pm:4084
+#: lib/Gscan2pdf/Document.pm:4193
 msgid "Error writing TIFF"
 msgstr "TIFF yazılırken hata"
 
-#: lib/Gscan2pdf/Document.pm:4103
+#: lib/Gscan2pdf/Document.pm:4212
 msgid "Concatenating TIFFs"
 msgstr "TIFF'ler birleştiriliyor."
 
-#: lib/Gscan2pdf/Document.pm:4127
+#: lib/Gscan2pdf/Document.pm:4231
 #, perl-format
 msgid "Error converting TIFF to PS: %s"
-msgstr ""
+msgstr "TIFF, PS'ye dönüştürülürken hata: %s"
 
-#: lib/Gscan2pdf/Document.pm:4225 lib/Gscan2pdf/Document.pm:4247
+#: lib/Gscan2pdf/Document.pm:4335 lib/Gscan2pdf/Document.pm:4357
 msgid "Error saving image"
 msgstr "Görüntüyü kaydetmede hata."
 
-#: lib/Gscan2pdf/Document.pm:4341
+#: lib/Gscan2pdf/Document.pm:4453
 #, perl-format
 msgid "Analysing page %i of %i"
-msgstr ""
+msgstr "%i / %i sayfa inceleniyor"
 
-#: lib/Gscan2pdf/Document.pm:5098
+#: lib/Gscan2pdf/Document.pm:5281
 msgid "Error copying page"
 msgstr "Sayfa kopyalamada hata"
 
 #: lib/Gscan2pdf/Frontend/CLI.pm:181
 #, perl-format
 msgid "Scanning %i pages..."
-msgstr ""
+msgstr "%i sayfa taranıyor..."
 
 #: lib/Gscan2pdf/Frontend/CLI.pm:187
 #, perl-format
@@ -2172,25 +2263,25 @@ msgstr ""
 
 #: lib/Gscan2pdf/PageRange.pm:38
 msgid "Selected"
-msgstr "Seçildi"
+msgstr "Seçili"
 
-#: lib/Gscan2pdf/Unpaper.pm:43
+#: lib/Gscan2pdf/Unpaper.pm:46
 msgid "Layout"
 msgstr "Yerleşim Düzeni"
 
-#: lib/Gscan2pdf/Unpaper.pm:46
+#: lib/Gscan2pdf/Unpaper.pm:49
 msgid "Single"
 msgstr "Tek"
 
-#: lib/Gscan2pdf/Unpaper.pm:48
+#: lib/Gscan2pdf/Unpaper.pm:51
 msgid "One page per sheet, oriented upwards without rotation."
 msgstr "Her kağıda bir sayfa, döndürmeden yukarı yönde"
 
-#: lib/Gscan2pdf/Unpaper.pm:52
+#: lib/Gscan2pdf/Unpaper.pm:55
 msgid "Double"
 msgstr "Çift"
 
-#: lib/Gscan2pdf/Unpaper.pm:54
+#: lib/Gscan2pdf/Unpaper.pm:57
 msgid ""
 "Two pages per sheet, landscape orientation (one page on the left half, one "
 "page on the right half)."
@@ -2198,111 +2289,111 @@ msgstr ""
 "Her kağıda iki sayfa, yatay yönlendirmeli (bir sayfa sol yarıda, bir sayfa "
 "sağ yarıda)"
 
-#: lib/Gscan2pdf/Unpaper.pm:62
+#: lib/Gscan2pdf/Unpaper.pm:65
 msgid "# Output pages"
 msgstr "# Çıktı sayfaları"
 
-#: lib/Gscan2pdf/Unpaper.pm:63
+#: lib/Gscan2pdf/Unpaper.pm:66
 msgid "Number of pages to output."
 msgstr "Çıktıdaki sayfaların sayısı"
 
-#: lib/Gscan2pdf/Unpaper.pm:71
-msgid "Writing system"
-msgstr ""
-
 #: lib/Gscan2pdf/Unpaper.pm:74
+msgid "Writing system"
+msgstr "Yazı sistemi"
+
+#: lib/Gscan2pdf/Unpaper.pm:77
 msgid "Left-to-right"
-msgstr ""
+msgstr "Soldan sağa"
 
-#: lib/Gscan2pdf/Unpaper.pm:76
+#: lib/Gscan2pdf/Unpaper.pm:79
 msgid "Most writings systems, e.g. Latin, Greek, Cyrillic."
-msgstr ""
+msgstr "Latin, Yunan, Kiril gibi çoğu yazı sistemi."
 
-#: lib/Gscan2pdf/Unpaper.pm:80
+#: lib/Gscan2pdf/Unpaper.pm:83
 msgid "Right-to-left"
-msgstr ""
+msgstr "Sağdan sola"
 
-#: lib/Gscan2pdf/Unpaper.pm:81
+#: lib/Gscan2pdf/Unpaper.pm:84
 msgid "Scripts like Arabic or Hebrew."
-msgstr ""
+msgstr "Arap, İbrani gibi alfabeler."
 
-#: lib/Gscan2pdf/Unpaper.pm:89
+#: lib/Gscan2pdf/Unpaper.pm:92
 msgid "No deskew"
 msgstr "Doğrultma yapma"
 
-#: lib/Gscan2pdf/Unpaper.pm:90
+#: lib/Gscan2pdf/Unpaper.pm:93
 msgid "Disable deskewing."
 msgstr "Kenarların eğriliğini gidermeyi devre dışı bırak."
 
-#: lib/Gscan2pdf/Unpaper.pm:95
+#: lib/Gscan2pdf/Unpaper.pm:98
 msgid "No mask scan"
 msgstr "Maske taraması uygulama"
 
-#: lib/Gscan2pdf/Unpaper.pm:96
+#: lib/Gscan2pdf/Unpaper.pm:99
 msgid "Disable mask detection."
 msgstr "Maske tespitini devre dışı bırak."
 
-#: lib/Gscan2pdf/Unpaper.pm:101
+#: lib/Gscan2pdf/Unpaper.pm:104
 msgid "No mask centering"
 msgstr ""
 
-#: lib/Gscan2pdf/Unpaper.pm:102
+#: lib/Gscan2pdf/Unpaper.pm:105
 msgid "Disable mask centering."
 msgstr ""
 
-#: lib/Gscan2pdf/Unpaper.pm:107
+#: lib/Gscan2pdf/Unpaper.pm:110
 msgid "No black filter"
-msgstr "Siyah filtresi uygulama"
+msgstr "Siyah süzgeci uygulama"
 
-#: lib/Gscan2pdf/Unpaper.pm:108
+#: lib/Gscan2pdf/Unpaper.pm:111
 msgid "Disable black area scan."
 msgstr "Siyah bölge taramasını etkisizleştir."
 
-#: lib/Gscan2pdf/Unpaper.pm:113
+#: lib/Gscan2pdf/Unpaper.pm:116
 msgid "No gray filter"
-msgstr "Gri filtre uygulama"
+msgstr "Gri süzgeci uygulama"
 
-#: lib/Gscan2pdf/Unpaper.pm:114
+#: lib/Gscan2pdf/Unpaper.pm:117
 msgid "Disable gray area scan."
 msgstr "Gri bölge taramasını etkisizleştir."
 
-#: lib/Gscan2pdf/Unpaper.pm:119
+#: lib/Gscan2pdf/Unpaper.pm:122
 msgid "No noise filter"
-msgstr "Gürültü filtresi uygulama"
+msgstr "Gürültü süzgeci uygulama"
 
-#: lib/Gscan2pdf/Unpaper.pm:120
+#: lib/Gscan2pdf/Unpaper.pm:123
 msgid "Disable noise filter."
-msgstr "Gürültü filtresini devre dışı bırak"
+msgstr "Gürültü süzgecini devre dışı bırak."
 
-#: lib/Gscan2pdf/Unpaper.pm:125
+#: lib/Gscan2pdf/Unpaper.pm:128
 msgid "No blur filter"
-msgstr "Bulanıklık filtresi uygulama"
+msgstr "Bulanıklık süzgeci uygulama"
 
-#: lib/Gscan2pdf/Unpaper.pm:126
+#: lib/Gscan2pdf/Unpaper.pm:129
 msgid "Disable blur filter."
-msgstr "Bulanıklık veya leke filtresini devre dışı bırak."
+msgstr "Bulanıklık süzgecini devre dışı bırak."
 
-#: lib/Gscan2pdf/Unpaper.pm:131
+#: lib/Gscan2pdf/Unpaper.pm:134
 msgid "No border scan"
 msgstr "Kenar taraması yapma"
 
-#: lib/Gscan2pdf/Unpaper.pm:132
+#: lib/Gscan2pdf/Unpaper.pm:135
 msgid "Disable border scanning."
 msgstr "Kenar taramasını devre dışı bırakır."
 
-#: lib/Gscan2pdf/Unpaper.pm:137
+#: lib/Gscan2pdf/Unpaper.pm:140
 msgid "No border align"
 msgstr "Kenar hizalaması uygulama"
 
-#: lib/Gscan2pdf/Unpaper.pm:139
+#: lib/Gscan2pdf/Unpaper.pm:142
 msgid "Disable aligning of the area detected by border scanning."
 msgstr "Kenar taramasında bulunan alan hizalamasını devre dışı bırakır."
 
-#: lib/Gscan2pdf/Unpaper.pm:144
+#: lib/Gscan2pdf/Unpaper.pm:147
 msgid "Deskew to edge"
-msgstr "Doğrultulacak kenarlar."
+msgstr "Doğrultulacak kenarlar"
 
-#: lib/Gscan2pdf/Unpaper.pm:146
+#: lib/Gscan2pdf/Unpaper.pm:149
 msgid ""
 "Edges from which to scan for rotation. Each edge of a mask can be used to "
 "detect the mask's rotation. If multiple edges are specified, the average "
@@ -2310,110 +2401,110 @@ msgid ""
 "deviation."
 msgstr ""
 "Döndürme için taranacak kenarlar. Maskenin her bir kenarı maskenin kenarını "
-"tespit etmek için kullanılabilir. Çoklu kenar belirtilirse ortalama değeri "
-"kullanılır, istatiksel sapma aşılmadığı sürece -eğrilikgiderme-tarama-sapma."
+"saptamak için kullanılabilir. Çoklu kenar belirtilirse ortalama değeri "
+"kullanılır, istatiksel sapma --deskew-scan-deviation 'ı aşmadığı sürece."
 
-#: lib/Gscan2pdf/Unpaper.pm:153
+#: lib/Gscan2pdf/Unpaper.pm:156
 msgid "Use 'left' for scanning from the left edge."
 msgstr "Sol kenardan taramak için 'sol' u seçiniz."
 
-#: lib/Gscan2pdf/Unpaper.pm:158
+#: lib/Gscan2pdf/Unpaper.pm:161
 msgid "Use 'top' for scanning from the top edge."
 msgstr "Üst kenardan taramak için 'üst' ü seçiniz"
 
-#: lib/Gscan2pdf/Unpaper.pm:162 lib/Gscan2pdf/Unpaper.pm:191
+#: lib/Gscan2pdf/Unpaper.pm:165 lib/Gscan2pdf/Unpaper.pm:194
 msgid "Right"
 msgstr "Sağ"
 
-#: lib/Gscan2pdf/Unpaper.pm:164
+#: lib/Gscan2pdf/Unpaper.pm:167
 msgid "Use 'right' for scanning from the right edge."
 msgstr "Sağ kenardan taramak için 'sağ' ı seçiniz."
 
-#: lib/Gscan2pdf/Unpaper.pm:168 lib/Gscan2pdf/Unpaper.pm:196
+#: lib/Gscan2pdf/Unpaper.pm:171 lib/Gscan2pdf/Unpaper.pm:199
 msgid "Bottom"
 msgstr "Alt"
 
-#: lib/Gscan2pdf/Unpaper.pm:169
+#: lib/Gscan2pdf/Unpaper.pm:172
 msgid "Use 'bottom' for scanning from the bottom."
 msgstr "Alt kenardan taramak için 'alt' ı seçiniz."
 
-#: lib/Gscan2pdf/Unpaper.pm:176
+#: lib/Gscan2pdf/Unpaper.pm:179
 msgid "Align to edge"
 msgstr "Kenara hizala"
 
-#: lib/Gscan2pdf/Unpaper.pm:177
+#: lib/Gscan2pdf/Unpaper.pm:180
 msgid "Edge to which to align the page."
 msgstr "Sayfaya hizalanacak kenar"
 
-#: lib/Gscan2pdf/Unpaper.pm:182
+#: lib/Gscan2pdf/Unpaper.pm:185
 msgid "Use 'left' to align to the left edge."
 msgstr "Sola hizalamak için 'sol' u seçiniz."
 
-#: lib/Gscan2pdf/Unpaper.pm:187
+#: lib/Gscan2pdf/Unpaper.pm:190
 msgid "Use 'top' to align to the top edge."
 msgstr "Üste hizalamak için 'üst' ü seçiniz."
 
-#: lib/Gscan2pdf/Unpaper.pm:192
+#: lib/Gscan2pdf/Unpaper.pm:195
 msgid "Use 'right' to align to the right edge."
 msgstr "Sağa hizlamak için 'sağ' ı seçiniz."
 
-#: lib/Gscan2pdf/Unpaper.pm:197
+#: lib/Gscan2pdf/Unpaper.pm:200
 msgid "Use 'bottom' to align to the bottom."
 msgstr "Alta hizalamak için 'alt' ı seçiniz."
 
-#: lib/Gscan2pdf/Unpaper.pm:203
+#: lib/Gscan2pdf/Unpaper.pm:206
 msgid "Border margin"
 msgstr "Kenar aralığı"
 
-#: lib/Gscan2pdf/Unpaper.pm:207
+#: lib/Gscan2pdf/Unpaper.pm:210
 msgid "Vertical margin"
 msgstr "Dikey aralık"
 
-#: lib/Gscan2pdf/Unpaper.pm:209
+#: lib/Gscan2pdf/Unpaper.pm:212
 msgid ""
 "Vertical distance to keep from the sheet edge when aligning a border area."
 msgstr "Kenar aralığını hizalarken kenarda korunacak dikey uzaklık"
 
-#: lib/Gscan2pdf/Unpaper.pm:218
+#: lib/Gscan2pdf/Unpaper.pm:221
 msgid "Horizontal margin"
 msgstr "Yatay aralık"
 
-#: lib/Gscan2pdf/Unpaper.pm:220
+#: lib/Gscan2pdf/Unpaper.pm:223
 msgid ""
 "Horizontal distance to keep from the sheet edge when aligning a border area."
 msgstr ""
 "Kenar aralığını hizalarken kağıdın kenarında korunacak dikey uzaklık."
 
-#: lib/Gscan2pdf/Unpaper.pm:231
+#: lib/Gscan2pdf/Unpaper.pm:234
 msgid "White threshold"
 msgstr "Beyaz eşik değeri"
 
-#: lib/Gscan2pdf/Unpaper.pm:233
+#: lib/Gscan2pdf/Unpaper.pm:236
 msgid "Brightness ratio above which a pixel is considered white."
 msgstr "Bu parlaklık oranının üzerindeki benek beyaz kabul edilir."
 
-#: lib/Gscan2pdf/Unpaper.pm:241
+#: lib/Gscan2pdf/Unpaper.pm:244
 msgid "Black threshold"
 msgstr "Siyah eşik değeri"
 
-#: lib/Gscan2pdf/Unpaper.pm:243
+#: lib/Gscan2pdf/Unpaper.pm:246
 msgid ""
 "Brightness ratio below which a pixel is considered black (non-gray). This is "
 "used by the gray-filter. This value is also used when converting a grayscale "
 "image to black-and-white mode."
 msgstr ""
-"Bu parlaklık orarının altındaki piksel siyah kabul edilir (Gri Olmayan) . Bu "
-"gri-filtresince kullanılır. Aynı zamanda gri tonlamalı bir resmi siyah "
+"Bu parlaklık orarının altındaki piksel siyah (gri olmayan) kabul edilir . "
+"Bu, gri süzgecince kullanılır. Aynı zamanda gri tonlamalı bir resmi siyah "
 "beyaza çevirirken kullanılır."
 
-#: lib/Gscan2pdf/Unpaper.pm:287
+#: lib/Gscan2pdf/Unpaper.pm:290
 msgid "Deskew"
 msgstr "Doğrultma"
 
-#: lib/Gscan2pdf/Unpaper.pm:320
+#: lib/Gscan2pdf/Unpaper.pm:323
 msgid "Border"
 msgstr "Kenar"
 
-#: lib/Gscan2pdf/Unpaper.pm:380
+#: lib/Gscan2pdf/Unpaper.pm:383
 msgid "Filters"
-msgstr "Filtreler"
+msgstr "Süzgeçler"
