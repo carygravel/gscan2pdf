@@ -7,6 +7,7 @@
 * Fix bug manually adding first OCR word to page.
 * Limit zoom to 15 to avoid errors like:
   "pango_font_description_set_size: assertion 'size >= 0' failed"
+* Fix bug finding page by number
 * Update to Hungarian translation (thanks to csola)
 
 

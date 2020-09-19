@@ -874,7 +874,7 @@ sub index_for_page {
     }
 
     my $i = $s;
-    while ( $step > 0 ? $i <= $e : $i >= $e ) {
+    while ( $step > 0 ? ( $i <= $e and $i < @{ $self->{data} } ) : $i >= $e ) {
         if ( $self->{data}[$i][0] == $n ) {
             return $i;
         }
