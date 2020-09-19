@@ -1973,6 +1973,7 @@ sub renumber {
         }
 
         for (@selection) {
+            $logger->info("Renumbering page $self->{data}[$_][0]->$start");
             $self->{data}[$_][0] = $start;
             $start += $step;
         }
@@ -1983,7 +1984,9 @@ sub renumber {
     else {
         for ( 1 .. $#{ $self->{data} } ) {
             if ( $self->{data}[$_][0] <= $self->{data}[ $_ - 1 ][0] ) {
-                $self->{data}[$_][0] = $self->{data}[ $_ - 1 ][0] + 1;
+                my $new = $self->{data}[ $_ - 1 ][0] + 1;
+                $logger->info("Renumbering page $self->{data}[$_][0]->$new");
+                $self->{data}[$_][0] = $new;
             }
         }
     }
