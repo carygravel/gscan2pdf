@@ -2004,7 +2004,7 @@ sub valid_renumber {
 "Checking renumber validity of: start $start, step $step, selection $selection"
     );
 
-    return FALSE if ( $step == 0 );
+    return FALSE if ( $step == 0 or $start < 1 );
 
     # if we are renumbering all pages, just make sure the numbers stay positive
     if ( $selection eq 'all' ) {
