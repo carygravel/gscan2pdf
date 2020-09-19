@@ -1958,8 +1958,10 @@ sub display_image {
     }
 
     # Delete OCR output if it has become corrupted
-    $logger->fatal("bboxtree: $current_page->{bboxtree}");
-    if ( not Gscan2pdf::Bboxtree->valid( $current_page->{bboxtree} ) ) {
+    if ( defined $current_page->{bboxtree}
+        and not Gscan2pdf::Bboxtree->valid( $current_page->{bboxtree} ) )
+    {
+        $logger->error("bboxtree: $current_page->{bboxtree}");
         delete $current_page->{bboxtree};
     }
 
