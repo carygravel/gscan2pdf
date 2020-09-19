@@ -203,6 +203,7 @@ $logger->info(
         Gtk3::get_micro_version
     )
 );
+$logger->info("Gtk3::SimpleList version $Gtk3::SimpleList::VERSION");
 $logger->info("Gscan2pdf::Document version $Gscan2pdf::Document::VERSION");
 
 #$logger->info( 'Using GtkImageView version ',
