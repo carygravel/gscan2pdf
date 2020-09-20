@@ -3,7 +3,7 @@ gscan2pdf (2.9.0-1) unstable; urgency=low
   * New upstream release
   * Added new dependency liblocale-codes-perl
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 19 Sep 2020 18:52:14 +0200
 
 gscan2pdf (2.8.2-1) unstable; urgency=low
 

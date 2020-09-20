@@ -13,7 +13,7 @@ use English qw( -no_match_vars );    # for $PROCESS_ID
 use Gscan2pdf::Translation '__';     # easier to extract strings with xgettext
 use Locale::Language;
 
-our $VERSION = '2.8.2';
+our $VERSION = '2.9.0';
 my $EMPTY = q{};
 my $COMMA = q{,};
 

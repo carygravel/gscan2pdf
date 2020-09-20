@@ -10,7 +10,7 @@ use HTML::Entities;
 use Encode;
 use English qw( -no_match_vars );    # for $PROCESS_ID
 
-our $VERSION = '2.8.2';
+our $VERSION = '2.9.0';
 
 my ( $exe, $installed, $setup, $logger );
 
