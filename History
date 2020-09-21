@@ -1,4 +1,4 @@
-2.9.0 (06.09.2020):
+2.9.0 (19.09.2020):
 
 * + warning if tesseract OCR package for current locale not installed.
 * + split tool
