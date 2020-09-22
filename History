@@ -1,3 +1,8 @@
+2.9.1 (19.10.2020):
+
+* Update to Hungarian translation (thanks to csola)
+
+
 2.9.0 (19.09.2020):
 
 * + warning if tesseract OCR package for current locale not installed.
