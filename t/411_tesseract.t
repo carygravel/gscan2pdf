@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 BEGIN {
     use_ok('Gscan2pdf::Tesseract');
@@ -16,6 +16,8 @@ my $logger = Log::Log4perl::get_logger;
 SKIP: {
     skip 'Tesseract not installed', 13
       unless Gscan2pdf::Tesseract->setup($logger);
+
+    is Gscan2pdf::Tesseract::_iso639_1to3('en'), 'eng', "_iso639_1to3 en";
 
     # Create b&w test image
     system(

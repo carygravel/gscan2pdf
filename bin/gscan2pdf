@@ -1544,7 +1544,10 @@ EOS
     }
     if ( $dependencies{tesseract} ) {
         my $lang_msg = Gscan2pdf::Tesseract->locale_installed( $ENV{LANGUAGE} );
-        if ( $lang_msg ne '1' ) { $msg .= $lang_msg }
+        if ( $lang_msg ne '1' ) {
+            $logger->warn($lang_msg);
+            $msg .= $lang_msg;
+        }
         else {
             $logger->info(
 "Using GUI language $ENV{LANGUAGE}, for which a tesseract language package is present"
