@@ -1543,14 +1543,15 @@ EOS
         $msg .= __("OCR requires gocr, tesseract, ocropus, or cuneiform\n");
     }
     if ( $dependencies{tesseract} ) {
-        my $lang_msg = Gscan2pdf::Tesseract->locale_installed( $ENV{LANGUAGE} );
+        my $lc_messages = setlocale(LC_MESSAGES);
+        my $lang_msg    = Gscan2pdf::Tesseract->locale_installed($lc_messages);
         if ( $lang_msg ne '1' ) {
             $logger->warn($lang_msg);
             $msg .= $lang_msg;
         }
         else {
             $logger->info(
-"Using GUI language $ENV{LANGUAGE}, for which a tesseract language package is present"
+"Using GUI language $lc_messages, for which a tesseract language package is present"
             );
         }
     }
