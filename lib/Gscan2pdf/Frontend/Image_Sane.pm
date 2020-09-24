@@ -529,7 +529,10 @@ sub _thread_open_device {
     }
 
     # close the handle
-    if ( defined( $self->{device_handle} ) ) { undef $self->{device_handle} }
+    if ( defined( $self->{device_handle} ) ) {
+        undef $self->{device_handle};
+        Image::Sane::_exit();    ## no critic (ProtectPrivateSubs)
+    }
 
     my $status = SANE_STATUS_GOOD;
     try {
