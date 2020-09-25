@@ -944,10 +944,10 @@ sub check_dependencies {
 
                 # Don't create PDF  directly with imagemagick, as
                 # some distros configure imagemagick not to write PDFs
-                my $temptif =
-                  File::Temp->new( DIR => $session, SUFFIX => '.tif' );
+                my $tempimg =
+                  File::Temp->new( DIR => $session, SUFFIX => '.jpg' );
                 Gscan2pdf::Document::exec_command(
-                    [ 'convert', 'rose:', $temptif ] );
+                    [ 'convert', 'rose:', $tempimg ] );
                 my $temppdf =
                   File::Temp->new( DIR => $session, SUFFIX => '.pdf' );
                 my $pdfobj = PDF::API2->new( -file => $temppdf );
@@ -955,7 +955,7 @@ sub check_dependencies {
                 my $size   = $Gscan2pdf::Document::POINTS_PER_INCH;
                 $page->mediabox( $size, $size );
                 my $gfx    = $page->gfx;
-                my $imgobj = $pdfobj->image_tiff($temptif);
+                my $imgobj = $pdfobj->image_jpeg($tempimg);
                 $gfx->image( $imgobj, 0, 0, $size, $size );
                 $pdfobj->save;
                 $pdfobj->end;
