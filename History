@@ -7,6 +7,7 @@
   C locale to English. Thanks to Petr Písař and Chris Mayo for the patches.
   Closes bug #360 and merge request #32.
 * Update to Hungarian translation (thanks to csola)
+* Update to German translation (thanks to Matthias Sprau)
 
 
 2.9.0 (19.09.2020):
