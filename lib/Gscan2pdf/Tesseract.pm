@@ -139,7 +139,8 @@ sub locale_installed {
 'gscan2pdf does not currently know which tesseract language package would be necessary for that locale.'
           )
           . q{ }
-          . __("Please contact the developers to add support for that locale.\n");
+          . __('Please contact the developers to add support for that locale.')
+          . "\n";
     }
     if ( defined $languages->{$code3} ) {
         return 1;
@@ -149,14 +150,15 @@ sub locale_installed {
         return
           sprintf( __("You are using locale '%s'."), $locale ) . q{ }
           . sprintf __(
-"Please install tesseract package 'tesseract-ocr-%s' and restart gscan2pdf for OCR for %s with tesseract.\n"
-          ), $code3, $languages->{$code3};
+"Please install tesseract package 'tesseract-ocr-%s' and restart gscan2pdf for OCR for %s with tesseract."
+          ) . "\n", $code3, $languages->{$code3};
     }
     return
         sprintf( __("You are using locale '%s'."), $locale ) . q{ }
       . sprintf __('There is no tesseract package for %s'),
       code2language( $code3, 'term' ) . '. '
-      . "If this is in error, please contact the gscan2pdf developers.\n";
+      . __('If this is in error, please contact the gscan2pdf developers.')
+      . "\n";
 }
 
 sub hocr {
