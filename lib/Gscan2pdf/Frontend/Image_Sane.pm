@@ -102,6 +102,7 @@ sub quit {
     if ( defined $_self->{thread} ) {
         $_self->{thread}->join();
         $_self->{thread} = undef;
+        Image::Sane::_exit();    ## no critic (ProtectPrivateSubs)
     }
     return;
 }
