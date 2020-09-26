@@ -3,6 +3,9 @@
 * Work around imagemagick versions that create TIFFs that PDF::API2 doesn't like
   when testing pdftk by using JPEG.
   Closes #361 Hang on startup since commit #ab767c
+* Read locale from LC_MESSAGES, rather than LANGUAGE environmental variable, map
+  C locale to English. Thanks to Petr Písař and Chris Mayo for the patches.
+  Closes bug #360 and merge request #32.
 * Update to Hungarian translation (thanks to csola)
 
 

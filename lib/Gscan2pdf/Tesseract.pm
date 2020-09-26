@@ -120,6 +120,7 @@ sub installable_languages {
 
 sub _iso639_1to3 {
     my ($code1) = @_;
+    if ( $code1 eq 'C' ) { $code1 = 'en' }
     my $code3 = $non_iso639_1{$code1};
     if ($code3) { return $code3 }
     $code3 = language_code2code( $code1, 'alpha-2', 'term' );
