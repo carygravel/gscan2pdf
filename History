@@ -1,4 +1,4 @@
-2.9.1 (19.10.2020):
+2.9.1 (25.09.2020):
 
 * Work around imagemagick versions that create TIFFs that PDF::API2 doesn't like
   when testing pdftk by using JPEG.
