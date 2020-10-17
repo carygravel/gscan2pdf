@@ -3,6 +3,10 @@ gscan2pdf (2.10.0-1) unstable; urgency=low
   * New upstream release
   * Make dependency liblocale-codes-perl versioned
     Closes: #972218 (gscan2pdf should depend on liblocale-codes-perl)
+  * Removed dependency libpdf-api2-perl
+  * Added new dependency libpdf-builder-perl.
+    Closes: #602486 (heavily distored scans)
+    Closes: #703768 (parts of the page translated to the right, black border)
 
  --
 

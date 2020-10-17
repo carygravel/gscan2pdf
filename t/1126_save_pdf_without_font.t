@@ -6,7 +6,7 @@ use Test::More tests => 3;
 BEGIN {
     use Gscan2pdf::Document;
     use Gtk3 -init;    # Could just call init separately
-    use PDF::API2;
+    use PDF::Builder;
 }
 
 #########################

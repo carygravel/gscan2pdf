@@ -6,7 +6,7 @@ use POSIX qw(locale_h);
 
 BEGIN {
     use Gscan2pdf::Document;
-    use PDF::API2;
+    use PDF::Builder;
 }
 
 #########################

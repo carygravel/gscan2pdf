@@ -19,7 +19,7 @@ Requires:       perl(Gtk3::ImageView)
 Requires:       perl(Image::Magick)
 Requires:       perl(List::MoreUtils)
 Requires:       perl(Log::Log4perl)
-Requires:       perl(PDF::API2)
+Requires:       perl(PDF::Builder)
 Requires:       perl(Proc::Killfam)
 Requires:       perl(Readonly)
 Requires:       perl(Sane)
@@ -43,7 +43,7 @@ scanimage or scanadf, and can scan multiple pages at once. It presents a
 thumbnail view of scanned pages, and permits simple operations such as rotating
 and deleting pages. 
 
-PDF conversion is done by PDF::API2.
+PDF conversion is done by PDF::Builder.
 
 The resulting document may be saved as a PDF, DjVu or a multipage TIFF file.
 

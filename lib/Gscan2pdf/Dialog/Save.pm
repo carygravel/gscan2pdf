@@ -800,10 +800,8 @@ sub add_pdf_options {
             'packbits', __('Packbits'),
             __('Compress output with Packbits encoding.')
         ],
-
-      # g3 and 4 give an error message
-      #  [ 'g3', __('G3'), __('Compress output with CCITT Group 3 encoding.') ],
-      #  [ 'g4', __('G4'), __('Compress output with CCITT Group 4 encoding.') ],
+        [ 'g3', __('G3'), __('Compress output with CCITT Group 3 encoding.') ],
+        [ 'g4', __('G4'), __('Compress output with CCITT Group 4 encoding.') ],
         [ 'png',  __('PNG'),  __('Compress output with PNG encoding.') ],
         [ 'jpg',  __('JPEG'), __('Compress output with JPEG encoding.') ],
         [ 'none', __('None'), __('Use no compression algorithm on output.') ],

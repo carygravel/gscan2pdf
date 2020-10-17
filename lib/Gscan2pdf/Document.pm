@@ -31,7 +31,7 @@ use IPC::Open3 'open3';
 use Symbol;            # for gensym
 use Try::Tiny;
 use Set::IntSpan 1.10;    # For size method for page numbering issues
-use PDF::API2;
+use PDF::Builder;
 use English qw( -no_match_vars );    # for $PROCESS_ID, $INPUT_RECORD_SEPARATOR
                                      # $CHILD_ERROR
 use POSIX qw(:sys_wait_h strftime);
@@ -3366,7 +3366,7 @@ EOS
     return;
 }
 
-# return if the given PDF::API2 font can encode the given character
+# return if the given PDF::Builder font can encode the given character
 
 sub font_can_char {
     my ( $font, $char ) = @_;
@@ -3379,14 +3379,14 @@ sub _thread_save_pdf {
     my $pagenr = 0;
     my ( $cache, $pdf, $error );
 
-    # Create PDF with PDF::API2
+    # Create PDF with PDF::Builder
     $self->{message} = __('Setting up PDF');
     my $filename = $options{path};
     if ( _need_temp_pdf(%options) ) {
         $filename = File::Temp->new( DIR => $options{dir}, SUFFIX => '.pdf' );
     }
     try {
-        $pdf = PDF::API2->new( -file => $filename );
+        $pdf = PDF::Builder->new( -file => $filename );
     }
     catch {
         $logger->error("Caught error creating PDF $filename: $_");
@@ -3810,15 +3810,23 @@ sub _write_image_object {
     {
         $logger->info("Writing temporary image $filename");
 
+        # Perlmagick doesn't reliably convert to 1-bit, so using convert
+        if ( $compression =~ /g[34]/xsm ) {
+            my @cmd = (
+                'convert', $image->Get('filename'),
+                '-threshold', '40%', '-depth', '1', $filename,
+            );
+            my ($status) = exec_command( \@cmd );
+            return 'tif';
+        }
+
         # Reset depth because of ImageMagick bug
         # <https://github.com/ImageMagick/ImageMagick/issues/277>
         $image->Set( 'depth', $image->Get('depth') );
         my $status = $image->Write( filename => $filename );
         return if $_self->{cancel};
         if ("$status") { $logger->warn($status) }
-        if ( $filename =~ /[.](\w*)$/xsm ) {
-            $format = $1;
-        }
+        if ( $filename =~ /[.](\w*)$/xsm ) { $format = $1 }
     }
     return $format;
 }

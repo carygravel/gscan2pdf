@@ -1,3 +1,13 @@
+2.10.0 (30.10.2020):
+
+* Switch from PDF::API2 to PDF::Builder to improve TIFF handling and compression
+  options.
+  Closes Debian bugs 602486 (heavily distored scans) and
+  703768 (parts of the page translated to the right, black border)
+* Switch from internal image viewer to Gtk3::ImageView
+  (based on internal image viewer)
+
+
 2.9.1 (25.09.2020):
 
 * Work around imagemagick versions that create TIFFs that PDF::API2 doesn't like

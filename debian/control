@@ -19,7 +19,7 @@ Build-Depends-Indep: gettext,
                      liblog-log4perl-perl,
                      liblist-moreutils-perl,
                      libossp-uuid-perl | libdata-uuid-perl,
-                     libpdf-api2-perl,
+                     libpdf-builder-perl,
                      libproc-processtable-perl,
                      libreadonly-perl,
                      librsvg2-common,
@@ -58,7 +58,7 @@ Depends: imagemagick,
          liblocale-gettext-perl (>= 1.05),
          liblog-log4perl-perl,
          libossp-uuid-perl | libdata-uuid-perl,
-         libpdf-api2-perl,
+         libpdf-builder-perl,
          libproc-processtable-perl,
          libreadonly-perl,
          librsvg2-common,
@@ -84,7 +84,7 @@ Description: GUI to produce PDFs or DjVus from scanned documents
  OCR can be used to recognise text in the scans, and the output
  embedded in the PDF or DjVu.
  .
- PDF conversion is done by PDF::API2.
+ PDF conversion is done by PDF::Builder.
  .
  The resulting document may be saved as a PDF, DjVu, multipage TIFF file, or
  single page image file.

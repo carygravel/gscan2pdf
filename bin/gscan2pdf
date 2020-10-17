@@ -78,7 +78,7 @@ use File::Copy;
 use File::Temp;                 # To create temporary files
 use File::Path qw(remove_tree);
 use Glib qw(TRUE FALSE);        # To get TRUE and FALSE
-use PDF::API2;
+use PDF::Builder;
 use Getopt::Long;
 use Set::IntSpan 1.10;          # For size method for page numbering issues
 use Proc::Killfam;
@@ -209,7 +209,7 @@ $logger->info("Gscan2pdf::Document version $Gscan2pdf::Document::VERSION");
 #$logger->info( 'Using GtkImageView version ',
 #    Gtk3::ImageView->library_version );
 #$logger->info("Using Gtk3::ImageView version $Gtk3::ImageView::VERSION");
-$logger->info("Using PDF::API2 version $PDF::API2::VERSION");
+$logger->info("Using PDF::Builder version $PDF::Builder::VERSION");
 $logger->info( 'Using Sane version ' . join $DOT, Image::Sane->get_version );
 $logger->info("Using libimage-sane-perl version $Image::Sane::VERSION");
 
@@ -950,7 +950,7 @@ sub check_dependencies {
                     [ 'convert', 'rose:', $tempimg ] );
                 my $temppdf =
                   File::Temp->new( DIR => $session, SUFFIX => '.pdf' );
-                my $pdfobj = PDF::API2->new( -file => $temppdf );
+                my $pdfobj = PDF::Builder->new( -file => $temppdf );
                 my $page   = $pdfobj->page;
                 my $size   = $Gscan2pdf::Document::POINTS_PER_INCH;
                 $page->mediabox( $size, $size );
@@ -7299,7 +7299,7 @@ Displays the program version and exits.
 =back
 
 Scanning is handled with SANE via scanimage.
-PDF conversion is done by PDF::API2.
+PDF conversion is done by PDF::Builder.
 TIFF export is handled by libtiff (faster and smaller memory footprint for
 multipage files).
 
@@ -7420,7 +7420,7 @@ A simple interface to Gtk3's complex MVC list widget
 
 Using libc functions for internationalisation in Perl
 
-=item libpdf-api2-perl
+=item libpdf-builder-perl
 
 provides the functions for creating PDF documents in Perl
 

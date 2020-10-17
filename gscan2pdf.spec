@@ -15,7 +15,7 @@ BuildRequires: gettext, desktop-file-utils
 Requires: perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires: perl(Gtk3::ImageView), perl-Gtk2-Ex-Simple-List
 Requires: perl-Sane, perl-Locale-gettext
-Requires: sane-utils, libtiff-tools, perl(PDF::API2)
+Requires: sane-utils, libtiff-tools, perl(PDF::Builder)
 Requires: perl(Config::General), ImageMagick-perl, ImageMagick
 Requires: librsvg-2-2, perl(Set::Intspan), perl(List::MoreUtils)
 Requires: perl-HTML-Parser, perl(Goo::Canvas), perl-Proc-ProcessTable
@@ -33,7 +33,7 @@ scanimage or scanadf, and can scan multiple pages at once. It presents a
 thumbnail view of scanned pages, and permits simple operations such as rotating
 and deleting pages. 
 
-PDF conversion is done by PDF::API2.
+PDF conversion is done by PDF::Builder.
 
 The resulting document may be saved as a PDF or a multipage TIFF file.
 

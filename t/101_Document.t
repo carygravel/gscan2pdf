@@ -4,7 +4,7 @@ use Test::More tests => 67;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
-use PDF::API2;
+use PDF::Builder;
 use File::stat;
 use Date::Calc qw(Time_to_Date);
 
@@ -512,7 +512,7 @@ is(
     'stderr open3 running unknown command'
 );
 
-my $pdf  = PDF::API2->new;
+my $pdf  = PDF::Builder->new;
 my $font = $pdf->corefont('Times-Roman');
 is( Gscan2pdf::Document::font_can_char( $font, decode_utf8('a') ),
     TRUE, '_font_can_char a' );
