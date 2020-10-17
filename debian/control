@@ -11,7 +11,7 @@ Build-Depends-Indep: perl (>= 5.8.0-7), gettext, libtest-pod-perl,
  libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl,
  libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl, xauth, xfonts-base,
  xvfb, libatk-adaptor, libsub-override-perl, poppler-utils,
- ghostscript, gsfonts, liblocale-codes-perl
+ ghostscript, gsfonts, liblocale-codes-perl (>= 3.60)
 Maintainer: Jeffrey Ratcliffe <jjr@debian.org>
 Standards-Version: 4.5.0
 Vcs-Git: https://git.code.sf.net/p/gscan2pdf/code
@@ -28,8 +28,8 @@ Depends: libgtk3-simplelist-perl, libgtk3-perl (>= 0.028),
  librsvg2-common, libset-intspan-perl (>= 1.10), liblist-moreutils-perl,
  libhtml-parser-perl, libgoocanvas2-perl, libproc-processtable-perl,
  libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl, libfilesys-df-perl,
- libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl, liblocale-codes-perl,
- ${misc:Depends}
+ libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl,
+ liblocale-codes-perl (>= 3.60), ${misc:Depends}
 Recommends: xdg-utils, djvulibre-bin, pdftk,
  unpaper, tesseract-ocr | gocr | cuneiform
 Description: GUI to produce PDFs or DjVus from scanned documents
