@@ -2,16 +2,38 @@ Source: gscan2pdf
 Section: utils
 Priority: optional
 Build-Depends: debhelper-compat (= 13)
-Build-Depends-Indep: perl (>= 5.8.0-7), gettext, libtest-pod-perl,
- libgtk3-simplelist-perl, libimage-sane-perl, liblocale-gettext-perl (>= 1.05),
- sane-utils (>= 1.0.17), libtiff-tools, libpdf-api2-perl,
- libconfig-general-perl (>= 2.40), libimage-magick-perl, imagemagick,
- librsvg2-common, libset-intspan-perl (>= 1.10), liblist-moreutils-perl,
- libhtml-parser-perl, libgoocanvas2-perl, libproc-processtable-perl,
- libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl,
- libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl, xauth, xfonts-base,
- xvfb, libatk-adaptor, libsub-override-perl, poppler-utils,
- ghostscript, gsfonts, liblocale-codes-perl (>= 3.60)
+Build-Depends-Indep: gettext,
+                     ghostscript,
+                     gsfonts,
+                     imagemagick,
+                     libatk-adaptor,
+                     libconfig-general-perl (>= 2.40),
+                     libdate-calc-perl,
+                     libgoocanvas2-perl,
+                     libgtk3-simplelist-perl,
+                     libhtml-parser-perl,
+                     libimage-magick-perl,
+                     libimage-sane-perl,
+                     liblocale-codes-perl (>= 3.60),
+                     liblocale-gettext-perl (>= 1.05),
+                     liblog-log4perl-perl,
+                     liblist-moreutils-perl,
+                     libossp-uuid-perl | libdata-uuid-perl,
+                     libpdf-api2-perl,
+                     libproc-processtable-perl,
+                     libreadonly-perl,
+                     librsvg2-common,
+                     libset-intspan-perl (>= 1.10),
+                     libsub-override-perl,
+                     libtest-pod-perl,
+                     libtiff-tools,
+                     libtry-tiny-perl,
+                     perl (>= 5.8.0-7),
+                     poppler-utils,
+                     sane-utils (>= 1.0.17),
+                     xauth,
+                     xfonts-base,
+                     xvfb
 Maintainer: Jeffrey Ratcliffe <jjr@debian.org>
 Standards-Version: 4.5.0
 Vcs-Git: https://git.code.sf.net/p/gscan2pdf/code
@@ -21,17 +43,35 @@ Rules-Requires-Root: no
 
 Package: gscan2pdf
 Architecture: all
-Depends: libgtk3-simplelist-perl, libgtk3-perl (>= 0.028),
- libimage-sane-perl, liblocale-gettext-perl (>= 1.05),
- sane-utils (>= 1.0.17), libtiff-tools, libpdf-api2-perl,
- libconfig-general-perl (>= 2.40), libimage-magick-perl, imagemagick,
- librsvg2-common, libset-intspan-perl (>= 1.10), liblist-moreutils-perl,
- libhtml-parser-perl, libgoocanvas2-perl, libproc-processtable-perl,
- libreadonly-perl, liblog-log4perl-perl, libtry-tiny-perl, libfilesys-df-perl,
- libossp-uuid-perl | libdata-uuid-perl, libdate-calc-perl,
- liblocale-codes-perl (>= 3.60), ${misc:Depends}
-Recommends: xdg-utils, djvulibre-bin, pdftk,
- unpaper, tesseract-ocr | gocr | cuneiform
+Depends: imagemagick,
+         libgoocanvas2-perl,
+         libconfig-general-perl (>= 2.40),
+         libdate-calc-perl,
+         libfilesys-df-perl,
+         libgtk3-perl (>= 0.028),
+         libgtk3-simplelist-perl,
+         libhtml-parser-perl,
+         libimage-magick-perl,
+         libimage-sane-perl,
+         liblist-moreutils-perl,
+         liblocale-codes-perl (>= 3.60),
+         liblocale-gettext-perl (>= 1.05),
+         liblog-log4perl-perl,
+         libossp-uuid-perl | libdata-uuid-perl,
+         libpdf-api2-perl,
+         libproc-processtable-perl,
+         libreadonly-perl,
+         librsvg2-common,
+         libset-intspan-perl (>= 1.10),
+         libtiff-tools,
+         libtry-tiny-perl,
+         sane-utils (>= 1.0.17),
+         ${misc:Depends}
+Recommends: xdg-utils,
+            djvulibre-bin,
+            pdftk,
+            unpaper,
+            tesseract-ocr | gocr | cuneiform
 Description: GUI to produce PDFs or DjVus from scanned documents
  Only five clicks are required to scan several pages and then save all or a
  selection as a PDF or DjVu file, including metadata if required.
