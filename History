@@ -7,6 +7,7 @@
 * Switch from internal image viewer to Gtk3::ImageView
   (based on internal image viewer)
 * Update to German translation (thanks to Eugen Artus)
+* Update to Ukrainian translation (thanks to Yuri Chornoivan)
 
 
 2.9.1 (25.09.2020):
