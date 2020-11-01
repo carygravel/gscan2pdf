@@ -1,4 +1,4 @@
-2.10.0 (30.10.2020):
+2.10.0 (31.10.2020):
 
 * Switch from PDF::API2 to PDF::Builder to improve TIFF handling and compression
   options.

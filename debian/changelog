@@ -8,7 +8,7 @@ gscan2pdf (2.10.0-1) unstable; urgency=low
     Closes: #602486 (heavily distored scans)
     Closes: #703768 (parts of the page translated to the right, black border)
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 31 Oct 2020 15:04:34 +0100
 
 gscan2pdf (2.9.1-1) unstable; urgency=low
 
