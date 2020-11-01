@@ -2,7 +2,8 @@ Source: gscan2pdf
 Section: utils
 Priority: optional
 Build-Depends: debhelper-compat (= 13)
-Build-Depends-Indep: gettext,
+Build-Depends-Indep: fonts-noto-extra,
+                     gettext,
                      ghostscript,
                      gsfonts,
                      imagemagick,

@@ -7,6 +7,8 @@ gscan2pdf (2.10.0-1) unstable; urgency=low
   * Added new dependency libpdf-builder-perl.
     Closes: #602486 (heavily distored scans)
     Closes: #703768 (parts of the page translated to the right, black border)
+  * Added new build dependency fonts-noto-extra to ensure non-ascii fonts
+    available for tests.
 
  -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 31 Oct 2020 15:04:34 +0100
 
