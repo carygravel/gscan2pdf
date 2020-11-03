@@ -4566,33 +4566,31 @@ sub _thread_threshold {
     return if $_self->{cancel};
     if ("$e") { $logger->warn($e) }
 
-    # Threshold the image
-    $e = $image->Threshold( threshold => "$threshold%" );
-    if ("$e") {
-        $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $e );
+    # Using imagemagick, as Perlmagick has performance problems.
+    # See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=968918
+    my $out;
+    try {
+        $out =
+          File::Temp->new( DIR => $dir, SUFFIX => '.pbm', UNLINK => FALSE );
+    }
+    catch {
+        $logger->error($_);
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $_ );
+        return;
+    };
+    my @cmd =
+      ( 'convert', $filename, '+dither', '-threshold', "$threshold%", $out, );
+    my ( $status, $stdout, $stderr ) = exec_command( \@cmd );
+    if ( $status != 0 ) {
+        $logger->error($stderr);
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold',
+            $stderr );
         return;
     }
     return if $_self->{cancel};
 
-    # Write it
-    my $error;
-    try {
-        $filename =
-          File::Temp->new( DIR => $dir, SUFFIX => '.pbm', UNLINK => FALSE );
-        $e = $image->Write( filename => $filename );
-        if ("$e") { $logger->warn($e) }
-    }
-    catch {
-        $logger->error("Error thesholding: $_");
-        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold', $e );
-        $error = TRUE;
-    };
-    if ($error) { return }
-    return if $_self->{cancel};
-
-    $page->{filename}   = $filename->filename;
-    $page->{dirty_time} = timestamp();           #flag as dirty
+    $page->{filename}   = $out->filename;
+    $page->{dirty_time} = timestamp();      #flag as dirty
     $self->{return}->enqueue(
         {
             type => 'page',
