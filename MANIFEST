@@ -16,6 +16,7 @@ debian/watch
 gscan2pdf.Suse.spec
 gscan2pdf.spec
 icons/180_degree.svg
+icons/crop.svg
 icons/gscan2pdf-papyrus.svg
 icons/gscan2pdf.svg
 icons/hand-tool.svg

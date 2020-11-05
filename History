@@ -2,6 +2,7 @@
 
 * Switch from Perlmagick to imagemagick for threshold tool to improve
   performance. Closes Debian bug 968918 (Threshold function is extremely slow)
+* + missing crop icon
 * Update to Hungarian translation (thanks to csola)
 
 
