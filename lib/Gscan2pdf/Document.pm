@@ -483,7 +483,7 @@ sub _extract_metadata {
         if ( $info->{format} eq 'Portable Document Format' ) {
             if ( $info->{datetime} =~ /^(.{19})((?:[+-]\d+)|Z)?$/xsm ) {
                 try {
-                    my $t = Time::Piece->strptime( $1, '%Y-%m-%dT%H:%M:%S' );
+                    my $t  = Time::Piece->strptime( $1, '%Y-%m-%dT%H:%M:%S' );
                     my $tz = $2;
                     $metadata{datetime} = [
                         $t->year, $t->mon, $t->day_of_month,
@@ -524,6 +524,7 @@ sub _note_callbacks {
     $callback{$uuid}{error}     = $options{error_callback};
     $callback{$uuid}{cancelled} = $options{cancelled_callback};
     $callback{$uuid}{display}   = $options{display_callback};
+
     if ( $options{mark_saved} ) {
         $callback{$uuid}{mark_saved} = sub {
 
@@ -1136,7 +1137,7 @@ sub drag_data_received_callback {    ## no critic (ProhibitManyArgs)
         my ( $path, $how ) = $tree->get_dest_row_at_pos( $x, $y );
         if ( defined $path ) { $path = $path->to_string }
 
-        my @rows = $tree->get_selected_indices or return;
+        my @rows      = $tree->get_selected_indices or return;
         my $selection = $tree->copy_selection( not $delete );
 
         # pasting without updating the selection
@@ -2766,7 +2767,7 @@ sub _thread_get_file_info {
 
     if ( not -e $options{filename} ) {
         _thread_throw_error(
-            $self, $options{uuid}, $options{page}{uuid},
+            $self,       $options{uuid}, $options{page}{uuid},
             'Open file', sprintf __('File %s not found'),
             $options{filename}
         );
@@ -3422,14 +3423,14 @@ sub _thread_save_pdf {
                 sprintf __(
                     "Unable to find font '%s'. Defaulting to core font."),
                 $options{options}{font}
-              )
+            )
         }
     }
 
     for my $pagedata ( @{ $options{list_of_pages} } ) {
         ++$pagenr;
         $self->{progress} = $pagenr / ( $#{ $options{list_of_pages} } + 2 );
-        $self->{message} = sprintf __('Saving page %i of %i'),
+        $self->{message}  = sprintf __('Saving page %i of %i'),
           $pagenr, $#{ $options{list_of_pages} } + 1;
         my $status =
           _add_page_to_pdf( $self, $pdf, $pagedata, $cache, %options );
@@ -3825,7 +3826,7 @@ sub _write_image_object {
         $image->Set( 'depth', $image->Get('depth') );
         my $status = $image->Write( filename => $filename );
         return if $_self->{cancel};
-        if ("$status") { $logger->warn($status) }
+        if ("$status")                     { $logger->warn($status) }
         if ( $filename =~ /[.](\w*)$/xsm ) { $format = $1 }
     }
     return $format;
@@ -3945,7 +3946,7 @@ sub _thread_save_djvu {
     for my $pagedata ( @{ $options{list_of_pages} } ) {
         ++$page;
         $self->{progress} = $page / ( $#{ $options{list_of_pages} } + 2 );
-        $self->{message} = sprintf __('Writing page %i of %i'),
+        $self->{message}  = sprintf __('Writing page %i of %i'),
           $page, $#{ $options{list_of_pages} } + 1;
 
         my ( $djvu, $error );
@@ -4397,7 +4398,7 @@ sub _thread_save_image {
             $current_filename = sprintf $options{path}, $i++;
             my $status = exec_command(
                 [
-                    'convert', $_->{filename},
+                    'convert',  $_->{filename},
                     '-density', $_->{xresolution} . 'x' . $_->{yresolution},
                     $current_filename
                 ],
@@ -4503,7 +4504,7 @@ sub _thread_analyse {
     my $total = @{$list_of_pages};
     for my $page ( @{$list_of_pages} ) {
         $self->{progress} = ( $i - 1 ) / $total;
-        $self->{message} = sprintf __('Analysing page %i of %i'), $i++, $total;
+        $self->{message}  = sprintf __('Analysing page %i of %i'), $i++, $total;
 
         # Identify with imagemagick
         my $image = Image::Magick->new;

@@ -6,7 +6,7 @@ use warnings;
 use feature 'switch';
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use Carp;
-use Glib qw(TRUE FALSE);            # To get TRUE and FALSE
+use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3;
 use version;
 use Gscan2pdf::Document;
@@ -74,10 +74,9 @@ sub new {
             string  => __('Writing system'),
             options => {
                 ltr => {
-                    string  => __('Left-to-right'),
-                    tooltip => __(
-                        'Most writings systems, e.g. Latin, Greek, Cyrillic.'
-                    ),
+                    string => __('Left-to-right'),
+                    tooltip =>
+                      __('Most writings systems, e.g. Latin, Greek, Cyrillic.'),
                 },
                 rtl => {
                     string  => __('Right-to-left'),

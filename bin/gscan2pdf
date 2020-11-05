@@ -634,11 +634,11 @@ sub parse_arguments {
         'help'          => \$help,
         'log=s'         => \$log,
         'debug'         => sub { $log_level = 'DEBUG'; $debug = TRUE },
-        'info'  => sub { $log_level = 'INFO' },
-        'warn'  => sub { $log_level = 'WARN' },
-        'error' => sub { $log_level = 'ERROR' },
-        'fatal' => sub { $log_level = 'FATAL' },
-        'version' => sub { warn "$prog_name $VERSION\n"; exit 0 },
+        'info'          => sub { $log_level = 'INFO' },
+        'warn'          => sub { $log_level = 'WARN' },
+        'error'         => sub { $log_level = 'ERROR' },
+        'fatal'         => sub { $log_level = 'FATAL' },
+        'version'       => sub { warn "$prog_name $VERSION\n"; exit 0 },
     );
     if ( not GetOptions(@args) ) { exit 1 }
     $Image::Sane::DEBUG = $debug;
@@ -1183,24 +1183,24 @@ sub create_menu_bar {
         # View menu
         [ 'View', undef, __('_View') ],
         [
-            'Zoom 100',       'gtk-zoom-100',
-            __('Zoom _100%'), undef,
+            'Zoom 100',         'gtk-zoom-100',
+            __('Zoom _100%'),   undef,
             __('Zoom to 100%'), sub { $view->set_zoom(1.0) }
         ],
         [
             'Zoom to fit',      'gtk-zoom-fit',
             __('Zoom to _fit'), undef,
-            __('Zoom to fit'), sub { $view->zoom_to_fit }
+            __('Zoom to fit'),  sub { $view->zoom_to_fit }
         ],
         [
             'Zoom in',      'gtk-zoom-in',
             __('Zoom _in'), 'plus',
-            __('Zoom in'), sub { $view->zoom_in }
+            __('Zoom in'),  sub { $view->zoom_in }
         ],
         [
             'Zoom out',      'gtk-zoom-out',
             __('Zoom _out'), 'minus',
-            __('Zoom out'), sub { $view->zoom_out }
+            __('Zoom out'),  sub { $view->zoom_out }
         ],
         [
             'Rotate 90',
@@ -2402,7 +2402,7 @@ sub import_files {
         $options{pagerange_callback} = sub {
             my ($info) = @_;
             return 1, $info->{pages};
-          }
+        }
     }
     else {
         $options{pagerange_callback} = sub {
@@ -2437,7 +2437,7 @@ sub import_files {
                 return $spinbuttonf->get_value, $spinbuttonl->get_value;
             }
             return;
-          }
+        }
     }
     $pid = $slist->import_files(%options);
     return;
@@ -2703,7 +2703,7 @@ sub save_button_clicked_callback {
     my $list_of_pages = list_of_pages;
 
     # dig out the image type, compression and quality
-    $SETTING{'image type'} = $windowi->get('image-type');
+    $SETTING{'image type'}         = $windowi->get('image-type');
     $SETTING{close_dialog_on_save} = $kbutton->get_active;
 
     $SETTING{post_save_hook} = $pshbutton->get_active;
@@ -2821,7 +2821,7 @@ sub save_button_clicked_callback {
         }
         when ('tif') {
             $SETTING{'tiff compression'} = $windowi->get('tiff-compression');
-            $SETTING{quality} = $windowi->get('jpeg-quality');
+            $SETTING{quality}            = $windowi->get('jpeg-quality');
 
             # cd back to cwd to save
             chdir $SETTING{cwd};
@@ -4447,7 +4447,7 @@ sub print_dialog {
 
             return;
         }
-    );
+      );
 
     my $res = $print_op->run( 'print-dialog', $window );
 
@@ -4905,7 +4905,7 @@ sub handle_clicks {
               ->popup( undef, undef, undef, undef, $event->button,
                 $event->time );
         }
-        else {                                           # Thumbnail simplelist
+        else {                                      # Thumbnail simplelist
             $SETTING{'Page range'} = 'selected';
             $uimanager->get_widget('/Thumb_Popup')
               ->popup( undef, undef, undef, undef, $event->button,
@@ -6070,7 +6070,7 @@ sub run_ocr {
     $SETTING{'threshold-before-ocr'} = $threshold_flag;
     if ($threshold_flag) {
         $SETTING{'threshold tool'} = $threshold;
-        $options{threshold} = $threshold;
+        $options{threshold}        = $threshold;
     }
 
     # fill $pagelist with filenames
@@ -6157,7 +6157,7 @@ sub take_snapshot {
     my @old_undo_files = map { "$_->[2]{filename}" } @undo_buffer;
 
     # Deep copy the tied data. Otherwise, very bad things happen.
-    @undo_buffer = map { [ @{$_} ] } @{ $slist->{data} };
+    @undo_buffer    = map { [ @{$_} ] } @{ $slist->{data} };
     @undo_selection = $slist->get_selected_indices;
     $logger->debug( Dumper( \@undo_buffer ) );
 
@@ -6207,7 +6207,7 @@ sub undo {
     $logger->info('Undoing');
 
     # Deep copy the tied data. Otherwise, very bad things happen.
-    @redo_buffer = map { [ @{$_} ] } @{ $slist->{data} };
+    @redo_buffer    = map { [ @{$_} ] } @{ $slist->{data} };
     @redo_selection = $slist->get_selected_indices;
     $logger->debug('redo_selection, undo_selection:');
     $logger->debug( Dumper( \@redo_selection, \@undo_selection ) );
@@ -6243,7 +6243,7 @@ sub unundo {
     $logger->info('Redoing');
 
     # Deep copy the tied data. Otherwise, very bad things happen.
-    @undo_buffer = map { [ @{$_} ] } @{ $slist->{data} };
+    @undo_buffer    = map { [ @{$_} ] } @{ $slist->{data} };
     @undo_selection = $slist->get_selected_indices;
     $logger->debug('redo_selection, undo_selection:');
     $logger->debug( Dumper( \@redo_selection, \@undo_selection ) );

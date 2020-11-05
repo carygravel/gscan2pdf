@@ -74,7 +74,7 @@ is( $slist->pages_possible( 2, 2 ),
 
 #########################
 
-is( $slist->valid_renumber( 1, 1, 'all' ), TRUE, 'valid_renumber all step 1' );
+is( $slist->valid_renumber( 1, 1,  'all' ), TRUE, 'valid_renumber all step 1' );
 is( $slist->valid_renumber( 3, -1, 'all' ),
     TRUE, 'valid_renumber all start 3 step -1' );
 is( $slist->valid_renumber( 2, -1, 'all' ),

@@ -3,7 +3,7 @@ package Gscan2pdf::Dialog;
 use warnings;
 use strict;
 use Gtk3;
-use Glib 1.220 qw(TRUE FALSE);      # To get TRUE and FALSE
+use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::PageRange;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
 use Data::Dumper;

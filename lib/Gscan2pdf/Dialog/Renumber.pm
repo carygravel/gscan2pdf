@@ -2,7 +2,7 @@ package Gscan2pdf::Dialog::Renumber;
 
 use strict;
 use warnings;
-use Glib 1.220 qw(TRUE FALSE);      # To get TRUE and FALSE
+use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Dialog;
 use Gscan2pdf::Document;
 use Gscan2pdf::PageRange;

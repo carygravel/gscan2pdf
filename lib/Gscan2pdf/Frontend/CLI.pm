@@ -120,7 +120,7 @@ sub find_scan_options {
             my ( $output, $error ) = @_;
             if ( defined $error and defined $options{error_callback} ) {
                 while ( $error =~ /([\r\n])/xsm ) {
-                    my $le = $1;
+                    my $le   = $1;
                     my $line = substr $error, 0, index $error, $le;
                     $error = substr $error, index( $error, $le ) + 1,
                       length $error;

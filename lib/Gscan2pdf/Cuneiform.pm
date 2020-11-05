@@ -4,8 +4,8 @@ use 5.008005;
 use strict;
 use warnings;
 use Carp;
-use File::Temp;                      # To create temporary files
-use Gscan2pdf::Document;             # for slurp
+use File::Temp;             # To create temporary files
+use Gscan2pdf::Document;    # for slurp
 use version;
 use English qw( -no_match_vars );    # for $PROCESS_ID
 

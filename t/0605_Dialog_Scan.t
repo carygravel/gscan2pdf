@@ -67,7 +67,7 @@ $override->replace(
 my $options = [
     undef,
     {
-        'constraint' => [ 'Auto', 'Flatbed', 'ADF Simplex' ],
+        'constraint'      => [ 'Auto', 'Flatbed', 'ADF Simplex' ],
         'desc'            => 'Selects source of the document to be scanned',
         'val'             => 'Auto',
         'constraint_type' => 3,

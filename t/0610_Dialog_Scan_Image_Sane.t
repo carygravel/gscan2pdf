@@ -345,7 +345,7 @@ $dialog->{reloaded_signal} = $dialog->signal_connect(
             'changed-profile' => sub {
                 my ( $widget, $profile ) = @_;
                 $dialog->signal_handler_disconnect( $dialog->{signal} );
-                my $options = $dialog->get('available-scan-options');
+                my $options  = $dialog->get('available-scan-options');
                 my $expected = { backend => [] };
                 push @{ $expected->{backend} },
                   { scalar(SANE_NAME_PAGE_HEIGHT) => 52 }

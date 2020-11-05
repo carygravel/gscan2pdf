@@ -29,7 +29,7 @@ print $fh $config;
 close $fh or die "Error: cannot close $rc\n";
 
 my %example = ( version => '1.3.2' );
-my %output = Gscan2pdf::Config::read_config( $rc, $logger );
+my %output  = Gscan2pdf::Config::read_config( $rc, $logger );
 
 is_deeply( \%output, \%example, 'Read Config::General' );
 
@@ -45,7 +45,7 @@ print $fh $config;
 close $fh or die "Error: cannot close $rc\n";
 
 %example = ( version => '1.3.3' );
-%output = Gscan2pdf::Config::read_config( $rc, $logger );
+%output  = Gscan2pdf::Config::read_config( $rc, $logger );
 
 is_deeply( \%output, \%example, 'Read JSON' );
 
@@ -280,7 +280,7 @@ print $fh $config;
 close $fh or die "Error: cannot close $rc\n";
 
 %example = ( user_defined_tools => ['gimp %i'] );
-%output = Gscan2pdf::Config::read_config( $rc, $logger );
+%output  = Gscan2pdf::Config::read_config( $rc, $logger );
 
 is_deeply( \%output, \%example, 'force user_defined_tools to be an array' );
 
@@ -490,7 +490,7 @@ print $fh $config;
 close $fh or die "Error: cannot close $rc\n";
 
 %example = ();
-%output = Gscan2pdf::Config::read_config( $rc, $logger );
+%output  = Gscan2pdf::Config::read_config( $rc, $logger );
 
 is_deeply( \%output, \%example, 'deal with corrupt config' );
 

@@ -446,7 +446,7 @@ sub write_config {
     $conf = $conf->canonical;
     open my $fh, '>', $rc or die "Error: cannot open $rc\n";
     print {$fh} $conf->encode($SETTING) or die "Error: cannot write to $rc\n";
-    close $fh or die "Error: cannot close $rc\n";
+    close $fh                           or die "Error: cannot close $rc\n";
     $logger->info("Wrote config to $rc");
     return;
 }

@@ -746,7 +746,7 @@ sub _edit_profile_callback {
         $profile = $parent->{current_scan_options};
     }
     else {
-        $msg = sprintf __('Editing scan profile "%s"'), $name;
+        $msg     = sprintf __('Editing scan profile "%s"'), $name;
         $profile = $parent->{profiles}{$name};
     }
     my $dialog = Gtk3::Dialog->new(
@@ -2075,7 +2075,7 @@ sub set_options {
             my ( $x, $y ) = to_graph( $widget, $event->x, $event->y );
             $x = int($x) + 1;
             if ( $x > @{ $widget->{val} } ) {
-                push @{ $widget->{val} }, $y;
+                push @{ $widget->{val} },   $y;
                 push @{ $widget->{items} }, add_value( $root, $widget );
             }
             else {

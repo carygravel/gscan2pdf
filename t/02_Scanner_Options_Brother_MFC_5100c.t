@@ -191,4 +191,4 @@ my @that     = (
 );
 is_deeply( $options->{array}, \@that, 'Brother_MFC_5100c' );
 is( Gscan2pdf::Scanner::Options->device, 'brother:bus1;dev2', 'device name' );
-is( $options->can_duplex, FALSE, 'can duplex' );
+is( $options->can_duplex,                FALSE,               'can duplex' );

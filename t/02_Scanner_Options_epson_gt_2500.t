@@ -693,8 +693,8 @@ my @that     = (
         index => 46,
         'desc' =>
 'Sets the focus position to either the glass or 2.5mm above the glass',
-        'constraint' => [ 'Focus on glass', 'Focus 2.5mm above glass' ],
-        'unit'       => SANE_UNIT_NONE,
+        'constraint'    => [ 'Focus on glass', 'Focus 2.5mm above glass' ],
+        'unit'          => SANE_UNIT_NONE,
         constraint_type => SANE_CONSTRAINT_STRING_LIST,
         type            => SANE_TYPE_STRING,
         'cap'           => SANE_CAP_SOFT_DETECT +

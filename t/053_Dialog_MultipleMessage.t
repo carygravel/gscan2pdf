@@ -179,8 +179,7 @@ EOS
 
 is(
     Gscan2pdf::Dialog::MultipleMessage::filter_message(
-        'Error processing with tesseract: Detected 440 diacritics'
-    ),
+        'Error processing with tesseract: Detected 440 diacritics'),
     'Error processing with tesseract: Detected %%d diacritics',
     'Filter out integer from tesseract warning'
 );

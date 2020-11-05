@@ -51,7 +51,7 @@ sub INIT_INSTANCE {
     $self->{grid}->attach(
         Gtk3::Label->new( __('Hide') ),
         $COL_CHECKBOX, $self->{grid_rows}++,
-        1, 1
+        1,             1
     );
     $self->{cbl} = Gtk3::Label->new( __("Don't show this message again") );
     $self->{cbl}->set_halign('end');

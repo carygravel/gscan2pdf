@@ -16,7 +16,7 @@ Log::Log4perl->easy_init($WARN);
 
 Gscan2pdf::Document->setup(Log::Log4perl::get_logger);
 my $slist = Gscan2pdf::Document->new;
-my $dir = File::Spec->catfile( File::Spec->tmpdir, 'gscan2pdf-tmp' );
+my $dir   = File::Spec->catfile( File::Spec->tmpdir, 'gscan2pdf-tmp' );
 $slist->set_dir($dir);
 $slist->open_session( dir => $dir );
 
