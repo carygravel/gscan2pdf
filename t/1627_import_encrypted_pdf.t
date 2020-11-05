@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::Cmd qw(can_run);
 use Test::More tests => 5;
 
 BEGIN {
@@ -11,7 +12,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'pdftk not installed', 4 unless `which pdftk`;
+    skip 'pdftk not installed', 4 unless can_run('pdftk');
 
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);

@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 5;
 use Gtk3 -init;    # Could just call init separately
 use Gscan2pdf::Tesseract;
@@ -24,8 +25,7 @@ $slist->set_dir($dir);
 SKIP: {
     skip 'Tesseract not installed', 5
       unless Gscan2pdf::Tesseract->setup($logger);
-    skip 'unpaper not installed', 5
-      unless ( system("which unpaper > /dev/null 2> /dev/null") == 0 );
+    skip 'unpaper not installed', 5 unless can_run('unpaper');
 
     my $unpaper = Gscan2pdf::Unpaper->new;
     my $vbox    = Gtk3::VBox->new;

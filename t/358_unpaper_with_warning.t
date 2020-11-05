@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 1;
 
 BEGIN {
@@ -11,8 +12,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'unpaper not installed', 1
-      unless ( system("which unpaper > /dev/null 2> /dev/null") == 0 );
+    skip 'unpaper not installed', 1 unless can_run('unpaper');
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     my $unpaper =
       Gscan2pdf::Unpaper->new( { 'deskew-scan-direction' => 'bottom,top' } );

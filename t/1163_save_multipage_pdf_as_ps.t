@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 2;
 
 BEGIN {
@@ -10,8 +11,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'pdf2ps not installed', 2
-      unless ( system("which pdf2ps > /dev/null 2> /dev/null") == 0 );
+    skip 'pdf2ps not installed', 2 unless can_run('pdf2ps');
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);
     Log::Log4perl->easy_init($WARN);

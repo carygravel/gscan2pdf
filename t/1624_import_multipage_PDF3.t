@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Temp;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 1;
 
 BEGIN {
@@ -12,7 +13,7 @@ BEGIN {
 
 TODO: {
     todo_skip 'pdfunite (poppler utils) not installed', 1
-      unless `which pdfunite`;
+      unless can_run('pdfunite');
     todo_skip '2000 page pdf import cannot succeede with current architecture',
       1
       if 1;

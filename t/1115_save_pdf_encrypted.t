@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 1;
 use Gtk3 -init;    # Could just call init separately
 
@@ -10,7 +11,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'pdftk not installed', 1 unless `which pdftk`;
+    skip 'pdftk not installed', 1 unless can_run('pdftk');
 
     Gscan2pdf::Translation::set_domain('gscan2pdf');
 

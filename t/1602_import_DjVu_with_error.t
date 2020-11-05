@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::Cmd qw(can_run);
 use Test::More tests => 1;
 
 BEGIN {
@@ -11,8 +12,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'DjVuLibre not installed', 1
-      unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
+    skip 'DjVuLibre not installed', 1 unless can_run('cjb2');
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);
     Log::Log4perl->easy_init($FATAL);

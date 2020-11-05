@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::Cmd qw(can_run);
 use Image::Sane ':all';    # To get SANE_* enums
 use Gscan2pdf::Scanner::Profile;
 use Test::More tests => 48;
@@ -386,8 +387,7 @@ $loop->run;
 #########################
 
 SKIP: {
-    skip 'scanadf not installed', 3
-      unless ( system("which scanadf > /dev/null 2> /dev/null") == 0 );
+    skip 'scanadf not installed', 3 unless can_run('scanadf');
     $loop = Glib::MainLoop->new;
     Gscan2pdf::Frontend::CLI->scan_pages(
         frontend         => 'scanadf',

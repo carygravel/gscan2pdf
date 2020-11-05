@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 2;
 
 BEGIN {
@@ -16,8 +17,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 SKIP: {
-    skip 'gocr not installed', 2
-      unless ( system("which gocr > /dev/null 2> /dev/null") == 0 );
+    skip 'gocr not installed', 2 unless can_run('gocr');
 
     # Create test image
     my $filename = 'test.pnm';

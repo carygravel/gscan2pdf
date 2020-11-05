@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::Cmd qw(can_run);
 use Test::More tests => 7;
 
 BEGIN {
@@ -12,8 +13,7 @@ BEGIN {
 Gscan2pdf::Translation::set_domain('gscan2pdf');
 
 SKIP: {
-    skip 'unpaper not installed', 5
-      unless ( system("which unpaper > /dev/null 2> /dev/null") == 0 );
+    skip 'unpaper not installed', 5 unless can_run('unpaper');
     my $unpaper = Gscan2pdf::Unpaper->new;
 
     use Log::Log4perl qw(:easy);

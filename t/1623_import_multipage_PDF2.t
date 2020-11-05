@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Temp;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 2;
 
 BEGIN {
@@ -11,7 +12,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'pdfunite (poppler utils) not installed', 2 unless `which pdfunite`;
+    skip 'pdfunite (poppler utils) not installed', 2 unless can_run('pdfunite');
 
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);

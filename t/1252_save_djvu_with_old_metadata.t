@@ -3,6 +3,7 @@ use strict;
 use Date::Calc qw(Date_to_Time);
 use File::stat;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
+use IPC::Cmd qw(can_run);
 use Test::More tests => 2;
 
 BEGIN {
@@ -13,8 +14,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'DjVuLibre not installed', 2
-      unless ( system("which cjb2 > /dev/null 2> /dev/null") == 0 );
+    skip 'DjVuLibre not installed', 2 unless can_run('cjb2');
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);
     Log::Log4perl->easy_init($FATAL);

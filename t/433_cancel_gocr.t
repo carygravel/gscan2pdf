@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::Cmd qw(can_run);
 use Test::More tests => 2;
 
 BEGIN {
@@ -10,8 +11,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'gocr not installed', 2
-      unless ( system("which gocr > /dev/null 2> /dev/null") == 0 );
+    skip 'gocr not installed', 2 unless can_run('gocr');
 
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);
