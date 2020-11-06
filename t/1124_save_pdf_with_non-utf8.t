@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {
@@ -18,7 +19,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 

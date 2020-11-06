@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -26,7 +27,7 @@ $slist->open_session_file( info => 'test2.gs2p' );
 $slist->save_session;
 
 like(
-    `file $slist->{data}[0][2]{filename}`,
+    capture( 'file', $slist->{data}[0][2]{filename} ),
     qr/PNG image data, 70 x 46, 8-bit\/color RGB, non-interlaced/,
     'PNG extracted with expected size'
 );

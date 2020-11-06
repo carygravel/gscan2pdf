@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Temp;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system);
 use Test::More tests => 2;
 
 BEGIN {
@@ -22,7 +23,8 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: page1.tif && tiff2pdf -o page1.pdf page1.tif');
+    system(qw(convert rose: page1.tif));
+    system(qw(tiff2pdf -o page1.pdf page1.tif));
     my $content = <<'EOS';
 %PDF-1.4
 1 0 obj
@@ -95,7 +97,7 @@ EOS
     open my $fh, '>', 'page2.pdf' or die 'Cannot open page2.pdf';
     print $fh $content;
     close $fh;
-    system('pdfunite page1.pdf page2.pdf test.pdf');
+    system(qw(pdfunite page1.pdf page2.pdf test.pdf));
 
     my $slist = Gscan2pdf::Document->new;
 

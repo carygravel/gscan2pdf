@@ -2,6 +2,7 @@ gscan2pdf (2.10.1-1) unstable; urgency=medium
 
   * New upstream release
     Closes: #968918 (Threshold function is extremely slow)
+  * Added new build dependency libipc-system-simple-perl.
 
  --
 

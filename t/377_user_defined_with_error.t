@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 2;
 
 BEGIN {
@@ -38,7 +39,7 @@ my %paper_sizes = (
 
 # Create test image
 my $filename = 'white.pnm';
-system("convert -size 210x297 xc:white $filename");
+system( qw(convert -size 210x297 xc:white), $filename );
 
 my $slist = Gscan2pdf::Document->new;
 

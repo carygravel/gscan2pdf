@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 
 BEGIN {
@@ -17,7 +18,9 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system(
-'convert -fill lightblue -pointsize 12 -units PixelsPerInch -density 300 label:"The quick brown fox" test.png'
+    qw(convert -fill lightblue -pointsize 12 -units PixelsPerInch -density 300),
+    'label:"The quick brown fox"',
+    'test.png'
 );
 
 my $slist = Gscan2pdf::Document->new;
@@ -42,7 +45,7 @@ $slist->import_files(
 Gtk3->main;
 
 like(
-    `identify test.tif`,
+    capture(qw(identify test.tif)),
     qr/test.tif TIFF 4\d\dx\d\d 4\d\dx\d\d\+0\+0 16-bit sRGB/,
     'valid TIFF created'
 );

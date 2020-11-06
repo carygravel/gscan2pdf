@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 2;
 
 BEGIN {
@@ -16,7 +17,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert -units PixelsPerInch -density 70 rose: test.jpg');
+system(qw(convert -units PixelsPerInch -density 70 rose: test.jpg));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -53,7 +54,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is( system('identify test2.jpg'),
+is( system(qw(identify test2.jpg)),
     0, 'can create a valid JPG after cancelling previous process' );
 
 #########################

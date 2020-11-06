@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 4;
 
 BEGIN {
@@ -20,7 +21,7 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: test.pnm');
+    system(qw(convert rose: test.pnm));
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -50,7 +51,7 @@ SKIP: {
     Gtk3->main;
 
     like(
-        `identify test2.png`,
+        capture(qw(identify test2.png)),
         qr/test2.png PNG 70x46 70x46\+0\+0 8-bit sRGB/,
         'ran post-save hook'
     );

@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -18,9 +19,11 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -units PixelsPerInch -density 300 label:"The quick brown fox" -border 20x10 test.png'
+    qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -units PixelsPerInch -density 300),
+    'label:"The quick brown fox"',
+    qw(-border 20x10 test.png)
 );
-my $info = `identify test.png`;
+my $info = capture(qw(identify test.png));
 my ( $width, $height );
 if ( $info =~ /(\d+)+x(\d+)/ ) { ( $width, $height ) = ( $1, $2 ) }
 
@@ -83,11 +86,8 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like(
-    `pdftotext test.pdf -`,
-    qr/The\s*quick\s*brown\s*fox/,
-    'PDF with expected text'
-);
+like( capture(qw(pdftotext test.pdf -)),
+    qr/The\s*quick\s*brown\s*fox/, 'PDF with expected text' );
 
 #########################
 

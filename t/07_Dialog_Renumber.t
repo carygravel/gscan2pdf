@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 14;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;
@@ -35,7 +36,7 @@ is( $dialog->get('increment'), 1, 'default step for empty document' );
 #########################
 
 $slist = Gscan2pdf::Document->new;
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 my $dir     = File::Temp->newdir;
 my %options = (
     filename    => 'test.pnm',

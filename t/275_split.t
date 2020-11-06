@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 8;
 
 BEGIN {
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.gif');
+system(qw(convert rose: test.gif));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -55,8 +56,8 @@ EOS
                 is_deeply [ $slist->{data}[0][2]{width},
                     $slist->{data}[0][2]{height} ], [ 35, 46 ],
                   'dimensions 1st page after split';
-                my $got =
-                  `identify -format '%g' $slist->{data}[0][2]{filename}`;
+                my $got = capture( qw(identify -format %g),
+                    $slist->{data}[0][2]{filename} );
                 chomp($got);
                 is $got, "35x46+0+0", 'GIF split correctly';
                 is dirname("$slist->{data}[0][2]{filename}"),
@@ -84,7 +85,8 @@ EOS
                 is_deeply [ $slist->{data}[1][2]{width},
                     $slist->{data}[1][2]{height} ], [ 35, 46 ],
                   'dimensions 2nd page after split';
-                $got = `identify -format '%g' $slist->{data}[1][2]{filename}`;
+                $got = capture( qw(identify -format %g),
+                    $slist->{data}[1][2]{filename} );
                 chomp($got);
                 is $got, "35x46+0+0", 'GIF split correctly 2';
                 is dirname("$slist->{data}[1][2]{filename}"),

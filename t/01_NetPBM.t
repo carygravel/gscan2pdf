@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 14;
 
 BEGIN {
@@ -16,7 +17,8 @@ for my $type (qw(pbm pgm ppm)) {
                 ( $width, $height ) = ( $1, $2 );
             }
             my $file = "test.$type";
-            system("convert -depth $depth -resize $size rose: $file");
+            system( qw(convert -depth),
+                $depth, '-resize', $size, 'rose:', $file );
             is_deeply [ Gscan2pdf::NetPBM::file_size_from_header($file) ],
               [ -s $file, $width, $height ],
               "get_size_from_PNM $type $size depth $depth";
@@ -28,7 +30,7 @@ for my $type (qw(pbm pgm ppm)) {
 #########################
 
 my $file = 'test.pnm';
-system("touch $file");
+system( 'touch', $file );
 is_deeply [ Gscan2pdf::NetPBM::file_size_from_header($file) ], [ -s $file ],
   "0-length PNM";
 unlink $file;

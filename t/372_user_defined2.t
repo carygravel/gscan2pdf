@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {
@@ -15,7 +16,7 @@ Log::Log4perl->easy_init($WARN);
 Gscan2pdf::Document->setup(Log::Log4perl::get_logger);
 
 # Create test image
-system('convert xc:white white.pnm');
+system(qw(convert xc:white white.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 

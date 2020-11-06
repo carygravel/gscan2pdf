@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 14;
 use Gscan2pdf::Document;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
@@ -62,7 +63,7 @@ $dialog = Gscan2pdf::Dialog::Scan->new(
     'document'      => $slist,
     'logger'        => $logger,
 );
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 my $dir     = File::Temp->newdir;
 my %options = (
     filename    => 'test.pnm',

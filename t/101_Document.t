@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 67;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
@@ -444,7 +445,7 @@ is_deeply(
 #########################
 
 my $filename = 'test.txt';
-system("touch $filename");
+system( 'touch', $filename );
 my %options = (
     path     => $filename,
     options  => { set_timestamp => TRUE },

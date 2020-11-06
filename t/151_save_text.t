@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -16,7 +17,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -41,8 +42,8 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is( `cat test.txt`,  'The quick brown fox', 'saved ASCII' );
-is( `cat test2.txt`, 'The quick brown fox', 'ran post-save hook' );
+is( capture(qw(cat test.txt)),  'The quick brown fox', 'saved ASCII' );
+is( capture(qw(cat test2.txt)), 'The quick brown fox', 'ran post-save hook' );
 
 #########################
 

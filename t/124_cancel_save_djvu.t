@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {
@@ -19,7 +20,7 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: test.pnm');
+    system(qw(convert rose: test.pnm));
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -48,7 +49,7 @@ SKIP: {
     );
     Gtk3->main;
 
-    is( system('identify test.jpg'),
+    is( system(qw(identify test.jpg)),
         0, 'can create a valid JPG after cancelling save DjVu process' );
 
 #########################

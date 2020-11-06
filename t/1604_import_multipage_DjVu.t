@@ -4,6 +4,7 @@ use File::Basename;    # Split filename into dir, file, ext
 use Gscan2pdf::Document;
 use Gtk3 -init;        # Could just call init separately
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system);
 use Test::More tests => 2;
 
 #########################
@@ -17,9 +18,9 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system(
-'convert rose: test.jpg;c44 test.jpg test.djvu;djvm -c test2.djvu test.djvu test.djvu'
-    );
+    system(qw(convert rose: test.jpg));
+    system(qw(c44 test.jpg test.djvu));
+    system(qw(djvm -c test2.djvu test.djvu test.djvu));
 
     my $slist = Gscan2pdf::Document->new;
 

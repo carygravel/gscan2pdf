@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {

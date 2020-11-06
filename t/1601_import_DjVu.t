@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 10;
 
 BEGIN {
@@ -20,7 +21,8 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: test.jpg;c44 test.jpg test.djvu');
+    system(qw(convert rose: test.jpg));
+    system(qw(c44 test.jpg test.djvu));
     my $text = <<'EOS';
 (page 0 0 2236 3185
   (column 157 3011 1725 3105
@@ -35,7 +37,7 @@ EOS
     open my $fh, '>:encoding(UTF8)', 'text.txt';
     print {$fh} $text;
     close $fh;
-    system("djvused 'test.djvu' -e 'select 1; set-txt text.txt' -s");
+    system( qw(djvused test.djvu -e), 'select 1; set-txt text.txt', '-s' );
 
     $text = <<'EOS';
 Author	"Authör"
@@ -47,9 +49,10 @@ EOS
     open $fh, '>:encoding(UTF8)', 'text.txt';
     print {$fh} $text;
     close $fh;
-    system("djvused 'test.djvu' -e 'set-meta text.txt' -s");
+    system( qw(djvused test.djvu -e), 'set-meta text.txt', '-s' );
 
-    my $old = `identify -format '%m %G %g %z-bit %r' test.djvu`;
+    my $old =
+      capture( qw(identify -format), '%m %G %g %z-bit %r', 'test.djvu' );
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -106,7 +109,11 @@ EOS
         },
         finished_callback => sub {
             like(
-`identify -format '%m %G %g %z-bit %r' $slist->{data}[0][2]{filename}`,
+                capture(
+                    qw(identify -format),
+                    '%m %G %g %z-bit %r',
+                    $slist->{data}[0][2]{filename}
+                ),
                 qr/^TIFF/,
                 'DjVu imported correctly'
             );

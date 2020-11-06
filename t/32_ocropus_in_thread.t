@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system);
 use Test::More tests => 3;
 
 BEGIN {
@@ -22,9 +23,8 @@ SKIP: {
     skip 'Ocropus not installed', 2 unless Gscan2pdf::Ocropus->setup($logger);
 
     # Create test image
-    system(
-'convert +matte -depth 1 -pointsize 12 -density 300 label:"The quick brown fox" test.png'
-    );
+    system( qw(convert +matte -depth 1 -pointsize 12 -density 300),
+        'label:"The quick brown fox"', 'test.png' );
 
     my $slist = Gscan2pdf::Document->new;
 

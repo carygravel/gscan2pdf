@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 use Gtk3 -init;    # Could just call init separately
 
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: -density 100x200 test.png');
+system(qw(convert rose: -density 100x200 test.png));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -33,7 +34,7 @@ $slist->import_files(
             list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub {
                 is(
-                    `pdfinfo test.pdf | grep 'Page size:'`,
+                    capture("pdfinfo test.pdf | grep 'Page size:'"),
                     "Page size:      50.4 x 16.56 pts\n",
                     'valid PDF created'
                 );

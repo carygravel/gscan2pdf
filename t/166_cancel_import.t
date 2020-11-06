@@ -1,5 +1,7 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
+use File::Copy;
 use Test::More tests => 2;
 
 BEGIN {
@@ -16,8 +18,8 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.tif');
-my $old = `identify -format '%m %G %g %z-bit %r' test.tif`;
+system(qw(convert rose: test.tif));
+my $old = capture( qw(identify -format), '%m %G %g %z-bit %r', 'test.tif' );
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -38,7 +40,7 @@ $slist->cancel(
         $slist->import_files(
             paths             => ['test.tif'],
             finished_callback => sub {
-                system("cp $slist->{data}[0][2]{filename} test.tif");
+                copy( "$slist->{data}[0][2]{filename}", 'test.tif' );
                 Gtk3->main_quit;
             }
         );
@@ -46,7 +48,7 @@ $slist->cancel(
 );
 Gtk3->main;
 
-is( `identify -format '%m %G %g %z-bit %r' test.tif`,
+is( capture( qw(identify -format), '%m %G %g %z-bit %r', 'test.tif' ),
     $old, 'TIFF imported correctly after cancelling previous import' );
 
 #########################

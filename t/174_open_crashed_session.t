@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(capture);
 use Test::More tests => 3;
 use File::Path qw(remove_tree);
 
@@ -21,7 +22,7 @@ $slist->set_dir($dir);
 $slist->open_session( dir => $dir );
 
 like(
-    `file $slist->{data}[0][2]{filename}`,
+    capture( 'file', $slist->{data}[0][2]{filename} ),
     qr/PNG image data, 70 x 46, 8-bit\/color RGB, non-interlaced/,
     'PNG extracted with expected size'
 );

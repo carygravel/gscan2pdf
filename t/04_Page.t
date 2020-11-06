@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 12;
 
 BEGIN {
@@ -14,7 +15,7 @@ use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($ERROR);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 Gscan2pdf::Page->set_logger(Log::Log4perl::get_logger);
 my $page = Gscan2pdf::Page->new(
@@ -47,7 +48,7 @@ my %paper_sizes = (
     },
 );
 
-system('convert -size 210x297 xc:white test.pnm');
+system(qw(convert -size 210x297 xc:white test.pnm));
 $page = Gscan2pdf::Page->new(
     filename => 'test.pnm',
     format   => 'Portable anymap',
@@ -58,7 +59,7 @@ is_deeply(
     { A4 => 25.4 },
     'basic portrait'
 );
-system('convert -size 297x210 xc:white test.pnm');
+system(qw(convert -size 297x210 xc:white test.pnm));
 $page = Gscan2pdf::Page->new(
     filename => 'test.pnm',
     format   => 'Portable anymap',
@@ -74,7 +75,7 @@ is_deeply(
 
 is( $page->get_resolution( \%paper_sizes ), 25.4, 'resolution' );
 
-system('convert -units "PixelsPerInch" -density 300 xc:white test.jpg');
+system(qw(convert -units PixelsPerInch -density 300 xc:white test.jpg));
 $page = Gscan2pdf::Page->new(
     filename => 'test.jpg',
     format   => 'Joint Photographic Experts Group JFIF format',
@@ -82,7 +83,7 @@ $page = Gscan2pdf::Page->new(
 );
 is( $page->get_resolution( \%paper_sizes ), 300, 'inches' );
 
-system('convert -units "PixelsPerCentimeter" -density 118 xc:white test.jpg');
+system(qw(convert -units PixelsPerCentimeter -density 118 xc:white test.jpg));
 $page = Gscan2pdf::Page->new(
     filename => 'test.jpg',
     format   => 'Joint Photographic Experts Group JFIF format',
@@ -90,7 +91,7 @@ $page = Gscan2pdf::Page->new(
 );
 is( $page->get_resolution( \%paper_sizes ), 299.72, 'centimetres' );
 
-system('convert -units "Undefined" -density 300 xc:white test.jpg');
+system(qw(convert -units Undefined -density 300 xc:white test.jpg));
 $page = Gscan2pdf::Page->new(
     filename => 'test.jpg',
     format   => 'Joint Photographic Experts Group JFIF format',
@@ -100,7 +101,7 @@ is( $page->get_resolution( \%paper_sizes ), 300, 'undefined' );
 
 #########################
 
-system('convert -size 210x297 xc:white test.pnm');
+system(qw(convert -size 210x297 xc:white test.pnm));
 $page = Gscan2pdf::Page->new(
     filename => 'test.pnm',
     format   => 'Portable anymap',

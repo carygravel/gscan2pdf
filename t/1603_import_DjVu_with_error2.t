@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 use Carp;
 use Sub::Override;     # Override Page to test functionality that
@@ -34,9 +35,11 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: test.jpg;c44 test.jpg test.djvu');
+    system(qw(convert rose: test.jpg));
+    system(qw(c44 test.jpg test.djvu));
 
-    my $old = `identify -format '%m %G %g %z-bit %r' test.djvu`;
+    my $old =
+      capture( qw(identify -format), '%m %G %g %z-bit %r', 'test.djvu' );
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -56,7 +59,11 @@ EOS
         },
         finished_callback => sub {
             like(
-`identify -format '%m %G %g %z-bit %r' $slist->{data}[0][2]{filename}`,
+                capture(
+                    qw(identify -format),
+                    '%m %G %g %z-bit %r',
+                    $slist->{data}[0][2]{filename}
+                ),
                 qr/^TIFF/,
                 'DjVu otherwise imported correctly'
             );

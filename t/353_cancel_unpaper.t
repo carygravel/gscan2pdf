@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -24,13 +25,17 @@ SKIP: {
 
     # Create test image
     system(
-'convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300 label:"The quick brown fox" 1.pnm'
+        qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        '1.pnm'
     );
     system(
-'convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300 label:"The slower lazy dog" 2.pnm'
+        qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        'label:"The slower lazy dog"',
+        '2.pnm'
     );
-    system('convert -size 100x100 xc:black black.pnm');
-    system('convert 1.pnm black.pnm 2.pnm +append test.pnm');
+    system(qw(convert -size 100x100 xc:black black.pnm));
+    system(qw(convert 1.pnm black.pnm 2.pnm +append test.pnm));
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -41,7 +46,8 @@ SKIP: {
     $slist->import_files(
         paths             => ['test.pnm'],
         finished_callback => sub {
-            my $md5sum = `md5sum $slist->{data}[0][2]{filename} | cut -c -32`;
+            my $md5sum =
+              capture("md5sum $slist->{data}[0][2]{filename} | cut -c -32");
             $slist->unpaper(
                 page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },
@@ -51,7 +57,9 @@ SKIP: {
                 sub {
                     is(
                         $md5sum,
-                        `md5sum $slist->{data}[0][2]{filename} | cut -c -32`,
+                        capture(
+                            "md5sum $slist->{data}[0][2]{filename} | cut -c -32"
+                        ),
                         'image not modified'
                     );
                     $slist->save_image(
@@ -65,7 +73,7 @@ SKIP: {
     );
     Gtk3->main;
 
-    is( system('identify test.jpg'),
+    is( system(qw(identify test.jpg)),
         0, 'can create a valid JPG after cancelling previous process' );
 
     unlink 'test.pnm', '1.pnm', '2.pnm', 'black.pnm', 'test.jpg';

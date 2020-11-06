@@ -3,6 +3,7 @@ use strict;
 use IPC::Cmd qw(can_run);
 use Image::Sane ':all';    # To get SANE_* enums
 use Gscan2pdf::Scanner::Profile;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 48;
 
 BEGIN {
@@ -176,7 +177,7 @@ $options{new_page_callback} = sub {
     $loop->quit;
 };
 my $msg = sprintf "Scanned page %d. (scanner status = %d)", 1, SANE_STATUS_EOF;
-system 'touch out1.pnm';
+system(qw(touch out1.pnm));
 Gscan2pdf::Frontend::CLI::parse_scanimage_output( $msg, \%options );
 $loop->run;
 unlink 'out1.pnm';
@@ -317,7 +318,7 @@ Gscan2pdf::Frontend::CLI::_watch_cmd(
     finished_callback => sub {
         my ( $output, $error ) = @_;
         is( length($output) . "\n",
-            `$cmd | wc -c`,
+            capture("$cmd | wc -c"),
             'stdout finished watching large amounts of stdout' );
         is( $error, undef, 'stderr finished watching large amounts of stdout' );
         $loop->quit;

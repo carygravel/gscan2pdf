@@ -5,6 +5,7 @@ use Storable qw(thaw store);
 use File::Path qw(make_path remove_tree);
 use Glib 1.210 qw(TRUE FALSE);
 use Try::Tiny;
+use IPC::System::Simple qw(capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -444,12 +445,9 @@ EOS
 
   SKIP: {
         skip 'file-5.31 cannot detect PGM', 1
-          if `file --version` =~ /file-5\.31$/m;
-        like(
-            `file $slist->{data}[0][2]{filename}`,
-            qr/image data/,
-            'extracted valid image'
-        );
+          if capture(qw(file --version)) =~ /file-5\.31$/m;
+        like( capture( 'file', $slist->{data}[0][2]{filename} ),
+            qr/image data/, 'extracted valid image' );
     }
 
 #########################

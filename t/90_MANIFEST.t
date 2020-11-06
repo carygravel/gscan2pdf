@@ -1,10 +1,14 @@
 use strict;
 use warnings;
 use Test::More;
+use IPC::System::Simple qw(capture);
 
 my $git;
-if ( -d '.git'
-    and eval { $git = `git ls-tree --name-status -r HEAD | egrep -v '^\.git'` }
+if (
+    -d '.git'
+    and eval {
+        $git = capture("git ls-tree --name-status -r HEAD | egrep -v '^\.git'");
+    }
   )
 {
     plan( tests => 1 );
@@ -14,6 +18,6 @@ else {
     plan( skip_all => $msg );
 }
 
-my $manifest = `cat MANIFEST`;
+my $manifest = capture(qw(cat MANIFEST));
 
 is( $git, $manifest, 'MANIFEST up to date' );

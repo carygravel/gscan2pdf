@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 use Gtk3 -init;    # Could just call init separately
 use POSIX qw(locale_h);
@@ -20,7 +21,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -40,7 +41,11 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like( `pdfinfo test.pdf`, qr/Page size:\s+70 x 46 pts/, 'valid PDF created' );
+like(
+    capture(qw(pdfinfo test.pdf)),
+    qr/Page size:\s+70 x 46 pts/,
+    'valid PDF created'
+);
 
 #########################
 

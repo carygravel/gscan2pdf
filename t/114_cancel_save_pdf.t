@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -46,7 +47,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is( system('identify test.jpg'),
+is( system(qw(identify test.jpg)),
     0, 'can create a valid JPG after cancelling save PDF process' );
 
 #########################

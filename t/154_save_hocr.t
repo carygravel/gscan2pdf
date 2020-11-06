@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -16,7 +17,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -85,8 +86,8 @@ $hocr = <<"EOS";
  </body>
 </html>
 EOS
-is( `cat test.txt`,  $hocr, 'saved hOCR' );
-is( `cat test2.txt`, $hocr, 'post-save hook' );
+is( capture(qw(cat test.txt)),  $hocr, 'saved hOCR' );
+is( capture(qw(cat test2.txt)), $hocr, 'post-save hook' );
 
 #########################
 

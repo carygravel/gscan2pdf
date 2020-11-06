@@ -4,6 +4,7 @@ use Date::Calc qw(Date_to_Time);
 use File::stat;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -24,7 +25,7 @@ SKIP: {
     # Create test image
     my $pnm  = 'test.pnm';
     my $djvu = 'test.djvu';
-    system('convert rose: test.pnm');
+    system(qw(convert rose: test.pnm));
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -52,7 +53,7 @@ SKIP: {
     );
     Gtk3->main;
 
-    my $info = `djvused $djvu -e 'print-meta'`;
+    my $info = capture( 'djvused', $djvu, qw(-e print-meta) );
     like( $info, qr/1966-02-10/, 'metadata ModDate in DjVu' );
 
 #########################

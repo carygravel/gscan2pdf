@@ -4,6 +4,7 @@ use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3;
 use Gscan2pdf::Frontend::Image_Sane;
 use Gscan2pdf::Scanner::Options;
+use IPC::System::Simple qw(capture);
 use Test::More tests => 3;
 
 #########################
@@ -36,15 +37,14 @@ Gscan2pdf::Frontend::Image_Sane->open_device(
                                 is( $status, 5, 'SANE_STATUS_GOOD' );
                               SKIP: {
                                     skip 'file-5.31 cannot detect PGM', 1
-                                      if `file --version` =~ /file-5\.31$/m;
-                                    like(
-                                        `file $path`,
+                                      if capture(qw(file --version)) =~
+                                      /file-5\.31$/m;
+                                    like( capture( 'file', $path ),
                                         qr/Netpbm /,
-                                        'Output has valid header'
-                                    );
+                                        'Output has valid header' );
                                 }
                                 like(
-                                    `identify $path`,
+                                    capture( 'identify', $path ),
 qr/PGM 216x334 216x334\+0\+0 8-bit Grayscale Gray/,
                                     'Output is valid image'
                                 );

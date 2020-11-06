@@ -3,6 +3,7 @@ use strict;
 use Date::Calc qw(Date_to_Time);
 use File::stat;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 
 BEGIN {
@@ -21,7 +22,7 @@ Gscan2pdf::Document->setup($logger);
 # Create test image
 my $pnm = 'test.pnm';
 my $pdf = 'test.pdf';
-system("convert rose: $pnm");
+system( qw(convert rose:), $pnm );
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -46,7 +47,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-my $info = `pdfinfo -isodates $pdf`;
+my $info = capture( qw(pdfinfo -isodates), $pdf );
 like $info, qr/1966-02-10T00:00:00Z/, 'metadata ModDate in PDF';
 
 #########################

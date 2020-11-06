@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 
 BEGIN {
@@ -19,7 +20,7 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: -density 100x200 test.png');
+    system(qw(convert rose: -density 100x200 test.png));
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -35,7 +36,7 @@ SKIP: {
                 list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                 finished_callback => sub {
                     is(
-                        `djvudump test.djvu | grep INFO`,
+                        capture('djvudump test.djvu | grep INFO'),
 "    INFO [10]         DjVu 140x46, v24, 200 dpi, gamma=2.2\n",
                         'created djvu with expect size and resolution'
                     );

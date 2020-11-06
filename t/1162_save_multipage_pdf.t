@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 
 BEGIN {
@@ -19,7 +20,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: 1.pnm');
+system(qw(convert rose: 1.pnm));
 
 # number of pages
 my $n = 3;
@@ -52,7 +53,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is( `pdffonts test.pdf | grep -c Times-Roman` + 0,
+is( capture('pdffonts test.pdf | grep -c Times-Roman') + 0,
     1, 'font embedded once in multipage PDF' );
 
 #########################

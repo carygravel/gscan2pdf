@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 3;
 
 BEGIN {
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert xc:white white.pnm');
+system(qw(convert xc:white white.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -28,7 +29,8 @@ $slist->set_dir($dir);
 $slist->import_files(
     paths             => ['white.pnm'],
     finished_callback => sub {
-        my $md5sum = `md5sum $slist->{data}[0][2]{filename} | cut -c -32`;
+        my $md5sum =
+          capture("md5sum $slist->{data}[0][2]{filename} | cut -c -32");
         $slist->user_defined(
             page             => $slist->{data}[0][2]{uuid},
             command          => 'sleep 10',
@@ -37,7 +39,9 @@ $slist->import_files(
                     sub {
                         is(
                             $md5sum,
-`md5sum $slist->{data}[0][2]{filename} | cut -c -32`,
+                            capture(
+"md5sum $slist->{data}[0][2]{filename} | cut -c -32"
+                            ),
                             'image not modified'
                         );
                         $slist->save_image(
@@ -58,7 +62,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is( system('identify test.jpg'),
+is( system(qw(identify test.jpg)),
     0, 'can create a valid JPG after cancelling previous process' );
 
 #########################

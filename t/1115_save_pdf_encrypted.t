@@ -1,6 +1,8 @@
 use warnings;
 use strict;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture EXIT_ANY);
+use Try::Tiny;
 use Test::More tests => 1;
 use Gtk3 -init;    # Could just call init separately
 
@@ -21,7 +23,7 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: test.jpg');
+    system(qw(convert rose: test.jpg));
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -37,11 +39,10 @@ SKIP: {
                 options           => { 'user-password' => '123' },
                 list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
                 finished_callback => sub {
-                    is(
-                        `pdfinfo test.pdf 2>&1`,
-                        "Command Line Error: Incorrect password\n",
-                        'created encrypted PDF'
-                    );
+                    my $output = capture( EXIT_ANY, 'pdfinfo test.pdf 2>&1' );
+                    is $output,
+                      "Command Line Error: Incorrect password\n",
+                      'created encrypted PDF';
                     Gtk3->main_quit;
                 }
             );

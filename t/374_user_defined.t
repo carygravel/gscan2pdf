@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 5;
 
 BEGIN {
@@ -35,7 +36,7 @@ my %paper_sizes = (
 );
 
 # Create test image
-system('convert -size 210x297 xc:white white.pnm');
+system(qw(convert -size 210x297 xc:white white.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -70,7 +71,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like( `pdfinfo test.pdf`, qr/A4/, 'PDF is A4' );
+like( capture(qw(pdfinfo test.pdf)), qr/A4/, 'PDF is A4' );
 
 #########################
 

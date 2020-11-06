@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system);
 use Test::More tests => 6;
 
 BEGIN {
@@ -25,7 +26,9 @@ SKIP: {
     # which should no longer occur, since v2.8.1 added --dpi to the tesseract
     # call
     system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.png'
+        qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        'test.png'
     );
 
     my $slist = Gscan2pdf::Document->new;

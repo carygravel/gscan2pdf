@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 9;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
@@ -18,7 +19,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -59,7 +60,7 @@ $slist->save_pdf(
     },
     finished_callback => sub {
         is(
-            `pdfinfo test.pdf | grep 'Page size:'`,
+            capture("pdfinfo test.pdf | grep 'Page size:'"),
             "Page size:      70 x 46 pts\n",
             'valid PDF created'
         );
@@ -70,7 +71,7 @@ $slist->save_pdf(
 Gtk3->main;
 
 like(
-    `identify test-1.ppm`,
+    capture(qw(identify test-1.ppm)),
     qr/test-1.ppm PPM 146x96 146x96\+0\+0 8-bit sRGB/,
     'ran post-save hook on pdf'
 );

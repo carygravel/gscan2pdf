@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use utf8;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 
 BEGIN {
@@ -18,10 +19,11 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my %options;
-$options{font} = `fc-list :lang=ru file | grep ttf 2> /dev/null | head -n 1`;
+$options{font} =
+  capture('fc-list :lang=ru file | grep ttf 2> /dev/null | head -n 1');
 chomp $options{font};
 $options{font} =~ s/: $//;
 
@@ -46,7 +48,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-my $out = `pdftotext test.pdf -`;
+my $out = capture(qw(pdftotext test.pdf -));
 utf8::decode($out);
 like $out, qr/пени способствовала сохранению/,
   'PDF with expected text';

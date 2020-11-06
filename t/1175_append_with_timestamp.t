@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gtk3 -init;             # Could just call init separately
@@ -18,8 +19,9 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
-system('convert rose: test.tif && tiff2pdf -o test.pdf test.tif');
+system(qw(convert rose: test.pnm));
+system(qw(convert rose: test.tif));
+system(qw(tiff2pdf -o test.pdf test.tif));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -46,7 +48,11 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is( `pdfinfo test.pdf | grep 'Pages:'`, "Pages:          2\n", 'PDF appended' );
+is(
+    capture("pdfinfo test.pdf | grep 'Pages:'"),
+    "Pages:          2\n",
+    'PDF appended'
+);
 is( -f 'test.pdf.bak', 1, 'Backed up original' );
 
 #########################

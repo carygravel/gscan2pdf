@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 
 BEGIN {
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -39,7 +40,7 @@ $slist->import_files(
 Gtk3->main;
 
 like(
-    `pdftotext test.pdf -`,
+    capture(qw(pdftotext test.pdf -)),
     qr/The quick brown fox/,
     'PDF with expected text'
 );

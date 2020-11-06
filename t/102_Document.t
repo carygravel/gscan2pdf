@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 10;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Document;
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.tif');
+system(qw(convert rose: test.tif));
 
 my $slist = Gscan2pdf::Document->new;
 

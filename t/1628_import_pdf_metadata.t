@@ -3,6 +3,7 @@ use strict;
 use Gscan2pdf::Document;
 use Gtk3 -init;    # Could just call init separately
 use Date::Calc qw(Add_Delta_DHMS);
+use IPC::System::Simple qw(system);
 use Test::More tests => 5;
 
 #########################
@@ -15,8 +16,10 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create b&w test image
+system( qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
+    'label:"The quick brown fox"', 'test.tif' );
 system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.tif && tiff2pdf -o test.pdf -e 20181231120000 -a Authör -t Title -s Sübject -k Keywörds test.tif'
+    qw(tiff2pdf -o test.pdf -e 20181231120000 -a Authör -t Title -s Sübject -k Keywörds test.tif)
 );
 
 my $slist = Gscan2pdf::Document->new;

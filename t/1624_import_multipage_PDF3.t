@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Temp;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {
@@ -26,17 +27,18 @@ TODO: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system('convert rose: page1.tif && tiff2pdf -o page1.pdf page1.tif');
+    system(qw(convert rose: page1.tif));
+    system(qw(tiff2pdf -o page1.pdf page1.tif));
     system(
-'pdfunite page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf 10.pdf'
+        qw(pdfunite page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf page1.pdf 10.pdf)
     );
     system(
-'pdfunite 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 100.pdf'
+        qw(pdfunite 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 10.pdf 100.pdf)
     );
     system(
-'pdfunite 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 1000.pdf'
+        qw(pdfunite 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 100.pdf 1000.pdf)
     );
-    system('pdfunite 1000.pdf 1000.pdf 2000.pdf');
+    system(qw(pdfunite 1000.pdf 1000.pdf 2000.pdf));
 
     my $slist = Gscan2pdf::Document->new;
 

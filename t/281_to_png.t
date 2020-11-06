@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system);
 use Test::More tests => 3;
 
 BEGIN {
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -31,7 +32,7 @@ $slist->import_files(
         $slist->to_png(
             page              => $slist->{data}[0][2]{uuid},
             finished_callback => sub {
-                is( system("identify $slist->{data}[0][2]{filename}"),
+                is( system( 'identify', $slist->{data}[0][2]{filename} ),
                     0, 'valid PNG created' );
                 is( dirname("$slist->{data}[0][2]{filename}"),
                     "$dir", 'using session directory' );

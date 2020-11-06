@@ -35,7 +35,7 @@ my %paper_sizes = (
 );
 
 # Create test image
-system('convert -size 210x297 xc:white white.pnm');
+system(qw(convert -size 210x297 xc:white white.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 

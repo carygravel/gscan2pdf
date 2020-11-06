@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 29;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
@@ -17,7 +18,7 @@ use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($WARN);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 Gscan2pdf::Page->set_logger(Log::Log4perl::get_logger);
 my $page = Gscan2pdf::Page->new(

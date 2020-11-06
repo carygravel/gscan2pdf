@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 3;
 
 BEGIN {
@@ -17,8 +18,8 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.tif');
-my $old = `identify -format '%m %G %g %z-bit %r' test.tif`;
+system(qw(convert rose: test.tif));
+my $old = capture( qw(identify -format), '%m %G %g %z-bit %r', 'test.tif' );
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -30,7 +31,11 @@ $slist->import_files(
     paths             => ['test.tif'],
     finished_callback => sub {
         is(
-`identify -format '%m %G %g %z-bit %r' $slist->{data}[0][2]{filename}`,
+            capture(
+                qw(identify -format),
+                '%m %G %g %z-bit %r',
+                $slist->{data}[0][2]{filename}
+            ),
             $old,
             'TIFF imported correctly'
         );

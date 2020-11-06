@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {
@@ -14,7 +15,7 @@ Log::Log4perl->easy_init($WARN);
 Gscan2pdf::Document->setup(Log::Log4perl::get_logger);
 
 # Create test image
-system('convert -size 210x297 xc:white white.pnm');
+system(qw(convert -size 210x297 xc:white white.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 

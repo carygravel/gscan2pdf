@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 use Gtk3 -init;    # Could just call init separately
 
@@ -17,9 +18,8 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.png'
-);
+system( qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
+    'label:"The quick brown fox"', 'test.png' );
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -51,10 +51,10 @@ Gtk3->main;
 
 is( -s 'test.pdf' > -s 'test2.pdf', 1,
     'downsampled PDF smaller than original' );
-system('pdfimages test2.pdf x');
+system(qw(pdfimages test2.pdf x));
 like(
-    `identify -format '%m %G %g %z-bit %r' x-000.pbm`,
-    qr/PBM 22\dx2\d 22\dx2\d[+]0[+]0 1-bit DirectClass Gray/,
+    capture( qw(identify -format), '%m %G %g %z-bit %r', 'x-000.pbm' ),
+    qr/PBM 2\d\dx2\d 2\d\dx2\d[+]0[+]0 1-bit DirectClass Gray/,
     'downsampled'
 );
 

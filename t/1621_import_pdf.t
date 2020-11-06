@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 4;
 
 BEGIN {
@@ -20,20 +21,25 @@ Gscan2pdf::Document->setup($logger);
 
 # Create b&w test image
 system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -units PixelsPerInch -density 300 label:"The quick brown fox" test.png'
+    qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -units PixelsPerInch -density 300),
+    'label:"The quick brown fox"',
+    'test.png'
 );
 
 # Add text layer with tesseract
 if ($tess_installed) {
-    system('tesseract -l eng test.png test pdf');
+    system(qw(tesseract -l eng test.png test pdf));
 }
 else {
     system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" test.tif && tiff2pdf -o test.pdf test.tif'
+        qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        'test.tif'
     );
+    system(qw(tiff2pdf -o test.pdf test.tif));
 }
 
-my $old = `identify -format '%m %G %g %z-bit %r' test.png`;
+my $old = capture( qw(identify -format), '%m %G %g %z-bit %r', 'test.png' );
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -45,7 +51,11 @@ $slist->import_files(
     paths             => ['test.pdf'],
     finished_callback => sub {
         is(
-`identify -format '%m %G %g %z-bit %r' $slist->{data}[0][2]{filename}`,
+            capture(
+                qw(identify -format),
+                '%m %G %g %z-bit %r',
+                $slist->{data}[0][2]{filename}
+            ),
             $old,
             'PDF imported correctly'
         );

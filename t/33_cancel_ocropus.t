@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 2;
 
 BEGIN {
@@ -19,9 +20,8 @@ SKIP: {
     skip 'Ocropus not installed', 2 unless Gscan2pdf::Ocropus->setup($logger);
 
     # Create test image
-    system(
-'convert +matte -depth 1 -pointsize 12 -density 300 label:"The quick brown fox" test.png'
-    );
+    system( qw(convert +matte -depth 1 -pointsize 12 -density 300),
+        'label:"The quick brown fox"', 'test.png' );
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -51,7 +51,7 @@ SKIP: {
     );
     Gtk3->main;
 
-    is( system('identify test.jpg'),
+    is( system(qw(identify test.jpg)),
         0, 'can create a valid JPG after cancelling previous process' );
 
     unlink 'test.png', 'test.jpg';

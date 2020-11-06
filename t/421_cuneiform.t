@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 8;
 
 BEGIN {
@@ -18,9 +19,8 @@ SKIP: {
       unless Gscan2pdf::Cuneiform->setup($logger);
 
     # Create test image
-    system(
-'convert +matte -depth 1 -pointsize 12 -density 300 label:"The quick brown fox" test.png'
-    );
+    system( qw(convert +matte -depth 1 -pointsize 12 -density 300),
+        'label:"The quick brown fox"', 'test.png' );
 
     my $got = Gscan2pdf::Cuneiform->hocr(
         file     => 'test.png',
@@ -31,9 +31,8 @@ SKIP: {
     like( $got, qr/The quick brown fox/, 'Cuneiform returned sensible text' );
 
     # Create colour test image
-    system(
-'convert -fill lightblue -pointsize 12 -density 300 label:"The quick brown fox" test.png'
-    );
+    system( qw(convert -fill lightblue -pointsize 12 -density 300),
+        'label:"The quick brown fox"', 'test.png' );
 
     $got = Gscan2pdf::Cuneiform->hocr(
         file      => 'test.png',
@@ -50,7 +49,7 @@ SKIP: {
 
     # Create test image
     system(
-"convert +matte -depth 1 -pointsize 12 -density 300 label:'öÖäÄüÜß' test.png"
+        qw(convert +matte -depth 1 -pointsize 12 -density 300 label:'öÖäÄüÜß' test.png)
     );
 
     $got = Gscan2pdf::Cuneiform->hocr(

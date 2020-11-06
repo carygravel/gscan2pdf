@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 2;
 use Gtk3 -init;    # Could just call init separately
 
@@ -17,8 +18,9 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
-system('convert rose: test.tif && tiff2pdf -o "te st.pdf" test.tif');
+system(qw(convert rose: test.pnm));
+system(qw(convert rose: test.tif));
+system( qw(tiff2pdf -o), 'te st.pdf', 'test.tif' );
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -42,7 +44,7 @@ $slist->import_files(
 Gtk3->main;
 
 is(
-    `pdfinfo 'te st.pdf' | grep 'Pages:'`,
+    capture("pdfinfo 'te st.pdf' | grep 'Pages:'"),
     "Pages:          2\n",
     'PDF prepended'
 );

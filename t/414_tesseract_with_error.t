@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 2;
 
 BEGIN {
@@ -23,7 +24,9 @@ SKIP: {
     # Create test image
     my $filename = 'test.png';
     system(
-"convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:'The quick brown fox' $filename"
+        qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
+        "label:'The quick brown fox'",
+        $filename
     );
 
     my $slist = Gscan2pdf::Document->new;

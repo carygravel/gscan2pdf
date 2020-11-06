@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 use Gtk3 -init;    # Could just call init separately
 use Gscan2pdf::Tesseract;
@@ -24,7 +25,7 @@ my $dir = File::Temp->newdir;
 $slist->set_dir($dir);
 
 # Create test image
-system('convert -size 210x297 xc:white white.pnm');
+system(qw(convert -size 210x297 xc:white white.pnm));
 
 $slist->import_scan(
     filename          => 'white.pnm',

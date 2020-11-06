@@ -1,6 +1,7 @@
 use warnings;
 use strict;
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system);
 use Test::More tests => 5;
 use Gtk3 -init;    # Could just call init separately
 use Gscan2pdf::Tesseract;
@@ -33,7 +34,9 @@ SKIP: {
 
     # Create b&w test image
     system(
-'convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300 label:"The quick brown fox" -rotate -90 test.pnm'
+        qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        qw(-rotate -90 test.pnm)
     );
 
     $slist->import_scan(

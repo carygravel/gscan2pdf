@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 3;
 
 BEGIN {
@@ -16,7 +17,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -41,12 +42,12 @@ $slist->import_files(
 Gtk3->main;
 
 like(
-    `identify test.jpg`,
+    capture(qw(identify test.jpg)),
     qr/test.jpg JPEG 70x46 70x46\+0\+0 8-bit sRGB/,
     'valid JPG created'
 );
 like(
-    `identify test2.png`,
+    capture(qw(identify test2.png)),
 qr/test2\.png PNG 70x46 70x46\+0\+0 8-bit sRGB \d+\.?\d*K?B 0\.\d+u 0:00\.\d+\b/,
     'ran post-save hook'
 );

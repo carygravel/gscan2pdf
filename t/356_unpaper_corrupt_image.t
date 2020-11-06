@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system);
 use Test::More tests => 1;
 
 BEGIN {
@@ -51,7 +52,9 @@ SKIP: {
 
     # Create test image
     system(
-'convert -size 2100x2970 +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300 label:"The quick brown fox" test.pnm'
+        qw(convert -size 2100x2970 +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        'test.pnm'
     );
 
     $slist->import_files(
@@ -60,7 +63,7 @@ SKIP: {
 
             # Now we've imported it,
             # remove the data to give a corrupt image
-            system("echo '' > $slist->{data}[0][2]->{filename}");
+            system( 'echo', '', '>', $slist->{data}[0][2]->{filename} );
             $slist->unpaper(
                 page              => $slist->{data}[0][2]{uuid},
                 options           => { command => $unpaper->get_cmdline },

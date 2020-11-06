@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 7;
 
 BEGIN {
@@ -45,7 +46,9 @@ SKIP: {
 
     # Create test image
     system(
-'convert -size 2100x2970 +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300 label:"The quick brown fox" test.pnm'
+        qw(convert -size 2100x2970 +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        'test.pnm'
     );
 
     my $slist = Gscan2pdf::Document->new;
@@ -95,7 +98,7 @@ SKIP: {
     );
     Gtk3->main;
 
-    like( `pdfinfo test.pdf`, qr/A4/, 'PDF is A4' );
+    like( capture(qw(pdfinfo test.pdf)), qr/A4/, 'PDF is A4' );
 
     unlink 'test.pnm', 'test.pdf', <$dir/*>;
     rmdir $dir;

@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 3;
 
 BEGIN {
@@ -23,13 +24,17 @@ SKIP: {
 
     # Create test image
     system(
-'convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300 label:"The quick brown fox" 1.pnm'
+        qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        '1.pnm'
     );
     system(
-'convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300 label:"The slower lazy dog" 2.pnm'
+        qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        'label:"The slower lazy dog"',
+        '2.pnm'
     );
-    system('convert -size 100x100 xc:black black.pnm');
-    system('convert 1.pnm black.pnm 2.pnm +append test.pnm');
+    system(qw(convert -size 100x100 xc:black black.pnm));
+    system(qw(convert 1.pnm black.pnm 2.pnm +append test.pnm));
 
     my $slist = Gscan2pdf::Document->new;
 
@@ -50,8 +55,12 @@ SKIP: {
                     my @level;
                     for my $i ( 0 .. 1 ) {
                         if (
-`convert $slist->{data}[$i][2]{filename} -depth 1 -resize 1x1 txt:-`
-                            =~ qr/gray\((\d{2,3}(\.\d+)?)%?\)/ )
+                            capture(
+                                'convert',
+                                $slist->{data}[$i][2]{filename},
+                                qw(-depth 1 -resize 1x1 txt:-)
+                            ) =~ qr/gray\((\d{2,3}(\.\d+)?)%?\)/
+                          )
                         {
                             $level[$i] = $1;
                             pass "valid PNM created for page $i";

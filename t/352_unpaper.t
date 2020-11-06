@@ -2,6 +2,7 @@ use warnings;
 use strict;
 use File::Basename;    # Split filename into dir, file, ext
 use IPC::Cmd qw(can_run);
+use IPC::System::Simple qw(system);
 use Test::More tests => 3;
 
 BEGIN {
@@ -44,7 +45,9 @@ SKIP: {
 
     # Create test image
     system(
-'convert -size 2550x3507 +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300 label:"The quick brown fox" test.pnm'
+        qw(convert -size 2550x3507 +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        'label:"The quick brown fox"',
+        'test.pnm'
     );
 
     my $slist = Gscan2pdf::Document->new;

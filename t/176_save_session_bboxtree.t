@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use IPC::System::Simple qw(system capture);
 use Test::More tests => 3;
 use File::Basename;    # Split filename into dir, file, ext
 
@@ -17,7 +18,7 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system('convert rose: test.pnm');
+system(qw(convert rose: test.pnm));
 
 my $slist = Gscan2pdf::Document->new;
 $slist->set_dir( File::Temp->newdir );
@@ -33,7 +34,7 @@ $slist->import_files(
 Gtk3->main;
 
 like(
-    `file test.gs2p`,
+    capture(qw(file test.gs2p)),
     qr/test.gs2p: gzip compressed data(?:, original size 9728)?/,
     'Session file created'
 );
