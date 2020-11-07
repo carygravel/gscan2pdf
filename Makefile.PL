@@ -36,10 +36,12 @@ $sharedir  = $prefixdir . "/share" unless ($sharedir);
 $localedir = $sharedir . "/locale" unless ($localedir);
 
 WriteMakefile(
-    NAME      => $program,
-    VERSION   => $version,
-    EXE_FILES => ["bin/$program"],
-    PREREQ_PM => {
+    NAME          => $program,
+    VERSION       => $version,
+    ABSTRACT_FROM => "bin/$program",       # retrieve abstract from module
+    AUTHOR        => "$author <$email>",
+    EXE_FILES     => ["bin/$program"],
+    PREREQ_PM     => {
         Glib             => 1.210,
         Gtk3             => 0,
         Image::Sane      => 0,
@@ -64,15 +66,6 @@ WriteMakefile(
     },
     clean => { FILES    => '$(SOURCE_TIDY)' },
     dist  => { COMPRESS => 'xz -9', SUFFIX => '.xz', },
-    (
-        $] >= 5.005
-        ?    ## Add these new keywords supported since 5.005
-          (
-            ABSTRACT_FROM => "bin/$program",     # retrieve abstract from module
-            AUTHOR        => "$author <$email>"
-          )
-        : ()
-    ),
 );
 
 sub MY::macro {
