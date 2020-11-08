@@ -270,7 +270,8 @@ my (
     $print_settings, $windowc, $current_page,
 
     # Goo::Canvas for OCR output
-    $canvas, $vpaned, $ocr_text_hbox, $ocr_textbuffer, $ocr_bbox,
+    $canvas,       $vpaned, $edit_ocr_action, $ocr_text_hbox, $ocr_textbuffer,
+    $ocr_textview, $ocr_bbox,
 
     # Notebook, split panes for detail view and OCR output
     $vnotebook, $hpanei,
@@ -483,6 +484,7 @@ sub populate_main_window {
     $ocr_text_cbutton->signal_connect(
         clicked => sub {
             $ocr_text_hbox->hide;
+            $edit_ocr_action->set_active(FALSE);
         }
     );
 
@@ -1326,7 +1328,13 @@ sub create_menu_bar {
             __('Arrange image and OCR viewers in split screen'), $SPLIT_VIEW
         ],
     );
-
+    my @ocr_tools = (
+        [
+            'Edit OCR',                   'gtk-edit',
+            __('Edit OCR'),               undef,
+            __('Show OCR editing tools'), \&show_ocr_tools_callback
+        ],
+    );
     my $ui = <<'EOS';
 <ui>
  <menubar name='MenuBar'>
@@ -1384,6 +1392,8 @@ sub create_menu_bar {
    <menuitem action='Rotate 90'/>
    <menuitem action='Rotate 180'/>
    <menuitem action='Rotate 270'/>
+   <separator/>
+   <menuitem action='Edit OCR'/>
   </menu>
   <menu action='Tools'>
    <menuitem action='Threshold'/>
@@ -1435,6 +1445,8 @@ sub create_menu_bar {
   <toolitem action='Rotate 180'/>
   <toolitem action='Rotate 270'/>
   <separator/>
+  <toolitem action='Edit OCR'/>
+  <separator/>
   <toolitem action='CropSelection'/>
   <separator/>
   <toolitem action='Help'/>
@@ -1453,6 +1465,8 @@ sub create_menu_bar {
   <menuitem action='Rotate 90'/>
   <menuitem action='Rotate 180'/>
   <menuitem action='Rotate 270'/>
+  <separator/>
+  <menuitem action='Edit OCR'/>
   <separator/>
   <menuitem action='CropSelection'/>
   <separator/>
@@ -1499,6 +1513,12 @@ EOS
         \&change_image_tool_cb );
     $actions_basic->add_radio_actions( \@viewer_tools, $SETTING{viewer_tools},
         \&change_view_cb );
+    $actions_basic->add_toggle_actions( \@ocr_tools );
+    for my $action ( $actions_basic->list_actions ) {
+        if ( $action->isa('Gtk3::ToggleAction') ) {
+            $edit_ocr_action = $action;
+        }
+    }
 
     # Add the actiongroup to the uimanager
     $uimanager->insert_action_group( $actions_basic, 0 );
@@ -1639,6 +1659,7 @@ sub update_uimanager {
         '/MenuBar/View/Rotate 90',
         '/MenuBar/View/Rotate 180',
         '/MenuBar/View/Rotate 270',
+        '/MenuBar/View/Edit OCR',
         '/MenuBar/Tools/Threshold',
         '/MenuBar/Tools/BrightnessContrast',
         '/MenuBar/Tools/Negate',
@@ -1659,6 +1680,7 @@ sub update_uimanager {
         '/ToolBar/Rotate 90',
         '/ToolBar/Rotate 180',
         '/ToolBar/Rotate 270',
+        '/ToolBar/Edit OCR',
         '/ToolBar/CropSelection',
 
         '/Detail_Popup/DraggerTool',
@@ -1671,6 +1693,7 @@ sub update_uimanager {
         '/Detail_Popup/Rotate 90',
         '/Detail_Popup/Rotate 180',
         '/Detail_Popup/Rotate 270',
+        '/Detail_Popup/Edit OCR',
         '/Detail_Popup/CropSelection',
 
         '/Thumb_Popup/Rotate 90',
@@ -2035,6 +2058,16 @@ sub create_canvas {
     return;
 }
 
+sub show_ocr_tools_callback {
+    my ( $widget, $data ) = @_;
+    if ( $widget->get_active ) {
+        $ocr_text_hbox->show;
+        return;
+    }
+    $ocr_text_hbox->hide;
+    return;
+}
+
 sub edit_ocr_text {
     my ( $widget, $target, $ev, $bbox ) = @_;
     if ( not $ev ) {
@@ -2043,6 +2076,7 @@ sub edit_ocr_text {
     $ocr_bbox = $bbox;
     $ocr_textbuffer->set( text => $bbox->get('text') );
     $ocr_text_hbox->show_all;
+    $edit_ocr_action->set_active(TRUE);
     $view->set_selection( $bbox->get('bbox') );
     $view->set_zoom_to_fit(FALSE);
     $view->zoom_to_selection($ZOOM_CONTEXT_FACTOR);
