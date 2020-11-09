@@ -4,6 +4,7 @@
   performance. Closes Debian bug 968918 (Threshold function is extremely slow)
 * + missing crop icon
 * + View/Edit OCR toggle
+* Don't zoom in/out if plus/minus pressed whilst editing OCR
 * Update to Hungarian translation (thanks to csola)
 
 
