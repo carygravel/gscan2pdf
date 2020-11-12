@@ -5,6 +5,7 @@
 * + missing crop icon
 * + View/Edit OCR toggle
 * Don't zoom in/out if plus/minus pressed whilst editing OCR
+* Allow cut/copy/paste whilst editing OCR
 * Update to Hungarian translation (thanks to csola)
 
 
