@@ -616,6 +616,11 @@ sub add_box_to_index {
 
 sub remove_current_box_from_index {
     my ($self) = @_;
+    if ( not defined $self->{confidence_index} ) {
+        Glib->error( __PACKAGE__,
+            'Attempted to delete undefined index from confidence list' );
+        return;
+    }
     splice @{ $self->{confidence_list} }, $self->{confidence_index}, 1;
     if ( $self->{confidence_index} > $#{ $self->{confidence_list} } ) {
         $self->{confidence_index} = $#{ $self->{confidence_list} };
