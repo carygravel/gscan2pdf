@@ -492,6 +492,19 @@ sub populate_main_window {
         }
     );
 
+    my $ocr_text_ubutton = Gtk3::Button->new;
+    $ocr_text_ubutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-copy', 'button' ) );
+    $ocr_text_ubutton->set_tooltip_text( __('Duplicate text') );
+    $ocr_text_ubutton->signal_connect(
+        clicked => sub {
+            $ocr_bbox = $canvas->add_box( $ocr_textbuffer->get('text'),
+                $view->get_selection );
+            $current_page->import_hocr( $canvas->hocr );
+            edit_ocr_text($ocr_bbox);
+        }
+    );
+
     my $ocr_text_abutton = Gtk3::Button->new;
     $ocr_text_abutton->set_image(
         Gtk3::Image->new_from_stock( 'gtk-add', 'button' ) );
@@ -546,6 +559,7 @@ sub populate_main_window {
     $ocr_text_hbox->pack_end( $ocr_text_dbutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_end( $ocr_text_cbutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_end( $ocr_text_obutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_end( $ocr_text_ubutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_end( $ocr_text_abutton, FALSE, FALSE, 0 );
 
     pack_viewer_tools();

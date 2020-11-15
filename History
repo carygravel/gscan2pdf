@@ -7,6 +7,7 @@
 * Don't zoom in/out if plus/minus pressed whilst editing OCR
 * Allow cut/copy/paste whilst editing OCR
 * Fixed bug manually adding OCR that overlaps with existing words
+* + button to duplicate OCR text
 * Update to Hungarian translation (thanks to csola)
 
 
