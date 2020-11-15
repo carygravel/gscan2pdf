@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 29;
+use Test::More tests => 30;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -115,6 +115,43 @@ EOS
 
 is( $canvas->hocr, $expected, 'updated hocr' );
 
+#########################
+
+# v2.10.0 had a bug where adding a word box manually where there was an overlap
+# with another word box picked up the existing word box as the parent.
+$canvas->add_box( 'foo2', { x => 250, y => 15, width => 74, height => 32 } );
+
+$expected = <<"EOS";
+<\?xml version="1.0" encoding="UTF-8"\?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Canvas::VERSION' />
+  <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocr_word'/>
+ </head>
+ <body>
+  <div class='ocr_page' id='page_1' title='bbox 0 0 422 61'>
+   <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
+    <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
+     <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>No</span>
+     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
+     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
+     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
+     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo2</span>
+    </span>
+   </div>
+  </div>
+ </body>
+</html>
+EOS
+
+is( $canvas->hocr, $expected,
+    'the parent of a box should not be of the same class' );
+
+#########################
+
 is_deeply( [ $canvas->get_bounds ], [ 0, 0, 70, 46 ], 'get_bounds' );
 is_deeply( $canvas->get_scale, 1, 'get_scale' );
 $canvas->_set_zoom_with_center( 2, 35, 26 );
@@ -171,6 +208,7 @@ $expected = <<"EOS";
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
      <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
      <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
+     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo2</span>
     </span>
    </div>
   </div>

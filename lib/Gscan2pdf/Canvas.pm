@@ -430,7 +430,7 @@ sub add_box {
         my $y = $selection->{y} + $selection->{height} / 2;
         $parent = $self->get_item_at( $x, $y, FALSE );
         while ( defined $parent
-            and not $parent->isa('Gscan2pdf::Canvas::Bbox') )
+            and ( not defined $parent->{type} or $parent->{type} eq 'word' ) )
         {
             $parent = $parent->get_property('parent');
         }

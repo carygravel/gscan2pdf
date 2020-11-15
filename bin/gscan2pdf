@@ -470,6 +470,10 @@ sub populate_main_window {
     $ocr_text_obutton->set_tooltip_text( __('Accept corrections') );
     $ocr_text_obutton->signal_connect(
         clicked => sub {
+            $logger->info( "Corrected '"
+                  . $ocr_bbox->get('text') . "'->'"
+                  . $ocr_textbuffer->get('text')
+                  . q{'} );
             $ocr_bbox->update_box( $ocr_textbuffer->get('text'),
                 $view->get_selection );
             $current_page->import_hocr( $canvas->hocr );
@@ -502,9 +506,11 @@ sub populate_main_window {
             # If we don't yet have a canvas, create one
             my $selection = $view->get_selection;
             if ( defined $current_page->{bboxtree} ) {
-                my $bbox = $canvas->add_box( $text, $view->get_selection );
+                $logger->info(
+                    "Added '" . $ocr_textbuffer->get('text') . q{'} );
+                $ocr_bbox = $canvas->add_box( $text, $view->get_selection );
                 $current_page->import_hocr( $canvas->hocr );
-                edit_ocr_text($bbox);
+                edit_ocr_text($ocr_bbox);
             }
             else {
                 $current_page->{bboxtree} =
@@ -2090,6 +2096,8 @@ sub edit_ocr_text {
 
     if ($ev) {
         $canvas->pointer_ungrab( $widget, $ev->time );
+    }
+    if ($bbox) {
         $canvas->set_index_by_bbox($bbox);
     }
     return TRUE;
