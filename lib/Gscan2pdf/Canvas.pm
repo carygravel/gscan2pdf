@@ -447,7 +447,7 @@ sub add_box {
         bbox           => $selection,
         transformation => \@transformation,
     );
-    if ( defined $text and $text ne q{} ) { $options2{text} = $text }
+    if ( length $text ) { $options2{text} = $text }
 
     # copy parameters from box from OCR output
     for my $key (qw(baseline confidence id text textangle type)) {
@@ -463,8 +463,7 @@ sub add_box {
 
     my $bbox = Gscan2pdf::Canvas::Bbox->new(%options2);
 
-    if ($text) {
-
+    if ( length $text ) {
         $self->add_box_to_index($bbox);
 
         # clicking text box produces a dialog to edit the text
@@ -604,6 +603,11 @@ sub confidence_binary_search {
 
 sub add_box_to_index {
     my ( $self, $bbox ) = @_;
+    if ( not defined $bbox ) {
+        Glib->error( __PACKAGE__,
+            'Attempted to add undefined box to confidence list' );
+        return;
+    }
     my $confidence = $bbox->get('confidence');
     if ( not @{ $self->{confidence_list} } ) {
         push @{ $self->{confidence_list} }, [ $bbox, $confidence ];

@@ -8,6 +8,7 @@
 * Allow cut/copy/paste whilst editing OCR
 * Fixed bug manually adding OCR that overlaps with existing words
 * + button to duplicate OCR text
+* Fixed bug adding OCR text '0'
 * Update to Hungarian translation (thanks to csola)
 
 

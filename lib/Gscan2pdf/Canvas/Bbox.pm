@@ -137,7 +137,7 @@ sub new {
     #        'stroke-color' => 'orange' );
     #}
 
-    if ( $self->{text} ) {
+    if ( defined $self->{text} and $self->{text} ne q{} ) {
 
         # create text and then scale, shift & rotate it into the bounding box
         my $text = GooCanvas2::CanvasText->new(
@@ -310,7 +310,7 @@ sub transform_text {
     my $text        = $self->get('text');
     $angle ||= 0;
 
-    if ( $bbox && $text ) {
+    if ( $bbox and length $text ) {
         my ( $x, $y, $width, $height ) =
           ( $bbox->{x}, $bbox->{y}, $bbox->{width}, $bbox->{height} );
         my ( $x2, $y2 ) = ( $x + $width, $y + $height );
@@ -448,7 +448,7 @@ sub to_hocr {
           . "<$tag class='$type' "
           . join( $SPACE, $id, $title ) . '>'
           . (
-            $self->{text}
+            ( defined $self->{text} and $self->{text} ne q{} )
             ? HTML::Entities::encode( $self->{text}, "<>&\"'" )
             : "\n"
           );

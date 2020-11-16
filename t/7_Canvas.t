@@ -119,7 +119,8 @@ is( $canvas->hocr, $expected, 'updated hocr' );
 
 # v2.10.0 had a bug where adding a word box manually where there was an overlap
 # with another word box picked up the existing word box as the parent.
-$canvas->add_box( 'foo2', { x => 250, y => 15, width => 74, height => 32 } );
+# A another bug prevented adding the text '0'
+$canvas->add_box( '0', { x => 250, y => 15, width => 74, height => 32 } );
 
 $expected = <<"EOS";
 <\?xml version="1.0" encoding="UTF-8"\?>
@@ -139,7 +140,7 @@ $expected = <<"EOS";
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
      <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
      <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
-     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo2</span>
+     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>0</span>
     </span>
    </div>
   </div>
@@ -208,7 +209,7 @@ $expected = <<"EOS";
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
      <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
      <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
-     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo2</span>
+     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>0</span>
     </span>
    </div>
   </div>
