@@ -2065,7 +2065,7 @@ sub display_image {
     if ( defined $current_page->{bboxtree}
         and not Gscan2pdf::Bboxtree->valid( $current_page->{bboxtree} ) )
     {
-        $logger->error("bboxtree: $current_page->{bboxtree}");
+        $logger->error("deleting corrupt bboxtree: $current_page->{bboxtree}");
         delete $current_page->{bboxtree};
     }
 

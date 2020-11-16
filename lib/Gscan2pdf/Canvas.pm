@@ -463,7 +463,7 @@ sub add_box {
 
     my $bbox = Gscan2pdf::Canvas::Bbox->new(%options2);
 
-    if ( length $text ) {
+    if ( defined $bbox and length $text ) {
         $self->add_box_to_index($bbox);
 
         # clicking text box produces a dialog to edit the text
@@ -604,7 +604,7 @@ sub confidence_binary_search {
 sub add_box_to_index {
     my ( $self, $bbox ) = @_;
     if ( not defined $bbox ) {
-        Glib->error( __PACKAGE__,
+        Glib->warning( __PACKAGE__,
             'Attempted to add undefined box to confidence list' );
         return;
     }
@@ -621,7 +621,7 @@ sub add_box_to_index {
 sub remove_current_box_from_index {
     my ($self) = @_;
     if ( not defined $self->{confidence_index} ) {
-        Glib->error( __PACKAGE__,
+        Glib->warning( __PACKAGE__,
             'Attempted to delete undefined index from confidence list' );
         return;
     }
