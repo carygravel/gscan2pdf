@@ -10,15 +10,16 @@ msgstr ""
 "Project-Id-Version: gscan2pdf\n"
 "Report-Msgid-Bugs-To: csola48@gmail.com\n"
 "POT-Creation-Date: 2020-10-31 15:17+0100\n"
-"PO-Revision-Date: 2020-11-01 11:13+0100\n"
+"PO-Revision-Date: 2020-11-20 09:47+0100\n"
 "Last-Translator: csola48 <csola48@gmail.com>\n"
 "Language-Team: magyar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-11-01 09:32+0000\n"
+"X-Launchpad-Export-Date: 2020-11-17 11:48+0000\n"
 "X-Generator: Poedit 2.0.6\n"
 "Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: bin/gscan2pdf:435
 msgid "OCR text"
@@ -129,7 +130,7 @@ msgstr "Tesseract"
 
 #: bin/gscan2pdf:1005
 msgid "Process image with Tesseract."
-msgstr "Kép feldolgozása Tesseract-tal"
+msgstr "Kép feldolgozása Tesseract-tal."
 
 #: bin/gscan2pdf:1010
 msgid "Ocropus"
@@ -137,7 +138,7 @@ msgstr "Ocropus"
 
 #: bin/gscan2pdf:1010
 msgid "Process image with Ocropus."
-msgstr "Kép feldolgozása Octopusszal"
+msgstr "Kép feldolgozása Octopusszal."
 
 #: bin/gscan2pdf:1015
 msgid "Cuneiform"
@@ -145,7 +146,7 @@ msgstr "Cuneiform"
 
 #: bin/gscan2pdf:1015
 msgid "Process image with Cuneiform."
-msgstr "Kép feldolgozása Cuneiformmal"
+msgstr "Kép feldolgozása Cuneiformmal."
 
 #: bin/gscan2pdf:1042
 msgid "_File"
@@ -373,7 +374,7 @@ msgstr "Nagyítás _100%"
 
 #: bin/gscan2pdf:1188
 msgid "Zoom to 100%"
-msgstr "Nagyítás 100%-ra"
+msgstr "Nagyítás 100%"
 
 #: bin/gscan2pdf:1192
 msgid "Zoom to _fit"
@@ -429,7 +430,7 @@ msgstr "_Fényesség / Kontraszt"
 
 #: bin/gscan2pdf:1249
 msgid "Change brightness & contrast"
-msgstr "fényesség & kontraszt cseréje"
+msgstr "Fényesség & kontraszt cseréje"
 
 #: bin/gscan2pdf:1252
 msgid "_Negate"
@@ -537,7 +538,7 @@ msgstr "A kép- és OCR-nézőket osztott képernyőn rendez"
 
 #: bin/gscan2pdf:1518
 msgid "Save image and Save as PDF both require imagemagick\n"
-msgstr "Kép és PDF mentéséhez nélkülözhetetlen az ImageMagick csomag\n"
+msgstr "Kép és PDF mentéséhez nélkülözhetetlen az imagemagick csomag\n"
 
 #: bin/gscan2pdf:1523
 msgid "Save image requires libtiff\n"
@@ -582,7 +583,7 @@ msgid ""
 "Warning: unable to use %s for temporary storage. Defaulting to %s instead."
 msgstr ""
 "Figyelmeztetés: %s nem használható átmeneti adattárolásra. Ehelyett %s "
-"használata"
+"használata."
 
 #: bin/gscan2pdf:1912
 msgid "Crashed sessions"
@@ -834,7 +835,7 @@ msgstr "90"
 
 #: bin/gscan2pdf:4016
 msgid "Rotate image 90 degrees clockwise."
-msgstr "Elforgatás az óramutató járásával megegyezően 90 fokkal"
+msgstr "Elforgatás az óramutató járásával megegyezően 90 fokkal."
 
 #: bin/gscan2pdf:4017
 msgid "180"
@@ -842,7 +843,7 @@ msgstr "180"
 
 #: bin/gscan2pdf:4017
 msgid "Rotate image 180 degrees clockwise."
-msgstr "Elforgatás az óramutató járásával megegyezően 180 fokkal"
+msgstr "Elforgatás az óramutató járásával megegyezően 180 fokkal."
 
 #: bin/gscan2pdf:4019
 msgid "270"
@@ -850,7 +851,7 @@ msgstr "270"
 
 #: bin/gscan2pdf:4020
 msgid "Rotate image 90 degrees anticlockwise."
-msgstr "Elforgatás az óramutató járásával ellentétesen 90 fokkal"
+msgstr "Elforgatás az óramutató járásával ellentétesen 90 fokkal."
 
 #: bin/gscan2pdf:4024 bin/gscan2pdf:4037
 msgid "Select direction of rotation"
@@ -959,7 +960,7 @@ msgstr "Szigma"
 
 #: bin/gscan2pdf:5186
 msgid "The standard deviation of the Gaussian."
-msgstr "Gauss átlagos eltérés"
+msgstr "Gauss átlagos eltérés."
 
 #: bin/gscan2pdf:5189
 msgid "Gain"
@@ -991,7 +992,7 @@ msgstr "x"
 
 #: bin/gscan2pdf:5364
 msgid "The x-position of the left hand edge of the crop."
-msgstr "A vágás bal szélének x poziciója"
+msgstr "A vágás bal szélének x poziciója."
 
 #: bin/gscan2pdf:5367
 msgid "y"
@@ -999,7 +1000,7 @@ msgstr "y"
 
 #: bin/gscan2pdf:5368
 msgid "The y-position of the top edge of the crop."
-msgstr "A vágás tetejének y poziciója"
+msgstr "A vágás tetejének y poziciója."
 
 #: bin/gscan2pdf:5370 lib/Gscan2pdf/Dialog/Scan.pm:1737
 msgid "Width"
@@ -1007,7 +1008,7 @@ msgstr "Szélesség"
 
 #: bin/gscan2pdf:5370
 msgid "The width of the crop."
-msgstr "A vágás szélessége"
+msgstr "A vágás szélessége."
 
 #: bin/gscan2pdf:5371 lib/Gscan2pdf/Dialog/Scan.pm:1738
 msgid "Height"
@@ -1015,7 +1016,7 @@ msgstr "Magasság"
 
 #: bin/gscan2pdf:5371
 msgid "The height of the crop."
-msgstr "A vágás magassága"
+msgstr "A vágás magassága."
 
 #: bin/gscan2pdf:5526
 msgid "Split"
@@ -1063,7 +1064,7 @@ msgstr "Nyelv felismerés"
 
 #: bin/gscan2pdf:5878
 msgid "English"
-msgstr "angol"
+msgstr "Angol"
 
 #: bin/gscan2pdf:5921
 msgid "OCR"
@@ -1130,7 +1131,7 @@ msgid ""
 msgstr ""
 "A szkennelés dialogus a háttérben automatikusan megnyitva a program "
 "indításakor. Ez elmenti az időt a szkennelés gombra való kattintáskor és vár "
-"a programra, hogy megkeresse a szkennert."
+"a programra, hogy megkeresse a szkennert"
 
 #: bin/gscan2pdf:6577
 msgid "Frontend"
@@ -1166,11 +1167,11 @@ msgstr "Interfész használata a szkenner csatolásához"
 
 #: bin/gscan2pdf:6601
 msgid "Device blacklist"
-msgstr "eszközök tiltólistája"
+msgstr "Eszközök tiltólistája"
 
 #: bin/gscan2pdf:6605
 msgid "Device blacklist (regular expression)"
-msgstr "eszközök tiltólistája (reguláris kifejezés)"
+msgstr "Eszközök tiltólistája (reguláris kifejezés)"
 
 #: bin/gscan2pdf:6613
 msgid "Cycle SANE handle after scan"
@@ -1285,8 +1286,9 @@ msgid "List current options"
 msgstr "Az aktuális opciók listája"
 
 #: bin/gscan2pdf:6778
+#, fuzzy
 msgid "No scanner currently open with command line frontend."
-msgstr "Jelenleg nincs szkenner megnyitva a parancssoros applikációban"
+msgstr "Jelenleg nincs szkenner megnyitva a parancssoros applikációban."
 
 #: bin/gscan2pdf:6786
 msgid "Show options not listed"
@@ -1370,12 +1372,13 @@ msgid "Warn if available space less than (Mb)"
 msgstr "Figyelmeztetés, ha a használható hely kevesebb, mint (Mb)"
 
 #: bin/gscan2pdf:6936
+#, fuzzy
 msgid ""
 "Warn if the available space in the temporary directory is less than this "
 "value"
 msgstr ""
 "Figyelmeztet, ha az elérhető hely az ideiglenes könyvtárban kisebb mint ez "
-"érték."
+"érték"
 
 #: bin/gscan2pdf:6944
 msgid "Blank threshold"
@@ -1403,7 +1406,7 @@ msgstr "Csere"
 
 #: bin/gscan2pdf:6975
 msgid "Replace the contents of the text buffer with that from the OCR output."
-msgstr "A szöveg puffer tartalmának cseréje az OCR kimenetével"
+msgstr "A szöveg puffer tartalmának cseréje az OCR kimenetével."
 
 #: bin/gscan2pdf:6979
 msgid "Prepend"
@@ -1411,15 +1414,16 @@ msgstr "Eléfűz"
 
 #: bin/gscan2pdf:6980
 msgid "Prepend the OCR output to the text buffer."
-msgstr "Elé fűz az OCR kimenethez a text pufferbe"
+msgstr "Elé fűz az OCR kimenethez a text pufferbe."
 
 #: bin/gscan2pdf:6983
 msgid "Append"
 msgstr "Hozzáfűz"
 
 #: bin/gscan2pdf:6984
+#, fuzzy
 msgid "Append the OCR output to the text buffer."
-msgstr "Hozzáfűz az OCR kimenethez a text pufferbe"
+msgstr "Hozzáfűz az OCR kimenethez a text pufferbe."
 
 #: bin/gscan2pdf:6992
 msgid "Manage user-defined tools"
@@ -1745,52 +1749,59 @@ msgid "LZW"
 msgstr "LZW"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:600 lib/Gscan2pdf/Dialog/Save.pm:796
+#, fuzzy
 msgid "Compress output with Lempel-Ziv & Welch encoding."
-msgstr "Kimenet tömörítése Lempel-Ziv & Welch kódolással"
+msgstr "Kimenet tömörítése Lempel-Ziv & Welch kódolással."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:602 lib/Gscan2pdf/Dialog/Save.pm:798
 msgid "Zip"
 msgstr "Zip"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:602 lib/Gscan2pdf/Dialog/Save.pm:798
+#, fuzzy
 msgid "Compress output with deflate encoding."
-msgstr "Kimenet tömörítése deflate kódolással"
+msgstr "Kimenet tömörítése deflate kódolással."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:605 lib/Gscan2pdf/Dialog/Save.pm:806
+#, fuzzy
 msgid "Compress output with JPEG encoding."
-msgstr "Kimenet tömörítése JPEG kódolással"
+msgstr "Kimenet tömörítése JPEG kódolással."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:607 lib/Gscan2pdf/Dialog/Save.pm:800
 msgid "Packbits"
 msgstr "Csomagolási bitek"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:608 lib/Gscan2pdf/Dialog/Save.pm:801
+#, fuzzy
 msgid "Compress output with Packbits encoding."
-msgstr "Kimenet tömörítése Packbits kódolással"
+msgstr "Kimenet tömörítése Packbits kódolással."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:610 lib/Gscan2pdf/Dialog/Save.pm:803
 msgid "G3"
 msgstr "G3"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:610 lib/Gscan2pdf/Dialog/Save.pm:803
+#, fuzzy
 msgid "Compress output with CCITT Group 3 encoding."
-msgstr "Kimenet tömörítése CCITT Group 3 kódolással"
+msgstr "Kimenet tömörítése CCITT Group 3 kódolással."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:611 lib/Gscan2pdf/Dialog/Save.pm:804
 msgid "G4"
 msgstr "G4"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:611 lib/Gscan2pdf/Dialog/Save.pm:804
+#, fuzzy
 msgid "Compress output with CCITT Group 4 encoding."
-msgstr "Kimenet tömörítése CCITT Group 4 kódolással"
+msgstr "Kimenet tömörítése CCITT Group 4 kódolással."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:612 lib/Gscan2pdf/Dialog/Save.pm:807
 msgid "None"
 msgstr "Nincs"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:612 lib/Gscan2pdf/Dialog/Save.pm:807
+#, fuzzy
 msgid "Use no compression algorithm on output."
-msgstr "Ne tömörítse a kimenetet"
+msgstr "Ne tömörítse a kimenetet."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:618 lib/Gscan2pdf/Dialog/Save.pm:813
 msgid "Compression"
@@ -1813,12 +1824,14 @@ msgid "Automatic"
 msgstr "Automatikus"
 
 #: lib/Gscan2pdf/Dialog/Save.pm:792
+#, fuzzy
 msgid "Let gscan2pdf which type of compression to use."
-msgstr "A gscan2pdf dönti el a tömörítés típusát"
+msgstr "A gscan2pdf dönti el a tömörítés típusát."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:805
+#, fuzzy
 msgid "Compress output with PNG encoding."
-msgstr "Kimenet tömörítése PNG kódolással"
+msgstr "Kimenet tömörítése PNG kódolással."
 
 #: lib/Gscan2pdf/Dialog/Save.pm:843
 msgid "Encrypt PDF"
@@ -2129,9 +2142,9 @@ msgid "File %s not found"
 msgstr "%s fájl nem található"
 
 #: lib/Gscan2pdf/Document.pm:2789
-#, perl-format
+#, fuzzy, perl-format
 msgid "Error importing zero-length file %s."
-msgstr "Nulla hosszúságú fájl importálása hiba %s"
+msgstr "Nulla hosszúságú fájl importálása hiba %s."
 
 #: lib/Gscan2pdf/Document.pm:2819
 msgid "Please install djvulibre-bin in order to open DjVu files."
@@ -2394,7 +2407,7 @@ msgid ""
 "Please install tesseract package 'tesseract-ocr-%s' and restart gscan2pdf "
 "for OCR for %s with tesseract."
 msgstr ""
-"Kérjük telepítse a tesseract 'tesseract-ocr-%s'csomagot és a %s tesseract "
+"Kérjük telepítse a tesseract 'tesseract-ocr-%s' csomagot és a %s tesseract "
 "használatával indítsa újra a gscan2pdf fájlt az OCR művelethez."
 
 #: lib/Gscan2pdf/Tesseract.pm:159
@@ -2415,8 +2428,9 @@ msgid "Single"
 msgstr "Egyszeres"
 
 #: lib/Gscan2pdf/Unpaper.pm:51
+#, fuzzy
 msgid "One page per sheet, oriented upwards without rotation."
-msgstr "Egy lap / oldal, forgatás nélküli"
+msgstr "Egy lap / oldal, forgatás nélküli."
 
 #: lib/Gscan2pdf/Unpaper.pm:55
 msgid "Double"
@@ -2435,8 +2449,9 @@ msgid "# Output pages"
 msgstr "# Kimeneti oldalak"
 
 #: lib/Gscan2pdf/Unpaper.pm:66
+#, fuzzy
 msgid "Number of pages to output."
-msgstr "Kimeneti oldalak száma"
+msgstr "Kimeneti oldalak száma."
 
 #: lib/Gscan2pdf/Unpaper.pm:74
 msgid "Writing system"
@@ -2455,16 +2470,18 @@ msgid "Right-to-left"
 msgstr "Jobbról balra"
 
 #: lib/Gscan2pdf/Unpaper.pm:84
+#, fuzzy
 msgid "Scripts like Arabic or Hebrew."
-msgstr "Arab vagy héber írás"
+msgstr "Arab vagy héber írás."
 
 #: lib/Gscan2pdf/Unpaper.pm:92
 msgid "No deskew"
 msgstr "Nincs kiegyenesítés"
 
 #: lib/Gscan2pdf/Unpaper.pm:93
+#, fuzzy
 msgid "Disable deskewing."
-msgstr "Kiegyenesítés letiltása"
+msgstr "Kiegyenesítés letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:98
 msgid "No mask scan"
@@ -2472,55 +2489,61 @@ msgstr "Nincs maszk beolvasás"
 
 #: lib/Gscan2pdf/Unpaper.pm:99
 msgid "Disable mask detection."
-msgstr "Maszk felismerés letiltása"
+msgstr "Maszk felismerés letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:104
 msgid "No mask centering"
 msgstr "Nincs központi maszk"
 
 #: lib/Gscan2pdf/Unpaper.pm:105
+#, fuzzy
 msgid "Disable mask centering."
-msgstr "Maszk felismerés letiltása"
+msgstr "Maszk felismerés letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:110
 msgid "No black filter"
 msgstr "Nincs fekete szűrő"
 
 #: lib/Gscan2pdf/Unpaper.pm:111
+#, fuzzy
 msgid "Disable black area scan."
-msgstr "Fekete terület felismerés letiltása"
+msgstr "Fekete terület felismerés letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:116
 msgid "No gray filter"
 msgstr "Nincs szürke szűrő"
 
 #: lib/Gscan2pdf/Unpaper.pm:117
+#, fuzzy
 msgid "Disable gray area scan."
-msgstr "Szürke terület felismerés letiltása"
+msgstr "Szürke terület felismerés letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:122
 msgid "No noise filter"
 msgstr "Nincs zaj szűrő"
 
 #: lib/Gscan2pdf/Unpaper.pm:123
+#, fuzzy
 msgid "Disable noise filter."
-msgstr "Zaj szűrő letiltása"
+msgstr "Zaj szűrő letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:128
 msgid "No blur filter"
 msgstr "Nincs elmosás szűrő"
 
 #: lib/Gscan2pdf/Unpaper.pm:129
+#, fuzzy
 msgid "Disable blur filter."
-msgstr "Elmosás szűrő letiltása"
+msgstr "Elmosás szűrő letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:134
 msgid "No border scan"
 msgstr "Nincs keret felismerés"
 
 #: lib/Gscan2pdf/Unpaper.pm:135
+#, fuzzy
 msgid "Disable border scanning."
-msgstr "Keret felismerés letiltása"
+msgstr "Keret felismerés letiltása."
 
 #: lib/Gscan2pdf/Unpaper.pm:140
 msgid "No border align"
@@ -2580,20 +2603,22 @@ msgid "Edge to which to align the page."
 msgstr "Kiválasztása, amihez az oldal igazítva lesz."
 
 #: lib/Gscan2pdf/Unpaper.pm:185
+#, fuzzy
 msgid "Use 'left' to align to the left edge."
-msgstr "Használja a bal szél megadásához"
+msgstr "Használja a bal szél megadásához."
 
 #: lib/Gscan2pdf/Unpaper.pm:190
+#, fuzzy
 msgid "Use 'top' to align to the top edge."
-msgstr "Használja a felső szél megadásához"
+msgstr "Használja a felső szél megadásához."
 
 #: lib/Gscan2pdf/Unpaper.pm:195
 msgid "Use 'right' to align to the right edge."
-msgstr "Használja a jobb szél megadásához"
+msgstr "Használja a jobb szél megadásához."
 
 #: lib/Gscan2pdf/Unpaper.pm:200
 msgid "Use 'bottom' to align to the bottom."
-msgstr "Használja az alsó szél megadásához"
+msgstr "Használja az alsó szél megadásához."
 
 #: lib/Gscan2pdf/Unpaper.pm:206
 msgid "Border margin"
