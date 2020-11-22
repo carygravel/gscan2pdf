@@ -582,7 +582,13 @@ sub _post_process_scan {
             queued_callback   => $options{queued_callback},
             started_callback  => $options{started_callback},
             finished_callback => sub {
+                delete $options{to_png};
                 my $finished_page = $self->find_page_by_uuid( $page->{uuid} );
+                if ( not defined $finished_page ) {
+                    $self->_post_process_scan( undef, %options )
+                      ;    # to fire finished_callback
+                    return;
+                }
                 $self->_post_process_scan( $self->{data}[$finished_page][2],
                     %options );
             },
@@ -600,6 +606,11 @@ sub _post_process_scan {
             finished_callback => sub {
                 delete $options{rotate};
                 my $finished_page = $self->find_page_by_uuid( $page->{uuid} );
+                if ( not defined $finished_page ) {
+                    $self->_post_process_scan( undef, %options )
+                      ;    # to fire finished_callback
+                    return;
+                }
                 $self->_post_process_scan( $self->{data}[$finished_page][2],
                     %options );
             },
@@ -620,6 +631,11 @@ sub _post_process_scan {
             finished_callback => sub {
                 delete $options{unpaper};
                 my $finished_page = $self->find_page_by_uuid( $page->{uuid} );
+                if ( not defined $finished_page ) {
+                    $self->_post_process_scan( undef, %options )
+                      ;    # to fire finished_callback
+                    return;
+                }
                 $self->_post_process_scan( $self->{data}[$finished_page][2],
                     %options );
             },
@@ -637,6 +653,11 @@ sub _post_process_scan {
             finished_callback => sub {
                 delete $options{udt};
                 my $finished_page = $self->find_page_by_uuid( $page->{uuid} );
+                if ( not defined $finished_page ) {
+                    $self->_post_process_scan( undef, %options )
+                      ;    # to fire finished_callback
+                    return;
+                }
                 $self->_post_process_scan( $self->{data}[$finished_page][2],
                     %options );
             },
@@ -4304,6 +4325,13 @@ sub _thread_save_tiff {
 sub _thread_rotate {
     my ( $self, $angle, $page, $dir, $uuid ) = @_;
     my $filename = $page->{filename};
+    if ( not defined $filename )
+    {    # in case file was deleted after process started
+        my $e = "Page for process $uuid no longer exists. Cannot rotate.";
+        $logger->error($e);
+        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Rotate', $e );
+        return;
+    }
     $logger->info("Rotating $filename by $angle degrees");
 
     # Rotate with imagemagick

@@ -9,6 +9,7 @@
 * Fixed bug manually adding OCR that overlaps with existing words
 * + button to duplicate OCR text
 * Fixed bug adding OCR text '0'
+* Fixed bug processing deleted page
 * Update to Hungarian translation (thanks to csola)
 
 
