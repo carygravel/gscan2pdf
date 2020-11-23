@@ -10,6 +10,7 @@
 * + button to duplicate OCR text
 * Fixed bug adding OCR text '0'
 * Fixed bug processing deleted page
+* Don't sort OCR confidence list if not changed
 * Update to Hungarian translation (thanks to csola)
 
 

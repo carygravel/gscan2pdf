@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 30;
+use Test::More tests => 31;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -150,6 +150,13 @@ EOS
 
 is( $canvas->hocr, $expected,
     'the parent of a box should not be of the same class' );
+
+#########################
+
+$canvas->get_last_bbox->update_box( 'No',
+    { x => 2, y => 15, width => 75, height => 32 } );
+is $canvas->get_last_bbox->get('text'), 'No',
+  "don't sort if confidence hasn't changed";
 
 #########################
 

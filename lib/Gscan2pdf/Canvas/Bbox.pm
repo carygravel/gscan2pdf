@@ -342,6 +342,7 @@ sub update_box {
 
     my $text_w = $self->get_text_widget;
     if ( length $text ) {
+        my $old_conf = $self->get('confidence');
         $text_w->set( text => $text );
         $self->set( text       => $text );
         $self->set( confidence => $_100_PERCENT );
@@ -362,9 +363,11 @@ sub update_box {
             $self->transform_text( $scale, $textangle );
         }
 
-        my $canvas = $self->get_canvas;
-        $canvas->remove_current_box_from_index;
-        $canvas->add_box_to_index($self);
+        if ( $old_conf != $self->get('confidence') ) {
+            my $canvas = $self->get_canvas;
+            $canvas->remove_current_box_from_index;
+            $canvas->add_box_to_index($self);
+        }
     }
     else {
         $self->delete_box;
