@@ -12,6 +12,7 @@
 * Fixed bug processing deleted page
 * Don't sort OCR confidence list if not changed
 * Update to Hungarian translation (thanks to csola)
+* Update to Ukrainian translation (thanks to Yuri Chornoivan)
 
 
 2.10.0 (31.10.2020):
