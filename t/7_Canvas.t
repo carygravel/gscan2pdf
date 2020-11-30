@@ -42,7 +42,7 @@ $page->import_hocr( <<'EOS');
     <p class='ocr_par'>
      <span class='ocr_line' id='line_1_1' title="bbox 1 14 420 59">
       <span class='ocr_word' id='word_1_1' title="bbox 1 14 77 48">
-       <span class='xocr_word' id='xword_1_1' title="x_wconf 3">The</span>
+       <span class='xocr_word' id='xword_1_1' title="x_wconf 3">The—</span>
       </span>
       <span class='ocr_word' id='word_1_2' title="bbox 92 14 202 59">
        <span class='xocr_word' id='xword_1_2' title="x_wconf 74">quick</span>
@@ -65,12 +65,12 @@ my $canvas = Gscan2pdf::Canvas->new;
 $canvas->set_text( $page, undef, FALSE );
 
 my $bbox = $canvas->get_first_bbox;
-is $bbox->get('text'), 'The', 'get_first_bbox';
+is $bbox->get('text'), 'The—', 'get_first_bbox';
 is $canvas->set_index_by_bbox($bbox), 0, 'set_index_by_bbox 1';
 $bbox = $canvas->get_next_bbox;
 is $bbox->get('text'), 'fox', 'get_next_bbox';
 is $canvas->set_index_by_bbox($bbox), 1, 'set_index_by_bbox 2';
-is $canvas->get_previous_bbox->get('text'), 'The', 'get_previous_text';
+is $canvas->get_previous_bbox->get('text'), 'The—', 'get_previous_text';
 $bbox = $canvas->get_last_bbox;
 is $bbox->get('text'), 'brown', 'get_last_text';
 is $canvas->set_index_by_bbox($bbox), 3, 'set_index_by_bbox 3';

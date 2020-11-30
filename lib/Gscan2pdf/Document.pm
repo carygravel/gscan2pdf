@@ -2113,12 +2113,11 @@ sub slurp {
 
 sub unescape_utf8 {
     my ($text) = @_;
-    while ( defined $text
-        and $text =~ /^(.*)\\(\d{3})\\(\d{3})(.*)$/xsm )
-    {
-        $text = $1 . decode( 'UTF-8', chr( oct $2 ) . chr oct $3 ) . $4;
+    if ( defined $text ) {
+        $text =~
+          s{\\(?:([0-7]{1,3})|(.))} {defined($1) ? chr(oct($1)) : $2}xsmeg;
     }
-    return $text;
+    return decode( 'UTF-8', $text );
 }
 
 sub exec_command {
@@ -2934,7 +2933,7 @@ sub _thread_get_file_info {
                 }
 
                 # extract the metadata from the file
-                _add_metadata_to_info( $options{info}, decode( 'UTF-8', $info ),
+                _add_metadata_to_info( $options{info}, $info,
                     qr{:\s+([^\n]+)}xsm );
             }
         }
@@ -5517,7 +5516,6 @@ sub _thread_paper_sizes {
 sub parse_truetype_fonts {
     my ($fclist) = @_;
     my %fonts;
-    $fclist = Encode::decode_utf8($fclist);
     for ( split /\n/sm, $fclist ) {
         if (/ttf:[ ]/xsm) {
             my ( $file, $family, $style ) = split /:/xsm;

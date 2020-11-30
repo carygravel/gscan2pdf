@@ -11,6 +11,7 @@
 * Fixed bug adding OCR text '0'
 * Fixed bug processing deleted page
 * Don't sort OCR confidence list if not changed
+* Fixed bug decoding 3-octal UTF-8 characters in DjVu text layer
 * Update to Hungarian translation (thanks to csola)
 * Update to Ukrainian translation (thanks to Yuri Chornoivan)
 

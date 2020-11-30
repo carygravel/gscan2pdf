@@ -228,7 +228,7 @@ sub hocr {
     $warnings =~ s/^Page[ ][01]\n//xsm;
 
     if ( $name eq 'stdout' ) {
-        return Encode::decode_utf8($out), $warnings;
+        return $out, $warnings;
     }
     return Gscan2pdf::Document::slurp($txt), $warnings;
 }

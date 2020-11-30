@@ -294,7 +294,11 @@ sub to_djvu {
         $string .= sprintf "($bbox->{type} %d %d %d %d", $x1, $h - $y2, $x2,
           $h - $y1;
         if ( defined $bbox->{text} ) {
-            $string .= $SPACE . _escape_text( $bbox->{text} );
+            $string .=
+                $SPACE
+              . $DOUBLE_QUOTES
+              . _escape_text( $bbox->{text} )
+              . $DOUBLE_QUOTES;
         }
     }
     if ( defined $prev_depth ) {
@@ -305,12 +309,11 @@ sub to_djvu {
 }
 
 # Escape backslashes and inverted commas
-# Surround with inverted commas
 sub _escape_text {
     my ($txt) = @_;
     $txt =~ s/\\/\\\\/gxsm;
     $txt =~ s/"/\\\"/gxsm;
-    return "$DOUBLE_QUOTES$txt$DOUBLE_QUOTES";
+    return $txt;
 }
 
 # return as plain text

@@ -28,7 +28,7 @@ SKIP: {
   (column 157 3011 1725 3105
     (para 157 3014 1725 3101
       (line 157 3014 1725 3101
-        (word 157 3030 241 3095 "Füß")
+        (word 157 3030 241 3095 "Füß—")
         (word 533 3033 645 3099 "LA")
         (word 695 3014 1188 3099 "MARQUISE")
         (word 1229 3034 1365 3098 "DE")
@@ -75,7 +75,7 @@ EOS
    <div class='ocr_carea' title='bbox 157 80 1725 174'>
     <p class='ocr_par' title='bbox 157 84 1725 171'>
      <span class='ocr_line' title='bbox 157 84 1725 171'>
-      <span class='ocr_word' title='bbox 157 90 241 155'>Füß</span>
+      <span class='ocr_word' title='bbox 157 90 241 155'>Füß—</span>
       <span class='ocr_word' title='bbox 533 86 645 152'>LA</span>
       <span class='ocr_word' title='bbox 695 86 1188 171'>MARQUISE</span>
       <span class='ocr_word' title='bbox 1229 87 1365 151'>DE</span>
