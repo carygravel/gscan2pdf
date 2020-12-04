@@ -4,7 +4,7 @@ gscan2pdf (2.10.1-1) unstable; urgency=medium
     Closes: #968918 (Threshold function is extremely slow)
   * Added new build dependency libipc-system-simple-perl.
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Thu, 03 Dec 2020 19:26:05 +0100
 
 gscan2pdf (2.10.0-1) unstable; urgency=low
 
