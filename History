@@ -1,4 +1,4 @@
-2.10.1 (30.11.2020):
+2.10.1 (03.12.2020):
 
 * Switch from Perlmagick to imagemagick for threshold tool to improve
   performance. Closes Debian bug 968918 (Threshold function is extremely slow)

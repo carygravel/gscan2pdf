@@ -29,7 +29,7 @@
 #    test dist sudo dpkg -i gscan2pdf_x.x.x_all.deb
 # 5.  git status
 #     git tag vx.x.x
-#     git push --tags ssh://ra28145@git.code.sf.net/p/gscan2pdf/code master
+#     git push --tags origin master
 #    If the latter doesn't work, try:
 #     git push --tags https://ra28145@git.code.sf.net/p/gscan2pdf/code master
 # 6. create version directory in https://sourceforge.net/projects/gscan2pdf/files/gscan2pdf
