@@ -582,7 +582,6 @@ sub _post_process_scan {
             queued_callback   => $options{queued_callback},
             started_callback  => $options{started_callback},
             finished_callback => sub {
-                delete $options{to_png};
                 my $finished_page = $self->find_page_by_uuid( $page->{uuid} );
                 if ( not defined $finished_page ) {
                     $self->_post_process_scan( undef, %options )
