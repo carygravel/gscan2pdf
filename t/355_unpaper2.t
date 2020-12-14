@@ -23,12 +23,12 @@ SKIP: {
 
     # Create test image
     system(
-        qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        qw(convert +matte -depth 1 -border 2x2 -bordercolor black), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
         'label:The quick brown fox',
         '1.pnm'
     );
     system(
-        qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
+        qw(convert +matte -depth 1 -border 2x2 -bordercolor black), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
         'label:The slower lazy dog',
         '2.pnm'
     );

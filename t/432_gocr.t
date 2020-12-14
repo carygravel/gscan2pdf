@@ -22,7 +22,7 @@ SKIP: {
 
     # Create test image
     system(
-'convert +matte -depth 1 -pointsize 12 -density 300 label:"öÖäÄüÜß" test.pnm'
+'convert +matte -depth 1 -family "DejaVu Sans" -pointsize 12 -density 300 label:"öÖäÄüÜß" test.pnm'
     );
 
     my $slist = Gscan2pdf::Document->new;

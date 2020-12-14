@@ -18,7 +18,7 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system(
-    qw(convert -fill lightblue -pointsize 12 -units PixelsPerInch -density 300),
+    qw(convert -fill lightblue), '-family', 'DejaVu Sans', qw(-pointsize 12 -units PixelsPerInch -density 300),
     'label:The quick brown fox',
     'test.png'
 );
@@ -46,7 +46,7 @@ Gtk3->main;
 
 like(
     capture(qw(identify test.tif)),
-    qr/test.tif TIFF 4\d\dx\d\d 4\d\dx\d\d\+0\+0 16-bit sRGB/,
+    qr/test.tif TIFF \d\d\dx\d\d \d\d\dx\d\d\+0\+0 16-bit sRGB/,
     'valid TIFF created'
 );
 

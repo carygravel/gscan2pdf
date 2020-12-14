@@ -22,7 +22,7 @@ SKIP: {
 
     # Create test image
     my $filename = 'test.pnm';
-    system( qw(convert +matte -depth 1 -pointsize 12 -density 300),
+    system( qw(convert +matte -depth 1), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
         "label:'The quick brown fox'", $filename );
 
     my $slist = Gscan2pdf::Document->new;
