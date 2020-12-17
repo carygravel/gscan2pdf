@@ -2180,8 +2180,24 @@ sub program_version {
 sub _program_version {
     my ( $stream, $regex, @output ) = @_;
     my ( $status, $out,   $err )    = @output;
-    my $output = $stream eq 'stdout' ? $out : $err;
-    if ( defined $output and $output =~ $regex ) { return $1 }
+    if ( not defined $out ) { $out = q{} }
+    if ( not defined $err ) { $err = q{} }
+    my $output;
+    given ($stream) {
+        when ('stdout') {
+            $output = $out
+        }
+        when ('stderr') {
+            $output = $err
+        }
+        when ('both') {
+            $output = $out . $err
+        }
+        default {
+            $logger->error("Unknown stream: '$stream'");
+        }
+    }
+    if ( $output =~ $regex ) { return $1 }
     if ( $status == $PROCESS_FAILED ) {
         $logger->info($err);
         return $PROCESS_FAILED;

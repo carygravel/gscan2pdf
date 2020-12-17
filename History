@@ -1,6 +1,8 @@
 2.10.2 (17.12.2020):
 
 * Catch errors running default launcher
+* Check both stderr and stdout for libtiff-tools version
+  Closes Debian bug 977532 (gscan2pdf: save option not available)
 
 
 2.10.1 (03.12.2020):
