@@ -3,6 +3,7 @@
 * Catch errors running default launcher
 * Check both stderr and stdout for libtiff-tools version
   Closes Debian bug 977532 (gscan2pdf: save option not available)
+* Rename drag tool -> pan tool
 
 
 2.10.1 (03.12.2020):

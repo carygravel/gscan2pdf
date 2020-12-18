@@ -1332,9 +1332,9 @@ sub create_menu_bar {
 
     my @image_tools = (
         [
-            'DraggerTool',           'hand-tool',
-            __('_Drag'),             undef,
-            __('Use the hand tool'), $DRAGGER_TOOL
+            'DraggerTool',          'hand-tool',
+            __('_Pan'),             undef,
+            __('Use the pan tool'), $DRAGGER_TOOL
         ],
         [
             'SelectorTool',                           'selection',
@@ -1342,12 +1342,9 @@ sub create_menu_bar {
             __('Use the rectangular selection tool'), $SELECTOR_TOOL
         ],
         [
-            'SelectorDraggerTool',
-            'gtk-media-play',
-            __('_Select & drag'),
-            undef,
-            __('Use the combined select and drag tool'),
-            $SELECTORDRAGGER_TOOL
+            'SelectorDraggerTool',                      'gtk-media-play',
+            __('_Select & pan'),                        undef,
+            __('Use the combined select and pan tool'), $SELECTORDRAGGER_TOOL
         ],
     );
     my @viewer_tools = (
