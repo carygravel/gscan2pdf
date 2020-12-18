@@ -4,6 +4,7 @@
 * Check both stderr and stdout for libtiff-tools version
   Closes Debian bug 977532 (gscan2pdf: save option not available)
 * Rename drag tool -> pan tool
+* Update to German translation (thanks to Matthias Sprau)
 
 
 2.10.1 (03.12.2020):
