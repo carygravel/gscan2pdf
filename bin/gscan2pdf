@@ -2657,7 +2657,9 @@ sub launch_default_for_file {
     my $uri = Glib->filename_to_uri( File::Spec->rel2abs($filename), undef );
     $logger->info("Opening $uri via default launcher");
     my $context = Glib::IO::AppLaunchContext->new;
-    return Glib::IO::AppInfo::launch_default_for_uri( $uri, $context );
+    try { Glib::IO::AppInfo::launch_default_for_uri( $uri, $context ) }
+    catch { $logger->error("Unable to launch viewer: $_") };
+    return;
 }
 
 # Display page selector and on save a fileselector.

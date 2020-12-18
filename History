@@ -1,3 +1,8 @@
+2.10.2 (17.12.2020):
+
+* Catch errors running default launcher
+
+
 2.10.1 (03.12.2020):
 
 * Switch from Perlmagick to imagemagick for threshold tool to improve
