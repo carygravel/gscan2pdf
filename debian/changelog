@@ -1,9 +1,9 @@
-gscan2pdf (2.11.0-1) unstable; urgency=medium
+gscan2pdf (2.10.2-1) unstable; urgency=high
 
   * Check both stderr and stdout for libtiff-tools version
     Closes: #977532 (gscan2pdf: save option not available)
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Thu, 17 Dec 2020 21:28:26 +0100
 
 gscan2pdf (2.10.1-1) unstable; urgency=medium
 
