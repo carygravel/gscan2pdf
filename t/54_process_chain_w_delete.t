@@ -2,7 +2,7 @@ use warnings;
 use strict;
 use IPC::System::Simple qw(system);
 use IPC::Cmd qw(can_run);
-use Test::More tests => 1;
+use Test::More tests => 2;
 use Gtk3 -init;    # Could just call init separately
 use Gscan2pdf::Tesseract;
 use Gscan2pdf::Document;
@@ -47,7 +47,7 @@ SKIP: {
         unpaper          => $unpaper,
         ocr              => 1,
         resolution       => 300,
-        delete           => 1,
+        delete           => 0,
         dir              => $dir,
         engine           => 'tesseract',
         language         => 'eng',
@@ -65,6 +65,33 @@ SKIP: {
         }
     );
     Gtk3->main;
+
+    # need a new main loop to avoid nesting
+    my $loop1 = Glib::MainLoop->new;
+    $slist->import_scan(
+        filename         => 'test.pnm',
+        page             => 2,
+        to_png           => 1,
+        rotate           => 90,
+        ocr              => 1,
+        resolution       => 300,
+        delete           => 1,
+        dir              => $dir,
+        engine           => 'tesseract',
+        language         => 'eng',
+        started_callback => sub {
+        },
+        error_callback => sub {
+            fail "Error processing after deleted page";
+            $loop1->quit;
+        },
+        finished_callback => sub {
+            pass "Successfully processed page after deleting";
+            $loop1->quit;
+        },
+    );
+    $loop1->run;
+
 }
 
 #########################

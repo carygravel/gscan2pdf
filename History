@@ -1,3 +1,8 @@
+2.11.0 (17.01.2021):
+
+* Run started callback before error callback
+
+
 2.10.2 (17.12.2020):
 
 * Catch errors running default launcher
