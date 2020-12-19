@@ -935,7 +935,7 @@ sub check_dependencies {
             'djvu', 'stderr', qr/DjVuLibre-([\d.]+)/xsm, [ 'cjb2', '--version' ]
         ],
         [
-            'libtiff', 'both',
+            'libtiff', 'both',    # changed from stderr->stdout on 2020-12-12
             qr/LIBTIFF,\sVersion\s([\d.]+)/xsm, [ 'tiffcp', '-h' ]
         ],
 
