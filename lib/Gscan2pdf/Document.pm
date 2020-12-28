@@ -829,6 +829,7 @@ sub check_return_queue {
                 }
                 else {
                     $logger->error("No page with UUID $data->{uuid}");
+                    $_self->{pages}->enqueue( { page => 'cancel' } );
                 }
                 return Glib::SOURCE_CONTINUE;
             }
@@ -1285,6 +1286,8 @@ sub delete_selection_extra {
 
     my @page   = $self->get_selected_indices;
     my $npages = $#page + 1;
+    my @uuids  = map { $self->{data}[$_][2]{uuid} } @page;
+    $logger->info( 'Deleting ', join q{ }, @uuids );
     if ( defined $self->{selection_changed_signal} ) {
         $self->get_selection->signal_handler_block(
             $self->{selection_changed_signal} );
@@ -4341,16 +4344,22 @@ sub _thread_save_tiff {
     return;
 }
 
+sub _thread_no_filename {
+    my ( $self, $process, $uuid, $page ) = @_;
+    if ( not defined $page->{filename} )
+    {    # in case file was deleted after process started
+        my $e = "Page for process $uuid no longer exists. Cannot $process.";
+        $logger->error($e);
+        _thread_throw_error( $self, $uuid, $page->{uuid}, $process, $e );
+        return TRUE;
+    }
+    return;
+}
+
 sub _thread_rotate {
     my ( $self, $angle, $page, $dir, $uuid ) = @_;
+    if ( _thread_no_filename( $self, 'rotate', $uuid, $page ) ) { return }
     my $filename = $page->{filename};
-    if ( not defined $filename )
-    {    # in case file was deleted after process started
-        my $e = "Page for process $uuid no longer exists. Cannot rotate.";
-        $logger->error($e);
-        _thread_throw_error( $self, $uuid, $page->{uuid}, 'Rotate', $e );
-        return;
-    }
     $logger->info("Rotating $filename by $angle degrees");
 
     # Rotate with imagemagick
@@ -4607,6 +4616,7 @@ sub _thread_analyse {
 
 sub _thread_threshold {
     my ( $self, $threshold, $page, $dir, $uuid ) = @_;
+    if ( _thread_no_filename( $self, 'threshold', $uuid, $page ) ) { return }
     my $filename = $page->{filename};
 
     my $image = Image::Magick->new;
@@ -4659,6 +4669,14 @@ sub _thread_threshold {
 
 sub _thread_brightness_contrast {
     my ( $self, %options ) = @_;
+    if (
+        _thread_no_filename(
+            $self, 'brightness-contrast', $options{uuid}, $options{page}
+        )
+      )
+    {
+        return;
+    }
     my $filename = $options{page}{filename};
 
     my $image = Image::Magick->new;
@@ -4728,6 +4746,7 @@ sub _thread_brightness_contrast {
 
 sub _thread_negate {
     my ( $self, $page, $dir, $uuid ) = @_;
+    if ( _thread_no_filename( $self, 'negate', $uuid, $page ) ) { return }
     my $filename = $page->{filename};
 
     my $image = Image::Magick->new;
@@ -4787,6 +4806,11 @@ sub _thread_negate {
 
 sub _thread_unsharp {
     my ( $self, %options ) = @_;
+    if ( _thread_no_filename( $self, 'unsharp', $options{uuid}, $options{page} )
+      )
+    {
+        return;
+    }
     my $filename = $options{page}{filename};
     my $version;
     my $image = Image::Magick->new;
@@ -4870,6 +4894,10 @@ sub _thread_unsharp {
 
 sub _thread_crop {
     my ( $self, %options ) = @_;
+    if ( _thread_no_filename( $self, 'crop', $options{uuid}, $options{page} ) )
+    {
+        return;
+    }
     my $filename = $options{page}{filename};
 
     my $image = Image::Magick->new;
@@ -4950,6 +4978,10 @@ sub _thread_crop {
 
 sub _thread_split {
     my ( $self, %options ) = @_;
+    if ( _thread_no_filename( $self, 'split', $options{uuid}, $options{page} ) )
+    {
+        return;
+    }
     my $filename  = $options{page}{filename};
     my $filename2 = $filename;
 
@@ -5084,6 +5116,7 @@ sub _thread_split {
 
 sub _thread_to_png {
     my ( $self, $page, $dir, $uuid ) = @_;
+    if ( _thread_no_filename( $self, 'to_png', $uuid, $page ) ) { return }
     my ( $new, $error );
     try {
         $new = $page->to_png($paper_sizes);
@@ -5117,6 +5150,14 @@ sub _thread_to_png {
 
 sub _thread_tesseract {
     my ( $self, %options ) = @_;
+    if (
+        _thread_no_filename(
+            $self, 'tesseract', $options{uuid}, $options{page}
+        )
+      )
+    {
+        return;
+    }
     my ( $error, $stdout, $stderr );
     try {
         ( $stdout, $stderr ) = Gscan2pdf::Tesseract->hocr(
@@ -5164,6 +5205,11 @@ sub _thread_tesseract {
 
 sub _thread_ocropus {
     my ( $self, %options ) = @_;
+    if ( _thread_no_filename( $self, 'ocropus', $options{uuid}, $options{page} )
+      )
+    {
+        return;
+    }
     $options{page}->import_hocr(
         Gscan2pdf::Ocropus->hocr(
             file      => $options{page}{filename},
@@ -5197,6 +5243,14 @@ sub _thread_ocropus {
 
 sub _thread_cuneiform {
     my ( $self, %options ) = @_;
+    if (
+        _thread_no_filename(
+            $self, 'cuneiform', $options{uuid}, $options{page}
+        )
+      )
+    {
+        return;
+    }
     $options{page}->import_hocr(
         Gscan2pdf::Cuneiform->hocr(
             file      => $options{page}{filename},
@@ -5230,6 +5284,7 @@ sub _thread_cuneiform {
 
 sub _thread_gocr {
     my ( $self, $page, $threshold, $pidfile, $uuid ) = @_;
+    if ( _thread_no_filename( $self, 'gocr', $uuid, $page ) ) { return }
     my $pnm;
     if (   ( $page->{filename} !~ /[.]pnm$/xsm )
         or ( defined $threshold and $threshold ) )
@@ -5292,6 +5347,11 @@ sub _thread_gocr {
 
 sub _thread_unpaper {
     my ( $self, %options ) = @_;
+    if ( _thread_no_filename( $self, 'unpaper', $options{uuid}, $options{page} )
+      )
+    {
+        return;
+    }
     my $filename = $options{page}{filename};
     my $in;
 
@@ -5438,6 +5498,14 @@ sub _thread_unpaper {
 
 sub _thread_user_defined {
     my ( $self, %options ) = @_;
+    if (
+        _thread_no_filename(
+            $self, 'user-defined', $options{uuid}, $options{page}
+        )
+      )
+    {
+        return;
+    }
     my $in = $options{page}{filename};
     my $suffix;
     if ( $in =~ /([.]\w*)$/xsm ) {

@@ -2,6 +2,7 @@
 
 * Run started callback before error callback
 * + option to navigate through OCR output by position
+* Fix hang trying to process page that has been deleted.
 * Update to Hungarian translation (thanks to csola)
 
 

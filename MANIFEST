@@ -374,6 +374,7 @@ t/51_process_chain.t
 t/52_process_chain_udt.t
 t/53_process_chain.t
 t/54_process_chain_w_delete.t
+t/55_process_chain_w_delete2.t
 t/6_PageRange.t
 t/75_Bboxtree.t
 t/7_Canvas.t
