@@ -16,6 +16,7 @@ Readonly my $COLOR_GREEN        => 2;
 Readonly my $COLOR_CYAN         => 3;
 Readonly my $COLOR_BLUE         => 4;
 Readonly my $_60_DEGREES        => 60;
+Readonly my $NOT_FOUND          => -1;
 
 my ( $EMPTY, $_100_PERCENT, $_360_DEGREES );
 
@@ -99,7 +100,17 @@ use Glib::Object::Subclass GooCanvas2::CanvasGroup::, signals => {
 
 sub new {
     my ( $class, %options ) = @_;
+    my $parent = $options{parent};
+    if (    $parent->isa('Gscan2pdf::Canvas::Bbox')
+        and $parent->get_n_children > 1 )
+    {
+        delete $options{parent};
+    }
     my $self = Glib::Object::new( $class, %options );
+    if ( not defined $options{parent} ) {
+        my $i = $parent->get_stack_index_by_position($self);
+        $parent->add_child( $self, $i );
+    }
 
     my ( $rotation, $x0, $y0 ) = @{ $self->{transformation} };
 
@@ -168,6 +179,83 @@ sub new {
     }
 
     return $self;
+}
+
+# an iterator for depth-first walking the bboxes below $self
+# iterator returns bbox
+# my $iter = $self->get_tree_iter();
+# while (my $bbox = $iter->()) {}
+
+sub get_tree_iter {
+    my ($self) = @_;
+    my @iter   = (0);
+    my @tree   = ($self);
+    return sub {
+        my $bbox = $tree[-1];
+        my $i    = $iter[-1];
+        my $n    = $bbox->get_n_children;
+        if ( $iter[-1] < $n ) {
+            $bbox = $bbox->get_child($i);
+            push @tree, $bbox;
+            push @iter, 0;
+            return $bbox;
+        }
+        while ( $iter[-1] >= $n ) {
+            pop @tree;
+            pop @iter;
+            if ( not @tree ) { return }
+            $bbox = $tree[-1];
+            $n    = $bbox->get_n_children;
+            $iter[-1] += 1;
+        }
+        return $bbox;
+    };
+}
+
+# given a parent bbox and a new box, return the index
+# where the new box should be inserted in the stack of children.
+# Using binary search
+# https://en.wikipedia.org/wiki/Binary_search_algorithm#Alternative_procedure
+
+sub get_stack_index_by_position {
+    my ( $self, $bbox ) = @_;
+    my $l     = 0;
+    my $r     = $self->get_n_children - 1;
+    my $child = $self->get_child($l);
+    while ( not $child->isa('Gscan2pdf::Canvas::Bbox') and $l < $r ) {
+        ++$l;
+        $child = $self->get_child($l);
+    }
+    $child = $self->get_child($r);
+    while ( not $child->isa('Gscan2pdf::Canvas::Bbox') and $l < $r ) {
+        --$r;
+        $child = $self->get_child($r);
+    }
+    my @newboxpos = $bbox->get_centroid;
+    my $axis      = $self->get('type') eq 'line' ? 0 : 1;
+
+    while ( $l != $r ) {
+        my $m = ceil( ( $l + $r ) / 2 );
+        $child = $self->get_child($m);
+        while ( not $child->isa('Gscan2pdf::Canvas::Bbox') ) {
+            if    ( $m > $l ) { --$m }
+            elsif ( $m < $r ) { ++$m }
+            else              { last }
+            $child = $self->get_child($m);
+        }
+        my @boxpos = $child->get_centroid;
+        if ( $boxpos[$axis] > $newboxpos[$axis] ) {
+            $r = $m - 1;
+        }
+        else {
+            $l = $m;
+        }
+    }
+    my @boxpos = $self->get_child($l)->get_centroid;
+    if ( $boxpos[$axis] < $newboxpos[$axis] ) {
+        $l += 1;
+    }
+    return $l;
 }
 
 # Convert confidence percentage into colour
@@ -278,6 +366,40 @@ sub get_text_widget {
     return;
 }
 
+sub get_centroid {
+    my ($self) = @_;
+    my $bbox = $self->get('bbox');
+    return $bbox->{x} + $bbox->{width} / 2, $bbox->{y} + $bbox->{height} / 2;
+}
+
+sub get_position_index {
+    my ($self) = @_;
+    my $parent = $self->get_property('parent');
+    while ( $parent and not $parent->isa('Gscan2pdf::Canvas::Bbox') ) {
+        $parent = $parent->get_property('parent');
+    }
+    my $sort_direction = 0;
+    if ( $parent->{type} ne 'line' ) { $sort_direction = 1 }
+    my @children = sort {
+        ( $a->get_centroid )[$sort_direction]
+          <=> ( $b->get_centroid )[$sort_direction]
+    } $parent->get_children;
+    for my $i ( 0 .. $#children ) {
+        if ( $children[$i] eq $self ) { return $i }
+    }
+    return;
+}
+
+sub get_child_ordinal {
+    my ( $self, $child ) = @_;
+    for my $i ( 0 .. $self->get_n_children - 1 ) {
+        if ( $child == $self->get_child($i) ) {
+            return $i;
+        }
+    }
+    return $NOT_FOUND;
+}
+
 sub get_children {
     my ($self) = @_;
     my @children;
@@ -336,12 +458,15 @@ sub update_box {
         height         => $selection->{height},
     );
 
-    my $old_box = $self->get('bbox');
-    $self->translate( $selection->{x} - $old_box->{x},
-        $selection->{y} - $old_box->{y} );
-
-    my $text_w = $self->get_text_widget;
     if ( length $text ) {
+        my $old_box     = $self->get('bbox');
+        my $old_pos_ind = $self->get_position_index;
+        $self->translate(
+            $selection->{x} - $old_box->{x},
+            $selection->{y} - $old_box->{y}
+        );
+
+        my $text_w   = $self->get_text_widget;
         my $old_conf = $self->get('confidence');
         $text_w->set( text => $text );
         $self->set( text       => $text );
@@ -363,10 +488,17 @@ sub update_box {
             $self->transform_text( $scale, $textangle );
         }
 
-        if ( $old_conf != $self->get('confidence') ) {
+        my $new_conf = $self->get('confidence');
+        if ( $old_conf != $new_conf ) {
             my $canvas = $self->get_canvas;
-            $canvas->remove_current_box_from_index;
-            $canvas->add_box_to_index($self);
+            $canvas->{confidence_index}->remove_current_box_from_index;
+            $canvas->{confidence_index}->add_box_to_index( $self, $new_conf );
+        }
+
+        my $new_pos_ind = $self->get_position_index;
+        if ( $old_pos_ind != $new_pos_ind ) {
+            my $parent = $self->get_parent;
+            $parent->move_child( $old_pos_ind, $new_pos_ind );
         }
     }
     else {
@@ -377,7 +509,11 @@ sub update_box {
 
 sub delete_box {
     my ($self) = @_;
-    $self->get_canvas->remove_current_box_from_index;
+    $self->get_canvas->{confidence_index}->remove_current_box_from_index;
+    my $bbox = $self->get_canvas->{position_index}->next_word;
+    if ( not defined $bbox ) {
+        $bbox = $self->get_canvas->{position_index}->previous_word;
+    }
     my $parent = $self->get_property('parent');
     for my $i ( 0 .. $parent->get_n_children - 1 ) {
         my $group = $parent->get_child($i);

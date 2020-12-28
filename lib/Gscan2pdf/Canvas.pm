@@ -6,10 +6,11 @@ use feature 'switch';
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use GooCanvas2;
 use Gscan2pdf::Canvas::Bbox;
+use Gscan2pdf::Canvas::ListIter;
+use Gscan2pdf::Canvas::TreeIter;
 use Glib 1.220 ':constants';
 use HTML::Entities;
 use Carp;
-use POSIX qw/ceil/;
 use Readonly;
 Readonly my $_360_DEGREES    => 360;
 Readonly my $MAX_COLOR_INT   => 65_535;
@@ -134,6 +135,8 @@ sub INIT_INSTANCE {
     }
     $self->{offset}{x} = 0;
     $self->{offset}{y} = 0;
+
+    $self->{current_index} = 'position';
 
     # allow the widget to accessed via CSS
     $self->set_name('gscan2pdf-ocr-canvas');
@@ -270,14 +273,14 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
     if ( not defined $idle ) {
         $idle = TRUE;
     }
-    my $root;
     if (%old_idles) {
         while ( my ( $box, $source ) = each %old_idles ) {
             Glib::Source->remove($source);
             delete $old_idles{$box};
         }
     }
-    $root = GooCanvas2::CanvasGroup->new;
+    delete $self->{position_index};
+    my $root = GooCanvas2::CanvasGroup->new;
     my ( $width, $height ) = $page->get_size;
     my ( $xres,  $yres )   = $page->get_resolution;
 
@@ -288,7 +291,7 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
     $self->set_bounds( 0, 0, $width, $height );
 
     # Attach the text to the canvas
-    $self->{confidence_list} = [];
+    $self->{confidence_index} = Gscan2pdf::Canvas::ListIter->new();
     my $tree = Gscan2pdf::Bboxtree->new( $page->{bboxtree} );
     my $iter = $tree->get_bbox_iter;
     my $box  = $iter->();
@@ -318,56 +321,90 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
 
 sub get_first_bbox {
     my ($self) = @_;
-    $self->{confidence_index} = 0;
-    return $self->get_bbox_by_index;
+    my $bbox;
+    if ( $self->{current_index} eq 'confidence' ) {
+        $bbox = $self->{confidence_index}->get_first_bbox;
+    }
+    else {
+        $bbox = $self->{position_index}->first_word;
+    }
+    $self->set_other_index($bbox);
+    return $bbox;
 }
 
 sub get_previous_bbox {
     my ($self) = @_;
-    if ( $self->{confidence_index} > 0 ) {
-        $self->{confidence_index} -= 1;
+    my $bbox;
+    if ( $self->{current_index} eq 'confidence' ) {
+        $bbox = $self->{confidence_index}->get_previous_bbox;
     }
-    return $self->get_bbox_by_index;
+    else {
+        $bbox = $self->{position_index}->previous_word;
+    }
+    $self->set_other_index($bbox);
+    return $bbox;
 }
 
 sub get_next_bbox {
     my ($self) = @_;
-    if ( $self->{confidence_index} < $#{ $self->{confidence_list} } ) {
-        $self->{confidence_index} += 1;
+    my $bbox;
+    if ( $self->{current_index} eq 'confidence' ) {
+        $bbox = $self->{confidence_index}->get_next_bbox;
     }
-    return $self->get_bbox_by_index;
+    else {
+        $bbox = $self->{position_index}->next_word;
+    }
+    $self->set_other_index($bbox);
+    return $bbox;
 }
 
 sub get_last_bbox {
     my ($self) = @_;
-    $self->{confidence_index} = $#{ $self->{confidence_list} };
-    return $self->get_bbox_by_index;
+    my $bbox;
+    if ( $self->{current_index} eq 'confidence' ) {
+        $bbox = $self->{confidence_index}->get_last_bbox;
+    }
+    else {
+        $bbox = $self->{position_index}->last_word;
+    }
+    $self->set_other_index($bbox);
+    return $bbox;
 }
 
-sub get_bbox_by_index {
+sub get_current_bbox {
     my ($self) = @_;
-    if ( $self->{confidence_index} > $EMPTY_LIST ) {
-        return $self->{confidence_list}[ $self->{confidence_index} ][0];
+    my $bbox;
+    if ( $self->{current_index} eq 'confidence' ) {
+        $bbox = $self->{confidence_index}->get_current_bbox;
     }
-    return;
+    else {
+        $bbox = $self->{position_index}->get_current_bbox;
+    }
+    $self->set_other_index($bbox);
+    return $bbox;
 }
 
 sub set_index_by_bbox {
     my ( $self, $bbox ) = @_;
-
-    # There may be multiple boxes with the same confidence, so use a binary
-    # search to find the next smallest confidence, and then a linear search to
-    # find the box
-    my $confidence = $bbox->get('confidence');
-    my $l =
-      confidence_binary_search( $self->{confidence_list}, $confidence - 1 );
-    for my $i ( $l .. $#{ $self->{confidence_list} } ) {
-        if ( $self->{confidence_list}->[$i][0] == $bbox ) {
-            $self->{confidence_index} = $i;
-            return $i;
-        }
+    if ( not defined $bbox ) { return }
+    if ( $self->{current_index} eq 'confidence' ) {
+        return $self->{confidence_index}
+          ->set_index_by_bbox( $bbox, $bbox->get('confidence') );
     }
-    delete $self->{confidence_index};
+    $self->{position_index} = Gscan2pdf::Canvas::TreeIter->new($bbox);
+    return;
+}
+
+sub set_other_index {
+    my ( $self, $bbox ) = @_;
+    if ( not defined $bbox ) { return }
+    if ( $self->{current_index} eq 'confidence' ) {
+        $self->{position_index} = Gscan2pdf::Canvas::TreeIter->new($bbox);
+    }
+    else {
+        $self->{confidence_index}
+          ->set_index_by_bbox( $bbox, $bbox->get('confidence') );
+    }
     return;
 }
 
@@ -421,19 +458,25 @@ sub get_offset {
     return $self->get('offset');
 }
 
+sub get_bbox_at {
+    my ( $self, $selection ) = @_;
+    my $x      = $selection->{x} + $selection->{width} / 2;
+    my $y      = $selection->{y} + $selection->{height} / 2;
+    my $parent = $self->get_item_at( $x, $y, FALSE );
+    while ( defined $parent
+        and ( not defined $parent->{type} or $parent->{type} eq 'word' ) )
+    {
+        $parent = $parent->get_property('parent');
+    }
+    return $parent;
+}
+
 sub add_box {
     my ( $self, $text, $selection, $edit_callback, %options ) = @_;
 
     my $parent = $options{parent};
     if ( not defined $parent ) {
-        my $x = $selection->{x} + $selection->{width} / 2;
-        my $y = $selection->{y} + $selection->{height} / 2;
-        $parent = $self->get_item_at( $x, $y, FALSE );
-        while ( defined $parent
-            and ( not defined $parent->{type} or $parent->{type} eq 'word' ) )
-        {
-            $parent = $parent->get_property('parent');
-        }
+        $parent = $self->get_bbox_at($selection);
         if ( not defined $parent ) { return }
     }
 
@@ -462,9 +505,13 @@ sub add_box {
     }
 
     my $bbox = Gscan2pdf::Canvas::Bbox->new(%options2);
+    if ( not defined $self->{position_index} ) {
+        $self->{position_index} = Gscan2pdf::Canvas::TreeIter->new($bbox);
+    }
 
     if ( defined $bbox and length $text ) {
-        $self->add_box_to_index($bbox);
+        $self->{confidence_index}
+          ->add_box_to_index( $bbox, $bbox->get('confidence') );
 
         # clicking text box produces a dialog to edit the text
         if ($edit_callback) {
@@ -574,61 +621,6 @@ sub _boxed_text {
     #   #  return TRUE;
     #  }
     # );
-    return;
-}
-
-# Return index of confidence using binary search
-# https://en.wikipedia.org/wiki/Binary_search_algorithm#Alternative_procedure
-
-sub confidence_binary_search {
-    my ( $confidence_list, $confidence ) = @_;
-    my $l = 0;
-    my $r = $#{$confidence_list};
-    while ( $l != $r ) {
-        my $m = ceil( ( $l + $r ) / 2 );
-        if ( $confidence_list->[$m][1] > $confidence ) {
-            $r = $m - 1;
-        }
-        else {
-            $l = $m;
-        }
-    }
-    if ( $confidence_list->[$l][1] < $confidence ) {
-        $l += 1;
-    }
-    return $l;
-}
-
-# insert into list sorted by confidence level using a binary search
-
-sub add_box_to_index {
-    my ( $self, $bbox ) = @_;
-    if ( not defined $bbox ) {
-        Glib->warning( __PACKAGE__,
-            'Attempted to add undefined box to confidence list' );
-        return;
-    }
-    my $confidence = $bbox->get('confidence');
-    if ( not @{ $self->{confidence_list} } ) {
-        push @{ $self->{confidence_list} }, [ $bbox, $confidence ];
-        return;
-    }
-    my $i = confidence_binary_search( $self->{confidence_list}, $confidence );
-    splice @{ $self->{confidence_list} }, $i, 0, [ $bbox, $confidence ];
-    return;
-}
-
-sub remove_current_box_from_index {
-    my ($self) = @_;
-    if ( not defined $self->{confidence_index} ) {
-        Glib->warning( __PACKAGE__,
-            'Attempted to delete undefined index from confidence list' );
-        return;
-    }
-    splice @{ $self->{confidence_list} }, $self->{confidence_index}, 1;
-    if ( $self->{confidence_index} > $#{ $self->{confidence_list} } ) {
-        $self->{confidence_index} = $#{ $self->{confidence_list} };
-    }
     return;
 }
 
@@ -753,6 +745,18 @@ sub _scroll {
 
     # don't allow the event to propagate, as this pans it in y
     return TRUE;
+}
+
+sub sort_by_confidence {
+    my ($self) = @_;
+    $self->{current_index} = 'confidence';
+    return;
+}
+
+sub sort_by_position {
+    my ($self) = @_;
+    $self->{current_index} = 'position';
+    return;
 }
 
 1;

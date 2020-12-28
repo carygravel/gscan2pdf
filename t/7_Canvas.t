@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 31;
+use Test::More tests => 37;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -44,13 +44,13 @@ $page->import_hocr( <<'EOS');
       <span class='ocr_word' id='word_1_1' title="bbox 1 14 77 48">
        <span class='xocr_word' id='xword_1_1' title="x_wconf 3">The—</span>
       </span>
-      <span class='ocr_word' id='word_1_2' title="bbox 92 14 202 59">
+      <span class='ocr_word' id='word_1_2' title="bbox 92 14 202 48">
        <span class='xocr_word' id='xword_1_2' title="x_wconf 74">quick</span>
       </span>
       <span class='ocr_word' id='word_1_3' title="bbox 214 14 341 48">
        <span class='xocr_word' id='xword_1_3' title="x_wconf 75">brown</span>
       </span>
-      <span class='ocr_word' id='word_1_4' title="bbox 355 14 420 48">
+      <span class='ocr_word' id='word_1_4' title="bbox 250 14 420 48">
        <span class='xocr_word' id='xword_1_4' title="x_wconf 71">fox</span>
       </span>
      </span>
@@ -62,18 +62,22 @@ $page->import_hocr( <<'EOS');
 EOS
 
 my $canvas = Gscan2pdf::Canvas->new;
+$canvas->sort_by_confidence;
 $canvas->set_text( $page, undef, FALSE );
 
 my $bbox = $canvas->get_first_bbox;
 is $bbox->get('text'), 'The—', 'get_first_bbox';
-is $canvas->set_index_by_bbox($bbox), 0, 'set_index_by_bbox 1';
+is $canvas->set_index_by_bbox( $bbox, $bbox->get('confidence') ), 0,
+  'set_index_by_bbox 1';
 $bbox = $canvas->get_next_bbox;
 is $bbox->get('text'), 'fox', 'get_next_bbox';
-is $canvas->set_index_by_bbox($bbox), 1, 'set_index_by_bbox 2';
+is $canvas->set_index_by_bbox( $bbox, $bbox->get('confidence') ), 1,
+  'set_index_by_bbox 2';
 is $canvas->get_previous_bbox->get('text'), 'The—', 'get_previous_text';
 $bbox = $canvas->get_last_bbox;
 is $bbox->get('text'), 'brown', 'get_last_text';
-is $canvas->set_index_by_bbox($bbox), 3, 'set_index_by_bbox 3';
+is $canvas->set_index_by_bbox( $bbox, $bbox->get('confidence') ), 3,
+  'set_index_by_bbox 3';
 
 $bbox->delete_box;
 is $canvas->get_last_bbox->get('text'), 'quick', 'get_last_bbox after deletion';
@@ -86,7 +90,7 @@ $group = $group->get_child(0);
 
 $group->update_box( 'No', { x => 2, y => 15, width => 74, height => 32 } );
 
-$canvas->add_box( 'foo', { x => 250, y => 15, width => 74, height => 32 } );
+$canvas->add_box( 'foo', { x => 355, y => 15, width => 74, height => 32 } );
 
 my $expected = <<"EOS";
 <\?xml version="1.0" encoding="UTF-8"\?>
@@ -103,9 +107,9 @@ my $expected = <<"EOS";
    <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
     <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
      <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>No</span>
-     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
-     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
-     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
+     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 48; x_wconf 74'>quick</span>
+     <span class='ocr_word' id='word_1_4' title='bbox 250 14 420 48; x_wconf 71'>fox</span>
+     <span class='ocr_word'  title='bbox 355 15 429 47; x_wconf 100'>foo</span>
     </span>
    </div>
   </div>
@@ -115,12 +119,24 @@ EOS
 
 is( $canvas->hocr, $expected, 'updated hocr' );
 
+$canvas->sort_by_position;
+$bbox = $canvas->get_first_bbox;
+is $bbox->get('text'), 'No', 'get_first_bbox position';
+is $canvas->get_previous_bbox, undef, 'before get_first_bbox position';
+$bbox = $canvas->get_next_bbox;
+is $bbox->get('text'), 'quick', 'get_next_bbox position';
+$bbox = $canvas->get_previous_bbox;
+is $bbox->get('text'), 'No', 'get_previous_bbox position';
+$bbox = $canvas->get_last_bbox;
+is $bbox->get('text'), 'foo', 'get_last_bbox position';
+is $canvas->get_next_bbox, undef, 'after get_last_bbox position';
+
 #########################
 
 # v2.10.0 had a bug where adding a word box manually where there was an overlap
 # with another word box picked up the existing word box as the parent.
 # A another bug prevented adding the text '0'
-$canvas->add_box( '0', { x => 250, y => 15, width => 74, height => 32 } );
+$canvas->add_box( '0', { x => 356, y => 15, width => 74, height => 32 } );
 
 $expected = <<"EOS";
 <\?xml version="1.0" encoding="UTF-8"\?>
@@ -137,10 +153,10 @@ $expected = <<"EOS";
    <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
     <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
      <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>No</span>
-     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
-     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
-     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
-     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>0</span>
+     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 48; x_wconf 74'>quick</span>
+     <span class='ocr_word' id='word_1_4' title='bbox 250 14 420 48; x_wconf 71'>fox</span>
+     <span class='ocr_word'  title='bbox 355 15 429 47; x_wconf 100'>foo</span>
+     <span class='ocr_word'  title='bbox 356 15 430 47; x_wconf 100'>0</span>
     </span>
    </div>
   </div>
@@ -153,6 +169,7 @@ is( $canvas->hocr, $expected,
 
 #########################
 
+$canvas->sort_by_confidence;
 $canvas->get_last_bbox->update_box( 'No',
     { x => 2, y => 15, width => 75, height => 32 } );
 is $canvas->get_last_bbox->get('text'), 'No',
@@ -213,10 +230,10 @@ $expected = <<"EOS";
    <div class='ocr_carea' id='block_1_1' title='bbox 1 14 420 59'>
     <span class='ocr_line' id='line_1_1' title='bbox 1 14 420 59'>
      <span class='ocr_word' id='word_1_1' title='bbox 2 15 76 47; x_wconf 100'>&lt;em&gt;No&lt;/em&gt;</span>
-     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 74'>quick</span>
-     <span class='ocr_word' id='word_1_4' title='bbox 355 14 420 48; x_wconf 71'>fox</span>
-     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>foo</span>
-     <span class='ocr_word'  title='bbox 250 15 324 47; x_wconf 100'>0</span>
+     <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 48; x_wconf 74'>quick</span>
+     <span class='ocr_word' id='word_1_4' title='bbox 250 14 420 48; x_wconf 71'>fox</span>
+     <span class='ocr_word'  title='bbox 355 15 429 47; x_wconf 100'>foo</span>
+     <span class='ocr_word'  title='bbox 356 15 430 47; x_wconf 100'>0</span>
     </span>
    </div>
   </div>
@@ -274,6 +291,7 @@ EOS
 
 $canvas = Gscan2pdf::Canvas->new;
 $canvas->set_text( $page, undef, FALSE );
+$canvas->sort_by_confidence;
 
 $expected = <<"EOS";
 <\?xml version="1.0" encoding="UTF-8"\?>
@@ -293,8 +311,8 @@ $expected = <<"EOS";
      <span class='ocr_word' id='word_1_2' title='bbox 92 14 202 59; x_wconf 3'>quick</span>
     </span>
     <span class='ocr_line' id='line_1_2' title='bbox 1 80 35 286; textangle 90'>
-     <span class='ocr_word' id='word_1_4' title='bbox 1 80 35 195; x_wconf 4'>fox</span>
      <span class='ocr_word' id='word_1_3' title='bbox 1 159 35 286; x_wconf 3'>brown</span>
+     <span class='ocr_word' id='word_1_4' title='bbox 1 80 35 195; x_wconf 4'>fox</span>
     </span>
    </div>
   </div>

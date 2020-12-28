@@ -455,6 +455,33 @@ sub populate_main_window {
     $ocr_text_pbutton->signal_connect(
         clicked => sub { edit_ocr_text( $canvas->get_previous_bbox ) } );
 
+    my @ocr_index = (
+        [
+            'confidence',
+            __('Sort by confidence'),
+            __('Sort OCR text boxes by confidence.')
+        ],
+        [
+            'position', __('Sort by position'),
+            __('Sort OCR text boxes by position.')
+        ],
+    );
+    my $ocr_text_scmbx = Gscan2pdf::ComboBoxText->new_from_array(@ocr_index);
+    $ocr_text_scmbx->set_tooltip_text( __('Select sort method for OCR boxes') );
+    $ocr_text_scmbx->signal_connect(
+        changed => sub {
+            if (
+                $ocr_index[ $ocr_text_scmbx->get_active ]->[0] eq 'confidence' )
+            {
+                $canvas->sort_by_confidence;
+            }
+            else {
+                $canvas->sort_by_position;
+            }
+        }
+    );
+    $ocr_text_scmbx->set_active(0);
+
     my $ocr_text_nbutton = Gtk3::Button->new;
     $ocr_text_nbutton->set_image(
         Gtk3::Image->new_from_stock( 'gtk-go-forward', 'button' ) );
@@ -552,12 +579,13 @@ sub populate_main_window {
         clicked => sub {
             $ocr_bbox->delete_box;
             $current_page->import_hocr( $canvas->hocr );
-            edit_ocr_text( $canvas->get_bbox_by_index );
+            edit_ocr_text( $canvas->get_current_bbox );
         }
     );
 
     $ocr_text_hbox->pack_start( $ocr_text_fbutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_start( $ocr_text_pbutton, FALSE, FALSE, 0 );
+    $ocr_text_hbox->pack_start( $ocr_text_scmbx,   FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_start( $ocr_text_nbutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_start( $ocr_text_lbutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_start( $ocr_textview,     FALSE, FALSE, 0 );
@@ -2102,6 +2130,7 @@ sub edit_ocr_text {
     if ( not $ev ) {
         $bbox = $widget;
     }
+    if ( not defined $bbox ) { return }
     $ocr_bbox = $bbox;
     $ocr_textbuffer->set( text => $bbox->get('text') );
     $ocr_text_hbox->show_all;
