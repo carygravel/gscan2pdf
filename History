@@ -3,6 +3,8 @@
 * Run started callback before error callback
 * + option to navigate through OCR output by position
 * Fix hang trying to process page that has been deleted.
+* Quit with fatal error if module versions do not match executable version.
+  Closes #370 (gscan2pdf opens to white screen).
 * Update to Hungarian translation (thanks to csola)
 
 

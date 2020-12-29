@@ -214,6 +214,15 @@ $logger->info(
 $logger->info("Gtk3::SimpleList version $Gtk3::SimpleList::VERSION");
 $logger->info("Gscan2pdf::Document version $Gscan2pdf::Document::VERSION");
 
+if ( $Gscan2pdf::Document::VERSION ne $VERSION ) {
+    $logger->fatal(
+        sprintf
+'Mismatch between Gscan2pdf::Document version %s and executable version %s.',
+        $Gscan2pdf::Document::VERSION, $VERSION
+    );
+    exit;
+}
+
 #$logger->info( 'Using GtkImageView version ',
 #    Gtk3::ImageView->library_version );
 $logger->info("Using Gtk3::ImageView version $Gtk3::ImageView::VERSION");
