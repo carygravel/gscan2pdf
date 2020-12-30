@@ -511,6 +511,7 @@ sub populate_main_window {
     $ocr_text_obutton->set_tooltip_text( __('Accept corrections') );
     $ocr_text_obutton->signal_connect(
         clicked => sub {
+            take_snapshot();
             $logger->info( "Corrected '"
                   . $ocr_bbox->get('text') . "'->'"
                   . $ocr_textbuffer->get('text')
@@ -552,6 +553,7 @@ sub populate_main_window {
     $ocr_text_abutton->set_tooltip_text( __('Add text') );
     $ocr_text_abutton->signal_connect(
         clicked => sub {
+            take_snapshot();
             my $text = $ocr_textbuffer->get('text');
             if ( not defined $text or $text eq $EMPTY ) {
                 $text = __('my-new-word');

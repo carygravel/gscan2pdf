@@ -5,6 +5,7 @@
 * Fix hang trying to process page that has been deleted.
 * Quit with fatal error if module versions do not match executable version.
   Closes #370 (gscan2pdf opens to white screen).
+* Take undo/redo snapshot when adding or correcting OCR text
 * Update to Hungarian translation (thanks to csola)
 
 
