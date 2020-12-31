@@ -7534,11 +7534,6 @@ C<sudo apt update>
 
 C<sudo apt install gscan2pdf>
 
-=head2 RPMs
-
-Download the rpm from Sourceforge, and then install it with
-C<rpm -i gscan2pdf-version.rpm>
-
 =head2 From source
 
 The source is hosted in the files section of the gscan2pdf project on
