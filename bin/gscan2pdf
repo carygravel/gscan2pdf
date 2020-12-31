@@ -6511,7 +6511,7 @@ sub preferences {
         $vbox2,       $fileentry,   $cbw,         $cbtz,
         $cbtm,        $cbts,        $cbtp,        $tmpentry,
         $spinbuttonw, $spinbuttonb, $spinbuttond, $ocr_function,
-        $comboo,      $cbv,         $cbb
+        $comboo,      $cbv,         $cbb,         $vboxt
       )
       = _preferences_general_options(
         $windowr->style_get('content-area-border') );
@@ -6625,6 +6625,9 @@ sub preferences {
 
             # Store viewer preferences
             $SETTING{'view files toggle'} = $cbv->get_active;
+
+            update_list_user_defined_tools( $vboxt,
+                [ $comboboxudt, $windows->{comboboxudt} ] );
 
             my @tmpdirs = File::Spec->splitdir($session);
             pop @tmpdirs;    # Remove the top level
@@ -7121,7 +7124,7 @@ EOS
     );
     return $vbox, $fileentry, $cbw, $cbtz, $cbtm, $cbts, $cbtp, $tmpentry,
       $spinbuttonw,
-      $spinbuttonb, $spinbuttond, \@ocr_function, $comboo, $cbv, $cbb;
+      $spinbuttonb, $spinbuttond, \@ocr_function, $comboo, $cbv, $cbb, $vboxt;
 }
 
 sub _cb_array_append {
@@ -7174,13 +7177,6 @@ sub add_user_defined_tool_entry {
     $vbox->pack_start( $hbox, TRUE, TRUE, 0 );
     my $entry = Gtk3::Entry->new;
     $entry->set_text($tool);
-    $entry->signal_connect(
-        changed => sub {
-            update_list_user_defined_tools( $vbox, $combobox_array );
-            ()    # this callback must return either 2 or 0 items.
-        }
-    );
-
     $entry->set_tooltip_text(
         __(
 "Use \%i and \%o for the input and output filenames respectively, or a single \%i if the image is to be modified in-place.\n\nThe other variable available is:\n\n\%r resolution"
