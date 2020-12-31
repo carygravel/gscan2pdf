@@ -5568,6 +5568,9 @@ sub _thread_user_defined {
             $new->{yresolution} = $options{page}{yresolution};
         }
 
+        # Copy the OCR output
+        $new->{bboxtree} = $options{page}{bboxtree};
+
         # reuse uuid so that the process chain can find it again
         $new->{uuid} = $options{page}{uuid};
         $self->{return}->enqueue(
