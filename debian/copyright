@@ -4,14 +4,14 @@ Upstream-Contact: Jeffrey Ratcliffe <jjr@debian.org>
 Source: https://gscan2pdf.sourceforge.net/
 
 Files: *
-Copyright: 2006--2020 Jeffrey Ratcliffe
+Copyright: 2006--2021 Jeffrey Ratcliffe
            2019 Manuel Stein
 License: GPL-3
  The full text of the GPL is available on Debian systems in
  /usr/share/common-licenses/GPL-3
 
 Files: net.sourceforge.gscan2pdf.appdata.xml
-Copyright: 2006--2020 Jeffrey Ratcliffe
+Copyright: 2006--2021 Jeffrey Ratcliffe
 License: CC0-1.0
  The full text of the CC0-1.0 licence is available on Debian systems in
  /usr/share/common-licenses/CC0-1.0
