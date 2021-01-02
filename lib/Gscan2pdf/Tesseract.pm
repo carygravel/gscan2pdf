@@ -12,6 +12,8 @@ use version;
 use English qw( -no_match_vars );    # for $PROCESS_ID
 use Gscan2pdf::Translation '__';     # easier to extract strings with xgettext
 use Locale::Language;
+use Readonly;
+Readonly our $DPI_OPTION_POS => 3;
 
 our $VERSION = '2.10.2';
 my $EMPTY = q{};
@@ -164,7 +166,7 @@ sub locale_installed {
 
 sub hocr {
     my ( $class, %options ) = @_;
-    my ( $tif, $cmd, $name, $path, $txt );
+    my ( $tif, $name, $path, $txt );
     if ( not $setup ) { Gscan2pdf::Tesseract->setup( $options{logger} ) }
 
     if ( $version >= version->parse('v3.03.00') ) {
@@ -203,24 +205,20 @@ sub hocr {
     else {
         $tif = $options{file};
     }
-    if ( $version > version->parse('v3.05.00') ) {
-        $cmd = [
-            'tesseract', $tif,
-            $path . $name,      '--dpi', $options{dpi}, '-l',
-            $options{language}, '-c',
-            'tessedit_create_hocr=1',
+    my @cmd = (
+        'tesseract', $tif, $path . $name,
+        '-l', $options{language}, '-c', 'tessedit_create_hocr=1',
+    );
 
-        ];
-    }
-    else {
-        $cmd = [
-            'tesseract',        $tif, $path . $name, '-l',
-            $options{language}, '-c', 'tessedit_create_hocr=1',
-        ];
+# really introduced in v4.0.0-rc1, but version->parse can't handle
+# rc/beta, etc:
+# https://github.com/tesseract-ocr/tesseract/commit/a0564fd4ec5e5c774ddc72597a6d55183c9cc628
+    if ( $version > version->parse('v4.0.0') ) {
+        splice @cmd, $DPI_OPTION_POS, 0, '--dpi', $options{dpi};
     }
 
     my ( undef, $out, $err ) =
-      Gscan2pdf::Document::exec_command( $cmd, $options{pidfile} );
+      Gscan2pdf::Document::exec_command( \@cmd, $options{pidfile} );
     my $warnings = ( $out ? $name ne 'stdout' : $EMPTY ) . $err;
     my $leading  = 'Tesseract Open Source OCR Engine';
     my $trailing = 'with Leptonica';

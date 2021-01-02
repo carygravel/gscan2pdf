@@ -9,6 +9,7 @@
 * Don't lose OCR output when running user-defined tool
 * Only update list of user-defined tools on pressing apply in preferences.
 * + vertically split screen view for image and OCR output.
+* Correct use of dpi option in v4.0.0-beta.1 tesseract call (i.e. Bionic).
 * Update to Hungarian translation (thanks to csola)
 
 
