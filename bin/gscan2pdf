@@ -132,7 +132,8 @@ Readonly my $DRAGGER_TOOL            => 10;
 Readonly my $SELECTOR_TOOL           => 20;
 Readonly my $SELECTORDRAGGER_TOOL    => 30;
 Readonly my $TABBED_VIEW             => 100;
-Readonly my $SPLIT_VIEW              => 101;
+Readonly my $SPLIT_VIEW_H            => 101;
+Readonly my $SPLIT_VIEW_V            => 102;
 Readonly my $EMPTY_LIST              => -1;
 Readonly my $_100_PERCENT            => 100;
 Readonly my $MAX_DPI                 => 2400;
@@ -288,7 +289,7 @@ my (
     $ocr_textview, $ocr_bbox,
 
     # Notebook, split panes for detail view and OCR output
-    $vnotebook, $hpanei,
+    $vnotebook, $hpanei, $vpanei,
 
     # Spinbuttons for selector on crop dialog
     $sb_selector_x, $sb_selector_y, $sb_selector_w, $sb_selector_h,
@@ -368,7 +369,9 @@ sub populate_main_window {
     # Notebook, split panes for detail view and OCR output
     $vnotebook = Gtk3::Notebook->new;
     $hpanei    = Gtk3::HPaned->new;
+    $vpanei    = Gtk3::VPaned->new;
     $hpanei->show;
+    $vpanei->show;
 
     # ImageView for detail view
     $view = Gtk3::ImageView->new;
@@ -685,10 +688,15 @@ sub pack_viewer_tools {
         $vpaned->pack1( $vnotebook, TRUE, TRUE );
         $vnotebook->show_all;
     }
-    else {    # $SPLIT_VIEW
+    elsif ( $SETTING{viewer_tools} == $SPLIT_VIEW_H ) {
         $hpanei->pack1( $view, TRUE, TRUE );
         $hpanei->pack2( $canvas, TRUE, TRUE );
         $vpaned->pack1( $hpanei, TRUE, TRUE );
+    }
+    else {    # $SPLIT_VIEW_V
+        $vpanei->pack1( $view, TRUE, TRUE );
+        $vpanei->pack2( $canvas, TRUE, TRUE );
+        $vpaned->pack1( $vpanei, TRUE, TRUE );
     }
     return;
 }
@@ -1392,8 +1400,15 @@ sub create_menu_bar {
             __('Arrange image and OCR viewers in tabs'), $TABBED_VIEW
         ],
         [
-            'Split', undef, __('_Split'), undef,
-            __('Arrange image and OCR viewers in split screen'), $SPLIT_VIEW
+            'SplitH', undef, __('_Split horizontally'),
+            undef,
+            __('Arrange image and OCR viewers in horizontally split screen'),
+            $SPLIT_VIEW_H
+        ],
+        [
+            'SplitV', undef, __('_Split vertically'), undef,
+            __('Arrange image and OCR viewers in vertically split screen'),
+            $SPLIT_VIEW_V
         ],
     );
     my @ocr_tools = (
@@ -1450,7 +1465,8 @@ sub create_menu_bar {
    <menuitem action='SelectorDraggerTool'/>
    <separator/>
    <menuitem action='Tabbed'/>
-   <menuitem action='Split'/>
+   <menuitem action='SplitH'/>
+   <menuitem action='SplitV'/>
    <separator/>
    <menuitem action='Zoom 100'/>
    <menuitem action='Zoom to fit'/>
@@ -1719,7 +1735,8 @@ sub update_uimanager {
         '/MenuBar/View/SelectorTool',
         '/MenuBar/View/SelectorDraggerTool',
         '/MenuBar/View/Tabbed',
-        '/MenuBar/View/Split',
+        '/MenuBar/View/SplitH',
+        '/MenuBar/View/SplitV',
         '/MenuBar/View/Zoom 100',
         '/MenuBar/View/Zoom to fit',
         '/MenuBar/View/Zoom in',
@@ -5426,17 +5443,26 @@ sub change_image_tool_cb {
 
 sub change_view_cb {
     my ( $action, $current ) = @_;
-    $SETTING{viewer_tools} = $current->get_current_value();
+
+    # $SETTING{viewer_tools} still has old value
     if ( $SETTING{viewer_tools} == $TABBED_VIEW ) {
-        $vpaned->remove($hpanei);
-        $hpanei->remove($view);
-        $hpanei->remove($canvas);
-    }
-    else {    # $SPLIT_VIEW
         $vpaned->remove($vnotebook);
         $vnotebook->remove($view);
         $vnotebook->remove($canvas);
     }
+    elsif ( $SETTING{viewer_tools} == $SPLIT_VIEW_H ) {
+        $vpaned->remove($hpanei);
+        $hpanei->remove($view);
+        $hpanei->remove($canvas);
+    }
+    else {    # $SPLIT_VIEW_V
+        $vpaned->remove($vpanei);
+        $vpanei->remove($view);
+        $vpanei->remove($canvas);
+    }
+
+    # Update $SETTING{viewer_tools}
+    $SETTING{viewer_tools} = $current->get_current_value();
     pack_viewer_tools();
     return;
 }

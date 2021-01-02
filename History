@@ -8,6 +8,7 @@
 * Take undo/redo snapshot when adding or correcting OCR text
 * Don't lose OCR output when running user-defined tool
 * Only update list of user-defined tools on pressing apply in preferences.
+* + vertically split screen view for image and OCR output.
 * Update to Hungarian translation (thanks to csola)
 
 
