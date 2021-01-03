@@ -1,5 +1,6 @@
 use warnings;
 use strict;
+use utf8;
 use IPC::System::Simple qw(system capture);
 use Test::More tests => 1;
 
@@ -8,7 +9,6 @@ BEGIN {
     use Gtk3 -init;    # Could just call init separately
     use PDF::Builder;
     use File::Copy;
-    use utf8;
 }
 
 #########################
@@ -45,10 +45,10 @@ $slist->import_files(
     paths             => \@files,
     finished_callback => sub {
         my @pages;
-        for my $i ( 1 .. $n ) {
-            $slist->{data}[ $i - 1 ][2]->import_text(
+        for my $i ( 0 .. $n - 1 ) {
+            $slist->{data}[$i][2]->import_text(
                 'пени способствовала сохранению');
-            push @pages, $slist->{data}[ $i - 1 ][2]{uuid};
+            push @pages, $slist->{data}[$i][2]{uuid};
         }
         $slist->save_pdf(
             path              => 'test.pdf',

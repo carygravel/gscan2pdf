@@ -107,7 +107,7 @@ use Date::Calc
 use Locale::gettext;
 
 # to deal with utf8 in filenames
-use Encode qw(_utf8_off _utf8_on);
+use Encode qw(_utf8_off _utf8_on encode);
 
 # Bind the Gio API
 # This is necessary mainly for Gtk3::Application
@@ -2297,7 +2297,7 @@ sub error_callback {
     else {
         $page_uuid = $EMPTY;
     }
-    $logger->error("$page_uuid$process, $message");
+    $logger->error( "$page_uuid$process, " . encode( 'UTF-8', $message ) );
 
     # Wrap show_message_dialog() in Glib::Idle->add() to allow the thread to
     # return immediately in order to allow it to work on subsequent pages

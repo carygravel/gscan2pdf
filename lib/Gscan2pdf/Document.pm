@@ -3448,26 +3448,24 @@ sub _thread_save_pdf {
         $pdf->info( %{$metadata} );
     }
 
-    # FIXME: use font_can_char() to check whether a font (TTF or core) can
-    # encode a particular character
     $cache->{core} = $pdf->corefont('Times-Roman');
-    if ( defined $options{options}{font} ) {
+    my $message =
+      sprintf __("Unable to find font '%s'. Defaulting to core font."),
+      $options{options}{font};
+    if ( defined $options{options}{font} and -f $options{options}{font} ) {
         try {
             $cache->{ttf} =
               $pdf->ttfont( $options{options}{font}, -unicodemap => 1 );
             $logger->info("Using $options{options}{font} for non-ASCII text");
         }
         catch {
-            _thread_throw_error(
-                $self,
-                $options{uuid},
-                $options{page}{uuid},
-                'Save file',
-                sprintf __(
-                    "Unable to find font '%s'. Defaulting to core font."),
-                $options{options}{font}
-            )
+            _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+                'Save file', $message )
         }
+    }
+    else {
+        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
+            'Save file', $message );
     }
 
     for my $pagedata ( @{ $options{list_of_pages} } ) {
@@ -3693,7 +3691,7 @@ sub _add_page_to_pdf {
 
     if ( defined( $pagedata->{bboxtree} ) ) {
         $logger->info('Embedding OCR output behind image');
-        _add_text_to_pdf( $page, $pagedata, $cache->{ttf}, $cache->{core} );
+        _add_text_to_pdf( $self, $page, $pagedata, $cache, %options );
     }
 
     # Add scan
@@ -3878,7 +3876,7 @@ sub _write_image_object {
 # Add OCR as text behind the scan
 
 sub _add_text_to_pdf {
-    my ( $pdf_page, $gs_page, $ttfcache, $corecache ) = @_;
+    my ( $self, $pdf_page, $gs_page, $cache, %options ) = @_;
     my $xresolution = $gs_page->{xresolution};
     my $yresolution = $gs_page->{yresolution};
     my $w           = $gs_page->{width} / $gs_page->{xresolution};
@@ -3892,16 +3890,35 @@ sub _add_text_to_pdf {
         my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
         my $txt = $box->{text};
         if ( not defined $txt ) { next }
-        if ( $txt =~ /([[:^ascii:]])/xsm and defined $ttfcache ) {
-            if ( defined $1 ) {
-                $logger->debug(
-                    encode( 'UTF-8', "Using TTF for '$1' in '$txt'" ) );
+        if ( $txt =~ /([[:^ascii:]]+)/xsm ) {
+            if ( not font_can_char( $cache->{core}, $1 ) ) {
+                if ( not defined $cache->{ttf} ) {
+                    my $message = sprintf __(
+"Core font '%s' cannot encode character '%s', and no TTF font defined."
+                    ), $cache->{core}->fontname, $1;
+                    $logger->error( encode( 'UTF-8', $message ) );
+                    _thread_throw_error( $self, $options{uuid},
+                        $options{page}{uuid},
+                        'Save file', $message );
+                }
+                elsif ( font_can_char( $cache->{ttf}, $1 ) ) {
+                    $logger->debug(
+                        encode( 'UTF-8', "Using TTF for '$1' in '$txt'" ) );
+                    $font = $cache->{ttf};
+                }
+                else {
+                    my $message = sprintf __(
+"Neither '%s' nor '%s' can encode character '%s' in '%s'"
+                      ), $cache->{core}->fontname, $cache->{ttf}->fontname, $1,
+                      $txt;
+                    $logger->error( encode( 'UTF-8', $message ) );
+                    _thread_throw_error( $self, $options{uuid},
+                        $options{page}{uuid},
+                        'Save file', $message );
+                }
             }
-            $font = $ttfcache;
         }
-        else {
-            $font = $corecache;
-        }
+        if ( not defined $font ) { $font = $cache->{core} }
         if ( $x1 == 0 and $y1 == 0 and not defined $x2 ) {
             ( $x2, $y2 ) = ( $w * $xresolution, $h * $yresolution );
         }

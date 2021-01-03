@@ -10,6 +10,7 @@
 * Only update list of user-defined tools on pressing apply in preferences.
 * + vertically split screen view for image and OCR output.
 * Correct use of dpi option in v4.0.0-beta.1 tesseract call (i.e. Bionic).
+* Check that the core font cannot encode the glyphs before using TTF.
 * Update to Hungarian translation (thanks to csola)
 
 
