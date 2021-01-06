@@ -272,6 +272,7 @@ sub add_defaults {
         'datetime offset'                   => [ 0, 0, 0, 0 ],
         'pdf compression'                   => 'auto',
         'tiff compression'                  => undef,
+        text_position                       => 'behind',
         'pdf font'                          => undef,
         quality                             => 75,
         'image type'                        => undef,

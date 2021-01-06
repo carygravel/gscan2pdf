@@ -118,6 +118,7 @@ Gscan2pdf::Config::add_defaults( \%output );
     use_time                            => FALSE,
     'pdf compression'                   => 'auto',
     'tiff compression'                  => undef,
+    text_position                       => 'behind',
     'pdf font'                          => undef,
     'quality'                           => 75,
     'image type'                        => undef,

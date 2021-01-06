@@ -228,7 +228,7 @@ sub export_text {
 sub import_pdftotext {
     my ( $self, $html ) = @_;
     my $tree = Gscan2pdf::Bboxtree->new;
-    $tree->from_pdftotext( $html, $self->get_resolution );
+    $tree->from_pdftotext( $html, $self->get_resolution, $self->get_size );
     $self->{bboxtree} = $tree->json;
     return;
 }

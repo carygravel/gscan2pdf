@@ -369,9 +369,10 @@ sub from_djvu {
 }
 
 sub _pdftotext2boxes {
-    my ( $html, $xresolution, $yresolution ) = @_;
+    my ( $html, $xresolution, $yresolution, $imagew, $imageh ) = @_;
     my $p = HTML::TokeParser->new( \$html );
     my ( $data, @stack, $boxes );
+    my $offset = 0;
     while ( my $token = $p->get_token ) {
         given ( $token->[0] ) {
             when ('S') {
@@ -383,11 +384,12 @@ sub _pdftotext2boxes {
                 if ( $tag eq 'page' ) {
                     $data->{type} = $tag;
                     if ( defined $attrs{width} and defined $attrs{height} ) {
-                        $data->{bbox} = [
-                            0, 0,
-                            scale( $attrs{width},  $xresolution ),
-                            scale( $attrs{height}, $yresolution )
-                        ];
+                        my $width  = scale( $attrs{width},  $xresolution );
+                        my $height = scale( $attrs{height}, $yresolution );
+                        if ( $width == 2 * $imagew && $height == $imageh ) {
+                            $offset = $imagew;
+                        }
+                        $data->{bbox} = [ 0, 0, $width - $offset, $height ];
                     }
                     push @{$boxes}, $data;
                 }
@@ -399,9 +401,9 @@ sub _pdftotext2boxes {
                         and defined $attrs{ymax} )
                     {
                         $data->{bbox} = [
-                            scale( $attrs{xmin}, $xresolution ),
+                            scale( $attrs{xmin}, $xresolution ) - $offset,
                             scale( $attrs{ymin}, $yresolution ),
-                            scale( $attrs{xmax}, $xresolution ),
+                            scale( $attrs{xmax}, $xresolution ) - $offset,
                             scale( $attrs{ymax}, $yresolution )
                         ];
                     }
@@ -443,9 +445,11 @@ sub scale {
 }
 
 sub from_pdftotext {
-    my ( $self, $html, $xresolution, $yresolution ) = @_;
+    my ( $self, $html, @image_data ) = @_;
+    my ( $xresolution, $yresolution, $imagew, $imageh ) = @image_data;
     if ( $html !~ /<body>[\s\S]*<\/body>/xsm ) { return }
-    my $box_tree = _pdftotext2boxes( $html, $xresolution, $yresolution );
+    my $box_tree =
+      _pdftotext2boxes( $html, $xresolution, $yresolution, $imagew, $imageh );
     _prune_empty_branches($box_tree);
     if ( $#{$box_tree} > $EMPTY_LIST ) {
         _walk_bboxes(
@@ -531,7 +535,7 @@ EOS
         }
         push @tags, $tag;
     }
-    $string .= '</' . pop(@tags) . ">\n";
+    if (@tags) { $string .= '</' . pop(@tags) . ">\n" }
     $prev_depth--;
     while ( $prev_depth-- >= 0 ) {
         $string .= $SPACE x ( 2 + $prev_depth + 1 ) . '</' . pop(@tags) . ">\n";

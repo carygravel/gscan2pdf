@@ -3322,20 +3322,29 @@ sub _thread_import_file {
 
 sub _thread_import_pdf {
     my ( $self, %options ) = @_;
-    my $warning_flag;
+    my ( $warning_flag, $xresolution, $yresolution );
 
     # Extract images from PDF
     if ( $options{last} >= $options{first} and $options{first} > 0 ) {
         for my $i ( $options{first} .. $options{last} ) {
             my $args =
-              [ 'pdfimages', '-f', $i, '-l', $i, $options{info}{path}, 'x' ];
+              [ 'pdfimages', '-f', $i, '-l', $i, '-list',
+                $options{info}{path} ];
             if ( defined $options{password} ) {
-                $args = [
-                    'pdfimages', '-upw', $options{password}, '-f', $i, '-l',
-                    $i, $options{info}{path}, 'x'
-                ];
+                splice @{$args}, 1, 0, '-upw', $options{password};
             }
             my ( $status, $out, $err ) =
+              exec_command( $args, $options{pidfile} );
+            for ( split /\n/xsm, $out ) {
+                ( $xresolution, $yresolution ) = unpack 'x69A6xA6';
+                if ( $xresolution =~ /\d/xsm ) { last }
+            }
+            $args =
+              [ 'pdfimages', '-f', $i, '-l', $i, $options{info}{path}, 'x' ];
+            if ( defined $options{password} ) {
+                splice @{$args}, 1, 0, '-upw', $options{password};
+            }
+            ( $status, $out, $err ) =
               exec_command( $args, $options{pidfile} );
             return if $_self->{cancel};
             if ($status) {
@@ -3351,13 +3360,7 @@ sub _thread_import_pdf {
                 $options{info}{path}, $html
             ];
             if ( defined $options{password} ) {
-                $args = [
-                    'pdftotext',          '-upw',
-                    $options{password},   '-bbox',
-                    '-f',                 $i,
-                    '-l',                 $i,
-                    $options{info}{path}, $html
-                ];
+                splice @{$args}, 1, 0, '-upw', $options{password};
             }
             ( $status, $out, $err ) = exec_command( $args, $options{pidfile} );
             return if $_self->{cancel};
@@ -3374,11 +3377,12 @@ sub _thread_import_pdf {
                 my ($ext) = /([^.]+)$/xsm;
                 try {
                     my $page = Gscan2pdf::Page->new(
-                        filename => $_,
-                        dir      => $options{dir},
-                        delete   => TRUE,
-                        format   => $format{$ext},
-                        size     => $options{info}{page_size},
+                        filename    => $_,
+                        dir         => $options{dir},
+                        delete      => TRUE,
+                        format      => $format{$ext},
+                        xresolution => $xresolution,
+                        yresolution => $yresolution,
                     );
                     $page->import_pdftotext( slurp($html) );
                     $self->{return}->enqueue(
@@ -3421,7 +3425,7 @@ sub _thread_save_pdf {
     my ( $self, %options ) = @_;
 
     my $pagenr = 0;
-    my ( $cache, $pdf, $error );
+    my ( $cache, $pdf, $error, $message );
 
     # Create PDF with PDF::Builder
     $self->{message} = __('Setting up PDF');
@@ -3449,23 +3453,27 @@ sub _thread_save_pdf {
     }
 
     $cache->{core} = $pdf->corefont('Times-Roman');
-    my $message =
-      sprintf __("Unable to find font '%s'. Defaulting to core font."),
-      $options{options}{font};
-    if ( defined $options{options}{font} and -f $options{options}{font} ) {
-        try {
-            $cache->{ttf} =
-              $pdf->ttfont( $options{options}{font}, -unicodemap => 1 );
-            $logger->info("Using $options{options}{font} for non-ASCII text");
+    if ( defined $options{options}{font} ) {
+        $message =
+          sprintf __("Unable to find font '%s'. Defaulting to core font."),
+          $options{options}{font};
+        if ( -f $options{options}{font} ) {
+            try {
+                $cache->{ttf} =
+                  $pdf->ttfont( $options{options}{font}, -unicodemap => 1 );
+                $logger->info(
+                    "Using $options{options}{font} for non-ASCII text");
+            }
+            catch {
+                _thread_throw_error( $self, $options{uuid},
+                    $options{page}{uuid},
+                    'Save file', $message )
+            }
         }
-        catch {
+        else {
             _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-                'Save file', $message )
+                'Save file', $message );
         }
-    }
-    else {
-        _thread_throw_error( $self, $options{uuid}, $options{page}{uuid},
-            'Save file', $message );
     }
 
     for my $pagedata ( @{ $options{list_of_pages} } ) {
@@ -3639,8 +3647,8 @@ sub _add_page_to_pdf {
     # and height are in pixels.
     my ( $width, $height ) = $pagedata->get_size;
     my ( $xres,  $yres )   = $pagedata->get_resolution;
-    my $w = $width / $xres;
-    my $h = $height / $yres;
+    my $w = $width / $xres * $POINTS_PER_INCH;
+    my $h = $height / $yres * $POINTS_PER_INCH;
 
     # Automatic mode
     my $type;
@@ -3681,16 +3689,21 @@ sub _add_page_to_pdf {
     };
     if ($error) { return 1 }
 
-    $logger->info(
-        'Defining page at ',
-        $w * $POINTS_PER_INCH,
-        'pt x ', $h * $POINTS_PER_INCH, 'pt'
-    );
     my $page = $pdf->page;
-    $page->mediabox( $w * $POINTS_PER_INCH, $h * $POINTS_PER_INCH );
+    if ( defined $options{options}{text_position}
+        and $options{options}{text_position} eq 'right' )
+    {
+        $logger->info('Embedding OCR output right of image');
+        $logger->info( 'Defining page at ', $w * 2, " pt x $h pt" );
+        $page->mediabox( $w * 2, $h );
+    }
+    else {
+        $logger->info('Embedding OCR output behind image');
+        $logger->info("Defining page at $w pt x $h pt");
+        $page->mediabox( $w, $h );
+    }
 
     if ( defined( $pagedata->{bboxtree} ) ) {
-        $logger->info('Embedding OCR output behind image');
         _add_text_to_pdf( $self, $page, $pagedata, $cache, %options );
     }
 
@@ -3730,11 +3743,7 @@ sub _add_page_to_pdf {
     }
 
     try {
-        $gfx->image(
-            $imgobj, 0, 0,
-            $w * $POINTS_PER_INCH,
-            $h * $POINTS_PER_INCH
-        );
+        $gfx->image( $imgobj, 0, 0, $w, $h );
     }
     catch {
         $logger->warn($_);
@@ -3882,6 +3891,12 @@ sub _add_text_to_pdf {
     my $w           = $gs_page->{width} / $gs_page->{xresolution};
     my $h           = $gs_page->{height} / $gs_page->{yresolution};
     my $font;
+    my $offset = 0;
+    if ( defined $options{options}{text_position}
+        and $options{options}{text_position} eq 'right' )
+    {
+        $offset = $w * $POINTS_PER_INCH;
+    }
     my $text = $pdf_page->text;
     my $iter =
       Gscan2pdf::Bboxtree->new( $gs_page->{bboxtree} )->get_bbox_iter();
@@ -3934,8 +3949,10 @@ sub _add_text_to_pdf {
             # will end up above the given point instead of below.
             my $size = ( $y2 - $y1 ) / $yresolution * $POINTS_PER_INCH;
             $text->font( $font, $size );
-            $text->translate( $x1 / $xresolution * $POINTS_PER_INCH,
-                ( $h - ( $y1 / $yresolution ) ) * $POINTS_PER_INCH - $size );
+            $text->translate(
+                $offset + $x1 / $xresolution * $POINTS_PER_INCH,
+                ( $h - ( $y1 / $yresolution ) ) * $POINTS_PER_INCH - $size
+            );
             $text->text( $txt, utf8 => 1 );
         }
         else {

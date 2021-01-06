@@ -174,6 +174,13 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, properties => [
         [qw/readable writable/]                              # flags
     ),
     Glib::ParamSpec->string(
+        'text_position',                                     # name
+        'Text position',                                     # nick
+        'Where to place the OCR output',                     # blurb
+        'behind',                                            # default
+        [qw/readable writable/]                              # flags
+    ),
+    Glib::ParamSpec->string(
         'pdf-font',                                            # name
         'PDF font',                                            # nick
         'Font with which to write hidden OCR layer of PDF',    # blurb
@@ -836,6 +843,26 @@ sub add_pdf_options {
         }
     );
     $hbox->pack_end( $combob, FALSE, FALSE, 0 );
+
+    my $hboxt = Gtk3::HBox->new;
+    $vboxp->pack_start( $hboxt, TRUE, TRUE, 0 );
+    $label = Gtk3::Label->new( __('Position of OCR output') );
+    $hboxt->pack_start( $label, FALSE, FALSE, 0 );
+    my @positions = (
+        [ 'behind', __('Behind'), __('Put OCR output behind image.') ],
+        [
+            'right', __('Right'),
+            __('Put OCR output to the right of the image.')
+        ],
+    );
+    my $combot = Gscan2pdf::ComboBoxText->new_from_array(@positions);
+    $combot->signal_connect(
+        changed => sub {
+            $self->set( 'text_position', $combot->get_active_index );
+        }
+    );
+    $combot->set_active_index( $self->get('text_position') );
+    $hboxt->pack_end( $combot, FALSE, FALSE, 0 );
 
     $self->add_font_button($vboxp);
 

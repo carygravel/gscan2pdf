@@ -2638,6 +2638,7 @@ sub save_pdf {
         downsample       => $SETTING{downsample},
         'downsample dpi' => $SETTING{'downsample dpi'},
         quality          => $SETTING{quality},
+        text_position    => $SETTING{text_position},
         font             => $SETTING{'pdf font'},
         'user-password'  => $windowi->get('pdf-user-password'),
         set_timestamp    => $SETTING{set_timestamp},
@@ -2763,6 +2764,7 @@ sub save_dialog {
         downsample                  => $SETTING{downsample},
         'pdf-compression'           => $SETTING{'pdf compression'},
         'available-fonts'           => $fonts,
+        text_position               => $SETTING{text_position},
         'pdf-font'                  => $SETTING{'pdf font'},
         'can-encrypt-pdf'           => defined $dependencies{pdftk},
         'tiff-compression'          => $SETTING{'tiff compression'},
@@ -2846,7 +2848,8 @@ sub save_button_clicked_callback {
             $SETTING{'pdf compression'} = $windowi->get('pdf-compression');
             $SETTING{quality}           = $windowi->get('jpeg-quality');
 
-            $SETTING{'pdf font'} = $windowi->get('pdf-font');
+            $SETTING{text_position} = $windowi->get('text_position');
+            $SETTING{'pdf font'}    = $windowi->get('pdf-font');
 
             # cd back to cwd to save
             chdir $SETTING{cwd};
@@ -3502,6 +3505,7 @@ sub email {
         'downsample-dpi'            => $SETTING{'downsample dpi'},
         downsample                  => $SETTING{downsample},
         'pdf-compression'           => $SETTING{'pdf compression'},
+        text_position               => $SETTING{text_position},
         'pdf-font'                  => $SETTING{'pdf font'},
         'can-encrypt-pdf'           => defined $dependencies{pdftk},
     );
@@ -3541,6 +3545,7 @@ sub email {
                 downsample       => $SETTING{downsample},
                 'downsample dpi' => $SETTING{'downsample dpi'},
                 quality          => $SETTING{quality},
+                text_position    => $SETTING{text_position},
                 font             => $SETTING{'pdf font'},
                 'user-password'  => $windowe->get('pdf-user-password'),
             );
