@@ -986,7 +986,7 @@ sub _write_buffer_to_fh {
         $image->{height} = $parm->{lines};
     }
     else {
-        $image->{height} = @{ $image->{data} } / $parm->{pixels_per_line};
+        $image->{height} = @{ $image->{data} } / $parm->{bytes_per_line};
         $image->{height} /= _number_frames($parm);
     }
     _thread_write_pnm_header( $fh, $parm->{format}, $parm->{pixels_per_line},

@@ -14,6 +14,7 @@
 * + option to put OCR output to the right of the image, rather than behind it.
 * Additionally make source "Normal" a synonym for "flatbed". Closes #371
   (Improve option for auto-select #Pages upon switching ADF/Normal)
+* Fix bug estimating height of non-greyscale variable height scans.
 * Update to Hungarian translation (thanks to csola)
 * Update to Ukrainian translation (thanks to Yuri Chornoivan)
 

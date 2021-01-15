@@ -302,6 +302,7 @@ t/166_cancel_import.t
 t/167_import_with_error.t
 t/1682_import_multiple_images_with_corrupt.t
 t/168_import_multiple_images.t
+t/169_import_scan.t
 t/171_save_session.t
 t/172_open_session.t
 t/173_open_multiple_session.t
