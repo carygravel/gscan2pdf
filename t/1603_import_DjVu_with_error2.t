@@ -25,7 +25,7 @@ SKIP: {
     # The overrides must occur before the thread is spawned in setup.
     my $override = Sub::Override->new;
     $override->replace(
-        'Gscan2pdf::Page::import_djvutext' => sub {
+        'Gscan2pdf::Page::import_djvu_txt' => sub {
             my ( $self, $text ) = @_;
             croak 'Error parsing djvu text';
             return;

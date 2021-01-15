@@ -292,7 +292,7 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
 
     # Attach the text to the canvas
     $self->{confidence_index} = Gscan2pdf::Canvas::ListIter->new();
-    my $tree = Gscan2pdf::Bboxtree->new( $page->{bboxtree} );
+    my $tree = Gscan2pdf::Bboxtree->new( $page->{text_layer} );
     my $iter = $tree->get_bbox_iter;
     my $box  = $iter->();
     if ( not defined $box ) { return }

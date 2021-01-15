@@ -178,30 +178,30 @@ sub import_hocr {
     my ( $self, $hocr ) = @_;
     my $bboxtree = Gscan2pdf::Bboxtree->new;
     $bboxtree->from_hocr($hocr);
-    $self->{bboxtree} = $bboxtree->json;
+    $self->{text_layer} = $bboxtree->json;
     return;
 }
 
 sub export_hocr {
     my ($self) = @_;
-    if ( defined $self->{bboxtree} ) {
-        return Gscan2pdf::Bboxtree->new( $self->{bboxtree} )->to_hocr;
+    if ( defined $self->{text_layer} ) {
+        return Gscan2pdf::Bboxtree->new( $self->{text_layer} )->to_hocr;
     }
     return;
 }
 
-sub import_djvutext {
+sub import_djvu_txt {
     my ( $self, $djvu ) = @_;
     my $tree = Gscan2pdf::Bboxtree->new;
-    $tree->from_djvu($djvu);
-    $self->{bboxtree} = $tree->json;
+    $tree->from_djvu_txt($djvu);
+    $self->{text_layer} = $tree->json;
     return;
 }
 
-sub export_djvutext {
+sub export_djvu_txt {
     my ($self) = @_;
-    if ( defined $self->{bboxtree} ) {
-        return Gscan2pdf::Bboxtree->new( $self->{bboxtree} )->to_djvu;
+    if ( defined $self->{text_layer} ) {
+        return Gscan2pdf::Bboxtree->new( $self->{text_layer} )->to_djvu_txt;
     }
     return;
 }
@@ -213,14 +213,14 @@ sub import_text {
     }
     my $tree = Gscan2pdf::Bboxtree->new;
     $tree->from_text( $text, $self->{width}, $self->{height} );
-    $self->{bboxtree} = $tree->json;
+    $self->{text_layer} = $tree->json;
     return;
 }
 
 sub export_text {
     my ($self) = @_;
-    if ( defined $self->{bboxtree} ) {
-        return Gscan2pdf::Bboxtree->new( $self->{bboxtree} )->to_text;
+    if ( defined $self->{text_layer} ) {
+        return Gscan2pdf::Bboxtree->new( $self->{text_layer} )->to_text;
     }
     return;
 }
@@ -229,7 +229,23 @@ sub import_pdftotext {
     my ( $self, $html ) = @_;
     my $tree = Gscan2pdf::Bboxtree->new;
     $tree->from_pdftotext( $html, $self->get_resolution, $self->get_size );
-    $self->{bboxtree} = $tree->json;
+    $self->{text_layer} = $tree->json;
+    return;
+}
+
+sub import_annotations {
+    my ( $self, $hocr ) = @_;
+    my $bboxtree = Gscan2pdf::Bboxtree->new;
+    $bboxtree->from_hocr($hocr);
+    $self->{annotations} = $bboxtree->json;
+    return;
+}
+
+sub export_djvu_ann {
+    my ($self) = @_;
+    if ( defined $self->{annotations} ) {
+        return Gscan2pdf::Bboxtree->new( $self->{annotations} )->to_djvu_ann;
+    }
     return;
 }
 
@@ -254,7 +270,7 @@ sub to_png {
         width       => $self->{width},
         height      => $self->{height},
     );
-    if ( defined $self->{bboxtree} ) { $new->{bboxtree} = $self->{bboxtree} }
+    if ( defined $self->{text_layer} ) { $new->{text_layer} = $self->{text_layer} }
     return $new;
 }
 

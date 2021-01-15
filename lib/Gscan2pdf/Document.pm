@@ -1923,7 +1923,7 @@ sub open_session {
                 else {
                     $tree->from_text( $sessionref->{$key}{hocr} );
                 }
-                $sessionref->{$key}{bboxtree} = $tree->json;
+                $sessionref->{$key}{text_layer} = $tree->json;
                 delete $sessionref->{$key}{hocr};
             }
         }
@@ -3136,7 +3136,7 @@ sub _thread_import_file {
                         height      => $options{info}{height}[ $i - 1 ],
                     );
                     try {
-                        $page->import_djvutext($txt);
+                        $page->import_djvu_txt($txt);
                     }
                     catch {
                         $logger->error(
@@ -3705,7 +3705,8 @@ sub _add_page_to_pdf {
         $page->mediabox( $w, $h );
     }
 
-    if ( defined( $pagedata->{bboxtree} ) ) {
+    if ( defined( $pagedata->{text_layer} ) ) {
+        $logger->info('Embedding text layer behind image');
         _add_text_to_pdf( $self, $page, $pagedata, $cache, %options );
     }
 
@@ -3915,7 +3916,7 @@ sub _add_text_to_pdf {
     }
     my $text = $pdf_page->text;
     my $iter =
-      Gscan2pdf::Bboxtree->new( $gs_page->{bboxtree} )->get_bbox_iter();
+      Gscan2pdf::Bboxtree->new( $gs_page->{text_layer} )->get_bbox_iter();
 
     while ( my $box = $iter->() ) {
         my ( $x1, $y1, $x2, $y2 ) = @{ $box->{bbox} };
@@ -4073,7 +4074,9 @@ sub _thread_save_djvu {
             return;
         }
         push @filelist, $djvu;
-        _add_text_to_djvu( $self, $djvu, $options{dir}, $pagedata,
+        _add_txt_to_djvu( $self, $djvu, $options{dir}, $pagedata,
+            $options{uuid} );
+        _add_ann_to_djvu( $self, $djvu, $options{dir}, $pagedata,
             $options{uuid} );
     }
     $self->{progress} = 1;
@@ -4197,12 +4200,10 @@ sub _write_file {
     return TRUE;
 }
 
-# Add OCR to text layer
-
-sub _add_text_to_djvu {
+sub _add_txt_to_djvu {
     my ( $self, $djvu, $dir, $pagedata, $uuid ) = @_;
-    if ( defined( $pagedata->{bboxtree} ) ) {
-        my $txt = $pagedata->export_djvutext;
+    if ( defined( $pagedata->{text_layer} ) ) {
+        my $txt = $pagedata->export_djvu_txt;
         if ( $txt eq $EMPTY ) { return }
 
         # Write djvusedtxtfile
@@ -4226,6 +4227,40 @@ sub _add_text_to_djvu {
             );
             _thread_throw_error( $self, $uuid, $pagedata->{uuid},
                 'Save file', __('Error adding text layer to DjVu') );
+        }
+    }
+    return;
+}
+
+# FIXME - refactor this together with _add_txt_to_djvu
+
+sub _add_ann_to_djvu {
+    my ( $self, $djvu, $dir, $pagedata, $uuid ) = @_;
+    if ( defined( $pagedata->{annotations} ) ) {
+        my $ann = $pagedata->export_djvu_ann;
+        if ( $ann eq $EMPTY ) { return }
+
+        # Write djvusedtxtfile
+        my $djvusedtxtfile = File::Temp->new( DIR => $dir, SUFFIX => '.txt' );
+        $logger->debug($ann);
+        open my $fh, '>:encoding(UTF8)', $djvusedtxtfile
+          or croak( sprintf __("Can't open file: %s"), $djvusedtxtfile );
+        _write_file( $self, $fh, $djvusedtxtfile, $ann, $uuid )
+          or return;
+        close $fh
+          or croak( sprintf __("Can't close file: %s"), $djvusedtxtfile );
+
+        # Run djvusedtxtfile
+        my @cmd =
+          ( 'djvused', $djvu, '-e', "select 1; set-ant $djvusedtxtfile", '-s' );
+        my ($status) = exec_command( \@cmd, $pagedata->{pidfile} );
+        return if $_self->{cancel};
+        if ($status) {
+            $logger->error(
+                "Error adding annotations to DjVu page $pagedata->{page_number}"
+            );
+            _thread_throw_error( $self, $uuid, $pagedata->{uuid},
+                'Save file', __('Error adding annotations to DjVu') );
         }
     }
     return;
@@ -5001,9 +5036,9 @@ sub _thread_crop {
     $options{page}{height}     = $options{h};
     $options{page}{dirty_time} = timestamp();           #flag as dirty
 
-    if ( $options{page}{bboxtree} ) {
-        my $bboxtree = Gscan2pdf::Bboxtree->new( $options{page}{bboxtree} );
-        $options{page}{bboxtree} =
+    if ( $options{page}{text_layer} ) {
+        my $bboxtree = Gscan2pdf::Bboxtree->new( $options{page}{text_layer} );
+        $options{page}{text_layer} =
           $bboxtree->crop( $options{x}, $options{y}, $options{w}, $options{h} )
           ->json;
     }
@@ -5122,11 +5157,11 @@ sub _thread_split {
         format   => $image2->Get('format'),
     );
 
-    if ( $options{page}{bboxtree} ) {
-        my $bboxtree  = Gscan2pdf::Bboxtree->new( $options{page}{bboxtree} );
-        my $bboxtree2 = Gscan2pdf::Bboxtree->new( $options{page}{bboxtree} );
-        $options{page}{bboxtree} = $bboxtree->crop( 0, 0, $w, $h )->json;
-        $new2->{bboxtree} = $bboxtree2->crop( $x2, $y2, $w2, $h2 )->json;
+    if ( $options{page}{text_layer} ) {
+        my $bboxtree  = Gscan2pdf::Bboxtree->new( $options{page}{text_layer} );
+        my $bboxtree2 = Gscan2pdf::Bboxtree->new( $options{page}{text_layer} );
+        $options{page}{text_layer} = $bboxtree->crop( 0, 0, $w, $h )->json;
+        $new2->{text_layer} = $bboxtree2->crop( $x2, $y2, $w2, $h2 )->json;
     }
 
     # crop doesn't change the resolution, so we can safely copy it

@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use Encode;
-use Test::More tests => 28;
+use Test::More tests => 29;
 
 BEGIN {
     use_ok('Gscan2pdf::Bboxtree');
@@ -146,7 +146,7 @@ is_deeply $bbox,
 $expected = <<'EOS';
 (page 0 0 422 61 "The quick brown fox")
 EOS
-is_deeply $tree->to_djvu, $expected, 'to_djvu from simple text';
+is_deeply $tree->to_djvu_txt, $expected, 'to_djvu_txt from simple text';
 
 #########################
 
@@ -393,7 +393,7 @@ $expected = <<'EOS';
   (line 1 1 420 46 "The quick brown fox"))
 EOS
 
-is_deeply $tree->to_djvu, $expected, 'djvu from cuneiform 1.0.0';
+is_deeply $tree->to_djvu_txt, $expected, 'djvu from cuneiform 1.0.0';
 
 #########################
 
@@ -440,7 +440,7 @@ $expected = <<'EOS';
         (word 1409 3031 1725 3101 "GANGE")))))
 EOS
 
-is_deeply $tree->to_djvu, $expected, 'djvu_text with hiearchy';
+is_deeply $tree->to_djvu_txt, $expected, 'djvu_txt with hiearchy';
 
 #########################
 
@@ -471,7 +471,7 @@ EOS
 $tree = Gscan2pdf::Bboxtree->new;
 $tree->from_hocr($hocr);
 
-is_deeply $tree->to_djvu, '', 'ignore hierachy with no contents';
+is_deeply $tree->to_djvu_txt, '', 'ignore hierachy with no contents';
 
 #########################
 
@@ -504,7 +504,7 @@ EOS
 $tree = Gscan2pdf::Bboxtree->new;
 $tree->from_hocr($hocr);
 
-is_deeply $tree->to_djvu, '', 'ignore hierachy with no contents 2';
+is_deeply $tree->to_djvu_txt, '', 'ignore hierachy with no contents 2';
 
 #########################
 
@@ -544,7 +544,7 @@ $expected = <<'EOS';
         (word 1198 1089 1363 1121 "Kauﬂ<raft")))))
 EOS
 
-is_deeply $tree->to_djvu, $expected, 'deal with encoded characters';
+is_deeply $tree->to_djvu_txt, $expected, 'deal with encoded characters';
 
 #########################
 
@@ -654,8 +654,8 @@ EOS
     },
 );
 $tree = Gscan2pdf::Bboxtree->new;
-$tree->from_djvu($djvu);
-is_deeply $tree, \@boxes, 'from_djvu() basic functionality';
+$tree->from_djvu_txt($djvu);
+is_deeply $tree, \@boxes, 'from_djvu_txt() basic functionality';
 
 #########################
 
@@ -678,8 +678,13 @@ EOS
     },
 );
 $tree = Gscan2pdf::Bboxtree->new;
-$tree->from_djvu($djvu);
-is_deeply $tree, \@boxes, 'from_djvu() with quoted brackets';
+$tree->from_djvu_txt($djvu);
+is_deeply $tree, \@boxes, 'from_djvu_txt() with quoted brackets';
+
+my $ann = <<'EOS';
+(maparea "" "()" (rect 157 3030 84 65) (hilite #cccf00) (xor))
+EOS
+is_deeply $tree->to_djvu_ann, $ann, 'to_djvu_ann()';
 
 #########################
 

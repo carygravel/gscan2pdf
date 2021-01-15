@@ -290,9 +290,13 @@ my (
     $windowr,     $view,           $windowp,        $message_dialog,
     $print_settings, $windowc, $current_page,
 
-    # Goo::Canvas for OCR output
+    # Goo::Canvas for text layer
     $canvas,       $vpaned, $edit_ocr_action, $ocr_text_hbox, $ocr_textbuffer,
     $ocr_textview, $ocr_bbox,
+
+    # Goo::Canvas for annotation layer
+    $a_canvas,       $avpaned, $edit_ann_action, $ann_hbox, $ann_textbuffer,
+    $ann_textview, $ann_bbox,
 
     # Notebook, split panes for detail view and OCR output
     $vnotebook, $hpanei, $vpanei,
@@ -431,7 +435,7 @@ sub populate_main_window {
         }
     );
 
-    # Goo::Canvas for OCR output
+    # Goo::Canvas for text layer
     $canvas = Gscan2pdf::Canvas->new;
     $canvas->{zoom_changed_signal} = $canvas->signal_connect(
         'zoom-changed' => sub {
@@ -449,14 +453,34 @@ sub populate_main_window {
         }
     );
 
-    # split panes for detail view/OCR output and ocr text dialog
+    # Goo::Canvas for annotation layer
+    $a_canvas = Gscan2pdf::Canvas->new;
+    $a_canvas->{zoom_changed_signal} = $a_canvas->signal_connect(
+        'zoom-changed' => sub {
+            $view->signal_handler_block( $view->{zoom_changed_signal} );
+            $view->set_zoom( $a_canvas->get_scale );
+            $view->signal_handler_unblock( $view->{zoom_changed_signal} );
+        }
+    );
+    $a_canvas->{offset_changed_signal} = $a_canvas->signal_connect(
+        'offset-changed' => sub {
+            $view->signal_handler_block( $view->{offset_changed_signal} );
+            my $offset = $a_canvas->get_offset;
+            $view->set_offset( $offset->{x}, $offset->{y} );
+            $view->signal_handler_unblock( $view->{offset_changed_signal} );
+        }
+    );
+
+    # split panes for detail view/text layer canvas and text layer dialog
     $vpaned = Gtk3::VPaned->new;
     $hpaned->pack2( $vpaned, TRUE, TRUE );
     $vpaned->show;
     $ocr_text_hbox = Gtk3::HBox->new;
-    $vpaned->pack2( $ocr_text_hbox, FALSE, TRUE );
+    my $edit_vbox = Gtk3::HBox->new;
+    $vpaned->pack2( $edit_vbox, FALSE, TRUE );
+    $edit_vbox->pack_start( $ocr_text_hbox, TRUE, TRUE, 0 );
     $ocr_textview = Gtk3::TextView->new;
-    $ocr_textview->set_tooltip_text( __('OCR text') );
+    $ocr_textview->set_tooltip_text( __('Text layer') );
     $ocr_textbuffer = $ocr_textview->get_buffer;
 
     my $ocr_text_fbutton = Gtk3::Button->new;
@@ -570,7 +594,7 @@ sub populate_main_window {
 
             # If we don't yet have a canvas, create one
             my $selection = $view->get_selection;
-            if ( defined $current_page->{bboxtree} ) {
+            if ( defined $current_page->{text_layer} ) {
                 $logger->info(
                     "Added '" . $ocr_textbuffer->get('text') . q{'} );
                 $ocr_bbox = $canvas->add_box( $text, $view->get_selection );
@@ -578,7 +602,7 @@ sub populate_main_window {
                 edit_ocr_text($ocr_bbox);
             }
             else {
-                $current_page->{bboxtree} =
+                $current_page->{text_layer} =
                   sprintf
 '[{"type":"page","bbox":[0,0,%d,%d],"depth":0},{"type":"word","bbox":[%d,%d,%d,%d],"text":"%s","depth":1}]',
                   $current_page->{width}, $current_page->{height},
@@ -614,6 +638,93 @@ sub populate_main_window {
     $ocr_text_hbox->pack_end( $ocr_text_obutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_end( $ocr_text_ubutton, FALSE, FALSE, 0 );
     $ocr_text_hbox->pack_end( $ocr_text_abutton, FALSE, FALSE, 0 );
+
+    # split panes for detail view/text layer canvas and text layer dialog
+    $ann_hbox = Gtk3::HBox->new;
+    $edit_vbox->pack_start( $ann_hbox, TRUE, TRUE, 0 );
+    $ann_textview = Gtk3::TextView->new;
+    $ann_textview->set_tooltip_text( __('Annotations') );
+    $ann_textbuffer = $ann_textview->get_buffer;
+
+    my $ann_obutton = Gtk3::Button->new;
+    $ann_obutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-ok', 'button' ) );
+    $ann_obutton->set_tooltip_text( __('Accept corrections') );
+    $ann_obutton->signal_connect(
+        clicked => sub {
+            $logger->info( "Corrected '"
+                  . $ann_bbox->get('text') . "'->'"
+                  . $ann_textbuffer->get('text')
+                  . q{'} );
+            $ann_bbox->update_box( $ann_textbuffer->get('text'),
+                $view->get_selection );
+            $current_page->import_annotations( $a_canvas->hocr );
+            edit_annotation($ann_bbox);
+        }
+    );
+
+    my $ann_cbutton = Gtk3::Button->new;
+    $ann_cbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-cancel', 'button' ) );
+    $ann_cbutton->set_tooltip_text( __('Cancel corrections') );
+    $ann_cbutton->signal_connect(
+        clicked => sub {
+            $ann_hbox->hide;
+            $edit_ann_action->set_active(FALSE);
+        }
+    );
+
+    my $ann_abutton = Gtk3::Button->new;
+    $ann_abutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-add', 'button' ) );
+    $ann_abutton->set_tooltip_text( __('Add annotation') );
+    $ann_abutton->signal_connect(
+        clicked => sub {
+            my $text = $ann_textbuffer->get('text');
+            if ( not defined $text or $text eq $EMPTY ) {
+                $text = __('my-new-annotation');
+            }
+
+            # If we don't yet have a canvas, create one
+            my $selection = $view->get_selection;
+            if ( defined $current_page->{text_layer} ) {
+                $logger->info(
+                    "Added '" . $ann_textbuffer->get('text') . q{'} );
+                $ann_bbox = $a_canvas->add_box( $text, $view->get_selection );
+                $current_page->import_annotations( $a_canvas->hocr );
+                edit_annotation($ann_bbox);
+            }
+            else {
+                $current_page->{text_layer} =
+                  sprintf
+'[{"type":"page","bbox":[0,0,%d,%d],"depth":0},{"type":"word","bbox":[%d,%d,%d,%d],"text":"%s","depth":1}]',
+                  $current_page->{width}, $current_page->{height},
+                  $selection->{x},        $selection->{y},
+                  $selection->{x} + $selection->{width},
+                  $selection->{y} + $selection->{height}, $text;
+
+                create_canvas($current_page);
+            }
+        }
+    );
+
+    my $ann_dbutton = Gtk3::Button->new;
+    $ann_dbutton->set_image(
+        Gtk3::Image->new_from_stock( 'gtk-delete', 'button' ) );
+    $ann_dbutton->set_tooltip_text( __('Delete annotation') );
+    $ann_dbutton->signal_connect(
+        clicked => sub {
+            $ann_bbox->delete_box;
+            $current_page->import_hocr( $a_canvas->hocr );
+            edit_annotation( $canvas->get_bbox_by_index );
+        }
+    );
+
+    $ann_hbox->pack_start( $ann_textview,     FALSE, FALSE, 0 );
+    $ann_hbox->pack_end( $ann_dbutton, FALSE, FALSE, 0 );
+    $ann_hbox->pack_end( $ann_cbutton, FALSE, FALSE, 0 );
+    $ann_hbox->pack_end( $ann_obutton, FALSE, FALSE, 0 );
+    $ann_hbox->pack_end( $ann_abutton, FALSE, FALSE, 0 );
 
     pack_viewer_tools();
 
@@ -690,7 +801,9 @@ sub pack_viewer_tools {
     if ( $SETTING{viewer_tools} == $TABBED_VIEW ) {
         $vnotebook->append_page( $view, Gtk3::Label->new( __('Image') ) );
         $vnotebook->append_page( $canvas,
-            Gtk3::Label->new( __('OCR Output') ) );
+            Gtk3::Label->new( __('Text layer') ) );
+        $vnotebook->append_page( $a_canvas,
+                                 Gtk3::Label->new( __('Annotations') ) );
         $vpaned->pack1( $vnotebook, TRUE, TRUE );
         $vnotebook->show_all;
     }
@@ -1419,9 +1532,14 @@ sub create_menu_bar {
     );
     my @ocr_tools = (
         [
-            'Edit OCR',                   'gtk-edit',
-            __('Edit OCR'),               undef,
-            __('Show OCR editing tools'), \&show_ocr_tools_callback
+            'Edit text layer',                   'gtk-edit',
+            __('Edit text layer'),               undef,
+            __('Show editing tools for text layer'), \&show_text_layer_tools_callback
+        ],
+        [
+            'Edit annotations',                   'error-correct-symbolic',
+            __('Edit annotations'),               undef,
+            __('Show editing tools for annotations'), \&show_annotation_tools_callback
         ],
     );
     my $ui = <<'EOS';
@@ -1483,7 +1601,8 @@ sub create_menu_bar {
    <menuitem action='Rotate 180'/>
    <menuitem action='Rotate 270'/>
    <separator/>
-   <menuitem action='Edit OCR'/>
+   <menuitem action='Edit text layer'/>
+   <menuitem action='Edit annotations'/>
   </menu>
   <menu action='Tools'>
    <menuitem action='Threshold'/>
@@ -1535,7 +1654,8 @@ sub create_menu_bar {
   <toolitem action='Rotate 180'/>
   <toolitem action='Rotate 270'/>
   <separator/>
-  <toolitem action='Edit OCR'/>
+  <toolitem action='Edit text layer'/>
+  <toolitem action='Edit annotations'/>
   <separator/>
   <toolitem action='CropSelection'/>
   <separator/>
@@ -1556,7 +1676,8 @@ sub create_menu_bar {
   <menuitem action='Rotate 180'/>
   <menuitem action='Rotate 270'/>
   <separator/>
-  <menuitem action='Edit OCR'/>
+  <menuitem action='Edit text layer'/>
+  <menuitem action='Edit annotations'/>
   <separator/>
   <menuitem action='CropSelection'/>
   <separator/>
@@ -1605,8 +1726,12 @@ EOS
         \&change_view_cb );
     $actions_basic->add_toggle_actions( \@ocr_tools );
     for my $action ( $actions_basic->list_actions ) {
-        if ( $action->isa('Gtk3::ToggleAction') ) {
+        my $name = $action->get_name;
+        if ( $name eq 'Edit text layer' ) {
             $edit_ocr_action = $action;
+        }
+        elsif ( $name eq 'Edit annotations' ) {
+            $edit_ann_action = $action;
         }
     }
 
@@ -1750,7 +1875,8 @@ sub update_uimanager {
         '/MenuBar/View/Rotate 90',
         '/MenuBar/View/Rotate 180',
         '/MenuBar/View/Rotate 270',
-        '/MenuBar/View/Edit OCR',
+        '/MenuBar/View/Edit text layer',
+        '/MenuBar/View/Edit annotations',
         '/MenuBar/Tools/Threshold',
         '/MenuBar/Tools/BrightnessContrast',
         '/MenuBar/Tools/Negate',
@@ -1771,7 +1897,8 @@ sub update_uimanager {
         '/ToolBar/Rotate 90',
         '/ToolBar/Rotate 180',
         '/ToolBar/Rotate 270',
-        '/ToolBar/Edit OCR',
+        '/ToolBar/Edit text layer',
+        '/ToolBar/Edit annotations',
         '/ToolBar/CropSelection',
 
         '/Detail_Popup/DraggerTool',
@@ -1784,7 +1911,8 @@ sub update_uimanager {
         '/Detail_Popup/Rotate 90',
         '/Detail_Popup/Rotate 180',
         '/Detail_Popup/Rotate 270',
-        '/Detail_Popup/Edit OCR',
+        '/Detail_Popup/Edit text layer',
+        '/Detail_Popup/Edit annotations',
         '/Detail_Popup/CropSelection',
 
         '/Thumb_Popup/Rotate 90',
@@ -1899,6 +2027,7 @@ sub selection_changed_callback {
     else {
         $view->set_pixbuf(undef);
         $canvas->clear_text;
+        $a_canvas->clear_text;
         undef $current_page;
     }
     update_uimanager();
@@ -2126,36 +2255,54 @@ sub display_image {
     }
 
     # Delete OCR output if it has become corrupted
-    if ( defined $current_page->{bboxtree}
-        and not Gscan2pdf::Bboxtree->valid( $current_page->{bboxtree} ) )
+    if ( defined $current_page->{text_layer}
+        and not Gscan2pdf::Bboxtree->valid( $current_page->{text_layer} ) )
     {
-        $logger->error("deleting corrupt bboxtree: $current_page->{bboxtree}");
-        delete $current_page->{bboxtree};
+        $logger->error("deleting corrupt text layer: $current_page->{text_layer}");
+        delete $current_page->{text_layer};
     }
 
     # Convert hocr output to Goo:Canvas if defined
-    if   ( defined $current_page->{bboxtree} ) { create_canvas($current_page) }
-    else                                       { $canvas->clear_text }
+    if   ( defined $current_page->{text_layer} ) { create_canvas($current_page) }
+    else                                       {
+        $canvas->clear_text;
+        $a_canvas->clear_text;
+    }
     return;
 }
 
 sub create_canvas {
     my ($page) = @_;
+    my $offset = $view->get_offset;
     $canvas->set_text( $page, \&edit_ocr_text );
     $canvas->set_scale( $view->get_zoom );
-    my $offset = $view->get_offset;
     $canvas->set_offset( $offset->{x}, $offset->{y} );
     $canvas->show;
+
+    $a_canvas->set_text( $page, \&edit_annotation );
+    $a_canvas->set_scale( $view->get_zoom );
+    $a_canvas->set_offset( $offset->{x}, $offset->{y} );
+    $a_canvas->show;
     return;
 }
 
-sub show_ocr_tools_callback {
+sub show_text_layer_tools_callback {
     my ( $widget, $data ) = @_;
     if ( $widget->get_active ) {
         $ocr_text_hbox->show;
         return;
     }
     $ocr_text_hbox->hide;
+    return;
+}
+
+sub show_annotation_tools_callback {
+    my ( $widget, $data ) = @_;
+    if ( $widget->get_active ) {
+        $ann_hbox->show;
+        return;
+    }
+    $ann_hbox->hide;
     return;
 }
 
@@ -2178,6 +2325,28 @@ sub edit_ocr_text {
     }
     if ($bbox) {
         $canvas->set_index_by_bbox($bbox);
+    }
+    return TRUE;
+}
+
+sub edit_annotation {
+    my ( $widget, $target, $ev, $bbox ) = @_;
+    if ( not $ev ) {
+        $bbox = $widget;
+    }
+    $ann_bbox = $bbox;
+    $ann_textbuffer->set( text => $bbox->get('text') );
+    $ann_hbox->show_all;
+    $edit_ann_action->set_active(TRUE);
+    $view->set_selection( $bbox->get('bbox') );
+    $view->set_zoom_to_fit(FALSE);
+    $view->zoom_to_selection($ZOOM_CONTEXT_FACTOR);
+
+    if ($ev) {
+        $a_canvas->pointer_ungrab( $widget, $ev->time );
+    }
+    if ($bbox) {
+        $a_canvas->set_index_by_bbox($bbox);
     }
     return TRUE;
 }
@@ -2238,6 +2407,7 @@ sub new {
     $slist->get_selection->unselect_all;
     $view->set_pixbuf(undef);
     $canvas->clear_text;
+    $a_canvas->clear_text;
     undef $current_page;
 
     # Reset start page in scan dialog
@@ -4695,7 +4865,7 @@ sub select_modified_since_ocr {
 sub select_no_ocr {
     my @selection;
     for ( 0 .. $#{ $slist->{data} } ) {
-        if ( not defined $slist->{data}[$_][2]{bboxtree} ) {
+        if ( not defined $slist->{data}[$_][2]{text_layer} ) {
             push @selection, $_;
         }
     }
@@ -4717,7 +4887,7 @@ sub clear_ocr {
 
     my @selection = $slist->get_selected_indices;
     for (@selection) {
-        delete $slist->{data}[$_][2]{bboxtree};
+        delete $slist->{data}[$_][2]{text_layer};
     }
     $slist->save_session;
     return;
@@ -5479,6 +5649,7 @@ sub change_view_cb {
         $vpaned->remove($vpanei);
         $vpanei->remove($view);
         $vpanei->remove($canvas);
+        $vpanei->remove($a_canvas);
     }
 
     # Update $SETTING{viewer_tools}

@@ -3,7 +3,7 @@ use strict;
 use IPC::Cmd qw(can_run);
 use IPC::System::Simple qw(system capture);
 use Encode qw(decode_utf8 encode_utf8);
-use Test::More tests => 1;
+use Test::More tests => 2;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -33,7 +33,7 @@ SKIP: {
     $slist->import_files(
         paths             => ['test.pnm'],
         finished_callback => sub {
-            $slist->{data}[0][2]->import_text( <<'EOS' );
+    my $hocr = <<'EOS';
 <!DOCTYPE html
  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN
  http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -54,6 +54,8 @@ SKIP: {
  </body>
 </html>
 EOS
+            $slist->{data}[0][2]->import_hocr( $hocr );
+            $slist->{data}[0][2]->import_annotations( $hocr );
             $slist->save_djvu(
                 path              => 'test.djvu',
                 list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
@@ -67,7 +69,12 @@ EOS
         decode_utf8( capture(qw(djvutxt test.djvu)) ),
         qr/The quick — brown fox·/,
         'DjVu with expected text'
-    );
+       );
+    like(
+        Gscan2pdf::Document::unescape_utf8( capture(qw(djvused test.djvu -e), 'select 1; print-ant')),
+        qr/The quick — brown fox·/,
+        'DjVu with expected annotation'
+       );
 
 #########################
 

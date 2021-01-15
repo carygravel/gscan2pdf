@@ -277,7 +277,7 @@ sub _walk_bboxes {
     return;
 }
 
-sub to_djvu {
+sub to_djvu_txt {
     my ($self) = @_;
     my $string = $EMPTY;
     my ( $prev_depth, $h );
@@ -305,6 +305,22 @@ sub to_djvu {
         while ( $prev_depth-- >= 0 ) { $string .= ')' }
     }
     if ( $string ne $EMPTY ) { $string .= "\n" }
+    return $string;
+}
+
+sub to_djvu_ann {
+    my ($self) = @_;
+    my $string = $EMPTY;
+    my $h;
+    my $iter = $self->get_bbox_iter();
+    while ( my $bbox = $iter->() ) {
+        if ( $bbox->{type} eq 'page' ) { $h = $bbox->{bbox}[-1] }
+        if ( defined $bbox->{text} ) {
+            my ( $x1, $y1, $x2, $y2 ) = @{ $bbox->{bbox} };
+            $string .= sprintf "(maparea \"\" \"%s\" (rect %d %d %d %d) (hilite #cccf00) (xor))\n", _escape_text( $bbox->{text} ), $x1, $h - $y2, $x2-$x1,
+              $y2 - $y1;
+        }
+    }
     return $string;
 }
 
@@ -339,7 +355,7 @@ sub to_text {
     return $string;
 }
 
-sub from_djvu {
+sub from_djvu_txt {
     my ( $self, $djvutext ) = @_;
     my $h;
     my $depth = 0;
