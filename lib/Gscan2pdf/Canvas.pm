@@ -31,7 +31,7 @@ BEGIN {
     Readonly $MAX_CONFIDENCE_DEFAULT => 95;
     Readonly $MIN_CONFIDENCE_DEFAULT => 50;
 }
-our $VERSION = '2.10.2';
+our $VERSION = '2.11.0';
 
 use Glib::Object::Subclass GooCanvas2::Canvas::, signals => {
     'zoom-changed' => {

@@ -14,7 +14,7 @@
 #    Update translators in credits (https://launchpad.net/gscan2pdf/+topcontributors)
 #    Check a locale with LC_ALL=de_DE LC_MESSAGES=de_DE LC_CTYPE=de_DE LANG=de_DE LANGUAGE=de_DE bin/gscan2pdf --log=log --locale=<wherever the locale directory is>
 #    Check $VERSION. If necessary bump with something like
-#     xargs sed -i "s/\(\$VERSION *= \)'2\.10\.1'/\1'2.10.2'/" < MANIFEST
+#     xargs sed -i "s/\(\$VERSION *= \)'2\.10\.2'/\1'2.11.0'/" < MANIFEST
 #    Make appropriate updates to ../debian/changelog
 # 2.  perl Makefile.PL
 #     Upload .pot
@@ -46,6 +46,12 @@
 #     dput gscan2pdf-ppa .changes
 #    https://launchpad.net/~jeffreyratcliffe/+archive
 # 8. gscan2pdf-announce@lists.sourceforge.net, gscan2pdf-help@lists.sourceforge.net, gnome-announce-list@gnome.org, sane-devel@lists.alioth.debian.org
+# 9. To interactively debug in the schroot:
+#     schroot -c sid-amd64-sbuild -u root
+#     apt-get build-dep gscan2pdf
+#     cd /build
+#     apt install wget
+#     wget the tarball and unpack it
 
 use warnings;
 use strict;
@@ -153,7 +159,7 @@ Glib::set_application_name('gscan2pdf');
 Glib::Object::Introspection->invoke( 'GLib', undef, 'set_prgname',
     'net.sourceforge.gscan2pdf' );
 my $prog_name = Glib::get_application_name;
-my $VERSION   = '2.10.2';
+my $VERSION   = '2.11.0';
 
 # Image border to ensure that a scaled to fit image gets no scrollbars
 my $border = 1;
