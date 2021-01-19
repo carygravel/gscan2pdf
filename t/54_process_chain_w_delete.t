@@ -24,9 +24,9 @@ my $dir = File::Temp->newdir;
 $slist->set_dir($dir);
 
 SKIP: {
-    skip 'Tesseract not installed', 1
+    skip 'Tesseract not installed', 2
       unless Gscan2pdf::Tesseract->setup($logger);
-    skip 'unpaper not installed', 1 unless can_run('unpaper');
+    skip 'unpaper not installed', 2 unless can_run('unpaper');
 
     my $unpaper = Gscan2pdf::Unpaper->new;
     my $vbox    = Gtk3::VBox->new;
