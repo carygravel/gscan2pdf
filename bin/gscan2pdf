@@ -545,12 +545,10 @@ sub populate_main_window {
     $ocr_text_obutton->signal_connect(
         clicked => sub {
             take_snapshot();
+            my $text = $ocr_textbuffer->get('text');
             $logger->info( "Corrected '"
-                  . $ocr_bbox->get('text') . "'->'"
-                  . $ocr_textbuffer->get('text')
-                  . q{'} );
-            $ocr_bbox->update_box( $ocr_textbuffer->get('text'),
-                $view->get_selection );
+                  . $ocr_bbox->get('text') . "'->'$text'" );
+            $ocr_bbox->update_box( $text, $view->get_selection );
             $current_page->import_hocr( $canvas->hocr );
             edit_ocr_text($ocr_bbox);
         }
@@ -595,13 +593,13 @@ sub populate_main_window {
             # If we don't yet have a canvas, create one
             my $selection = $view->get_selection;
             if ( defined $current_page->{text_layer} ) {
-                $logger->info(
-                    "Added '" . $ocr_textbuffer->get('text') . q{'} );
+                $logger->info( "Added '$text'" );
                 $ocr_bbox = $canvas->add_box( $text, $view->get_selection );
                 $current_page->import_hocr( $canvas->hocr );
                 edit_ocr_text($ocr_bbox);
             }
             else {
+                $logger->info("Creating new text layer with '$text'" );
                 $current_page->{text_layer} =
                   sprintf
 '[{"type":"page","bbox":[0,0,%d,%d],"depth":0},{"type":"word","bbox":[%d,%d,%d,%d],"text":"%s","depth":1}]',
@@ -610,7 +608,10 @@ sub populate_main_window {
                   $selection->{x} + $selection->{width},
                   $selection->{y} + $selection->{height}, $text;
 
-                create_canvas($current_page);
+                create_txt_canvas($current_page, sub {
+                                      $ocr_bbox = $canvas->get_first_bbox;
+            edit_ocr_text($ocr_bbox);
+                                  });
             }
         }
     );
@@ -652,12 +653,10 @@ sub populate_main_window {
     $ann_obutton->set_tooltip_text( __('Accept corrections') );
     $ann_obutton->signal_connect(
         clicked => sub {
+            my $text = $ann_textbuffer->get('text');
             $logger->info( "Corrected '"
-                  . $ann_bbox->get('text') . "'->'"
-                  . $ann_textbuffer->get('text')
-                  . q{'} );
-            $ann_bbox->update_box( $ann_textbuffer->get('text'),
-                $view->get_selection );
+                  . $ann_bbox->get('text') . "'->'$text'" );
+            $ann_bbox->update_box( $text, $view->get_selection );
             $current_page->import_annotations( $a_canvas->hocr );
             edit_annotation($ann_bbox);
         }
@@ -695,7 +694,8 @@ sub populate_main_window {
                 edit_annotation($ann_bbox);
             }
             else {
-                $current_page->{text_layer} =
+                $logger->info("Creating new annotation canvas with '$text'" );
+                $current_page->{annotations} =
                   sprintf
 '[{"type":"page","bbox":[0,0,%d,%d],"depth":0},{"type":"word","bbox":[%d,%d,%d,%d],"text":"%s","depth":1}]',
                   $current_page->{width}, $current_page->{height},
@@ -703,7 +703,10 @@ sub populate_main_window {
                   $selection->{x} + $selection->{width},
                   $selection->{y} + $selection->{height}, $text;
 
-                create_canvas($current_page);
+                create_ann_canvas($current_page, sub {
+                                      $ann_bbox = $a_canvas->get_first_bbox;
+            edit_annotation($ann_bbox);
+                                  });
             }
         }
     );
@@ -2263,7 +2266,10 @@ sub display_image {
     }
 
     # Convert hocr output to Goo:Canvas if defined
-    if   ( defined $current_page->{text_layer} ) { create_canvas($current_page) }
+    if   ( defined $current_page->{text_layer} or defined $current_page->{annotations} ) {
+        create_txt_canvas($current_page);
+        create_ann_canvas($current_page);
+    }
     else                                       {
         $canvas->clear_text;
         $a_canvas->clear_text;
@@ -2271,15 +2277,20 @@ sub display_image {
     return;
 }
 
-sub create_canvas {
-    my ($page) = @_;
+sub create_txt_canvas {
+    my ($page, $finished_callback) = @_;
     my $offset = $view->get_offset;
-    $canvas->set_text( $page, \&edit_ocr_text );
+    $canvas->set_text( $page, 'text_layer', \&edit_ocr_text, TRUE, $finished_callback );
     $canvas->set_scale( $view->get_zoom );
     $canvas->set_offset( $offset->{x}, $offset->{y} );
     $canvas->show;
+    return;
+}
 
-    $a_canvas->set_text( $page, \&edit_annotation );
+sub create_ann_canvas {
+    my ($page, $finished_callback) = @_;
+    my $offset = $view->get_offset;
+    $a_canvas->set_text( $page, 'annotations', \&edit_annotation, TRUE, $finished_callback );
     $a_canvas->set_scale( $view->get_zoom );
     $a_canvas->set_offset( $offset->{x}, $offset->{y} );
     $a_canvas->show;
@@ -6384,7 +6395,7 @@ sub run_ocr {
             my ($new_page) = @_;
             my @page = $slist->get_selected_indices;
             if ( @page and $new_page == $slist->{data}[ $page[0] ][2] ) {
-                create_canvas($new_page);
+                create_txt_canvas($new_page);
             }
         },
         engine   => $engine,

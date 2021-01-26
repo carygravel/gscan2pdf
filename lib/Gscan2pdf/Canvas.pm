@@ -269,7 +269,7 @@ sub string2rgb {
 }
 
 sub set_text {    # FIXME: why is this called twice when running OCR from tools?
-    my ( $self, $page, $edit_callback, $idle ) = @_;
+    my ( $self, $page, $layer, $edit_callback, $idle, $finished_callback ) = @_;
     if ( not defined $idle ) {
         $idle = TRUE;
     }
@@ -292,7 +292,7 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
 
     # Attach the text to the canvas
     $self->{confidence_index} = Gscan2pdf::Canvas::ListIter->new();
-    my $tree = Gscan2pdf::Bboxtree->new( $page->{text_layer} );
+    my $tree = Gscan2pdf::Bboxtree->new( $page->{$layer} );
     my $iter = $tree->get_bbox_iter;
     my $box  = $iter->();
     if ( not defined $box ) { return }
@@ -303,6 +303,7 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
         transformations => [ [ 0, 0, 0 ] ],
         edit_callback   => $edit_callback,
         idle            => $idle,
+        finished_callback   => $finished_callback,
     );
     if ($idle) {
         $old_idles{$box} = Glib::Idle->add(
@@ -576,7 +577,10 @@ sub _boxed_text {
 
     push @transformations, [ $textangle + $rotation, $x1, $y1 ];
     my $child = $options{iter}->();
-    if ( not defined $child ) { return }
+    if ( not defined $child ) {
+        $options{finished_callback}->();
+        return
+    }
 
     my %options3 = (
         box             => $child,
@@ -585,6 +589,7 @@ sub _boxed_text {
         transformations => \@transformations,
         edit_callback   => $edit_callback,
         idle            => $options{idle},
+        finished_callback=> $options{finished_callback},
     );
     if ( $options{idle} ) {
         $old_idles{$child} = Glib::Idle->add(

@@ -63,7 +63,7 @@ EOS
 
 my $canvas = Gscan2pdf::Canvas->new;
 $canvas->sort_by_confidence;
-$canvas->set_text( $page, undef, FALSE );
+$canvas->set_text( $page, 'text_layer', undef, FALSE );
 
 my $bbox = $canvas->get_first_bbox;
 is $bbox->get('text'), 'The—', 'get_first_bbox';
@@ -290,7 +290,7 @@ $page->import_hocr( <<'EOS');
 EOS
 
 $canvas = Gscan2pdf::Canvas->new;
-$canvas->set_text( $page, undef, FALSE );
+$canvas->set_text( $page, 'text_layer', undef, FALSE );
 $canvas->sort_by_confidence;
 
 $expected = <<"EOS";
@@ -365,7 +365,7 @@ $page = Gscan2pdf::Page->new(
 $page->import_text('The quick brown fox');
 
 $canvas = Gscan2pdf::Canvas->new;
-$canvas->set_text( $page, undef, FALSE );
+$canvas->set_text( $page, 'text_layer', undef, FALSE );
 $expected = <<"EOS";
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
