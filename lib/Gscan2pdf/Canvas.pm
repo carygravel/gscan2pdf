@@ -578,7 +578,7 @@ sub _boxed_text {
     push @transformations, [ $textangle + $rotation, $x1, $y1 ];
     my $child = $options{iter}->();
     if ( not defined $child ) {
-        $options{finished_callback}->();
+        if ($options{finished_callback}) {$options{finished_callback}->()}
         return
     }
 

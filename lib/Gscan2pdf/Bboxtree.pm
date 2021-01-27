@@ -324,6 +324,26 @@ sub to_djvu_ann {
     return $string;
 }
 
+sub from_djvu_ann {
+    my ( $self, $djvuann, $imagew, $imageh ) = @_;
+    push @{$self}, {
+        type  => 'page',
+        bbox  => [ 0, 0, $imagew, $imageh, ],
+        depth => 0,
+                   };
+    for my $line ( split /\n/xsm, $djvuann ) {
+        if ( $line =~
+             /[(]maparea\s+""\s+"(.*)"\s+[(]rect\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)[)]\s+[(]hilite\s+[#]cccf00[)]\s+[(]xor[)][)](.*?)$/xsm )
+        {
+            push @{$self}, {type => 'word', depth => 1, text => $1, bbox => [$2, $imageh-$3-$5, $2+$4, $imageh-$3]};
+        }
+        else {
+            croak "Error parsing djvu annotation $line";
+        }
+    }
+    return;
+}
+
 # Escape backslashes and inverted commas
 sub _escape_text {
     my ($txt) = @_;

@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use Encode;
-use Test::More tests => 29;
+use Test::More tests => 30;
 
 BEGIN {
     use_ok('Gscan2pdf::Bboxtree');
@@ -684,7 +684,11 @@ is_deeply $tree, \@boxes, 'from_djvu_txt() with quoted brackets';
 my $ann = <<'EOS';
 (maparea "" "()" (rect 157 3030 84 65) (hilite #cccf00) (xor))
 EOS
-is_deeply $tree->to_djvu_ann, $ann, 'to_djvu_ann()';
+is_deeply $tree->to_djvu_ann, $ann, 'to_djvu_ann() basic functionality';
+
+$tree = Gscan2pdf::Bboxtree->new;
+$tree->from_djvu_ann($ann, 2480, 3507);
+is_deeply $tree, \@boxes, 'from_djvu_ann() basic functionality';
 
 #########################
 
@@ -740,7 +744,7 @@ EOS
     },
 );
 $tree = Gscan2pdf::Bboxtree->new;
-$tree->from_pdftotext( $pdftext, 72, 72 );
+$tree->from_pdftotext( $pdftext, 72, 72, 59, 465 );
 is_deeply $tree, \@boxes, 'from_pdftotext() basic functionality';
 
 #########################
@@ -777,7 +781,7 @@ is_deeply $tree, \@boxes, 'from_pdftotext() basic functionality';
     },
 );
 $tree = Gscan2pdf::Bboxtree->new;
-$tree->from_pdftotext( $pdftext, 300, 300 );
+$tree->from_pdftotext( $pdftext, 300, 300, 244, 1937 );
 is_deeply $tree, \@boxes, 'from_pdftotext() with resolution';
 
 #########################
