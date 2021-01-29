@@ -3077,7 +3077,7 @@ sub _thread_import_file {
                       sprintf __('Importing page %i of %i'),
                       $i, $options{last} - $options{first} + 1;
 
-                    my ( $tif, $txt, $error );
+                    my ( $tif, $txt, $ann, $error );
                     try {
                         $tif = File::Temp->new(
                             DIR    => $options{dir},
@@ -3096,6 +3096,13 @@ sub _thread_import_file {
                             [
                                 'djvused', $options{info}{path},
                                 '-e',      "select $i; print-txt"
+                            ],
+                            $options{pidfile}
+                        );
+                        ( undef, $ann ) = exec_command(
+                            [
+                                'djvused', $options{info}{path},
+                                '-e',      "select $i; print-ant"
                             ],
                             $options{pidfile}
                         );
@@ -3144,6 +3151,16 @@ sub _thread_import_file {
                         _thread_throw_error( $self, $options{uuid},
                             $options{page}{uuid},
                             'Open file', 'Error: parsing DjVU text layer' );
+                    };
+                    try {
+                        $page->import_djvu_ann($ann);
+                    }
+                    catch {
+                        $logger->error(
+                            "Caught error parsing DjVU annotation layer: $_");
+                        _thread_throw_error( $self, $options{uuid},
+                            $options{page}{uuid},
+                            'Open file', 'Error: parsing DjVU annotation layer' );
                     };
                     $self->{return}->enqueue(
                         {

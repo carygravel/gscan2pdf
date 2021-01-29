@@ -3,7 +3,7 @@ use strict;
 use File::Basename;    # Split filename into dir, file, ext
 use IPC::Cmd qw(can_run);
 use IPC::System::Simple qw(system capture);
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -37,7 +37,13 @@ EOS
     open my $fh, '>:encoding(UTF8)', 'text.txt';
     print {$fh} $text;
     close $fh;
-    system( qw(djvused test.djvu -e), 'select 1; set-txt text.txt', '-s' );
+    $text = <<'EOS';
+(maparea "" "()" (rect 157 3030 84 65) (hilite #cccf00) (xor))
+EOS
+    open $fh, '>:encoding(UTF8)', 'ann.txt';
+    print {$fh} $text;
+    close $fh;
+    system( qw(djvused test.djvu -e), 'select 1; set-txt text.txt; set-ant ann.txt', '-s' );
 
     $text = <<'EOS';
 Author	"Authör"
@@ -59,34 +65,6 @@ EOS
     # dir for temporary files
     my $dir = File::Temp->newdir;
     $slist->set_dir($dir);
-
-    my $expected = <<"EOS";
-<\?xml version="1.0" encoding="UTF-8"\?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
- "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
- <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Document::VERSION' />
-  <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocr_word'/>
- </head>
- <body>
-  <div class='ocr_page' title='bbox 0 0 2236 3185'>
-   <div class='ocr_carea' title='bbox 157 80 1725 174'>
-    <p class='ocr_par' title='bbox 157 84 1725 171'>
-     <span class='ocr_line' title='bbox 157 84 1725 171'>
-      <span class='ocr_word' title='bbox 157 90 241 155'>Füß—</span>
-      <span class='ocr_word' title='bbox 533 86 645 152'>LA</span>
-      <span class='ocr_word' title='bbox 695 86 1188 171'>MARQUISE</span>
-      <span class='ocr_word' title='bbox 1229 87 1365 151'>DE</span>
-      <span class='ocr_word' title='bbox 1409 84 1725 154'>GANGE</span>
-     </span>
-    </p>
-   </div>
-  </div>
- </body>
-</html>
-EOS
 
     $slist->import_files(
         paths            => ['test.djvu'],
@@ -119,7 +97,40 @@ EOS
             );
             is( dirname("$slist->{data}[0][2]{filename}"),
                 "$dir", 'using session directory' );
-            is( $slist->{data}[0][2]->export_hocr, $expected, 'hocr layer' );
+
+            my $expected = <<"EOS";
+<\?xml version="1.0" encoding="UTF-8"\?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta name='ocr-system' content='gscan2pdf $Gscan2pdf::Document::VERSION' />
+  <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocr_word'/>
+ </head>
+ <body>
+  <div class='ocr_page' title='bbox 0 0 2236 3185'>
+   <div class='ocr_carea' title='bbox 157 80 1725 174'>
+    <p class='ocr_par' title='bbox 157 84 1725 171'>
+     <span class='ocr_line' title='bbox 157 84 1725 171'>
+      <span class='ocr_word' title='bbox 157 90 241 155'>Füß—</span>
+      <span class='ocr_word' title='bbox 533 86 645 152'>LA</span>
+      <span class='ocr_word' title='bbox 695 86 1188 171'>MARQUISE</span>
+      <span class='ocr_word' title='bbox 1229 87 1365 151'>DE</span>
+      <span class='ocr_word' title='bbox 1409 84 1725 154'>GANGE</span>
+     </span>
+    </p>
+   </div>
+  </div>
+ </body>
+</html>
+EOS
+            is( $slist->{data}[0][2]->export_hocr, $expected, 'text layer' );
+
+            $expected = <<"EOS";
+(maparea "" "()" (rect 157 3030 84 65) (hilite #cccf00) (xor))
+EOS
+            is( $slist->{data}[0][2]->export_djvu_ann, $expected, 'annotation layer' );
             Gtk3->main_quit;
         }
     );
@@ -127,7 +138,7 @@ EOS
 
 #########################
 
-    unlink 'test.djvu', 'text.txt', 'test.jpg', <$dir/*>;
+    unlink 'test.djvu', 'text.txt', 'ann.txt', 'test.jpg', <$dir/*>;
     rmdir $dir;
     Gscan2pdf::Document->quit();
 }

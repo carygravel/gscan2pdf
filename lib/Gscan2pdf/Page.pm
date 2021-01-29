@@ -241,6 +241,15 @@ sub import_annotations {
     return;
 }
 
+sub import_djvu_ann {
+    my ($self, $ann) = @_;
+    my ($imagew, $imageh) = $self->get_size;
+    my $tree = Gscan2pdf::Bboxtree->new;
+    $tree->from_djvu_ann($ann, $imagew, $imageh);
+    $self->{annotations} = $tree->json;
+    return;
+}
+
 sub export_djvu_ann {
     my ($self) = @_;
     if ( defined $self->{annotations} ) {
