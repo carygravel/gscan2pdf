@@ -2265,13 +2265,17 @@ sub display_image {
         delete $current_page->{text_layer};
     }
 
-    # Convert hocr output to Goo:Canvas if defined
-    if   ( defined $current_page->{text_layer} or defined $current_page->{annotations} ) {
+    if   ( defined $current_page->{text_layer} ) {
         create_txt_canvas($current_page);
-        create_ann_canvas($current_page);
     }
     else                                       {
         $canvas->clear_text;
+    }
+
+    if   ( defined $current_page->{annotations} ) {
+        create_ann_canvas($current_page);
+    }
+    else                                       {
         $a_canvas->clear_text;
     }
     return;

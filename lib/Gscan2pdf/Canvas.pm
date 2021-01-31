@@ -22,7 +22,6 @@ Readonly my $_60_DEGREES     => 60;
 Readonly my $MAX_ZOOM        => 15;
 Readonly my $EMPTY_LIST      => -1;
 my $device;
-my %old_idles;
 
 my ( $_100_PERCENT, $MAX_CONFIDENCE_DEFAULT, $MIN_CONFIDENCE_DEFAULT );
 
@@ -273,10 +272,10 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
     if ( not defined $idle ) {
         $idle = TRUE;
     }
-    if (%old_idles) {
-        while ( my ( $box, $source ) = each %old_idles ) {
+    if ($self->{old_idles}) {
+        while ( my ( $box, $source ) = each %{$self->{old_idles}} ) {
             Glib::Source->remove($source);
-            delete $old_idles{$box};
+            delete $self->{old_idles}{$box};
         }
     }
     delete $self->{position_index};
@@ -306,10 +305,10 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
         finished_callback   => $finished_callback,
     );
     if ($idle) {
-        $old_idles{$box} = Glib::Idle->add(
+        $self->{old_idles}{$box} = Glib::Idle->add(
             sub {
                 $self->_boxed_text(%options);
-                delete $old_idles{$box};
+                delete $self->{old_idles}{$box};
                 return Glib::SOURCE_REMOVE;
             }
         );
@@ -592,10 +591,10 @@ sub _boxed_text {
         finished_callback=> $options{finished_callback},
     );
     if ( $options{idle} ) {
-        $old_idles{$child} = Glib::Idle->add(
+        $self->{old_idles}{$child} = Glib::Idle->add(
             sub {
                 $self->_boxed_text(%options3);
-                delete $old_idles{$child};
+                delete $self->{old_idles}{$child};
                 return Glib::SOURCE_REMOVE;
             }
         );
