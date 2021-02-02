@@ -17,7 +17,7 @@ Gscan2pdf::Document->setup($logger);
 
 # Create b&w test image
 system( qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
-    'label:"The quick brown fox"', 'test.tif' );
+    'label:The quick brown fox', 'test.tif' );
 system(
     qw(tiff2pdf -o test.pdf -e 20181231120000 -a Authör -t Title -s Sübject -k Keywörds test.tif)
 );

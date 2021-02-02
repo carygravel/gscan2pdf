@@ -26,7 +26,7 @@ SKIP: {
     # Create b&w test image
     system(
         qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -units PixelsPerInch -density 300),
-        'label:"The quick brown fox"',
+        'label:The quick brown fox',
         'test.png'
     );
 
@@ -37,7 +37,7 @@ SKIP: {
     else {
         system(
             qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
-            'label:"The quick brown fox"',
+            'label:The quick brown fox',
             'input.tif'
         );
         system(qw(tiff2pdf -o test.pdf test.tif));

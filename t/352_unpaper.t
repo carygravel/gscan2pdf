@@ -46,7 +46,7 @@ SKIP: {
     # Create test image
     system(
         qw(convert -size 2550x3507 +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
-        'label:"The quick brown fox"',
+        'label:The quick brown fox',
         'test.pnm'
     );
 

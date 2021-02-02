@@ -20,13 +20,13 @@ Gscan2pdf::Document->setup($logger);
 # Create test image
 system(
     qw(convert +matte -depth 1 -colorspace Gray -type Bilevel -pointsize 12 -density 300),
-    'label:"The quick brown fox"',
+    'label:The quick brown fox',
     'test.tif'
 );
 system(qw(tiff2pdf -o test.pdf test.tif));
 system(
     qw(convert +matte -depth 1 -colorspace Gray -type Bilevel -pointsize 12 -density 300),
-    'label:"The quick brown fox"',
+    'label:The quick brown fox',
     'test.png'
 );
 my $old = capture( qw(identify -format), '%m %G %g %z-bit %r', 'test.png' );

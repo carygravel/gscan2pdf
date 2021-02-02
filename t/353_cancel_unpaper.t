@@ -26,12 +26,12 @@ SKIP: {
     # Create test image
     system(
         qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
-        'label:"The quick brown fox"',
+        'label:The quick brown fox',
         '1.pnm'
     );
     system(
         qw(convert +matte -depth 1 -border 2x2 -bordercolor black -pointsize 12 -density 300),
-        'label:"The slower lazy dog"',
+        'label:The slower lazy dog',
         '2.pnm'
     );
     system(qw(convert -size 100x100 xc:black black.pnm));

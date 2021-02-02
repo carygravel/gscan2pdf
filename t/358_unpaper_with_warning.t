@@ -27,7 +27,7 @@ SKIP: {
     my $filename = 'test.png';
     system(
         qw(convert +matte -depth 1 -colorspace Gray -pointsize 12 -density 300),
-        'label:"The quick brown fox"',
+        'label:The quick brown fox',
         qw(-rotate 20), $filename
     );
 

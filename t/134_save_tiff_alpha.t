@@ -19,7 +19,7 @@ Gscan2pdf::Document->setup($logger);
 # Create test image
 system(
     qw(convert -fill lightblue -pointsize 12 -units PixelsPerInch -density 300),
-    'label:"The quick brown fox"',
+    'label:The quick brown fox',
     'test.png'
 );
 
