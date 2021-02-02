@@ -3777,6 +3777,11 @@ sub _add_page_to_pdf {
     };
     if ($error) { return 1 }
 
+    if ( defined( $pagedata->{annotations} ) ) {
+        $logger->info('Adding annotations');
+        _add_annotations_to_pdf( $self, $page, $pagedata );
+    }
+
     $logger->info("Added $filename at $output_resolution PPI");
     return;
 }
@@ -3981,10 +3986,10 @@ sub _add_text_to_pdf {
             # y coordinate (since the PDF coordinates are bottom to top
             # instead of top to bottom) and subtract $size, since the text
             # will end up above the given point instead of below.
-            my $size = ( $y2 - $y1 ) / $yresolution * $POINTS_PER_INCH;
+            my $size = px2pt($y2 - $y1, $yresolution);
             $text->font( $font, $size );
             $text->translate(
-                $offset + $x1 / $xresolution * $POINTS_PER_INCH,
+                $offset + px2pt($x1, $xresolution),
                 ( $h - ( $y1 / $yresolution ) ) * $POINTS_PER_INCH - $size
             );
             $text->text( $txt, utf8 => 1 );
@@ -3996,6 +4001,11 @@ sub _add_text_to_pdf {
         }
     }
     return;
+}
+
+sub px2pt {
+    my ($px, $resolution)=@_;
+    return $px / $resolution * $POINTS_PER_INCH
 }
 
 # Box is the same size as the page. We don't know the text position.
@@ -4019,6 +4029,29 @@ sub _wrap_text_to_page {
             $x += $text_box->text( $word, utf8 => 1 );
         }
         $y -= $size;
+    }
+    return;
+}
+
+sub _add_annotations_to_pdf {
+    my ( $self, $page, $gs_page ) = @_;
+    my $xresolution = $gs_page->{xresolution};
+    my $yresolution = $gs_page->{yresolution};
+    my $h           = px2pt($gs_page->{height}, $yresolution);
+    my $iter =
+      Gscan2pdf::Bboxtree->new( $gs_page->{annotations} )->get_bbox_iter();
+
+    while ( my $box = $iter->() ) {
+        if ($box->{type} eq 'page' or not defined $box->{text} or $box->{text} eq $EMPTY) {            next        }
+        my @bbox = @{ $box->{bbox} };
+        $bbox[0] = px2pt($bbox[0], $xresolution);
+        $bbox[1] = $h-px2pt($bbox[1], $yresolution);
+        $bbox[2] = px2pt($bbox[2], $xresolution);
+        $bbox[3] = $h-px2pt($bbox[3], $yresolution);
+        my $annot = $page->annotation;
+#        $annot->text($box->{text}, -rect=>\@bbox, -color=>[1, 1, 0], -icon=>'None');
+        $annot->text($box->{text}, -rect=>\@bbox, -color=>[0, 0, 1, 0.1], -icon=>'None');
+#        $annot->url('', -text=>$box->{text}, -rect=>\@bbox, -color=>[1, 1, 0], -icon=>'None');
     }
     return;
 }
