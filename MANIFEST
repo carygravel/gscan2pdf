@@ -237,6 +237,7 @@ t/1123_save_pdf_with_utf8.t
 t/1124_save_pdf_with_non-utf8.t
 t/1125_save_pdf_with_1bpp.t
 t/1126_save_pdf_without_font.t
+t/11271_save_pdf2_g4.t
 t/1127_save_pdf_g4.t
 t/1128_save_pdf_with_sbs_hocr.t
 t/113_save_pdf_with_downsample.t

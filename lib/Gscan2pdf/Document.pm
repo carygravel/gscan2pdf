@@ -3778,11 +3778,15 @@ sub _convert_image_for_pdf {
     my $output_xresolution = $pagedata->{xresolution};
     my $output_yresolution = $pagedata->{yresolution};
 
-    if (   ( $compression ne 'none' and $compression ne $format )
-        or $options{options}{downsample}
-        or $compression eq 'jpg' )
+    if (
+        _must_convert_image_for_pdf(
+            $compression, $format, $options{options}{downsample}
+        )
+      )
     {
-        if ( $compression !~ /(?:jpg|png)/xsm and $format ne 'tif' ) {
+        if (   ( $compression !~ /(?:jpg|png)/xsm and $format ne 'tif' )
+            or ( $compression =~ /g[34]/xsm and $image->Get('depth') > 1 ) )
+        {
             my $ofn = $filename;
             $filename =
               File::Temp->new( DIR => $options{dir}, SUFFIX => '.tif' );
@@ -3852,12 +3856,22 @@ sub _convert_image_for_pdf {
     return $filename, $format, $output_xresolution, $output_yresolution;
 }
 
+sub _must_convert_image_for_pdf {
+    my ( $compression, $format, $downsample ) = @_;
+    return (
+             ( $compression ne 'none' and $compression ne $format )
+          or $downsample
+          or $compression eq 'jpg'
+    );
+}
+
 sub _write_image_object {
     my ( $image, $filename, $format, $pagedata, $downsample ) = @_;
     my $compression = $pagedata->{compression};
     if (   ( $compression !~ /(?:jpg|png)/xsm and $format ne 'tif' )
         or ( $compression =~ /(?:jpg|png)/xsm )
-        or $downsample )
+        or $downsample
+        or ( $compression =~ /g[34]/xsm and $image->Get('depth') > 1 ) )
     {
         $logger->info("Writing temporary image $filename");
 
