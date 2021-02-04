@@ -687,7 +687,7 @@ EOS
 is_deeply $tree->to_djvu_ann, $ann, 'to_djvu_ann() basic functionality';
 
 $tree = Gscan2pdf::Bboxtree->new;
-$tree->from_djvu_ann($ann, 2480, 3507);
+$tree->from_djvu_ann( $ann, 2480, 3507 );
 is_deeply $tree, \@boxes, 'from_djvu_ann() basic functionality';
 
 #########################

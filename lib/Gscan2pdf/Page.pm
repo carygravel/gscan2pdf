@@ -242,10 +242,10 @@ sub import_annotations {
 }
 
 sub import_djvu_ann {
-    my ($self, $ann) = @_;
-    my ($imagew, $imageh) = $self->get_size;
+    my ( $self,   $ann )    = @_;
+    my ( $imagew, $imageh ) = $self->get_size;
     my $tree = Gscan2pdf::Bboxtree->new;
-    $tree->from_djvu_ann($ann, $imagew, $imageh);
+    $tree->from_djvu_ann( $ann, $imagew, $imageh );
     $self->{annotations} = $tree->json;
     return;
 }
@@ -279,7 +279,9 @@ sub to_png {
         width       => $self->{width},
         height      => $self->{height},
     );
-    if ( defined $self->{text_layer} ) { $new->{text_layer} = $self->{text_layer} }
+    if ( defined $self->{text_layer} ) {
+        $new->{text_layer} = $self->{text_layer};
+    }
     return $new;
 }
 

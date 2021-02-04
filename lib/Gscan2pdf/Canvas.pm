@@ -272,8 +272,8 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
     if ( not defined $idle ) {
         $idle = TRUE;
     }
-    if ($self->{old_idles}) {
-        while ( my ( $box, $source ) = each %{$self->{old_idles}} ) {
+    if ( $self->{old_idles} ) {
+        while ( my ( $box, $source ) = each %{ $self->{old_idles} } ) {
             Glib::Source->remove($source);
             delete $self->{old_idles}{$box};
         }
@@ -296,13 +296,13 @@ sub set_text {    # FIXME: why is this called twice when running OCR from tools?
     my $box  = $iter->();
     if ( not defined $box ) { return }
     my %options = (
-        iter            => $iter,
-        box             => $box,
-        parents         => [$root],
-        transformations => [ [ 0, 0, 0 ] ],
-        edit_callback   => $edit_callback,
-        idle            => $idle,
-        finished_callback   => $finished_callback,
+        iter              => $iter,
+        box               => $box,
+        parents           => [$root],
+        transformations   => [ [ 0, 0, 0 ] ],
+        edit_callback     => $edit_callback,
+        idle              => $idle,
+        finished_callback => $finished_callback,
     );
     if ($idle) {
         $self->{old_idles}{$box} = Glib::Idle->add(
@@ -577,18 +577,18 @@ sub _boxed_text {
     push @transformations, [ $textangle + $rotation, $x1, $y1 ];
     my $child = $options{iter}->();
     if ( not defined $child ) {
-        if ($options{finished_callback}) {$options{finished_callback}->()}
-        return
+        if ( $options{finished_callback} ) { $options{finished_callback}->() }
+        return;
     }
 
     my %options3 = (
-        box             => $child,
-        iter            => $options{iter},
-        parents         => \@parents,
-        transformations => \@transformations,
-        edit_callback   => $edit_callback,
-        idle            => $options{idle},
-        finished_callback=> $options{finished_callback},
+        box               => $child,
+        iter              => $options{iter},
+        parents           => \@parents,
+        transformations   => \@transformations,
+        edit_callback     => $edit_callback,
+        idle              => $options{idle},
+        finished_callback => $options{finished_callback},
     );
     if ( $options{idle} ) {
         $self->{old_idles}{$child} = Glib::Idle->add(

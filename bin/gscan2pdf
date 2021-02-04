@@ -546,8 +546,8 @@ sub populate_main_window {
         clicked => sub {
             take_snapshot();
             my $text = $ocr_textbuffer->get('text');
-            $logger->info( "Corrected '"
-                  . $ocr_bbox->get('text') . "'->'$text'" );
+            $logger->info(
+                "Corrected '" . $ocr_bbox->get('text') . "'->'$text'" );
             $ocr_bbox->update_box( $text, $view->get_selection );
             $current_page->import_hocr( $canvas->hocr );
             edit_ocr_text($ocr_bbox);
@@ -593,13 +593,13 @@ sub populate_main_window {
             # If we don't yet have a canvas, create one
             my $selection = $view->get_selection;
             if ( defined $current_page->{text_layer} ) {
-                $logger->info( "Added '$text'" );
+                $logger->info("Added '$text'");
                 $ocr_bbox = $canvas->add_box( $text, $view->get_selection );
                 $current_page->import_hocr( $canvas->hocr );
                 edit_ocr_text($ocr_bbox);
             }
             else {
-                $logger->info("Creating new text layer with '$text'" );
+                $logger->info("Creating new text layer with '$text'");
                 $current_page->{text_layer} =
                   sprintf
 '[{"type":"page","bbox":[0,0,%d,%d],"depth":0},{"type":"word","bbox":[%d,%d,%d,%d],"text":"%s","depth":1}]',
@@ -608,10 +608,13 @@ sub populate_main_window {
                   $selection->{x} + $selection->{width},
                   $selection->{y} + $selection->{height}, $text;
 
-                create_txt_canvas($current_page, sub {
-                                      $ocr_bbox = $canvas->get_first_bbox;
-            edit_ocr_text($ocr_bbox);
-                                  });
+                create_txt_canvas(
+                    $current_page,
+                    sub {
+                        $ocr_bbox = $canvas->get_first_bbox;
+                        edit_ocr_text($ocr_bbox);
+                    }
+                );
             }
         }
     );
@@ -654,8 +657,8 @@ sub populate_main_window {
     $ann_obutton->signal_connect(
         clicked => sub {
             my $text = $ann_textbuffer->get('text');
-            $logger->info( "Corrected '"
-                  . $ann_bbox->get('text') . "'->'$text'" );
+            $logger->info(
+                "Corrected '" . $ann_bbox->get('text') . "'->'$text'" );
             $ann_bbox->update_box( $text, $view->get_selection );
             $current_page->import_annotations( $a_canvas->hocr );
             edit_annotation($ann_bbox);
@@ -694,7 +697,7 @@ sub populate_main_window {
                 edit_annotation($ann_bbox);
             }
             else {
-                $logger->info("Creating new annotation canvas with '$text'" );
+                $logger->info("Creating new annotation canvas with '$text'");
                 $current_page->{annotations} =
                   sprintf
 '[{"type":"page","bbox":[0,0,%d,%d],"depth":0},{"type":"word","bbox":[%d,%d,%d,%d],"text":"%s","depth":1}]',
@@ -703,10 +706,13 @@ sub populate_main_window {
                   $selection->{x} + $selection->{width},
                   $selection->{y} + $selection->{height}, $text;
 
-                create_ann_canvas($current_page, sub {
-                                      $ann_bbox = $a_canvas->get_first_bbox;
-            edit_annotation($ann_bbox);
-                                  });
+                create_ann_canvas(
+                    $current_page,
+                    sub {
+                        $ann_bbox = $a_canvas->get_first_bbox;
+                        edit_annotation($ann_bbox);
+                    }
+                );
             }
         }
     );
@@ -723,7 +729,7 @@ sub populate_main_window {
         }
     );
 
-    $ann_hbox->pack_start( $ann_textview,     FALSE, FALSE, 0 );
+    $ann_hbox->pack_start( $ann_textview, FALSE, FALSE, 0 );
     $ann_hbox->pack_end( $ann_dbutton, FALSE, FALSE, 0 );
     $ann_hbox->pack_end( $ann_cbutton, FALSE, FALSE, 0 );
     $ann_hbox->pack_end( $ann_obutton, FALSE, FALSE, 0 );
@@ -806,7 +812,7 @@ sub pack_viewer_tools {
         $vnotebook->append_page( $canvas,
             Gtk3::Label->new( __('Text layer') ) );
         $vnotebook->append_page( $a_canvas,
-                                 Gtk3::Label->new( __('Annotations') ) );
+            Gtk3::Label->new( __('Annotations') ) );
         $vpaned->pack1( $vnotebook, TRUE, TRUE );
         $vnotebook->show_all;
     }
@@ -1535,14 +1541,20 @@ sub create_menu_bar {
     );
     my @ocr_tools = (
         [
-            'Edit text layer',                   'gtk-edit',
-            __('Edit text layer'),               undef,
-            __('Show editing tools for text layer'), \&show_text_layer_tools_callback
+            'Edit text layer',
+            'gtk-edit',
+            __('Edit text layer'),
+            undef,
+            __('Show editing tools for text layer'),
+            \&show_text_layer_tools_callback
         ],
         [
-            'Edit annotations',                   'error-correct-symbolic',
-            __('Edit annotations'),               undef,
-            __('Show editing tools for annotations'), \&show_annotation_tools_callback
+            'Edit annotations',
+            'error-correct-symbolic',
+            __('Edit annotations'),
+            undef,
+            __('Show editing tools for annotations'),
+            \&show_annotation_tools_callback
         ],
     );
     my $ui = <<'EOS';
@@ -2261,30 +2273,32 @@ sub display_image {
     if ( defined $current_page->{text_layer}
         and not Gscan2pdf::Bboxtree->valid( $current_page->{text_layer} ) )
     {
-        $logger->error("deleting corrupt text layer: $current_page->{text_layer}");
+        $logger->error(
+            "deleting corrupt text layer: $current_page->{text_layer}");
         delete $current_page->{text_layer};
     }
 
-    if   ( defined $current_page->{text_layer} ) {
+    if ( defined $current_page->{text_layer} ) {
         create_txt_canvas($current_page);
     }
-    else                                       {
+    else {
         $canvas->clear_text;
     }
 
-    if   ( defined $current_page->{annotations} ) {
+    if ( defined $current_page->{annotations} ) {
         create_ann_canvas($current_page);
     }
-    else                                       {
+    else {
         $a_canvas->clear_text;
     }
     return;
 }
 
 sub create_txt_canvas {
-    my ($page, $finished_callback) = @_;
+    my ( $page, $finished_callback ) = @_;
     my $offset = $view->get_offset;
-    $canvas->set_text( $page, 'text_layer', \&edit_ocr_text, TRUE, $finished_callback );
+    $canvas->set_text( $page, 'text_layer', \&edit_ocr_text, TRUE,
+        $finished_callback );
     $canvas->set_scale( $view->get_zoom );
     $canvas->set_offset( $offset->{x}, $offset->{y} );
     $canvas->show;
@@ -2292,9 +2306,10 @@ sub create_txt_canvas {
 }
 
 sub create_ann_canvas {
-    my ($page, $finished_callback) = @_;
+    my ( $page, $finished_callback ) = @_;
     my $offset = $view->get_offset;
-    $a_canvas->set_text( $page, 'annotations', \&edit_annotation, TRUE, $finished_callback );
+    $a_canvas->set_text( $page, 'annotations', \&edit_annotation, TRUE,
+        $finished_callback );
     $a_canvas->set_scale( $view->get_zoom );
     $a_canvas->set_offset( $offset->{x}, $offset->{y} );
     $a_canvas->show;

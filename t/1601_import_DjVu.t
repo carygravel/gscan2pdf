@@ -43,7 +43,8 @@ EOS
     open $fh, '>:encoding(UTF8)', 'ann.txt';
     print {$fh} $text;
     close $fh;
-    system( qw(djvused test.djvu -e), 'select 1; set-txt text.txt; set-ant ann.txt', '-s' );
+    system( qw(djvused test.djvu -e),
+        'select 1; set-txt text.txt; set-ant ann.txt', '-s' );
 
     $text = <<'EOS';
 Author	"Authör"
@@ -130,7 +131,8 @@ EOS
             $expected = <<"EOS";
 (maparea "" "()" (rect 157 3030 84 65) (hilite #cccf00) (xor))
 EOS
-            is( $slist->{data}[0][2]->export_djvu_ann, $expected, 'annotation layer' );
+            is( $slist->{data}[0][2]->export_djvu_ann,
+                $expected, 'annotation layer' );
             Gtk3->main_quit;
         }
     );

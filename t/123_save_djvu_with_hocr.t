@@ -33,7 +33,7 @@ SKIP: {
     $slist->import_files(
         paths             => ['test.pnm'],
         finished_callback => sub {
-    my $hocr = <<'EOS';
+            my $hocr = <<'EOS';
 <!DOCTYPE html
  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN
  http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -54,8 +54,8 @@ SKIP: {
  </body>
 </html>
 EOS
-            $slist->{data}[0][2]->import_hocr( $hocr );
-            $slist->{data}[0][2]->import_annotations( $hocr );
+            $slist->{data}[0][2]->import_hocr($hocr);
+            $slist->{data}[0][2]->import_annotations($hocr);
             $slist->save_djvu(
                 path              => 'test.djvu',
                 list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
@@ -69,12 +69,14 @@ EOS
         decode_utf8( capture(qw(djvutxt test.djvu)) ),
         qr/The quick — brown fox·/,
         'DjVu with expected text'
-       );
+    );
     like(
-        Gscan2pdf::Document::unescape_utf8( capture(qw(djvused test.djvu -e), 'select 1; print-ant')),
+        Gscan2pdf::Document::unescape_utf8(
+            capture( qw(djvused test.djvu -e), 'select 1; print-ant' )
+        ),
         qr/The quick — brown fox·/,
         'DjVu with expected annotation'
-       );
+    );
 
 #########################
 

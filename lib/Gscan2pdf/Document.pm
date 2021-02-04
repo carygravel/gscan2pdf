@@ -46,8 +46,8 @@ use version;
 use Readonly;
 Readonly our $POINTS_PER_INCH             => 72;
 Readonly my $STRING_FORMAT                => 8;
-Readonly my $_POLL_INTERVAL               => 100;     # ms
-Readonly my $THUMBNAIL                    => 100;     # pixels
+Readonly my $_POLL_INTERVAL               => 100;        # ms
+Readonly my $THUMBNAIL                    => 100;        # pixels
 Readonly my $_100PERCENT                  => 100;
 Readonly my $YEAR                         => 5;
 Readonly my $BOX_TOLERANCE                => 5;
@@ -69,6 +69,8 @@ Readonly my $STRFTIME_MONTH_OFFSET        => -1;
 Readonly my $LAST_ELEMENT                 => -1;
 Readonly my $_90_DEGREES                  => 90;
 Readonly my $_270_DEGREES                 => 270;
+Readonly our $ANNOTATION_COLOR            => 'cccf00';
+Readonly my $HEX_FF                       => hex 'ff';
 
 BEGIN {
     use Exporter ();
@@ -3160,7 +3162,8 @@ sub _thread_import_file {
                             "Caught error parsing DjVU annotation layer: $_");
                         _thread_throw_error( $self, $options{uuid},
                             $options{page}{uuid},
-                            'Open file', 'Error: parsing DjVU annotation layer' );
+                            'Open file',
+                            'Error: parsing DjVU annotation layer' );
                     };
                     $self->{return}->enqueue(
                         {
@@ -3915,7 +3918,7 @@ sub _write_image_object {
         $image->Set( 'depth', $image->Get('depth') );
         my $status = $image->Write( filename => $filename );
         return if $_self->{cancel};
-        if ("$status")                     { $logger->warn($status) }
+        if ("$status") { $logger->warn($status) }
         if ( $filename =~ /[.](\w*)$/xsm ) { $format = $1 }
     }
     return $format;
@@ -3986,12 +3989,10 @@ sub _add_text_to_pdf {
             # y coordinate (since the PDF coordinates are bottom to top
             # instead of top to bottom) and subtract $size, since the text
             # will end up above the given point instead of below.
-            my $size = px2pt($y2 - $y1, $yresolution);
+            my $size = px2pt( $y2 - $y1, $yresolution );
             $text->font( $font, $size );
-            $text->translate(
-                $offset + px2pt($x1, $xresolution),
-                ( $h - ( $y1 / $yresolution ) ) * $POINTS_PER_INCH - $size
-            );
+            $text->translate( $offset + px2pt( $x1, $xresolution ),
+                ( $h - ( $y1 / $yresolution ) ) * $POINTS_PER_INCH - $size );
             $text->text( $txt, utf8 => 1 );
         }
         else {
@@ -4004,8 +4005,8 @@ sub _add_text_to_pdf {
 }
 
 sub px2pt {
-    my ($px, $resolution)=@_;
-    return $px / $resolution * $POINTS_PER_INCH
+    my ( $px, $resolution ) = @_;
+    return $px / $resolution * $POINTS_PER_INCH;
 }
 
 # Box is the same size as the page. We don't know the text position.
@@ -4037,21 +4038,34 @@ sub _add_annotations_to_pdf {
     my ( $self, $page, $gs_page ) = @_;
     my $xresolution = $gs_page->{xresolution};
     my $yresolution = $gs_page->{yresolution};
-    my $h           = px2pt($gs_page->{height}, $yresolution);
+    my $h           = px2pt( $gs_page->{height}, $yresolution );
     my $iter =
       Gscan2pdf::Bboxtree->new( $gs_page->{annotations} )->get_bbox_iter();
 
     while ( my $box = $iter->() ) {
-        if ($box->{type} eq 'page' or not defined $box->{text} or $box->{text} eq $EMPTY) {            next        }
+        if (   $box->{type} eq 'page'
+            or not defined $box->{text}
+            or $box->{text} eq $EMPTY )
+        {
+            next;
+        }
         my @bbox = @{ $box->{bbox} };
-        $bbox[0] = px2pt($bbox[0], $xresolution);
-        $bbox[1] = $h-px2pt($bbox[1], $yresolution);
-        $bbox[2] = px2pt($bbox[2], $xresolution);
-        $bbox[3] = $h-px2pt($bbox[3], $yresolution);
+        for my $i ( ( 0, 2 ) ) {
+            $bbox[$i] = px2pt( $bbox[$i], $xresolution );
+            $bbox[ $i + 1 ] = $h - px2pt( $bbox[ $i + 1 ], $yresolution );
+        }
         my $annot = $page->annotation;
-#        $annot->text($box->{text}, -rect=>\@bbox, -color=>[1, 1, 0], -icon=>'None');
-        $annot->text($box->{text}, -rect=>\@bbox, -color=>[0, 0, 1, 0.1], -icon=>'None');
-#        $annot->url('', -text=>$box->{text}, -rect=>\@bbox, -color=>[1, 1, 0], -icon=>'None');
+
+        my @rgb;
+        for my $i ( 0 .. 2 ) {
+            push @rgb, hex( substr $ANNOTATION_COLOR, $i, 2 ) / $HEX_FF;
+        }
+        $annot->text( $box->{text}, -rect => \@bbox, -color => \@rgb );
+
+#        $annot->text($box->{text}, -rect=>\@bbox, -color=>\@rgb, -border=>[0, 0, 1]);
+#        $annot->text($box->{text}, -rect=>\@bbox, -color=>\@rgb, -icon=>'None');
+#        $annot->text($box->{text}, -rect=>\@bbox, -color=>\@rgb, -icon=>'None', -border=>[0, 0, 1]);
+#        $annot->url('', -text=>$box->{text}, -rect=>\@bbox, -color=>\@rgb, -icon=>'None', -border=>[0, 0, 1]); # produces a nice box where we want it, but ignores the text field.
     }
     return;
 }

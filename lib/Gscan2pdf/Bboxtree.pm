@@ -18,6 +18,8 @@ Readonly my $HALF       => 0.5;
 my $EMPTY         = q{};
 my $SPACE         = q{ };
 my $DOUBLE_QUOTES = q{"};
+my $BBOX_REGEX    = qr{(\d+)\s+(\d+)\s+(\d+)\s+(\d+)}xsm;
+my $HILITE_REGEX  = qr{[(]hilite\s+[#][A-Fa-f\d]{6}[)]\s+[(]xor[)]}xsm;
 
 BEGIN {
     use Exporter ();
@@ -212,7 +214,7 @@ sub _hocr2boxes {
 
 sub _parse_tag_data {
     my ( $title, $data ) = @_;
-    if ( $title =~ /\bbbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/xsm ) {
+    if ( $title =~ /\bbbox\s+$BBOX_REGEX/xsm ) {
         if ( $1 != $3 and $2 != $4 ) { $data->{bbox} = [ $1, $2, $3, $4 ] }
     }
     if ( $title =~ /\btextangle\s+(\d+)/xsm ) { $data->{textangle}  = $1 }
@@ -317,8 +319,11 @@ sub to_djvu_ann {
         if ( $bbox->{type} eq 'page' ) { $h = $bbox->{bbox}[-1] }
         if ( defined $bbox->{text} ) {
             my ( $x1, $y1, $x2, $y2 ) = @{ $bbox->{bbox} };
-            $string .= sprintf "(maparea \"\" \"%s\" (rect %d %d %d %d) (hilite #cccf00) (xor))\n", _escape_text( $bbox->{text} ), $x1, $h - $y2, $x2-$x1,
-              $y2 - $y1;
+            $string .=
+              sprintf
+              "(maparea \"\" \"%s\" (rect %d %d %d %d) (hilite #%s) (xor))\n",
+              _escape_text( $bbox->{text} ), $x1, $h - $y2, $x2 - $x1,
+              $y2 - $y1, $Gscan2pdf::Document::ANNOTATION_COLOR;
         }
     }
     return $string;
@@ -326,16 +331,28 @@ sub to_djvu_ann {
 
 sub from_djvu_ann {
     my ( $self, $djvuann, $imagew, $imageh ) = @_;
-    push @{$self}, {
+    push @{$self},
+      {
         type  => 'page',
         bbox  => [ 0, 0, $imagew, $imageh, ],
         depth => 0,
-                   };
+      };
     for my $line ( split /\n/xsm, $djvuann ) {
-        if ( $line =~
-             /[(]maparea\s+""\s+"(.*)"\s+[(]rect\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)[)]\s+[(]hilite\s+[#]cccf00[)]\s+[(]xor[)][)](.*?)$/xsm )
+        if (
+            $line =~ m{[(]maparea\s+".*" # url
+\s+"(.*)" # text field enclosed in inverted commas
+\s+[(]rect\s+$BBOX_REGEX[)] # bounding box
+\s+$HILITE_REGEX # highlight color
+[)]}xsm
+          )
         {
-            push @{$self}, {type => 'word', depth => 1, text => $1, bbox => [$2, $imageh-$3-$5, $2+$4, $imageh-$3]};
+            push @{$self},
+              {
+                type  => 'word',
+                depth => 1,
+                text  => $1,
+                bbox  => [ $2, $imageh - $3 - $5, $2 + $4, $imageh - $3 ]
+              };
         }
         else {
             croak "Error parsing djvu annotation $line";
@@ -380,9 +397,7 @@ sub from_djvu_txt {
     my $h;
     my $depth = 0;
     for my $line ( split /\n/xsm, $djvutext ) {
-        if ( $line =~
-            /^\s*([(]+)(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(.*?)([)]*)$/xsm )
-        {
+        if ( $line =~ /^\s*([(]+)(\w+)\s+$BBOX_REGEX(.*?)([)]*)$/xsm ) {
             my %bbox;
             $depth += length $1;
             $bbox{depth} = $depth - 1;
