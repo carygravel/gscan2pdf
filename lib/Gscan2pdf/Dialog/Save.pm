@@ -802,15 +802,10 @@ sub add_pdf_options {
             'lzw', __('LZW'),
             __('Compress output with Lempel-Ziv & Welch encoding.')
         ],
-        [ 'zip', __('Zip'), __('Compress output with deflate encoding.') ],
-        [
-            'packbits', __('Packbits'),
-            __('Compress output with Packbits encoding.')
-        ],
         [ 'g3', __('G3'), __('Compress output with CCITT Group 3 encoding.') ],
         [ 'g4', __('G4'), __('Compress output with CCITT Group 4 encoding.') ],
-        [ 'png',  __('PNG'),  __('Compress output with PNG encoding.') ],
-        [ 'jpg',  __('JPEG'), __('Compress output with JPEG encoding.') ],
+        [ 'png', __('Flate'), __('Compress output with flate encoding.') ],
+        [ 'jpg', __('JPEG'),  __('Compress output with JPEG (DCT) encoding.') ],
         [ 'none', __('None'), __('Use no compression algorithm on output.') ],
     );
 
