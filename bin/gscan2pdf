@@ -6306,6 +6306,10 @@ sub ocr_dialog {
         );
     }
 
+    # Checkbox & SpinButton for threshold
+    my $hboxt = Gtk3::HBox->new;
+    $vbox->pack_start( $hboxt, FALSE, TRUE, 0 );
+
     my $cbto = Gtk3::CheckButton->new_with_label( __('Threshold before OCR') );
     $cbto->set_tooltip_text(
         __(
@@ -6316,22 +6320,17 @@ sub ocr_dialog {
     if ( defined $SETTING{'threshold-before-ocr'} ) {
         $cbto->set_active( $SETTING{'threshold-before-ocr'} );
     }
-    $vbox->pack_start( $cbto, TRUE, TRUE, 0 );
+    $hboxt->pack_start( $cbto, FALSE, TRUE, 0 );
 
-    # SpinButton for threshold
-    my $hboxt = Gtk3::HBox->new;
-    $hboxt->set_sensitive( $cbto->get_active ? TRUE : FALSE );
-    $vbox->pack_start( $hboxt, FALSE, TRUE, 0 );
-    $label = Gtk3::Label->new( __('Threshold') );
-    $hboxt->pack_start( $label, FALSE, TRUE, 0 );
     my $labelp = Gtk3::Label->new($PERCENT);
     $hboxt->pack_end( $labelp, FALSE, TRUE, 0 );
     my $spinbutton = Gtk3::SpinButton->new_with_range( 0, $_100_PERCENT, 1 );
     $spinbutton->set_value( $SETTING{'threshold tool'} );
+    $spinbutton->set_sensitive( $cbto->get_active ? TRUE : FALSE );
     $hboxt->pack_end( $spinbutton, FALSE, TRUE, 0 );
     $cbto->signal_connect(
         toggled => sub {
-            $hboxt->set_sensitive( $cbto->get_active ? TRUE : FALSE );
+            $spinbutton->set_sensitive( $cbto->get_active ? TRUE : FALSE );
         }
     );
 
