@@ -4,7 +4,7 @@ use Date::Calc qw(Date_to_Time);
 use File::stat;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use IPC::System::Simple qw(system capture);
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 BEGIN {
     use_ok('Gscan2pdf::Document');
@@ -30,8 +30,11 @@ my $slist = Gscan2pdf::Document->new;
 my $dir = File::Temp->newdir;
 $slist->set_dir($dir);
 
-my %metadata =
-  ( datetime => [ 2016, 2, 10, 0, 0, 0 ], title => 'metadata title' );
+my %metadata = (
+    datetime => [ 2016, 2, 10, 0, 0, 0 ],
+    title    => 'metadata title',
+    subject  => ''
+);
 $slist->import_files(
     paths             => [$pnm],
     finished_callback => sub {
@@ -47,8 +50,9 @@ $slist->import_files(
 Gtk3->main;
 
 my $info = capture( qw(pdfinfo -isodates), $pdf );
-like $info, qr/metadata title/,       'metadata title in PDF';
-like $info, qr/2016-02-10T00:00:00Z/, 'metadata ModDate in PDF';
+like $info,   qr/metadata title/,       'metadata title in PDF';
+unlike $info, qr/NONE/,                 "don't add blank metadata";
+like $info,   qr/2016-02-10T00:00:00Z/, 'metadata ModDate in PDF';
 my $sb = stat($pdf);
 is( $sb->mtime, Date_to_Time( 2016, 2, 10, 0, 0, 0 ), 'timestamp' );
 

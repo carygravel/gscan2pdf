@@ -2388,7 +2388,7 @@ sub prepare_output_metadata {
         $h{Creator} = "gscan2pdf v$Gscan2pdf::Document::VERSION";
         if ( $type eq 'DjVu' ) { $h{Producer} = 'djvulibre' }
         for my $key (qw/author title subject keywords/) {
-            if ( defined $metadata->{$key} ) {
+            if ( defined $metadata->{$key} and $metadata->{$key} ne q{} ) {
                 $h{ ucfirst $key } = $metadata->{$key};
             }
         }

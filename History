@@ -3,6 +3,8 @@
 * Fix bug importing a DjVu or TIFF with depth > 1 and saving it as PDF with G3/4
 * Remove zip and packbits PDF compression options. Rename PNG->Flate.
   Closes bug #366 (Rename PDF compression options)
+* Don't write blank metadata fields. Closes bug #375
+  (PDF saving with empty meta data. Don't write "NONE" to fields)
 
 
 2.11.0 (17.01.2021):
