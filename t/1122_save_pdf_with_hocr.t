@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system capture);
-use Test::More tests => 2;
+use Test::More tests => 3;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -65,6 +65,7 @@ $slist->import_files(
     paths             => ['test.png'],
     finished_callback => sub {
         $slist->{data}[0][2]->import_hocr($hocr);
+        $slist->{data}[0][2]->import_annotations($hocr);
         $slist->save_pdf(
             path              => 'test.pdf',
             list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
@@ -89,8 +90,11 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like( capture(qw(pdftotext test.pdf -)),
-    qr/The\s*quick\s*brown\s*fox/, 'PDF with expected text' );
+like capture(qw(pdftotext test.pdf -)), qr/The\s*quick\s*brown\s*fox/,
+  'PDF with expected text';
+like capture(qw(cat test.pdf)),
+  qr{/Type\s/Annot\s/Subtype\s/Highlight\s/C.+/Contents.+fox},
+  'PDF with expected annotation';
 
 #########################
 

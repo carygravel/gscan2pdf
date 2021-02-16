@@ -4054,18 +4054,23 @@ sub _add_annotations_to_pdf {
             $bbox[$i] = px2pt( $bbox[$i], $xresolution );
             $bbox[ $i + 1 ] = $h - px2pt( $bbox[ $i + 1 ], $yresolution );
         }
-        my $annot = $page->annotation;
+
+        # extra coords for markup
+        splice @bbox, 0, 0, $bbox[0], $bbox[3];
+        splice @bbox, 2, 0, $bbox[4], $bbox[1];
+        splice @bbox, 6, 0, $bbox[2], $bbox[5];
+        splice @bbox, 8, 2;
 
         my @rgb;
         for my $i ( 0 .. 2 ) {
-            push @rgb, hex( substr $ANNOTATION_COLOR, $i, 2 ) / $HEX_FF;
+            push @rgb, hex( substr $ANNOTATION_COLOR, $i * 2, 2 ) / $HEX_FF;
         }
-        $annot->text( $box->{text}, -rect => \@bbox, -color => \@rgb );
-
-#        $annot->text($box->{text}, -rect=>\@bbox, -color=>\@rgb, -border=>[0, 0, 1]);
-#        $annot->text($box->{text}, -rect=>\@bbox, -color=>\@rgb, -icon=>'None');
-#        $annot->text($box->{text}, -rect=>\@bbox, -color=>\@rgb, -icon=>'None', -border=>[0, 0, 1]);
-#        $annot->url('', -text=>$box->{text}, -rect=>\@bbox, -color=>\@rgb, -icon=>'None', -border=>[0, 0, 1]); # produces a nice box where we want it, but ignores the text field.
+        my $annot = $page->annotation;
+        $annot->markup(
+            $box->{text}, \@bbox, 'Highlight',
+            -color   => \@rgb,
+            -opacity => 0.5
+        );
     }
     return;
 }
