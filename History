@@ -6,6 +6,7 @@
 * Don't write blank metadata fields. Closes bug #375
   (PDF saving with empty meta data. Don't write "NONE" to fields)
 * + Galician translation (thanks to dopais)
+* Update to Ukrainian translation (thanks to Yuri Chornoivan)
 
 
 2.11.0 (17.01.2021):
