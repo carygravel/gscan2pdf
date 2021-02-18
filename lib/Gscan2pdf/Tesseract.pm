@@ -15,7 +15,7 @@ use Locale::Language;
 use Readonly;
 Readonly our $DPI_OPTION_POS => 3;
 
-our $VERSION = '2.11.0';
+our $VERSION = '2.11.1';
 my $EMPTY = q{};
 my $COMMA = q{,};
 
