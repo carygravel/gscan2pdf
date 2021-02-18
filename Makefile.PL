@@ -49,7 +49,7 @@ WriteMakefile(
         Image::Magick    => 0,
         Locale::gettext  => 1.05,
         Config::General  => 2.40,
-        PDF::Builder     => 0,
+        PDF::Builder     => 3.022, # check this version with the new annotation features
         Set::IntSpan     => 1.10,
         GooCanvas2       => 0,
         Readonly         => 0,

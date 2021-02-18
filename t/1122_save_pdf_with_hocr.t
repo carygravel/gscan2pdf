@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system capture);
-use Test::More tests => 3;
+use Test::More tests => 4;
 
 BEGIN {
     use Gscan2pdf::Document;
@@ -81,6 +81,10 @@ $slist->import_files(
                         like $slist->{data}[1][2]->export_hocr,
                           qr/bbox\s0\s0\s$width\s$height/xsm,
                           'import text layer';
+
+                        like $slist->{data}[1][2]->{annotations},
+                          qr/The.+quick.+brown.+fox/xsm,
+                          'import annotations';
                         Gtk3->main_quit;
                     }
                 );

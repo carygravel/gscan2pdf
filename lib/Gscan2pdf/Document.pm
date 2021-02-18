@@ -31,6 +31,7 @@ use IPC::Open3 'open3';
 use Symbol;            # for gensym
 use Try::Tiny;
 use Set::IntSpan 1.10;    # For size method for page numbering issues
+use lib qw(/home/jeff/dev/perl/Perl-PDF-Builder-myfork/lib);
 use PDF::Builder;
 use English qw( -no_match_vars );    # for $PROCESS_ID, $INPUT_RECORD_SEPARATOR
                                      # $CHILD_ERROR
@@ -3348,6 +3349,7 @@ sub _thread_import_pdf {
 
     # Extract images from PDF
     if ( $options{last} >= $options{first} and $options{first} > 0 ) {
+        my $pdfobj = PDF::Builder->open($options{info}{path});
         for my $i ( $options{first} .. $options{last} ) {
             my $args =
               [ 'pdfimages', '-f', $i, '-l', $i, '-list',
@@ -3392,6 +3394,10 @@ sub _thread_import_pdf {
                     'Open file', __('Error extracting text layer from PDF') );
             }
 
+            my $pageobj = $pdfobj->openpage($i);
+            use Data::Dumper;
+            $logger->fatal("annotations ".Dumper( $pageobj->{'Annots'} ));
+            
             # Import each image
             my @images = glob 'x-??*.???';
             if ( @images != 1 ) { $warning_flag = TRUE }
