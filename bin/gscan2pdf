@@ -3991,7 +3991,9 @@ sub process_error_callback {
     }
     $shbox->hide;
 
-    if ( $process eq 'open_device' and $msg =~ /Invalid[ ]argument/xsm ) {
+    if (    $process eq 'open_device'
+        and $msg =~ /(Invalid[ ]argument|Device[ ]busy)/xsm )
+    {
         my $error_name = 'error opening device';
         my $response;
         if ( defined $SETTING{message}{$error_name}
