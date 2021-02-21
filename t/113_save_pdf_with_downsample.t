@@ -54,7 +54,7 @@ is( -s 'test.pdf' > -s 'test2.pdf', 1,
 system(qw(pdfimages test2.pdf x));
 like(
     capture( qw(identify -format), '%m %G %g %z-bit %r', 'x-000.pbm' ),
-    qr/PBM 2\d\dx2\d 2\d\dx2\d[+]0[+]0 1-bit DirectClass Gray/,
+    qr/PBM 2\d\dx[23]\d 2\d\dx[23]\d[+]0[+]0 1-bit DirectClass Gray/,
     'downsampled'
 );
 
