@@ -4,6 +4,7 @@
   off and display the relevant dialog.
   Closes #378 (gscan2pdf claims scanner is "busy" when not connected)
 * Update to Hungarian translation (thanks to csola)
+* Update to Ukrainian translation (thanks to Yuri Chornoivan)
 
 
 2.11.1 (17.02.2021):
