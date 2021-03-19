@@ -35,12 +35,12 @@
 # 6. create version directory in https://sourceforge.net/projects/gscan2pdf/files/gscan2pdf
 #     make file_releases
 # 7. Build packages for Debian & Ubuntu
-#    name the release -0~ppa1<release>, where release is:
-#      * hirsute
-#      * groovy
-#      * focal (dh12)
-#      * bionic (dh11, no tests, no fonts-noto-extra, liblocale-codes-perl >= 3.55, also in Build-Depends-Indep)
-#      * xenial (dh9, defined in debian/compat, removing the -compat, take away the version on liblocale-codes-perl, also in Build-Depends-Indep)
+#    name the release -0~ppa1<release>, where release (https://wiki.ubuntu.com/Releases) is:
+#      * hirsute (until 2022-01)
+#      * groovy (until 2021-07)
+#      * focal (until 2025-04, dh12)
+#      * bionic (until 2023-04, dh11, no tests, no fonts-noto-extra, liblocale-codes-perl >= 3.55, also in Build-Depends-Indep)
+#      * xenial (until 2021-04, dh9, defined in debian/compat, removing the -compat, take away the version on liblocale-codes-perl, also in Build-Depends-Indep)
 #     debuild -S -sa
 #     dput ftp-master .changes
 #     dput gscan2pdf-ppa .changes
