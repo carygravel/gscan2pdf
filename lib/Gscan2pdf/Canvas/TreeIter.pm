@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 use Readonly;
 Readonly my $EMPTY_LIST => -1;
-our $VERSION = '2.11.1';
+our $VERSION = '2.11.2';
 
 sub new {
     my ( $class, $bbox ) = @_;

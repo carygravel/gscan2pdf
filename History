@@ -1,4 +1,4 @@
-2.11.2 (17.03.2021):
+2.11.2 (18.03.2021):
 
 * Recognise that the smfp backend returns "Device busy" if the scanner is turned
   off and display the relevant dialog.
