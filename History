@@ -1,5 +1,6 @@
 2.11.3 (18.04.2021):
 
+* Enabled subject and keywords in filename template.
 * Update to Hungarian translation (thanks to csola)
 
 

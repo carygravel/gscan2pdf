@@ -2275,6 +2275,8 @@ sub expand_metadata_pattern {
     # Expand author, title and extension
     $data{template} =~ s/%Da/$data{author}/gsm;
     $data{template} =~ s/%Dt/$data{title}/gsm;
+    $data{template} =~ s/%Ds/$data{subject}/gsm;
+    $data{template} =~ s/%Dk/$data{keywords}/gsm;
     $data{template} =~ s/%De/$data{extension}/gsm;
 
     # Expand convert %Dx code to %x, convert using strftime and replace

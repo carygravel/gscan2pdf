@@ -2884,6 +2884,8 @@ sub save_button_clicked_callback {
                     docdate       => $windowi->get('meta-datetime'),
                     today_and_now => [ Today_and_Now() ],
                     extension     => 'pdf',
+                    subject       => $SETTING{subject},
+                    keywords      => $SETTING{keywords},
                 );
 
                 $file_chooser->set_current_name($filename);
@@ -2936,6 +2938,8 @@ sub save_button_clicked_callback {
                 docdate       => $windowi->get('meta-datetime'),
                 today_and_now => [ Today_and_Now() ],
                 extension     => 'djvu',
+                subject       => $SETTING{subject},
+                keywords      => $SETTING{keywords},
             );
 
             $file_chooser->set_current_name($filename);
@@ -3565,6 +3569,8 @@ sub email {
                 docdate       => $windowe->get('meta-datetime'),
                 today_and_now => [ Today_and_Now() ],
                 extension     => 'pdf',
+                subject       => $SETTING{subject},
+                keywords      => $SETTING{keywords},
             );
             if ( $filename =~ /^\s+$/xsm ) { $filename = 'document' }
             $pdf = "$session/$filename.pdf";
@@ -7002,6 +7008,8 @@ strftime codes, e.g.:
 with the following additions:
 %Da	author
 %De	filename extension
+%Dk	keywords
+%Ds	subject
 %Dt	title
 
 All document date codes use strftime codes with a leading D, e.g.:

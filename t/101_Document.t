@@ -162,18 +162,18 @@ is_deeply( \@date, [ 2016, 2, 1, 10, 11, 12 ], 'text_to_datetime' );
 
 #########################
 
-is(
-    Gscan2pdf::Document::expand_metadata_pattern(
-        template      => '%Da %Dt %DY %Y %Dm %m %Dd %d %H %M %S.%De',
-        author        => 'a.n.other',
-        title         => 'title',
-        docdate       => [ 2016, 02, 01 ],
-        today_and_now => [ 1970, 01, 12, 14, 46, 39 ],
-        extension     => 'png',
-    ),
-    'a.n.other title 2016 1970 02 01 01 12 14 46 39.png',
-    'expand_metadata_pattern'
-);
+is Gscan2pdf::Document::expand_metadata_pattern(
+    template      => '%Da %Dt %Ds %Dk %DY %Y %Dm %m %Dd %d %H %M %S.%De',
+    author        => 'a.n.other',
+    title         => 'title',
+    subject       => 'subject',
+    keywords      => 'keywords',
+    docdate       => [ 2016, 02, 01 ],
+    today_and_now => [ 1970, 01, 12, 14, 46, 39 ],
+    extension     => 'png',
+  ),
+  'a.n.other title subject keywords 2016 1970 02 01 01 12 14 46 39.png',
+  'expand_metadata_pattern';
 
 is(
     Gscan2pdf::Document::expand_metadata_pattern(
