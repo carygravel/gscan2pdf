@@ -26,7 +26,10 @@ SKIP: {
     # which should no longer occur, since v2.8.1 added --dpi to the tesseract
     # call
     system(
-        qw(convert +matte -depth 1 -colorspace Gray), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
+        qw(convert +matte -depth 1 -colorspace Gray),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
         'label:The quick brown fox',
         'test.png'
     );

@@ -19,13 +19,19 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system(
-    qw(convert +matte -depth 1 -colorspace Gray -type Bilevel), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
+    qw(convert +matte -depth 1 -colorspace Gray -type Bilevel),
+    '-family',
+    'DejaVu Sans',
+    qw(-pointsize 12 -density 300),
     'label:The quick brown fox',
     'test.tif'
 );
 system(qw(tiff2pdf -o test.pdf test.tif));
 system(
-    qw(convert +matte -depth 1 -colorspace Gray -type Bilevel), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
+    qw(convert +matte -depth 1 -colorspace Gray -type Bilevel),
+    '-family',
+    'DejaVu Sans',
+    qw(-pointsize 12 -density 300),
     'label:The quick brown fox',
     'test.png'
 );

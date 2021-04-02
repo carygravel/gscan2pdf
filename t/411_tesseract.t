@@ -22,7 +22,10 @@ SKIP: {
 
     # Create b&w test image
     system(
-        qw(convert +matte -depth 1 -colorspace Gray), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
+        qw(convert +matte -depth 1 -colorspace Gray),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
         'label:The quick brown fox',
         'test.png'
     );
@@ -40,8 +43,14 @@ SKIP: {
     like( $got, qr/f(o|0)x/, 'Tesseract returned "fox"' );
 
     # Create colour test image
-    system( qw(convert -fill lightblue), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
-        'label:The quick brown fox', 'test.png' );
+    system(
+        qw(convert -fill lightblue),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
+        'label:The quick brown fox',
+        'test.png'
+    );
 
     ( $got, $messages ) = Gscan2pdf::Tesseract->hocr(
         file      => 'test.png',
@@ -62,7 +71,10 @@ SKIP: {
 
     # Create b&w test image
     system(
-        qw(convert +matte -depth 1 -colorspace Gray), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
+        qw(convert +matte -depth 1 -colorspace Gray),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
         "label:'süß tränenüberströmt'",
         'test.png'
     );

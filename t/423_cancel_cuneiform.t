@@ -23,8 +23,14 @@ SKIP: {
     Gscan2pdf::Document->setup($logger);
 
     # Create test image
-    system( qw(convert +matte -depth 1), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
-        'label:The quick brown fox', 'test.png' );
+    system(
+        qw(convert +matte -depth 1),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
+        'label:The quick brown fox',
+        'test.png'
+    );
 
     my $slist = Gscan2pdf::Document->new;
 

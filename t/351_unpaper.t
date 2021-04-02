@@ -46,7 +46,10 @@ SKIP: {
 
     # Create test image
     system(
-        qw(convert -size 2100x2970 +matte -depth 1 -border 2x2 -bordercolor black), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
+        qw(convert -size 2100x2970 +matte -depth 1 -border 2x2 -bordercolor black),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
         'label:The quick brown fox',
         'test.pnm'
     );

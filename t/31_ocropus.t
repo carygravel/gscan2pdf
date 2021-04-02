@@ -19,8 +19,14 @@ SKIP: {
     skip 'Ocropus not installed', 7 unless Gscan2pdf::Ocropus->setup($logger);
 
     # Create test image
-    system( qw(convert +matte -depth 1), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
-        'label:The quick brown fox', 'test.png' );
+    system(
+        qw(convert +matte -depth 1),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
+        'label:The quick brown fox',
+        'test.png'
+    );
 
     my $got = Gscan2pdf::Ocropus->hocr(
         file      => 'test.png',
@@ -31,8 +37,14 @@ SKIP: {
     like( $got, qr/The quick brown fox/, 'Ocropus returned sensible text' );
 
     # Create colour test image
-    system( qw(convert -fill lightblue), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
-        'label:The quick brown fox', 'test.png' );
+    system(
+        qw(convert -fill lightblue),
+        '-family',
+        'DejaVu Sans',
+        qw(-pointsize 12 -density 300),
+        'label:The quick brown fox',
+        'test.png'
+    );
 
     $got = Gscan2pdf::Ocropus->hocr(
         file      => 'test.png',
@@ -53,8 +65,11 @@ SKIP: {
       unless ( defined $languages->{'deu'} );
 
     # Create test image
-    system( qw(convert +matte -depth 1), '-family', 'DejaVu Sans', qw(-pointsize 12 -density 300),
-        "label:'öÖäÄüÜß'", 'test.png' );
+    system(
+        qw(convert +matte -depth 1), '-family',
+        'DejaVu Sans',               qw(-pointsize 12 -density 300),
+        "label:'öÖäÄüÜß'",    'test.png'
+    );
 
     $got = Gscan2pdf::Ocropus->hocr(
         file     => 'test.png',

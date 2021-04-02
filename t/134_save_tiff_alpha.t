@@ -18,7 +18,10 @@ Gscan2pdf::Document->setup($logger);
 
 # Create test image
 system(
-    qw(convert -fill lightblue), '-family', 'DejaVu Sans', qw(-pointsize 12 -units PixelsPerInch -density 300),
+    qw(convert -fill lightblue),
+    '-family',
+    'DejaVu Sans',
+    qw(-pointsize 12 -units PixelsPerInch -density 300),
     'label:The quick brown fox',
     'test.png'
 );
