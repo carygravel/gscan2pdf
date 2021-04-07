@@ -1,6 +1,8 @@
 2.11.3 (18.04.2021):
 
 * Enabled subject and keywords in filename template.
+* Switch from Perlmagick to imagemagick for threshold steps of OCR to improve
+  performance.
 * Update to Hungarian translation (thanks to csola)
 
 

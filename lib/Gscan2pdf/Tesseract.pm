@@ -184,23 +184,24 @@ sub hocr {
 
         # Temporary filename for new file
         $tif = File::Temp->new( SUFFIX => '.tif' );
-        my $image = Image::Magick->new;
-        $image->Read( $options{file} );
 
-        my $x;
+        my @cmd;
         if ( defined $options{threshold} and $options{threshold} ) {
             $logger->info("thresholding at $options{threshold} to $tif");
-            $image->BlackThreshold( threshold => "$options{threshold}%" );
-            $image->WhiteThreshold( threshold => "$options{threshold}%" );
-            $x = $image->Set( alpha => 'Off' );
-            $x = $image->Quantize( colors => 2 );
-            $x = $image->Write( depth => 1, filename => $tif );
+            @cmd = (
+                'convert', $options{file}, '+dither', '-threshold',
+                "$options{threshold}%", '-depth', 1, $tif,
+            );
         }
         else {
             $logger->info("writing temporary image $tif");
-            $x = $image->Write( filename => $tif );
+            @cmd = ( 'convert', $options{file}, $tif );
         }
-        if ("$x") { $logger->warn($x) }
+        my ( $status, $stdout, $stderr ) =
+          Gscan2pdf::Document::exec_command( \@cmd );
+        if ( $status != 0 ) {
+            return $stdout, $stderr;
+        }
     }
     else {
         $tif = $options{file};

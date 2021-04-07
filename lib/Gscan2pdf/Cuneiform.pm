@@ -111,13 +111,13 @@ sub hocr {
         my $image = Image::Magick->new;
         $image->Read( $options{file} );
 
-        my $x;
+        my @cmd;
         if ( defined $options{threshold} and $options{threshold} ) {
             $logger->info("thresholding at $options{threshold} to $bmp");
-            $image->BlackThreshold( threshold => "$options{threshold}%" );
-            $image->WhiteThreshold( threshold => "$options{threshold}%" );
-            $x = $image->Quantize( colors => 2 );
-            $x = $image->Write( depth => 1, filename => $bmp );
+            @cmd = (
+                'convert', $options{file}, '+dither', '-threshold',
+                "$options{threshold}%", '-depth', 1, $bmp,
+            );
         }
         else {
             $logger->info("writing temporary image $bmp");
@@ -125,9 +125,11 @@ sub hocr {
 # Force TrueColor, as this produces DirectClass, which is what cuneiform expects.
 # Without this, PseudoClass is often produced, for which cuneiform gives
 # "PUMA_XFinalrecognition failed" warnings
-            $image->Write( filename => $bmp, type => 'TrueColor' );
+            @cmd = ( 'convert', $options{file}, '-type', 'truecolor', $bmp, );
         }
-        if ("$x") { $logger->warn($x) }
+        my ( $status, $stdout, $stderr ) =
+          Gscan2pdf::Document::exec_command( \@cmd );
+        if ( $status != 0 ) { return }
     }
     else {
         $bmp = $options{file};

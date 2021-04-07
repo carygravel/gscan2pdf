@@ -5342,22 +5342,25 @@ sub _thread_gocr {
 
         # Temporary filename for new file
         $pnm = File::Temp->new( SUFFIX => '.pnm' );
-        my $image = Image::Magick->new;
-        $image->Read( $page->{filename} );
-        return if $_self->{cancel};
 
-        my $x;
+        my @cmd;
         if ( defined $threshold and $threshold ) {
             $logger->info("thresholding at $threshold to $pnm");
-            $image->Threshold( threshold => "$threshold%" );
-            return if $_self->{cancel};
-            $x = $image->Quantize( colors => 2 );
-            return if $_self->{cancel};
-            $x = $image->Write( depth => 1, filename => $pnm );
+            @cmd = (
+                'convert', $page->{filename}, '+dither', '-threshold',
+                "$threshold%", '-depth', 1, $pnm,
+            );
         }
         else {
             $logger->info("writing temporary image $pnm");
-            $image->Write( filename => $pnm );
+            @cmd = ( 'convert', $page->{filename}, $pnm, );
+        }
+        my ( $status, $stdout, $stderr ) = exec_command( \@cmd );
+        if ( $status != 0 ) {
+            $logger->error($stderr);
+            _thread_throw_error( $self, $uuid, $page->{uuid}, 'Threshold',
+                $stderr );
+            return;
         }
         return if $_self->{cancel};
     }

@@ -64,22 +64,21 @@ sub hocr {
 
         # Temporary filename for new file
         $png = File::Temp->new( SUFFIX => '.png' );
-        my $image = Image::Magick->new;
-        $image->Read( $options{file} );
-
-        my $x;
+        my @cmd;
         if ( defined $options{threshold} and $options{threshold} ) {
             $logger->info("thresholding at $options{threshold} to $png");
-            $image->BlackThreshold( threshold => "$options{threshold}%" );
-            $image->WhiteThreshold( threshold => "$options{threshold}%" );
-            $x = $image->Quantize( colors => 2 );
-            $x = $image->Write( depth => 1, filename => $png );
+            @cmd = (
+                'convert', $options{file}, '+dither', '-threshold',
+                "$options{threshold}%", '-depth', 1, $png,
+            );
         }
         else {
             $logger->info("writing temporary image $png");
-            $image->Write( filename => $png );
+            @cmd = ( 'convert', $options{file}, $png );
         }
-        if ("$x") { $logger->warn($x) }
+        my ( $status, $stdout, $stderr ) =
+          Gscan2pdf::Document::exec_command( \@cmd );
+        if ( $status != 0 ) { return }
     }
     else {
         $png = $options{file};
