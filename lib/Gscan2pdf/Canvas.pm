@@ -483,7 +483,8 @@ sub add_box {
     my @transformation = ( 0, 0, 0 );
     if ( $parent->isa('Gscan2pdf::Canvas::Bbox') ) {
         my $parent_box = $parent->get('bbox');
-        @transformation = ( 0, $parent_box->{x}, $parent_box->{y} );
+        my $parent_textangle = $parent->get('textangle');
+        @transformation = ( $parent_textangle, $parent_box->{x}, $parent_box->{y} );
     }
     my %options2 = (
         parent         => $parent,
