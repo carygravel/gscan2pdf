@@ -140,6 +140,15 @@ sub _hocr2boxes {
                         when (/_par$/xsm) {
                             $data->{type} = 'para';
                         }
+                        when (/_header$/xsm) {
+                            $data->{type} = 'header';
+                        }
+                        when (/_footer$/xsm) {
+                            $data->{type} = 'footer';
+                        }
+                        when (/_caption$/xsm) {
+                            $data->{type} = 'caption';
+                        }
                         when (/_line$/xsm) {
                             $data->{type} = 'line';
                         }
