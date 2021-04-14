@@ -480,12 +480,18 @@ sub update_box {
             $self->set( bbox => $selection );
             $text_w->set_simple_transform( 0, 0, 1, 0 );
             my $bounds    = $text_w->get_bounds;
+            my @transformation = @{ $self->get('transformation') };
+            my $rotation = (@transformation) ? $transformation[0] : 0;
             my $textangle = $self->get('textangle');
-            my $scale =
-              ( $textangle ? $selection->{height} : $selection->{width} ) /
-              ( $bounds->x2 - $bounds->x1 );
+            my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
+            # don't scale & rotate if text has no width
+            if ( $bounds->x1 != $bounds->x2 ) {
+                my $scale =
+                  ( $angle ? $selection->{height} : $selection->{width} ) /
+                  ( $bounds->x2 - $bounds->x1 );
 
-            $self->transform_text( $scale, $textangle );
+                $self->transform_text( $scale, $angle );
+            }
         }
 
         my $new_conf = $self->get('confidence');
