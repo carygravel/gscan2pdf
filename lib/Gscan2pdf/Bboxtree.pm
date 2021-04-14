@@ -565,6 +565,12 @@ EOS
         $string .= $SPACE x ( 2 + $bbox->{depth} ) . "<$tag class='$type'";
         if ( defined $bbox->{id} ) { $string .= " id='$bbox->{id}'" }
         $string .= " title='bbox $x1 $y1 $x2 $y2";
+        if ( defined $bbox->{baseline} ) {
+            $string .= '; baseline ' . join( $SPACE, @{ $bbox->{baseline} } );
+        }
+        if ( defined $bbox->{textangle} ) {
+            $string .= "; textangle $bbox->{textangle}";
+        }
         if ( defined $bbox->{confidence} ) {
             $string .= "; x_wconf $bbox->{confidence}";
         }
