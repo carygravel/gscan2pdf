@@ -546,8 +546,10 @@ EOS
     while ( my $bbox = $iter->() ) {
         if ( defined $prev_depth ) {
             if ( $prev_depth >= $bbox->{depth} ) {
+                if (@tags) { $string .= '</' . pop(@tags) . ">\n" }
+                $prev_depth--;
                 while ( $prev_depth-- >= $bbox->{depth} ) {
-                    $string .= '</' . pop(@tags) . ">\n";
+                    $string .= $SPACE x ( 2 + $prev_depth + 1 ) . '</' . pop(@tags) . ">\n";
                 }
             }
             else {
