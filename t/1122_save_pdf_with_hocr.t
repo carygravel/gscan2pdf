@@ -82,9 +82,12 @@ $slist->import_files(
                           qr/bbox\s0\s0\s$width\s$height/xsm,
                           'import text layer';
 
-                        like $slist->{data}[1][2]->{annotations},
-                          qr/The.+quick.+brown.+fox/xsm,
-                          'import annotations';
+                        SKIP: {
+                              skip "No way of importing annotations from PDF", 1;
+                              like $slist->{data}[1][2]->{annotations},
+                                qr/The.+quick.+brown.+fox/xsm,
+                                'import annotations';
+                          };
                         Gtk3->main_quit;
                     }
                 );
