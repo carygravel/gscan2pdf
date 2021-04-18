@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 37;
+use Test::More tests => 36;
 use Glib 1.220 qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Page;
 use Gtk3 -init;
@@ -324,6 +324,30 @@ is( $canvas->hocr, $expected, 'updated hocr with extended hOCR properties' );
 
 #########################
 
+$group = $canvas->get_root_item;
+# get page 'page_1'
+$group = $group->get_child(0);
+# get column/carea 'block_1'
+$group = $group->get_child(1);
+# get line 'line_1_2'
+$group = $group->get_child(2);
+# get word 'word_1_3'
+$bbox  = $group->get_child(1);
+
+isa_ok($bbox, 'Gscan2pdf::Canvas::Bbox');
+is($bbox->{textangle}, 0, "word_1_3's textangle is 0");
+is($bbox->{transformation}->[0], 90, "word_1_3's (inherited) rotation is 90");
+
+my $textwidget   = $bbox->get_text_widget;
+
+isa_ok($textwidget, 'GooCanvas2::CanvasText');
+
+my @transform = $textwidget->get_simple_transform();
+
+is($transform[-1], 270, "word_1_3's text widget rotation matches the 90° rotation");
+
+#########################
+
 $bbox = $canvas->get_first_bbox;
 $bbox->delete_box;
 $bbox = $canvas->get_next_bbox;
@@ -333,26 +357,6 @@ $bbox->delete_box;
 $bbox = $canvas->get_next_bbox;
 $bbox->delete_box;
 is $canvas->get_last_bbox, undef, 'get_last_bbox() returns undef if no boxes';
-
-#########################
-
-SKIP: {
-    skip 'GooCanvas2::Canvas::get_transform() returns undef', 6;
-    $group = $canvas->get_root_item;
-    $group = $group->get_child(0);
-    $group = $group->get_child(1);
-    $group = $group->get_child(1);
-    $group = $group->get_child(2);
-    $bbox  = $group->get_child(1);
-    my $matrix = $bbox->get_transform;
-
-    is( $matrix->x0, -103.251044000815, 'rotated text x0' );
-    is( $matrix->y0, -42.1731768180892, 'rotated text y0' );
-    is( $matrix->xx, 2.86820126298635,  'rotated text xx' );
-    is( $matrix->xy, 0,                 'rotated text xy' );
-    is( $matrix->yx, 0,                 'rotated text yx' );
-    is( $matrix->yy, 2.86820126298635,  'rotated text yy' );
-}
 
 #########################
 
