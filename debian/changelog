@@ -1,6 +1,7 @@
 gscan2pdf (2.12.0-1) unstable; urgency=medium
 
   * New upstream release
+    Closes: #987059 (gscan2pdf: POD and manpage improvements)
   * Update depends libpdf-builder-perl to require 3.022 or better
 
  --

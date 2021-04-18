@@ -4,6 +4,8 @@
 * Switch from Perlmagick to imagemagick for threshold steps of OCR to improve
   performance.
 * + annotation layer for DjVu and PDF.
+* POD and manpage improvements. Thanks to Peter Marschall for the patch.
+  Closes Debian bug #987059 (gscan2pdf: POD and manpage improvements)
 * Update to Hungarian translation (thanks to csola)
 
 
