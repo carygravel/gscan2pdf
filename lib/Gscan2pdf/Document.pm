@@ -3349,7 +3349,7 @@ sub _thread_import_pdf {
 
     # Extract images from PDF
     if ( $options{last} >= $options{first} and $options{first} > 0 ) {
-        my $pdfobj = PDF::Builder->open($options{info}{path});
+        my $pdfobj = PDF::Builder->open( $options{info}{path} );
         for my $i ( $options{first} .. $options{last} ) {
             my $args =
               [ 'pdfimages', '-f', $i, '-l', $i, '-list',
@@ -3395,9 +3395,7 @@ sub _thread_import_pdf {
             }
 
             my $pageobj = $pdfobj->openpage($i);
-            use Data::Dumper;
-            $logger->fatal("annotations ".Dumper( $pageobj->{'Annots'} ));
-            
+
             # Import each image
             my @images = glob 'x-??*.???';
             if ( @images != 1 ) { $warning_flag = TRUE }
@@ -3924,7 +3922,7 @@ sub _write_image_object {
         $image->Set( 'depth', $image->Get('depth') );
         my $status = $image->Write( filename => $filename );
         return if $_self->{cancel};
-        if ("$status") { $logger->warn($status) }
+        if ("$status")                     { $logger->warn($status) }
         if ( $filename =~ /[.](\w*)$/xsm ) { $format = $1 }
     }
     return $format;

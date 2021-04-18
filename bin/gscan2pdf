@@ -295,7 +295,7 @@ my (
     $ocr_textview, $ocr_bbox,
 
     # Goo::Canvas for annotation layer
-    $a_canvas,       $avpaned, $edit_ann_action, $ann_hbox, $ann_textbuffer,
+    $a_canvas,     $edit_ann_action, $ann_hbox, $ann_textbuffer,
     $ann_textview, $ann_bbox,
 
     # Notebook, split panes for detail view and OCR output
@@ -819,11 +819,17 @@ sub pack_viewer_tools {
     elsif ( $SETTING{viewer_tools} == $SPLIT_VIEW_H ) {
         $hpanei->pack1( $view, TRUE, TRUE );
         $hpanei->pack2( $canvas, TRUE, TRUE );
+        if ( $a_canvas->get_parent ) {
+            $vnotebook->remove($a_canvas);
+        }
         $vpaned->pack1( $hpanei, TRUE, TRUE );
     }
     else {    # $SPLIT_VIEW_V
         $vpanei->pack1( $view, TRUE, TRUE );
         $vpanei->pack2( $canvas, TRUE, TRUE );
+        if ( $a_canvas->get_parent ) {
+            $vnotebook->remove($a_canvas);
+        }
         $vpaned->pack1( $vpanei, TRUE, TRUE );
     }
     return;
