@@ -13,7 +13,7 @@ BEGIN {
 #########################
 
 SKIP: {
-    skip 'DjVuLibre not installed', 1 unless can_run('cjb2');
+    skip 'DjVuLibre not installed', 2 unless can_run('cjb2');
 
     Gscan2pdf::Translation::set_domain('gscan2pdf');
     use Log::Log4perl qw(:easy);
