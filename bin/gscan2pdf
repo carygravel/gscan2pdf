@@ -140,6 +140,8 @@ Readonly my $SELECTORDRAGGER_TOOL    => 30;
 Readonly my $TABBED_VIEW             => 100;
 Readonly my $SPLIT_VIEW_H            => 101;
 Readonly my $SPLIT_VIEW_V            => 102;
+Readonly my $EDIT_TEXT               => 200;
+Readonly my $EDIT_ANNOTATION         => 201;
 Readonly my $EMPTY_LIST              => -1;
 Readonly my $_100_PERCENT            => 100;
 Readonly my $MAX_DPI                 => 2400;
@@ -291,12 +293,10 @@ my (
     $print_settings, $windowc, $current_page,
 
     # Goo::Canvas for text layer
-    $canvas,       $vpaned, $edit_ocr_action, $ocr_text_hbox, $ocr_textbuffer,
-    $ocr_textview, $ocr_bbox,
+    $canvas, $vpaned, $ocr_text_hbox, $ocr_textbuffer, $ocr_textview, $ocr_bbox,
 
     # Goo::Canvas for annotation layer
-    $a_canvas,     $edit_ann_action, $ann_hbox, $ann_textbuffer,
-    $ann_textview, $ann_bbox,
+    $a_canvas, $ann_hbox, $ann_textbuffer, $ann_textview, $ann_bbox,
 
     # Notebook, split panes for detail view and OCR output
     $vnotebook, $hpanei, $vpanei,
@@ -561,7 +561,6 @@ sub populate_main_window {
     $ocr_text_cbutton->signal_connect(
         clicked => sub {
             $ocr_text_hbox->hide;
-            $edit_ocr_action->set_active(FALSE);
         }
     );
 
@@ -672,7 +671,6 @@ sub populate_main_window {
     $ann_cbutton->signal_connect(
         clicked => sub {
             $ann_hbox->hide;
-            $edit_ann_action->set_active(FALSE);
         }
     );
 
@@ -793,7 +791,8 @@ sub populate_main_window {
         Gtk3::Image->new_from_stock( 'gtk-cancel', 'button' ) );
     $thbox->pack_end( $tcbutton, FALSE, FALSE, 0 );
 
-    $ocr_text_hbox->hide;
+    $ocr_text_hbox->show;
+    $ann_hbox->hide;
 
     # Open scan dialog in background
     if ( $SETTING{'auto-open-scan-dialog'} ) { scan_dialog( undef, TRUE ) }
@@ -1547,12 +1546,9 @@ sub create_menu_bar {
     );
     my @ocr_tools = (
         [
-            'Edit text layer',
-            'gtk-edit',
-            __('Edit text layer'),
-            undef,
-            __('Show editing tools for text layer'),
-            \&show_text_layer_tools_callback
+            'Edit text layer',                       'gtk-edit',
+            __('Edit text layer'),                   undef,
+            __('Show editing tools for text layer'), $EDIT_TEXT
         ],
         [
             'Edit annotations',
@@ -1560,7 +1556,7 @@ sub create_menu_bar {
             __('Edit annotations'),
             undef,
             __('Show editing tools for annotations'),
-            \&show_annotation_tools_callback
+            $EDIT_ANNOTATION
         ],
     );
     my $ui = <<'EOS';
@@ -1745,16 +1741,8 @@ EOS
         \&change_image_tool_cb );
     $actions_basic->add_radio_actions( \@viewer_tools, $SETTING{viewer_tools},
         \&change_view_cb );
-    $actions_basic->add_toggle_actions( \@ocr_tools );
-    for my $action ( $actions_basic->list_actions ) {
-        my $name = $action->get_name;
-        if ( $name eq 'Edit text layer' ) {
-            $edit_ocr_action = $action;
-        }
-        elsif ( $name eq 'Edit annotations' ) {
-            $edit_ann_action = $action;
-        }
-    }
+    $actions_basic->add_radio_actions( \@ocr_tools, $EDIT_TEXT,
+        \&edit_tools_callback );
 
     # Add the actiongroup to the uimanager
     $uimanager->insert_action_group( $actions_basic, 0 );
@@ -2322,23 +2310,17 @@ sub create_ann_canvas {
     return;
 }
 
-sub show_text_layer_tools_callback {
-    my ( $widget, $data ) = @_;
-    if ( $widget->get_active ) {
+sub edit_tools_callback {
+    my ( $action, $current ) = @_;
+    $logger->debug( "in edit_tools_callback with $action, $current "
+          . $current->get_current_value );
+    if ( $current->get_current_value == $EDIT_TEXT ) {
         $ocr_text_hbox->show;
+        $ann_hbox->hide;
         return;
     }
     $ocr_text_hbox->hide;
-    return;
-}
-
-sub show_annotation_tools_callback {
-    my ( $widget, $data ) = @_;
-    if ( $widget->get_active ) {
-        $ann_hbox->show;
-        return;
-    }
-    $ann_hbox->hide;
+    $ann_hbox->show;
     return;
 }
 
@@ -2351,7 +2333,6 @@ sub edit_ocr_text {
     $ocr_bbox = $bbox;
     $ocr_textbuffer->set( text => $bbox->get('text') );
     $ocr_text_hbox->show_all;
-    $edit_ocr_action->set_active(TRUE);
     $view->set_selection( $bbox->get('bbox') );
     $view->set_zoom_to_fit(FALSE);
     $view->zoom_to_selection($ZOOM_CONTEXT_FACTOR);
@@ -2373,7 +2354,6 @@ sub edit_annotation {
     $ann_bbox = $bbox;
     $ann_textbuffer->set( text => $bbox->get('text') );
     $ann_hbox->show_all;
-    $edit_ann_action->set_active(TRUE);
     $view->set_selection( $bbox->get('bbox') );
     $view->set_zoom_to_fit(FALSE);
     $view->zoom_to_selection($ZOOM_CONTEXT_FACTOR);
