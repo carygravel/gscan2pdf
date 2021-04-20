@@ -1,3 +1,11 @@
+gscan2pdf (2.12.1-1) unstable; urgency=medium
+
+  * New upstream release
+    Closes: #987057 (gscan2pdf: fixes to hOCR)
+    Closes: #987058 (gscan2pdf: fix displaying rotated text)
+
+ --
+
 gscan2pdf (2.12.0-1) unstable; urgency=medium
 
   * New upstream release

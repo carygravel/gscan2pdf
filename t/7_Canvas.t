@@ -325,26 +325,31 @@ is( $canvas->hocr, $expected, 'updated hocr with extended hOCR properties' );
 #########################
 
 $group = $canvas->get_root_item;
+
 # get page 'page_1'
 $group = $group->get_child(0);
+
 # get column/carea 'block_1'
 $group = $group->get_child(1);
+
 # get line 'line_1_2'
 $group = $group->get_child(2);
+
 # get word 'word_1_3'
-$bbox  = $group->get_child(1);
+$bbox = $group->get_child(1);
 
-isa_ok($bbox, 'Gscan2pdf::Canvas::Bbox');
-is($bbox->{textangle}, 0, "word_1_3's textangle is 0");
-is($bbox->{transformation}->[0], 90, "word_1_3's (inherited) rotation is 90");
+isa_ok( $bbox, 'Gscan2pdf::Canvas::Bbox' );
+is( $bbox->{textangle},           0,  "word_1_3's textangle is 0" );
+is( $bbox->{transformation}->[0], 90, "word_1_3's (inherited) rotation is 90" );
 
-my $textwidget   = $bbox->get_text_widget;
+my $textwidget = $bbox->get_text_widget;
 
-isa_ok($textwidget, 'GooCanvas2::CanvasText');
+isa_ok( $textwidget, 'GooCanvas2::CanvasText' );
 
 my @transform = $textwidget->get_simple_transform();
 
-is($transform[-1], 270, "word_1_3's text widget rotation matches the 90° rotation");
+is( $transform[-1], 270,
+    "word_1_3's text widget rotation matches the 90° rotation" );
 
 #########################
 

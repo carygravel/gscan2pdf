@@ -479,11 +479,12 @@ sub update_box {
         if ( $self->get('type') ne 'page' ) {
             $self->set( bbox => $selection );
             $text_w->set_simple_transform( 0, 0, 1, 0 );
-            my $bounds    = $text_w->get_bounds;
+            my $bounds         = $text_w->get_bounds;
             my @transformation = @{ $self->get('transformation') };
-            my $rotation = (@transformation) ? $transformation[0] : 0;
-            my $textangle = $self->get('textangle');
-            my $angle  = -( $textangle + $rotation ) % $_360_DEGREES;
+            my $rotation       = (@transformation) ? $transformation[0] : 0;
+            my $textangle      = $self->get('textangle');
+            my $angle          = -( $textangle + $rotation ) % $_360_DEGREES;
+
             # don't scale & rotate if text has no width
             if ( $bounds->x1 != $bounds->x2 ) {
                 my $scale =

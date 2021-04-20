@@ -78,13 +78,12 @@ my $hocr = <<'EOS';
 EOS
 
 $slist->import_files(
-    paths             => [ 'test.pnm' ],
+    paths             => ['test.pnm'],
     finished_callback => sub {
         $slist->{data}[0][2]->import_hocr($hocr);
         $slist->save_hocr(
-            path => 'test.txt',
-            list_of_pages =>
-              [ $slist->{data}[0][2]{uuid} ],
+            path              => 'test.txt',
+            list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub { Gtk3->main_quit }
         );
     }

@@ -544,64 +544,7 @@ EOS
     my ( $prev_depth, @tags );
     my $iter = $self->get_bbox_iter();
     while ( my $bbox = $iter->() ) {
-        if ( defined $prev_depth ) {
-            if ( $prev_depth >= $bbox->{depth} ) {
-                if (@tags) { $string .= '</' . pop(@tags) . ">\n" }
-                $prev_depth--;
-                while ( $prev_depth-- >= $bbox->{depth} ) {
-                    $string .= $SPACE x ( 2 + $prev_depth + 1 ) . '</' . pop(@tags) . ">\n";
-                }
-            }
-            else {
-                $string .= "\n";
-            }
-        }
-        $prev_depth = $bbox->{depth};
-        my ( $x1, $y1, $x2, $y2 ) = @{ $bbox->{bbox} };
-        my $type = 'ocr_' . $bbox->{type};
-        my $tag  = 'span';
-        given ( $bbox->{type} ) {
-            when ('page') {
-                $tag = 'div';
-            }
-            when (/^(?:carea|column)$/xsm) {
-                $type = 'ocr_carea';
-                $tag  = 'div';
-            }
-            when ('para') {
-                $type = 'ocr_par';
-                $tag  = 'p';
-            }
-        }
-        $string .= $SPACE x ( 2 + $bbox->{depth} ) . "<$tag class='$type'";
-        if ( defined $bbox->{id} ) { $string .= " id='$bbox->{id}'" }
-        $string .= " title='bbox $x1 $y1 $x2 $y2";
-        if ( defined $bbox->{baseline} ) {
-            $string .= '; baseline ' . join( $SPACE, @{ $bbox->{baseline} } );
-        }
-        if ( defined $bbox->{textangle} ) {
-            $string .= "; textangle $bbox->{textangle}";
-        }
-        if ( defined $bbox->{confidence} ) {
-            $string .= "; x_wconf $bbox->{confidence}";
-        }
-        $string .= "'>";
-        if ( defined $bbox->{text} ) {
-            if ( defined $bbox->{style} ) {
-                for my $tag ( @{ $bbox->{style} } ) {
-                    if    ( $tag eq 'Bold' )   { $string .= '<strong>' }
-                    elsif ( $tag eq 'Italic' ) { $string .= '<em>' }
-                }
-            }
-            $string .= HTML::Entities::encode( $bbox->{text}, "<>&\"'" );
-            if ( defined $bbox->{style} ) {
-                for my $tag ( reverse @{ $bbox->{style} } ) {
-                    if    ( $tag eq 'Bold' )   { $string .= '</strong>' }
-                    elsif ( $tag eq 'Italic' ) { $string .= '</em>' }
-                }
-            }
-        }
-        push @tags, $tag;
+        $string .= _bbox_to_hocr( $bbox, \$prev_depth, \@tags );
     }
     if (@tags) { $string .= '</' . pop(@tags) . ">\n" }
     $prev_depth--;
@@ -609,6 +552,71 @@ EOS
         $string .= $SPACE x ( 2 + $prev_depth + 1 ) . '</' . pop(@tags) . ">\n";
     }
     $string .= " </body>\n</html>\n";
+    return $string;
+}
+
+sub _bbox_to_hocr {
+    my ( $bbox, $prev_depth, $tags ) = @_;
+    my $string = q{};
+    if ( defined ${$prev_depth} ) {
+        if ( ${$prev_depth} >= $bbox->{depth} ) {
+            if ( @{$tags} ) { $string .= '</' . pop( @{$tags} ) . ">\n" }
+            ${$prev_depth}--;
+            while ( ${$prev_depth}-- >= $bbox->{depth} ) {
+                $string .= $SPACE x ( 2 + ${$prev_depth} + 1 ) . '</'
+                  . pop( @{$tags} ) . ">\n";
+            }
+        }
+        else {
+            $string .= "\n";
+        }
+    }
+    ${$prev_depth} = $bbox->{depth};
+    my ( $x1, $y1, $x2, $y2 ) = @{ $bbox->{bbox} };
+    my $type = 'ocr_' . $bbox->{type};
+    my $tag  = 'span';
+    given ( $bbox->{type} ) {
+        when ('page') {
+            $tag = 'div';
+        }
+        when (/^(?:carea|column)$/xsm) {
+            $type = 'ocr_carea';
+            $tag  = 'div';
+        }
+        when ('para') {
+            $type = 'ocr_par';
+            $tag  = 'p';
+        }
+    }
+    $string .= $SPACE x ( 2 + $bbox->{depth} ) . "<$tag class='$type'";
+    if ( defined $bbox->{id} ) { $string .= " id='$bbox->{id}'" }
+    $string .= " title='bbox $x1 $y1 $x2 $y2";
+    if ( defined $bbox->{baseline} ) {
+        $string .= '; baseline ' . join $SPACE, @{ $bbox->{baseline} };
+    }
+    if ( defined $bbox->{textangle} ) {
+        $string .= "; textangle $bbox->{textangle}";
+    }
+    if ( defined $bbox->{confidence} ) {
+        $string .= "; x_wconf $bbox->{confidence}";
+    }
+    $string .= "'>";
+    if ( defined $bbox->{text} ) {
+        if ( defined $bbox->{style} ) {
+            for my $tag ( @{ $bbox->{style} } ) {
+                if    ( $tag eq 'Bold' )   { $string .= '<strong>' }
+                elsif ( $tag eq 'Italic' ) { $string .= '<em>' }
+            }
+        }
+        $string .= HTML::Entities::encode( $bbox->{text}, "<>&\"'" );
+        if ( defined $bbox->{style} ) {
+            for my $tag ( reverse @{ $bbox->{style} } ) {
+                if    ( $tag eq 'Bold' )   { $string .= '</strong>' }
+                elsif ( $tag eq 'Italic' ) { $string .= '</em>' }
+            }
+        }
+    }
+    push @{$tags}, $tag;
     return $string;
 }
 
