@@ -31,7 +31,6 @@ use IPC::Open3 'open3';
 use Symbol;            # for gensym
 use Try::Tiny;
 use Set::IntSpan 1.10;    # For size method for page numbering issues
-use lib qw(/home/jeff/dev/perl/Perl-PDF-Builder-myfork/lib);
 use PDF::Builder;
 use English qw( -no_match_vars );    # for $PROCESS_ID, $INPUT_RECORD_SEPARATOR
                                      # $CHILD_ERROR

@@ -1,5 +1,7 @@
 2.12.1 (18.05.2021):
 
+* Remove 'use lib' line with local, user-based path.
+  Closes bug #384. Thanks to Petr Písař for the report.
 * Update to Hungarian translation (thanks to csola)
 
 
