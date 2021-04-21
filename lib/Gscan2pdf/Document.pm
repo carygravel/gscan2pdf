@@ -71,6 +71,10 @@ Readonly my $_90_DEGREES                  => 90;
 Readonly my $_270_DEGREES                 => 270;
 Readonly our $ANNOTATION_COLOR            => 'cccf00';
 Readonly my $HEX_FF                       => hex 'ff';
+Readonly my $LEFT                         => 0;
+Readonly my $TOP                          => 1;
+Readonly my $RIGHT                        => 2;
+Readonly my $BOTTOM                       => 3;
 
 BEGIN {
     use Exporter ();
@@ -4052,30 +4056,32 @@ sub _add_annotations_to_pdf {
         {
             next;
         }
-        my @bbox = @{ $box->{bbox} };
-        for my $i ( ( 0, 2 ) ) {
-            $bbox[$i] = px2pt( $bbox[$i], $xresolution );
-            $bbox[ $i + 1 ] = $h - px2pt( $bbox[ $i + 1 ], $yresolution );
-        }
-
-        # extra coords for markup
-        splice @bbox, 0, 0, $bbox[0], $bbox[3];
-        splice @bbox, 2, 0, $bbox[4], $bbox[1];
-        splice @bbox, 6, 0, $bbox[2], $bbox[5];
-        splice @bbox, 8, 2;
-
         my @rgb;
         for my $i ( 0 .. 2 ) {
             push @rgb, hex( substr $ANNOTATION_COLOR, $i * 2, 2 ) / $HEX_FF;
         }
         my $annot = $page->annotation;
         $annot->markup(
-            $box->{text}, \@bbox, 'Highlight',
+            $box->{text},
+            _bbox2markup( $xresolution, $yresolution, $h, @{ $box->{bbox} } ),
+            'Highlight',
             -color   => \@rgb,
             -opacity => 0.5
         );
     }
     return;
+}
+
+sub _bbox2markup {
+    my ( $xresolution, $yresolution, $h, @bbox ) = @_;
+    for my $i ( ( 0, 2 ) ) {
+        $bbox[$i] = px2pt( $bbox[$i], $xresolution );
+        $bbox[ $i + 1 ] = $h - px2pt( $bbox[ $i + 1 ], $yresolution );
+    }
+    return [
+        $bbox[$LEFT], $bbox[$BOTTOM], $bbox[$RIGHT], $bbox[$BOTTOM],
+        $bbox[$LEFT], $bbox[$TOP],    $bbox[$RIGHT], $bbox[$TOP]
+    ];
 }
 
 sub _post_save_hook {

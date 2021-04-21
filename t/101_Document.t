@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 67;
+use Test::More tests => 68;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -551,6 +551,12 @@ is Gscan2pdf::Document::get_tmp_dir(
   '/tmp', 'get_tmp_dir';
 is Gscan2pdf::Document::get_tmp_dir( undef, 'gscan2pdf-\w\w\w\w' ), undef,
   'get_tmp_dir undef';
+
+#########################
+
+is_deeply Gscan2pdf::Document::_bbox2markup( 300, 300, 500, 0, 0, 452, 57 ),
+  [ 0, 486.32, 108.48, 486.32, 0, 500, 108.48, 500 ],
+  'converted bbox to markup coords';
 
 #########################
 
