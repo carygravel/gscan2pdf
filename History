@@ -1,9 +1,6 @@
 2.12.1 (18.05.2021):
 
-* Several improvements to handling of OCR output.
-  Thanks to Peter Marschall for the patches.
-  Closes Debian bugs #987057 (gscan2pdf: fixes to hOCR) and
-  #987058 (gscan2pdf: fix displaying rotated text)
+* Update to Hungarian translation (thanks to csola)
 
 
 2.12.0 (18.04.2021):
