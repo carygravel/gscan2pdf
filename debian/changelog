@@ -5,6 +5,7 @@ gscan2pdf (2.12.1-1) unstable; urgency=medium
     Closes: #987058 (gscan2pdf: fix displaying rotated text)
     Closes: #987211
     (gscan2pdf: separate tab for Post-processing options in Scan dialog)
+    Closes: #987212 (gscan2pdf: visually align 'Threshold before OCR')
 
  --
 

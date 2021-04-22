@@ -5,6 +5,9 @@
 * Move postprocessing options to separate tab. Closes Debian bug #987211
   (gscan2pdf: separate tab for Post-processing options in Scan dialog)
   Thanks to Peter Marschall for the patch.
+* Refactor "Threshold before OCR" options into one line.
+  Closes Debian bug #987212 (gscan2pdf: visually align 'Threshold before OCR')
+  Thanks to Peter Marschall for the patches.
 * Update to Hungarian translation (thanks to csola)
 
 
