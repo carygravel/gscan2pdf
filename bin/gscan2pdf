@@ -4563,7 +4563,8 @@ sub add_postprocessing_options {
 
     my $scwin = Gtk3::ScrolledWindow->new;
 
-    $self->{notebook}->append_page( $scwin, Gtk3::Label->new( __( 'Post-processing' ) ) );
+    $self->{notebook}
+      ->append_page( $scwin, Gtk3::Label->new( __('Postprocessing') ) );
     $scwin->set_policy( 'automatic', 'automatic' );
 
     my $vboxp = Gtk3::VBox->new;

@@ -2,6 +2,9 @@
 
 * Remove 'use lib' line with local, user-based path.
   Closes bug #384. Thanks to Petr Písař for the report.
+* Move postprocessing options to separate tab. Closes Debian bug #987211
+  (gscan2pdf: separate tab for Post-processing options in Scan dialog)
+  Thanks to Peter Marschall for the patch.
 * Update to Hungarian translation (thanks to csola)
 
 
