@@ -36,8 +36,8 @@
 #     make file_releases
 # 7. Build packages for Debian & Ubuntu
 #    name the release -0~ppa1<release>, where release (https://wiki.ubuntu.com/Releases) is:
-#      * hirsute (until 2022-01), + graphicsmagick, use gm for tests 1122, 1128, 113, & 134. t/169 ok size > 178
-#      * groovy (until 2021-07)
+#      * hirsute (until 2022-01), no tests
+#      * groovy (until 2021-07), with tests
 #      * focal (until 2025-04, dh12)
 #      * bionic (until 2023-04, dh11, no tests, no fonts-noto-extra, liblocale-codes-perl >= 3.55, also in Build-Depends-Indep)
 #      * xenial (until 2021-04, dh9, defined in debian/compat, removing the -compat, take away the version on liblocale-codes-perl, also in Build-Depends-Indep)
