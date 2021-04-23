@@ -9,6 +9,7 @@
   Closes Debian bug #987212 (gscan2pdf: visually align 'Threshold before OCR')
   Thanks to Peter Marschall for the patches.
 * Update to Hungarian translation (thanks to csola)
+* Update to German translation (thanks to Matthias Sprau)
 
 
 2.12.0 (18.04.2021):
