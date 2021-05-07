@@ -4999,7 +4999,8 @@ sub about {
         'Roy Shahbazian',
         'Jarl Stefansson',
         'Wikinaut',
-        'Jakub Wilk'
+        'Jakub Wilk',
+        'Sean Dreilinger',
     ];
     $about->set_authors( ['Jeff Ratcliffe'] );
     $about->add_credit_section( 'Patches gratefully received from', $authors );

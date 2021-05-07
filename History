@@ -1,5 +1,8 @@
 2.12.2 (22.05.2021):
 
+* + support for opencl-enabled tesseract. Closes bug #386
+  (gscan2pdf needs help parsing output from opencl-enabled tesseract).
+  Thanks to Sean Dreilinger for the patch.
 * Update to Hungarian translation (thanks to csola)
 
 

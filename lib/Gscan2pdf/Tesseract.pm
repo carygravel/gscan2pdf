@@ -85,9 +85,9 @@ sub setup {
 sub languages {
     if ( not %languages ) {
         my @codes;
-        my ( undef, $out, $err ) =
+        my ( undef, $out ) =
           Gscan2pdf::Document::exec_command( [ 'tesseract', '--list-langs' ] );
-        @codes = split /\n/xsm, $err ? $err : $out;
+        @codes = split /\n/xsm, $out;
         if ( $codes[0] =~ /^List[ ]of[ ]available[ ]languages/xsm ) {
             shift @codes;
         }
