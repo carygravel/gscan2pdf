@@ -980,7 +980,10 @@ sub SET_PROPERTY {
                     'changed-paper' => sub {
                         $self->signal_handler_disconnect($signal);
                         my $paper = defined $newval ? $newval : __('Manual');
-                        $self->{combobp}->set_active_by_text($paper);
+                        my $retval =
+                          $self->{combobp}->set_active_by_text($paper);
+                        $logger->debug(
+                            "Widget update to $paper returned $retval");
                         if ( defined $logger ) {
                             $logger->debug("Finished$msg");
                         }
