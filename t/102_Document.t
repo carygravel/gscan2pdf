@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Document;
 
@@ -39,7 +39,7 @@ $slist->import_files(
         );
         isnt( "$slist->{data}[0][2]{uuid}",
             "$slist->{data}[1][2]{uuid}", 'different uuid' );
-        is( "$slist->{data}[1][0]", 2, 'new page is number 2' );
+        is $slist->{data}[1][0], 2, 'new page is number 2';
         my @rows = $slist->get_selected_indices;
         is_deeply( \@rows, [1], 'pasted page selected' );
 
@@ -54,6 +54,7 @@ $slist->import_files(
             $clipboard->[0][2]{uuid},
             'cut page pasted at page 1'
         );
+        is $slist->{data}[0][0], 1, 'cut page renumbered to page 1';
         @rows = $slist->get_selected_indices;
         is_deeply( \@rows, [1],
             'pasted page not selected, as parameter not TRUE' );

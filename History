@@ -3,6 +3,8 @@
 * + support for opencl-enabled tesseract. Closes bug #386
   (gscan2pdf needs help parsing output from opencl-enabled tesseract).
   Thanks to Sean Dreilinger for the patch.
+* Fixed page numbering when reordering pages. Closes bug #379
+  (Inconsistent handling of page numbers when reordering PDF pages)
 * Update to Hungarian translation (thanks to csola)
 
 

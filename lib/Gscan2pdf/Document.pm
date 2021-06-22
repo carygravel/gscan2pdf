@@ -1232,6 +1232,18 @@ sub paste_selection {
         push @{ $self->{data} }, @{$data};
     }
 
+    # Renumber the newly pasted rows
+    my $start;
+    if ( $dest == 0 ) {
+        $start = 1;
+    }
+    else {
+        $start = $self->{data}[ $dest - 1 ][0] + 1;
+    }
+    for ( $dest .. $dest + @{$data} ) {
+        $self->{data}[$_][0] = $start++;
+    }
+
     # Update the start spinbutton if necessary
     $self->renumber;
     $self->get_model->signal_emit( 'row-changed', Gtk3::TreePath->new,
