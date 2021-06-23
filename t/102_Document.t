@@ -1,9 +1,10 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Gscan2pdf::Document;
+use Gscan2pdf::Dialog::Scan;
 
 BEGIN {
     use Gtk3 -init;         # Could just call init separately
@@ -20,10 +21,17 @@ Gscan2pdf::Document->setup($logger);
 # Create test image
 system(qw(convert rose: test.tif));
 
-my $slist = Gscan2pdf::Document->new;
+my $slist  = Gscan2pdf::Document->new;
+my $window = Gtk3::Window->new;
+my $dialog = Gscan2pdf::Dialog::Scan->new(
+    title           => 'title',
+    'transient-for' => $window,
+    'document'      => $slist,
+    'logger'        => $logger,
+  ),
 
-# dir for temporary files
-my $dir = File::Temp->newdir;
+  # dir for temporary files
+  my $dir = File::Temp->newdir;
 $slist->set_dir($dir);
 
 $slist->import_files(
@@ -43,9 +51,17 @@ $slist->import_files(
         my @rows = $slist->get_selected_indices;
         is_deeply( \@rows, [1], 'pasted page selected' );
 
+        $dialog->set( 'page-number-start', 3 );
         $clipboard = $slist->cut_selection;
         is( $#{$clipboard},       0, 'cut 1 page to clipboard' );
         is( $#{ $slist->{data} }, 0, '1 page left in list' );
+      TODO: {
+            local $TODO =
+                "Don't know how to trigger update of page-number-start "
+              . "from Document";
+            is $dialog->get('page-number-start'), 2,
+              'page-number-start after cut';
+        }
 
         $slist->paste_selection( $clipboard, '0', 'before' )
           ;    # paste page before 1
@@ -58,7 +74,8 @@ $slist->import_files(
         @rows = $slist->get_selected_indices;
         is_deeply( \@rows, [1],
             'pasted page not selected, as parameter not TRUE' );
-
+        is $dialog->get('page-number-start'), 3,
+          'page-number-start after paste';
         $slist->select( 0, 1 );
         @rows = $slist->get_selected_indices;
         is_deeply( \@rows, [ 0, 1 ], 'selected all pages' );
