@@ -28,7 +28,7 @@ Readonly my $NOT_FOUND      => -1;
 my $uuid_object = Data::UUID->new;
 my $EMPTY       = q{};
 
-our $VERSION = '2.12.1';
+our $VERSION = '2.12.2';
 
 my ( $prog_name, $logger, %callback, $_self );
 

@@ -1,3 +1,9 @@
+gscan2pdf (2.12.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Wed, 30 Jun 2021 19:26:55 +0200
+
 gscan2pdf (2.12.1-1) unstable; urgency=medium
 
   * New upstream release

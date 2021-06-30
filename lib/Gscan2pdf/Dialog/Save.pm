@@ -16,7 +16,7 @@ use Readonly;
 Readonly my $ENTRY_WIDTH_DATE     => 10;
 Readonly my $ENTRY_WIDTH_DATETIME => 19;
 
-our $VERSION = '2.12.1';
+our $VERSION = '2.12.2';
 my $EMPTY           = q{};
 my $DATE_FORMAT     = '%04d-%02d-%02d';
 my $DATETIME_FORMAT = '%04d-%02d-%02d %02d:%02d:%02d';
