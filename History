@@ -1,3 +1,9 @@
+2.12.3 (01.08.2021):
+
+* Fixed pan/pan & select mismatch in defaults for toolbar icon and image
+  control. Now both default to pan & select tool.
+
+
 2.12.2 (01.07.2021):
 
 * + support for opencl-enabled tesseract. Closes bug #386

@@ -1737,7 +1737,7 @@ EOS
     # and fill it with Gtk3::Action instances
     my $actions_basic = Gtk3::ActionGroup->new('actions_basic');
     $actions_basic->add_actions( \@action_items, undef );
-    $actions_basic->add_radio_actions( \@image_tools, $DRAGGER_TOOL,
+    $actions_basic->add_radio_actions( \@image_tools, $SELECTORDRAGGER_TOOL,
         \&change_image_tool_cb );
     $actions_basic->add_radio_actions( \@viewer_tools, $SETTING{viewer_tools},
         \&change_view_cb );
