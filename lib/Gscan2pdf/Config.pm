@@ -242,6 +242,7 @@ sub add_defaults {
         window_y                            => undef,
         'thumb panel'                       => 100,
         viewer_tools                        => 100,
+        image_control_tool                  => 30,
         scan_window_width                   => undef,
         scan_window_height                  => undef,
         message_window_width                => 600,

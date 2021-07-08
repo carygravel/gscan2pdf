@@ -2,6 +2,7 @@
 
 * Fixed pan/pan & select mismatch in defaults for toolbar icon and image
   control. Now both default to pan & select tool.
+* Remember selected image control tool between sessions.
 
 
 2.12.2 (01.07.2021):
