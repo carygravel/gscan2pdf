@@ -17,7 +17,8 @@ my $logger = Log::Log4perl::get_logger;
 Gscan2pdf::Document->setup($logger);
 
 # Create test image
-system(qw(convert rose: test.tif));
+system(
+    qw(convert rose: -define tiff:rows-per-strip=1 -compress group4 test.tif));
 
 my $slist = Gscan2pdf::Document->new;
 
@@ -40,12 +41,14 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is
-  capture("pdfinfo test.pdf | grep 'Page size:'"),
-  "Page size:      70 x 46 pts\n",
-  'valid PDF created';
+system(
+"gs -q -dNOPAUSE -dBATCH -sDEVICE=pnggray -g70x46 -dPDFFitPage -dUseCropBox -sOutputFile=test.png test.pdf"
+);
+my $example  = `convert test.png -depth 1 -alpha off txt:-`;
+my $expected = `convert test.tif -depth 1 -alpha off txt:-`;
+is( $example, $expected, 'valid G4 PDF created from multi-strip TIFF' );
 
 #########################
 
-unlink 'test.pdf', 'test.tif';
+unlink 'test.pdf', 'test.tif', 'test.png';
 Gscan2pdf::Document->quit();

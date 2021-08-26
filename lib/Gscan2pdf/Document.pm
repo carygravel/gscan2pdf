@@ -3886,8 +3886,12 @@ sub _convert_image_for_pdf {
             my $error =
               File::Temp->new( DIR => $options{dir}, SUFFIX => '.txt' );
             ( my $status, undef, $error ) = exec_command(
-                [ 'tiffcp', '-c', $compression, $filename, $filename2 ],
-                $options{pidfile} );
+                [
+                    'tiffcp',     '-r',      '-1', '-c',
+                    $compression, $filename, $filename2
+                ],
+                $options{pidfile}
+            );
             return if $_self->{cancel};
             if ($status) {
                 $logger->info($error);
