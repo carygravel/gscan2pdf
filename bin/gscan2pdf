@@ -5077,6 +5077,7 @@ Arthur Rodrigues
 Matthias Sprau
 Buckethead
 Eugen Artus
+Quentin PAGÈS
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
