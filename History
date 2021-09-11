@@ -5,6 +5,8 @@
 * Remember selected image control tool between sessions.
 * Ensure that all intermediate TIFFs are written with only one strip to avoid
   triggering bug in PDF::Builder creating corrupt PDF
+* Update debian/control to depend on libpdf-builder-perl >= 3.022.
+  Closes bug #392. Thanks to Fab Stz for the report
 * Update to Occitan (post 1500) translation (thanks to Quentin PAGÈS)
 
 
