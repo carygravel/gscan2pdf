@@ -1,4 +1,4 @@
-2.12.3 (01.08.2021):
+2.12.3 (17.09.2021):
 
 * Fixed pan/pan & select mismatch in defaults for toolbar icon and image
   control. Now both default to pan & select tool.
