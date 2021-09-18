@@ -38,7 +38,6 @@
 #    name the release -0~ppa1<release>, where release (https://wiki.ubuntu.com/Releases) is:
 #      * impish (until 2022-07), no tests
 #      * hirsute (until 2022-01), no tests
-#      * groovy (until 2021-07), with tests
 #      * focal (until 2025-04, dh12)
 #      * bionic (until 2023-04, dh11, no tests, no fonts-noto-extra, liblocale-codes-perl >= 3.55, also in Build-Depends-Indep)
 #     debuild -S -sa
