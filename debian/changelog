@@ -1,10 +1,4 @@
-gscan2pdf (2.12.2-1) unstable; urgency=medium
-
-  * New upstream release
-
- -- Jeffrey Ratcliffe <jjr@debian.org>  Wed, 30 Jun 2021 19:26:55 +0200
-
-gscan2pdf (2.12.1-1) unstable; urgency=medium
+gscan2pdf (2.12.3-1) unstable; urgency=medium
 
   * New upstream release
     Closes: #987057 (gscan2pdf: fixes to hOCR)
@@ -12,28 +6,10 @@ gscan2pdf (2.12.1-1) unstable; urgency=medium
     Closes: #987211
     (gscan2pdf: separate tab for Post-processing options in Scan dialog)
     Closes: #987212 (gscan2pdf: visually align 'Threshold before OCR')
-
- -- Jeffrey Ratcliffe <jjr@debian.org>  Thu, 22 Apr 2021 20:08:27 +0200
-
-gscan2pdf (2.12.0-1) unstable; urgency=medium
-
-  * New upstream release
     Closes: #987059 (gscan2pdf: POD and manpage improvements)
   * Update depends libpdf-builder-perl to require 3.022 or better
 
- -- Jeffrey Ratcliffe <jjr@debian.org>  Sun, 18 Apr 2021 14:32:28 +0200
-
-gscan2pdf (2.11.2-1) unstable; urgency=medium
-
-  * New upstream release
-
- -- Jeffrey Ratcliffe <jjr@debian.org>  Thu, 18 Mar 2021 20:26:05 +0100
-
-gscan2pdf (2.11.1-1) unstable; urgency=medium
-
-  * New upstream release
-
- -- Jeffrey Ratcliffe <jjr@debian.org>  Wed, 17 Feb 2021 20:56:29 +0100
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Fri, 17 Sep 2021 19:26:26 +0200
 
 gscan2pdf (2.11.0-1) unstable; urgency=medium
 
