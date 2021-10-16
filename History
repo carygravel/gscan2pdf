@@ -1,3 +1,8 @@
+2.12.4 (17.10.2021):
+
+* Fixed writing text layer to DjVu where tesseract used text type "header".
+
+
 2.12.3 (17.09.2021):
 
 * Fixed pan/pan & select mismatch in defaults for toolbar icon and image

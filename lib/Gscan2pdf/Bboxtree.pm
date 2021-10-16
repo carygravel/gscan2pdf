@@ -298,12 +298,20 @@ sub to_djvu_txt {
             while ( $prev_depth-- >= $bbox->{depth} ) { $string .= ')' }
         }
         $prev_depth = $bbox->{depth};
-        if ( $bbox->{type} eq 'page' ) { $h = $bbox->{bbox}[-1] }
+        my $type = $bbox->{type};
+        if ( $type !~ /^(?:page|column|para|line|word)$/xsm ) {
+            if ( $bbox->{id} =~ /([[:alpha:]]+)/xsm ) {
+                $type = $1;
+            }
+            else {
+                $type = 'line';
+            }
+        }
+        if ( $type eq 'page' ) { $h = $bbox->{bbox}[-1] }
         my ( $x1, $y1, $x2, $y2 ) = @{ $bbox->{bbox} };
         if ( $bbox->{depth} != 0 ) { $string .= "\n" }
         for ( 1 .. $bbox->{depth} * 2 ) { $string .= $SPACE }
-        $string .= sprintf "($bbox->{type} %d %d %d %d", $x1, $h - $y2, $x2,
-          $h - $y1;
+        $string .= sprintf "($type %d %d %d %d", $x1, $h - $y2, $x2, $h - $y1;
         if ( defined $bbox->{text} ) {
             $string .=
                 $SPACE

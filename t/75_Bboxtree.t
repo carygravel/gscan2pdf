@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use Encode;
-use Test::More tests => 30;
+use Test::More tests => 31;
 
 BEGIN {
     use_ok('Gscan2pdf::Bboxtree');
@@ -545,6 +545,45 @@ $expected = <<'EOS';
 EOS
 
 is_deeply $tree->to_djvu_txt, $expected, 'deal with encoded characters';
+
+#########################
+
+$hocr = <<'EOS';
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ <head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <meta name='ocr-system' content='tesseract 4.1.1' />
+  <meta name='ocr-capabilities' content='ocr_page ocr_carea ocr_par ocr_line ocrx_word ocrp_wconf'/>
+ </head>
+ <body>
+  <div class='ocr_page' id='page_1' title='image "bug.tif"; bbox 0 0 2480 3507; ppageno 0'>
+   <div class='ocr_carea' id='block_1_3' title="bbox 253 443 782 528">
+    <p class='ocr_par' id='par_1_3' lang='deu' title="bbox 253 443 782 528">
+     <span class='ocr_header' id='line_1_3' title="bbox 255 443 782 480; baseline -0.009 0; x_size 38.437073; x_descenders 5.4370708; x_ascenders 9">
+      <span class='ocrx_word' id='word_1_6' title='bbox 255 447 335 480; x_wconf 93'>GLS</span>
+     </span>
+    </p>
+   </div>
+  </div>
+ </body>
+</html>
+EOS
+$tree = Gscan2pdf::Bboxtree->new;
+$tree->from_hocr($hocr);
+
+$expected = <<'EOS';
+(page 0 0 2480 3507
+  (column 253 2979 782 3064
+    (para 253 2979 782 3064
+      (line 255 3027 782 3064
+        (word 255 3027 335 3060 "GLS")))))
+EOS
+
+is_deeply $tree->to_djvu_txt, $expected, 'deal with unsupported box types';
 
 #########################
 
