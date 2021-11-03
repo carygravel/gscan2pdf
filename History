@@ -2,6 +2,7 @@
 
 * Fixed writing text layer to DjVu where tesseract used text type "header".
 * Dropped support for ocropus.
+* Update to French translation (thanks to Alexandre NICOLADIE)
 
 
 2.12.3 (17.09.2021):
