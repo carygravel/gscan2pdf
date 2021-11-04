@@ -1,6 +1,7 @@
 2.12.5 (20.12.2021):
 
 * Fixed "Wide character in print" warnings in log file.
+* Update to Russian translation (thanks to Aleksandr Proklov)
 
 
 2.12.4 (20.11.2021):
@@ -350,7 +351,7 @@
 * Fix infinite loop scanning reverse pages
 * Update to German translation (thanks to Stephan Woidowski)
 * Update to Italian translation (thanks to Albano Battistella)
-* Update to Russion translation (thanks to Olesya Gerasimenko)
+* Update to Russian translation (thanks to Olesya Gerasimenko)
 * Update to Ukrainian translation (thanks to Yuri Chornoivan)
 
 

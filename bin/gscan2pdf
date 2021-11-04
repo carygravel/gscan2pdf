@@ -5068,6 +5068,7 @@ Buckethead
 Eugen Artus
 Quentin PAGÈS
 Alexandre NICOLADIE
+Aleksandr Proklov
 EOS
     $about->set_translator_credits($translators);
     $about->set_artists( ['lodp, Andreas E.'] );
