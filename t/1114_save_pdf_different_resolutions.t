@@ -33,9 +33,9 @@ $slist->import_files(
             path              => 'test.pdf',
             list_of_pages     => [ $slist->{data}[0][2]{uuid} ],
             finished_callback => sub {
-                is(
-                    capture("pdfinfo test.pdf | grep 'Page size:'"),
-                    "Page size:      50.4 x 16.56 pts\n",
+                like(
+                    capture("pdfinfo test.pdf"),
+                    qr/Page size:\s+50.4 x 16.56 pts/,
                     'valid PDF created'
                 );
                 Gtk3->main_quit;

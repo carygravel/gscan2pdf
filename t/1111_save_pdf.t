@@ -59,9 +59,9 @@ $slist->save_pdf(
         post_save_hook_options => 'fg',
     },
     finished_callback => sub {
-        is(
-            capture("pdfinfo test.pdf | grep 'Page size:'"),
-            "Page size:      70 x 46 pts\n",
+        like(
+            capture("pdfinfo test.pdf"),
+            qr/Page size:\s+70 x 46 pts/,
             'valid PDF created'
         );
         is( $slist->scans_saved, 1, 'pages tagged as saved' );

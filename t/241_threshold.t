@@ -51,9 +51,9 @@ $slist->import_files(
 );
 Gtk3->main;
 
-is(
-    capture("pdfinfo test.pdf | grep 'Page size:'"),
-    "Page size:      70 x 46 pts\n",
+like(
+    capture("pdfinfo test.pdf"),
+    qr/Page size:\s+70 x 46 pts/,
     'created valid PDF'
 );
 
