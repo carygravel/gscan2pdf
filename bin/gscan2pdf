@@ -283,12 +283,12 @@ init_icons(
 my (
     $slist,     $windowi,     $windowe, $windows, $windowo, $windowrn, $windowu,
     $windowudt, $save_button, $window,  $thbox,   $tpbar,
-    $tcbutton, $spbar, $shbox, $scbutton, $unpaper, $hpaned,
+    $tcbutton,  $spbar,       $shbox,   $scbutton, $unpaper, $hpaned,
     @undo_buffer,
-    @redo_buffer, @undo_selection, @redo_selection, %dependencies,
-    $menubar,     $toolbar,
-    @ocr_engine,  $clipboard,
-    $windowr,     $view,           $windowp,        $message_dialog,
+    @redo_buffer,    @undo_selection, @redo_selection, %dependencies,
+    $menubar,        $toolbar,
+    @ocr_engine,     $clipboard,
+    $windowr,        $view,    $windowp, $message_dialog,
     $print_settings, $windowc, $current_page,
 
     # Goo::Canvas for text layer
@@ -1105,7 +1105,7 @@ sub check_dependencies {
             [ 'convert', '--version' ]
         ],
         [
-            'graphicsmagick', 'stdout',
+            'graphicsmagick',                 'stdout',
             qr/GraphicsMagick\s([\d.-]+)/xsm, [ 'gm', '-version' ]
         ],
         [
@@ -1114,7 +1114,7 @@ sub check_dependencies {
             [ 'scanadf', '--version' ]
         ],
         [
-            'xdg', 'stdout',
+            'xdg',                      'stdout',
             qr/xdg-email\s([^\n]+)/xsm, [ 'xdg-email', '--version' ]
         ],
         [ 'gocr', 'stderr', qr/gocr\s([^\n]+)/xsm, [ 'gocr', '-h' ] ],
@@ -1130,11 +1130,11 @@ sub check_dependencies {
         # the version is the same.
         # Both are needed, though to update %dependencies
         [
-            'pdftops', 'stderr',
+            'pdftops',                         'stderr',
             qr/pdftops\sversion\s([\d.]+)/xsm, [ 'pdftops', '-v' ]
         ],
         [
-            'pdfunite', 'stderr',
+            'pdfunite',                         'stderr',
             qr/pdfunite\sversion\s([\d.]+)/xsm, [ 'pdfunite', '-v' ]
         ],
         [ 'pdf2ps', 'stdout', qr/([\d.]+)/xsm, [ 'gs',    '--version' ] ],
@@ -2634,7 +2634,7 @@ sub open_dialog {
     $file_chooser->set_current_folder( $SETTING{cwd} );
     add_filter( $file_chooser, __('Image files'),
         'jpg', 'png', 'pnm', 'ppm', 'pbm', 'gif', 'tif', 'tiff', 'pdf', 'djvu',
-        'ps', 'gs2p' );
+        'ps',  'gs2p' );
 
     if ( 'ok' eq $file_chooser->run ) {
 
@@ -2865,7 +2865,7 @@ sub save_pdf {
     $pid = $slist->save_pdf(
         path          => "$filename",      # stringify in case of PS
         list_of_pages => $list_of_pages,
-        metadata => Gscan2pdf::Document::collate_metadata(
+        metadata      => Gscan2pdf::Document::collate_metadata(
             \%SETTING,
             [ Today_and_Now() ],
             [ Timezone() ]
@@ -3070,7 +3070,7 @@ sub save_button_clicked_callback {
                 );
 
                 my $filename = Gscan2pdf::Document::expand_metadata_pattern(
-                    template => $SETTING{'default filename'},
+                    template           => $SETTING{'default filename'},
                     convert_whitespace =>
                       $SETTING{'convert whitespace to underscores'},
                     author        => $SETTING{author},
@@ -3124,7 +3124,7 @@ sub save_button_clicked_callback {
             );
 
             my $filename = Gscan2pdf::Document::expand_metadata_pattern(
-                template => $SETTING{'default filename'},
+                template           => $SETTING{'default filename'},
                 convert_whitespace =>
                   $SETTING{'convert whitespace to underscores'},
                 author        => $SETTING{author},
@@ -3543,7 +3543,7 @@ sub save_djvu {
     $logger->debug("Started saving $filename");
     my ( $signal, $pid );
     my %options = (
-        set_timestamp => $SETTING{set_timestamp},
+        set_timestamp                       => $SETTING{set_timestamp},
         'convert whitespace to underscores' =>
           $SETTING{'convert whitespace to underscores'},
     );
@@ -3755,7 +3755,7 @@ sub email {
             );
 
             my $filename = Gscan2pdf::Document::expand_metadata_pattern(
-                template => $SETTING{'default filename'},
+                template           => $SETTING{'default filename'},
                 convert_whitespace =>
                   $SETTING{'convert whitespace to underscores'},
                 author        => $SETTING{author},
@@ -3849,15 +3849,15 @@ sub scan_dialog {
 
     # scan pop-up window
     my %options = (
-        'transient-for'       => $window,
-        title                 => __('Scan Document'),
-        'default-width'       => $SETTING{scan_window_width},
-        'default-height'      => $SETTING{scan_window_height},
-        logger                => $logger,
-        dir                   => $session,
-        'hide-on-delete'      => TRUE,
-        'paper-formats'       => $SETTING{Paper},
-        'allow-batch-flatbed' => $SETTING{'allow-batch-flatbed'},
+        'transient-for'               => $window,
+        title                         => __('Scan Document'),
+        'default-width'               => $SETTING{scan_window_width},
+        'default-height'              => $SETTING{scan_window_height},
+        logger                        => $logger,
+        dir                           => $session,
+        'hide-on-delete'              => TRUE,
+        'paper-formats'               => $SETTING{Paper},
+        'allow-batch-flatbed'         => $SETTING{'allow-batch-flatbed'},
         'adf-defaults-scan-all-pages' =>
           $SETTING{'adf-defaults-scan-all-pages'},
         'document'                   => $slist,

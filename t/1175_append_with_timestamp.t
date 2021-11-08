@@ -48,11 +48,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like(
-    capture("pdfinfo test.pdf"),
-    qr/Pages:\s+2/,
-    'PDF appended'
-);
+like( capture("pdfinfo test.pdf"), qr/Pages:\s+2/, 'PDF appended' );
 is( -f 'test.pdf.bak', 1, 'Backed up original' );
 
 #########################

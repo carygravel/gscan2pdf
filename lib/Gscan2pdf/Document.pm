@@ -21,16 +21,16 @@ use Glib 1.210 qw(TRUE FALSE)
 use Socket;
 use FileHandle;
 use Image::Magick;
-use File::Temp;        # To create temporary files
-use File::Basename;    # Split filename into dir, file, ext
+use File::Temp;                      # To create temporary files
+use File::Basename;                  # Split filename into dir, file, ext
 use File::Copy;
 use Storable qw(store retrieve);
-use Archive::Tar;      # For session files
+use Archive::Tar;                    # For session files
 use Proc::Killfam;
 use IPC::Open3 'open3';
-use Symbol;            # for gensym
+use Symbol;                          # for gensym
 use Try::Tiny;
-use Set::IntSpan 1.10;    # For size method for page numbering issues
+use Set::IntSpan 1.10;               # For size method for page numbering issues
 use PDF::Builder;
 use English qw( -no_match_vars );    # for $PROCESS_ID, $INPUT_RECORD_SEPARATOR
                                      # $CHILD_ERROR
@@ -785,7 +785,7 @@ sub _throw_error {
 
 sub check_return_queue {
     my ($self) = @_;
-    lock( $_self->{return} );       # unlocks automatically when out of scope
+    lock( $_self->{return} );    # unlocks automatically when out of scope
     while ( defined( my $data = $_self->{return}->dequeue_nb() ) ) {
         if ( not defined $data->{type} ) {
             $logger->error("Bad data bundle $data in return queue.");
@@ -2672,7 +2672,7 @@ sub _thread_main {
 
             when ('rotate') {
                 _thread_rotate(
-                    $self,           $request->{angle}, $request->{page},
+                    $self, $request->{angle}, $request->{page},
                     $request->{dir}, $request->{uuid}
                 );
             }
@@ -3395,7 +3395,7 @@ sub _thread_import_pdf {
             my $html =
               File::Temp->new( DIR => $options{dir}, SUFFIX => '.html' );
             $args = [
-                'pdftotext', '-bbox', '-f', $i, '-l', $i,
+                'pdftotext',          '-bbox', '-f', $i, '-l', $i,
                 $options{info}{path}, $html
             ];
             if ( defined $options{password} ) {
@@ -3480,7 +3480,7 @@ sub _thread_save_pdf {
     catch {
         $logger->error("Caught error creating PDF $filename: $_");
         _thread_throw_error(
-            $self, $options{uuid}, $options{page}{uuid},
+            $self,       $options{uuid}, $options{page}{uuid},
             'Save file', sprintf __('Caught error creating PDF %s: %s'),
             $filename,   $_
         );
@@ -3687,7 +3687,7 @@ sub _add_page_to_pdf {
     # Get the size and resolution. Resolution is pixels per inch, width
     # and height are in pixels.
     my ( $width, $height ) = $pagedata->get_size;
-    my ( $xres,  $yres )   = $pagedata->get_resolution;
+    my ( $xres, $yres )    = $pagedata->get_resolution;
     my $w = $width / $xres * $POINTS_PER_INCH;
     my $h = $height / $yres * $POINTS_PER_INCH;
 
@@ -3929,7 +3929,7 @@ sub _write_image_object {
         # Perlmagick doesn't reliably convert to 1-bit, so using convert
         if ( $compression =~ /g[34]/xsm ) {
             my @cmd = (
-                'convert', $image->Get('filename'),
+                'convert',    $image->Get('filename'),
                 '-threshold', '40%', '-depth', '1', $filename,
             );
             my ($status) = exec_command( \@cmd );
@@ -4311,8 +4311,9 @@ sub _add_txt_to_djvu {
           or croak( sprintf __("Can't close file: %s"), $djvusedtxtfile );
 
         # Run djvusedtxtfile
-        my @cmd =
-          ( 'djvused', $djvu, '-e', "select 1; set-txt $djvusedtxtfile", '-s' );
+        my @cmd = (
+            'djvused', $djvu, '-e', "select 1; set-txt $djvusedtxtfile", '-s'
+        );
         my ($status) = exec_command( \@cmd, $pagedata->{pidfile} );
         return if $_self->{cancel};
         if ($status) {
@@ -4345,8 +4346,9 @@ sub _add_ann_to_djvu {
           or croak( sprintf __("Can't close file: %s"), $djvusedtxtfile );
 
         # Run djvusedtxtfile
-        my @cmd =
-          ( 'djvused', $djvu, '-e', "select 1; set-ant $djvusedtxtfile", '-s' );
+        my @cmd = (
+            'djvused', $djvu, '-e', "select 1; set-ant $djvusedtxtfile", '-s'
+        );
         my ($status) = exec_command( \@cmd, $pagedata->{pidfile} );
         return if $_self->{cancel};
         if ($status) {
@@ -5476,8 +5478,8 @@ sub _thread_gocr {
         if ( defined $threshold and $threshold ) {
             $logger->info("thresholding at $threshold to $pnm");
             @cmd = (
-                'convert', $page->{filename}, '+dither', '-threshold',
-                "$threshold%", '-depth', 1, $pnm,
+                'convert',     $page->{filename}, '+dither', '-threshold',
+                "$threshold%", '-depth',          1,         $pnm,
             );
         }
         else {

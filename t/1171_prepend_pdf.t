@@ -43,11 +43,7 @@ $slist->import_files(
 );
 Gtk3->main;
 
-like(
-    capture("pdfinfo test.pdf"),
-    qr/Pages:\s+2/,
-    'PDF prepended'
-);
+like( capture("pdfinfo test.pdf"), qr/Pages:\s+2/, 'PDF prepended' );
 is( -f 'test.pdf.bak', 1, 'Backed up original' );
 
 #########################
