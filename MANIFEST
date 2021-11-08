@@ -48,7 +48,6 @@ lib/Gscan2pdf/EntryCompletion.pm
 lib/Gscan2pdf/Frontend/CLI.pm
 lib/Gscan2pdf/Frontend/Image_Sane.pm
 lib/Gscan2pdf/NetPBM.pm
-lib/Gscan2pdf/Ocropus.pm
 lib/Gscan2pdf/Page.pm
 lib/Gscan2pdf/PageRange.pm
 lib/Gscan2pdf/Scanner/Options.pm
@@ -340,9 +339,6 @@ t/281_to_png.t
 t/282_cancel_to_png.t
 t/283_to_png_with_error.t
 t/291_brightness_contrast.t
-t/31_ocropus.t
-t/32_ocropus_in_thread.t
-t/33_cancel_ocropus.t
 t/34_Unpaper.t
 t/351_unpaper.t
 t/352_unpaper.t

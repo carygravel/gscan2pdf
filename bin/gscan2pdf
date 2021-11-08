@@ -67,7 +67,6 @@ use Gscan2pdf::Frontend::Image_Sane;
 use Gscan2pdf::Frontend::CLI;
 use Gscan2pdf::Scanner::Profile;
 use Gscan2pdf::Tesseract;
-use Gscan2pdf::Ocropus;
 use Gscan2pdf::Cuneiform;
 use Gscan2pdf::Unpaper;
 use Gscan2pdf::Canvas;
@@ -1089,7 +1088,6 @@ sub check_dependencies {
         $dependencies{perlmagick} = $1;
     }
     $dependencies{tesseract} = Gscan2pdf::Tesseract->setup($logger);
-    $dependencies{ocropus}   = Gscan2pdf::Ocropus->setup($logger);
     $dependencies{cuneiform} = Gscan2pdf::Cuneiform->setup($logger);
     $dependencies{unpaper}   = Gscan2pdf::Unpaper->version;
     if ( $dependencies{perlmagick} ) {
@@ -1224,11 +1222,6 @@ sub check_dependencies {
     if ( $dependencies{tesseract} ) {
         push @ocr_engine,
           [ 'tesseract', __('Tesseract'), __('Process image with Tesseract.') ];
-    }
-    if ( $dependencies{ocropus} ) {
-        $logger->info('Found ocropus');
-        push @ocr_engine,
-          [ 'ocropus', __('Ocropus'), __('Process image with Ocropus.') ];
     }
     if ( $dependencies{cuneiform} ) {
         $logger->info("Found cuneiform v$dependencies{cuneiform}");
@@ -1829,11 +1822,10 @@ EOS
     $dependencies{ocr} = (
              $dependencies{gocr}
           or $dependencies{tesseract}
-          or $dependencies{ocropus}
           or $dependencies{cuneiform}
     );
     if ( not $dependencies{ocr} ) {
-        $msg .= __("OCR requires gocr, tesseract, ocropus, or cuneiform\n");
+        $msg .= __("OCR requires gocr, tesseract, or cuneiform\n");
     }
     if ( $dependencies{tesseract} ) {
         my $lc_messages = setlocale(LC_MESSAGES);
@@ -4495,8 +4487,7 @@ sub add_postprocessing_ocr {
         ( $hboxtl, $comboboxtl, @tesslang ) = add_tess_languages($vbox);
         $comboboxe->signal_connect(
             changed => sub {
-                if (   $ocr_engine[ $comboboxe->get_active ]->[0] eq 'tesseract'
-                    or $ocr_engine[ $comboboxe->get_active ]->[0] eq 'ocropus' )
+                if ( $ocr_engine[ $comboboxe->get_active ]->[0] eq 'tesseract' )
                 {
                     $hboxtl->show_all;
                 }
@@ -4673,9 +4664,7 @@ sub add_postprocessing_options {
             if ( $SETTING{'OCR on scan'} ) {
                 $SETTING{'ocr engine'} =
                   $ocr_engine[ $comboboxe->get_active ]->[0];
-                if (   $SETTING{'ocr engine'} eq 'tesseract'
-                    or $SETTING{'ocr engine'} eq 'ocropus' )
-                {
+                if ( $SETTING{'ocr engine'} eq 'tesseract' ) {
                     $SETTING{'ocr language'} = $comboboxtl->get_active_index;
                 }
                 if ( $SETTING{'ocr engine'} eq 'cuneiform' ) {
@@ -4695,8 +4684,7 @@ sub add_postprocessing_options {
             if (
                 defined $hboxtl
                 and
-                not(   $ocr_engine[ $comboboxe->get_active ]->[0] eq 'tesseract'
-                    or $ocr_engine[ $comboboxe->get_active ]->[0] eq 'ocropus' )
+                not( $ocr_engine[ $comboboxe->get_active ]->[0] eq 'tesseract' )
               )
             {
                 $hboxtl->hide;
@@ -6292,9 +6280,7 @@ sub ocr_dialog {
         ( $hboxtl, $comboboxtl, @tesslang ) = add_tess_languages($vbox);
         $combobe->signal_connect(
             changed => sub {
-                if (   $ocr_engine[ $combobe->get_active ]->[0] eq 'tesseract'
-                    or $ocr_engine[ $combobe->get_active ]->[0] eq 'ocropus' )
-                {
+                if ( $ocr_engine[ $combobe->get_active ]->[0] eq 'tesseract' ) {
                     $hboxtl->show_all;
                 }
                 else {
@@ -6363,11 +6349,8 @@ sub ocr_dialog {
     );
 
     $windowo->show_all;
-    if (
-        defined $hboxtl
-        and not( $ocr_engine[ $combobe->get_active ]->[0] eq 'tesseract'
-            or $ocr_engine[ $combobe->get_active ]->[0] eq 'ocropus' )
-      )
+    if ( defined $hboxtl
+        and not( $ocr_engine[ $combobe->get_active ]->[0] eq 'tesseract' ) )
     {
         $hboxtl->hide;
     }
@@ -6381,7 +6364,7 @@ sub ocr_dialog {
 
 sub run_ocr {
     my ( $engine, $tesslang, $cflang, $threshold_flag, $threshold ) = @_;
-    if ( $engine eq 'tesseract' or $engine eq 'ocropus' ) {
+    if ( $engine eq 'tesseract' ) {
         $SETTING{'ocr language'} = $tesslang;
     }
     if ( $SETTING{'ocr engine'} eq 'cuneiform' ) {
@@ -7909,10 +7892,6 @@ A command line OCR. See L<http://jocr.sourceforge.net/>.
 
 A command line OCR. See L<https://github.com/tesseract-ocr/tesseract>
 
-=item ocropus
-
-A command line OCR. See L<http://code.google.com/p/ocropus/>
-
 =item cuneiform
 
 A command line OCR. See L<http://launchpad.net/cuneiform-linux>
@@ -8267,7 +8246,7 @@ unpaper (see L<https://www.flameeyes.eu/projects/unpaper>) is a utility for clea
 
 =head3 OCR (Optical Character Recognition)
 
-The gocr, tesseract, ocropus or cuneiform utilities are used to produce text from
+The gocr, tesseract or cuneiform utilities are used to produce text from
 an image.
 
 There is an OCR output buffer for each page and is embedded as

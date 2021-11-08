@@ -12,7 +12,6 @@ use Thread::Queue;
 use Gscan2pdf::Scanner::Options;
 use Gscan2pdf::Page;
 use Gscan2pdf::Tesseract;
-use Gscan2pdf::Ocropus;
 use Gscan2pdf::Cuneiform;
 use Gscan2pdf::NetPBM;
 use Gscan2pdf::Translation '__';    # easier to extract strings with xgettext
@@ -1703,31 +1702,6 @@ sub tesseract {
     );
 }
 
-sub ocropus {
-    my ( $self, %options ) = @_;
-
-   # File in which to store the process ID so that it can be killed if necessary
-    my $pidfile = $self->create_pidfile(%options);
-    if ( not defined $pidfile ) { return }
-
-    my $uuid     = $self->_note_callbacks(%options);
-    my $sentinel = _enqueue_request(
-        'ocropus',
-        {
-            page      => $options{page},
-            language  => $options{language},
-            threshold => $options{threshold},
-            pidfile   => "$pidfile",
-            uuid      => $uuid,
-        }
-    );
-    return $self->_monitor_process(
-        sentinel => $sentinel,
-        pidfile  => $pidfile,
-        uuid     => $uuid,
-    );
-}
-
 sub cuneiform {
     my ( $self, %options ) = @_;
 
@@ -1788,9 +1762,6 @@ sub ocr_pages {
         }
         elsif ( $options{engine} eq 'tesseract' ) {
             $self->tesseract(%options);
-        }
-        elsif ( $options{engine} eq 'ocropus' ) {
-            $self->ocropus(%options);
         }
         else {    # cuneiform
             $self->cuneiform(%options);
@@ -2648,17 +2619,6 @@ sub _thread_main {
                 _thread_negate(
                     $self,           $request->{page},
                     $request->{dir}, $request->{uuid}
-                );
-            }
-
-            when ('ocropus') {
-                _thread_ocropus(
-                    $self,
-                    page      => $request->{page},
-                    language  => $request->{language},
-                    threshold => $request->{threshold},
-                    pidfile   => $request->{pidfile},
-                    uuid      => $request->{uuid}
                 );
             }
 
@@ -5378,44 +5338,6 @@ sub _thread_tesseract {
         {
             type    => 'finished',
             process => 'tesseract',
-            uuid    => $options{uuid},
-        }
-    );
-    return;
-}
-
-sub _thread_ocropus {
-    my ( $self, %options ) = @_;
-    if ( _thread_no_filename( $self, 'ocropus', $options{uuid}, $options{page} )
-      )
-    {
-        return;
-    }
-    $options{page}->import_hocr(
-        Gscan2pdf::Ocropus->hocr(
-            file      => $options{page}{filename},
-            language  => $options{language},
-            logger    => $logger,
-            pidfile   => $options{pidfile},
-            threshold => $options{threshold}
-        )
-    );
-    return if $_self->{cancel};
-    $options{page}{ocr_flag} = 1;    #FlagOCR
-    $options{page}{ocr_time} =
-      timestamp();                   #remember when we ran OCR on this page
-    $self->{return}->enqueue(
-        {
-            type => 'page',
-            uuid => $options{uuid},
-            page => $options{page},
-            info => { replace => $options{page}{uuid} }
-        }
-    );
-    $self->{return}->enqueue(
-        {
-            type    => 'finished',
-            process => 'ocropus',
             uuid    => $options{uuid},
         }
     );
