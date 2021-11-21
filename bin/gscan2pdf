@@ -36,6 +36,7 @@
 #     make file_releases
 # 7. Build packages for Debian & Ubuntu
 #    name the release -0~ppa1<release>, where release (https://wiki.ubuntu.com/Releases) is:
+#      * jammy (until 2027-04), no tests until chroot failures fixed
 #      * impish (until 2022-07), no tests
 #      * hirsute (until 2022-01), no tests
 #      * focal (until 2025-04, dh12)
