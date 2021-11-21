@@ -1,4 +1,4 @@
-2.12.4 (17.10.2021):
+2.12.4 (20.11.2021):
 
 * Fixed writing text layer to DjVu where tesseract used text type "header".
 * Dropped support for ocropus.
