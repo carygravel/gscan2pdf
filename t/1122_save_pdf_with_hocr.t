@@ -52,7 +52,11 @@ my $hocr = <<EOS;
   <div class='ocr_page' id='page_1' title='image "test.png"; bbox 0 0 452 57; ppageno 0'>
    <div class='ocr_carea' id='block_1_1' title="bbox 1 9 449 55">
     <p class='ocr_par' dir='ltr' id='par_1_1' title="bbox 1 9 449 55">
-     <span class='ocr_line' id='line_1_1' title="bbox 1 9 449 55; baseline 0 -10"><span class='ocrx_word' id='word_1_1' title='bbox 1 9 85 45; x_wconf 90' lang='eng' dir='ltr'>The</span> <span class='ocrx_word' id='word_1_2' title='bbox 103 9 217 55; x_wconf 89' lang='eng' dir='ltr'>quick</span> <span class='ocrx_word' id='word_1_3' title='bbox 235 9 365 45; x_wconf 94' lang='eng' dir='ltr'>brown</span> <span class='ocrx_word' id='word_1_4' title='bbox 383 9 449 45; x_wconf 94' lang='eng' dir='ltr'>fox</span>
+     <span class='ocr_line' id='line_1_1' title="bbox 1 9 449 55; baseline 0 -10">
+      <span class='ocrx_word' id='word_1_1' title='bbox 1 9 85 45; x_wconf 90' lang='eng' dir='ltr'>The</span>
+      <span class='ocrx_word' id='word_1_2' title='bbox 103 9 217 55; x_wconf 89' lang='eng' dir='ltr'>quick</span>
+      <span class='ocrx_word' id='word_1_3' title='bbox 235 9 365 45; x_wconf 94' lang='eng' dir='ltr'>brown</span>
+      <span class='ocrx_word' id='word_1_4' title='bbox 383 9 449 45; x_wconf 94' lang='eng' dir='ltr'>fox</span>
      </span>
     </p>
    </div>

@@ -21,7 +21,12 @@ my $hocr = <<'EOS';
 <div class='ocr_page' id='page_1' title='image "test.tif"; bbox 0 0 422 61'>
 <div class='ocr_carea' id='block_1_1' title="bbox 1 14 420 59">
 <p class='ocr_par'>
-<span class='ocr_line' id='line_1_1' title="bbox 1 14 420 59"><span class='ocr_word' id='word_1_1' title="bbox 1 14 77 48"><span class='xocr_word' id='xword_1_1' title="x_wconf -3">The</span></span> <span class='ocr_word' id='word_1_2' title="bbox 92 14 202 59"><span class='xocr_word' id='xword_1_2' title="x_wconf -3">quick</span></span> <span class='ocr_word' id='word_1_3' title="bbox 214 14 341 48"><span class='xocr_word' id='xword_1_3' title="x_wconf -3">brown</span></span> <span class='ocr_word' id='word_1_4' title="bbox 355 14 420 48"><span class='xocr_word' id='xword_1_4' title="x_wconf -4">fox</span></span></span>
+<span class='ocr_line' id='line_1_1' title="bbox 1 14 420 59">
+ <span class='ocr_word' id='word_1_1' title="bbox 1 14 77 48"><span class='xocr_word' id='xword_1_1' title="x_wconf -3">The</span></span>
+ <span class='ocr_word' id='word_1_2' title="bbox 92 14 202 59"><span class='xocr_word' id='xword_1_2' title="x_wconf -3">quick</span></span>
+ <span class='ocr_word' id='word_1_3' title="bbox 214 14 341 48"><span class='xocr_word' id='xword_1_3' title="x_wconf -3">brown</span></span>
+ <span class='ocr_word' id='word_1_4' title="bbox 355 14 420 48"><span class='xocr_word' id='xword_1_4' title="x_wconf -4">fox</span></span>
+</span>
 </p>
 </div>
 </div>
@@ -612,7 +617,12 @@ $hocr = <<'EOS';
    </div>
    <div class='ocr_carea' id='block_1_2' title="bbox 0 181 541 227">
     <p class='ocr_par' id='par_1_2' lang='eng' title="bbox 0 181 541 227">
-     <span class='ocr_line' id='line_1_3' title="bbox 0 181 541 227; baseline 0 -10; x_size 46; x_descenders 10; x_ascenders 10"><span class='ocrx_word' id='word_1_5' title='bbox 0 181 132 227; x_wconf 90'>jumps</span> <span class='ocrx_word' id='word_1_6' title='bbox 150 191 246 217; x_wconf 90'>over</span> <span class='ocrx_word' id='word_1_7' title='bbox 261 181 328 217; x_wconf 90'>the</span> <span class='ocrx_word' id='word_1_8' title='bbox 347 181 432 227; x_wconf 90'>lazy</span> <span class='ocrx_word' id='word_1_9' title='bbox 449 181 541 227; x_wconf 93'>dog.</span>
+     <span class='ocr_line' id='line_1_3' title="bbox 0 181 541 227; baseline 0 -10; x_size 46; x_descenders 10; x_ascenders 10">
+      <span class='ocrx_word' id='word_1_5' title='bbox 0 181 132 227; x_wconf 90'>jumps</span>
+      <span class='ocrx_word' id='word_1_6' title='bbox 150 191 246 217; x_wconf 90'>over</span>
+      <span class='ocrx_word' id='word_1_7' title='bbox 261 181 328 217; x_wconf 90'>the</span>
+      <span class='ocrx_word' id='word_1_8' title='bbox 347 181 432 227; x_wconf 90'>lazy</span>
+      <span class='ocrx_word' id='word_1_9' title='bbox 449 181 541 227; x_wconf 93'>dog.</span>
      </span>
     </p>
    </div>
