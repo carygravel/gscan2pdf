@@ -26,6 +26,9 @@ for (@argv) {
     elsif (m!SHAREDIR=(.+)!i) {
         $sharedir = $1;
     }
+    elsif (m!LOCALEDIR=(.+)!i) {
+        $localedir = $1;
+    }
     else {
         push @ARGV, $_;
     }

@@ -12,7 +12,6 @@
 # 1. New screendump required? Print screen creates screenshot.png in Desktop.
 #    Download new translations (https://translations.launchpad.net/gscan2pdf)
 #    Update translators in credits (https://launchpad.net/gscan2pdf/+topcontributors)
-#    Check a locale with LC_ALL=de_DE LC_MESSAGES=de_DE LC_CTYPE=de_DE LANG=de_DE LANGUAGE=de_DE bin/gscan2pdf --log=log --locale=<wherever the locale directory is>
 #    Check $VERSION. If necessary bump with something like
 #     xargs sed -i "s/\(\$VERSION *= \)'2\.12\.3'/\1'2.12.4'/" < MANIFEST
 #    Make appropriate updates to ../debian/changelog
@@ -877,6 +876,7 @@ sub parse_arguments {
     my $log_conf = <<'EOS';
  log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
  log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
+ log4perl.appender.Screen.utf8   = 1
 EOS
 
     if ( defined $log ) {
@@ -885,6 +885,7 @@ EOS
  log4perl.appender.Logfile.filename = $log
  log4perl.appender.Logfile.mode     = write
  log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
+ log4perl.appender.Logfile.utf8     = 1
  log4perl.category                  = $log_level, Logfile, Screen
 EOS
     }
@@ -7956,6 +7957,29 @@ the source code L<http://www.sane-project.org/cvs.html>.
 Alternatively, Ubuntu has its own translation project. For the 9.04 release, the
 translations are available at
 L<https://translations.launchpad.net/ubuntu/jaunty/+source/sane-backends/+pots/sane-backends>
+
+If you have updated an C<.po> file in the C<po> directory of the gscan2pdf source tree
+and would like to test it, pick a test directory for the compiled locales, e.g.
+C<./locale>, and create the C<.mo> files with:
+
+C<perl Makefile.PL LOCALEDIR=./locale>
+
+If the updated locale is your standard one, then the following will find the
+updated file:
+
+C<perl -I lib bin/gscan2pdf --log=log --locale=locale>
+
+If it is not your standard locale, you will need something like (for Russian):
+
+C<LC_ALL=ru_RU.utf8 LC_MESSAGES=ru_RU.utf8 LC_CTYPE=ru_RU.utf8 LANG=ru_RU.utf8 LANGUAGE=ru_RU.utf8 perl -I lib bin/gscan2pdf --log=log --locale=locale>
+
+or German:
+
+C<LC_ALL=de_DE LC_MESSAGES=de_DE LC_CTYPE=de_DE LANG=de_DE LANGUAGE=de_DE perl -I lib bin/gscan2pdf --log=log --locale=locale>
+
+If the above doesn't work, make sure it is in the list produced by C<locale -a>,
+including any C<.utf8> suffix. If necessary, generate new locales with
+C<sudo dpkg-reconfigure locales>
 
 =head1 DESCRIPTION
 
