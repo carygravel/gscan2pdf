@@ -4544,11 +4544,11 @@ sub add_postprocessing_ocr {
     $hboxt->pack_end( $labelp, FALSE, TRUE, 0 );
     my $spinbutton = Gtk3::SpinButton->new_with_range( 0, $_100_PERCENT, 1 );
     $spinbutton->set_value( $SETTING{'threshold tool'} );
-    $spinbutton->set_sensitive( $cbto->get_active ? TRUE : FALSE );
+    $spinbutton->set_sensitive( $cbto->get_active );
     $hboxt->pack_end( $spinbutton, FALSE, TRUE, 0 );
     $cbto->signal_connect(
         toggled => sub {
-            $spinbutton->set_sensitive( $cbto->get_active ? TRUE : FALSE );
+            $spinbutton->set_sensitive( $cbto->get_active );
         }
     );
 
@@ -6326,11 +6326,11 @@ sub ocr_dialog {
     $hboxt->pack_end( $labelp, FALSE, TRUE, 0 );
     my $spinbutton = Gtk3::SpinButton->new_with_range( 0, $_100_PERCENT, 1 );
     $spinbutton->set_value( $SETTING{'threshold tool'} );
-    $spinbutton->set_sensitive( $cbto->get_active ? TRUE : FALSE );
+    $spinbutton->set_sensitive( $cbto->get_active );
     $hboxt->pack_end( $spinbutton, FALSE, TRUE, 0 );
     $cbto->signal_connect(
         toggled => sub {
-            $spinbutton->set_sensitive( $cbto->get_active ? TRUE : FALSE );
+            $spinbutton->set_sensitive( $cbto->get_active );
         }
     );
 

@@ -533,7 +533,7 @@ sub get_option {
                 }
             }
             when ('CheckButton') {
-                return $hashref->{$option}{widget}->get_active ? TRUE : FALSE;
+                return $hashref->{$option}{widget}->get_active;
             }
             when ('SpinButton') {
                 return $hashref->{$option}{widget}->get_value;

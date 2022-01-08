@@ -2026,8 +2026,7 @@ sub valid_renumber {
 
     # if we are renumbering all pages, just make sure the numbers stay positive
     if ( $selection eq 'all' ) {
-        return ( $start + $#{ $self->{data} } * $step > 0 ) ? TRUE : FALSE
-          if ( $step < 0 );
+        return ( $start + $#{ $self->{data} } * $step > 0 ) if ( $step < 0 );
         return TRUE;
     }
 
@@ -2208,7 +2207,7 @@ sub _program_version {
 sub check_command {
     my ($cmd) = @_;
     my ( undef, $exe ) = exec_command( [ 'which', $cmd ] );
-    return ( defined $exe and $exe ne $EMPTY ? TRUE : FALSE );
+    return ( defined $exe and $exe ne $EMPTY );
 }
 
 # Compute a timestamp
