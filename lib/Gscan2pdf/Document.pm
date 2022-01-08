@@ -4271,7 +4271,7 @@ sub _add_txt_to_djvu {
 
         # Run djvusedtxtfile
         my @cmd = (
-            'djvused', $djvu, '-e', "select 1; set-txt $djvusedtxtfile", '-s'
+            'djvused', $djvu, '-e', "select 1; set-txt $djvusedtxtfile", '-s',
         );
         my ($status) = exec_command( \@cmd, $pagedata->{pidfile} );
         return if $_self->{cancel};
@@ -4306,7 +4306,7 @@ sub _add_ann_to_djvu {
 
         # Run djvusedtxtfile
         my @cmd = (
-            'djvused', $djvu, '-e', "select 1; set-ant $djvusedtxtfile", '-s'
+            'djvused', $djvu, '-e', "select 1; set-ant $djvusedtxtfile", '-s',
         );
         my ($status) = exec_command( \@cmd, $pagedata->{pidfile} );
         return if $_self->{cancel};
