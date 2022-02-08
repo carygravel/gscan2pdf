@@ -20,6 +20,7 @@ use Image::Sane ':all';    # To get SANE_NAME_PAGE_WIDTH & SANE_NAME_PAGE_HEIGHT
 use Cwd;
 use File::Spec;
 use Readonly;
+use version;
 Readonly my $_POLL_INTERVAL               => 100;    # ms
 Readonly my $_100                         => 100;
 Readonly my $_1KB                         => 1024;
@@ -45,9 +46,9 @@ sub setup {
         finished_callback => sub {
             my ( $output, $error ) = @_;
             if ( $output =~
-                /scanimage\s[(]sane-backends[)]\s\d+[.]\d+[.](\d+)/xsm )
+                /scanimage\s[(]sane-backends[)]\s(\d+[.]\d+[.]\d+)/xsm )
             {
-                $_self->{version} = $1;
+                $_self->{version} = version->parse($1);
             }
         }
     );
@@ -334,7 +335,7 @@ sub _create_scanimage_cmd {
         }
     }
     if ( not $help ) {
-        if ( defined $_self->{version} and $_self->{version} gt '27' ) {
+        if ( defined $_self->{version} and $_self->{version} > v1.0.27 ) {
             push @options, '--format=pnm';
         }
         push @options, '--batch';
