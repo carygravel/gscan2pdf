@@ -4,7 +4,7 @@ gscan2pdf (2.12.5-1) unstable; urgency=high
     Closes: #1005576: gscan2pdf: FTBFS: dh_auto_test: error:
                             make -j4 test TEST_VERBOSE=1 returned exit code 2
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Tue, 15 Feb 2022 19:21:52 +0100
 
 gscan2pdf (2.12.4-1) unstable; urgency=medium
 
