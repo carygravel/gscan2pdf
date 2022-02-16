@@ -5232,14 +5232,12 @@ sub handle_clicks {
     if ( $event->button == $RIGHT_MOUSE_BUTTON ) {
         if ( $widget->isa('Gtk3::ImageView') ) {    # main image
             $uimanager->get_widget('/Detail_Popup')
-              ->popup( undef, undef, undef, undef, $event->button,
-                $event->time );
+              ->popup_at_pointer( $event );
         }
         else {                                      # Thumbnail simplelist
             $SETTING{'Page range'} = 'selected';
             $uimanager->get_widget('/Thumb_Popup')
-              ->popup( undef, undef, undef, undef, $event->button,
-                $event->time );
+              ->popup_at_pointer( $event );
         }
 
         # block event propagation
