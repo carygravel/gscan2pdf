@@ -3,6 +3,7 @@
 * Fixed "Wide character in print" warnings in log file.
 * Fixed parsing version from sane-backends v1.1.1.
   Closes bug #399 (Parsing scanimage version is broken for sane-backends-1.1.1)
+  Thanks to Petr Písař for the patch.
 * Update to Russian translation (thanks to Aleksandr Proklov)
 * Update to Italian translation (thanks to Silvio Brera)
 * Update to Ukrainian translation (thanks to Yuri Chornoivan)
