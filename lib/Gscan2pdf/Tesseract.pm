@@ -25,7 +25,15 @@ my ( %languages, %installable_languages, $installed, $setup, $version,
 # Taken from
 # https://github.com/tesseract-ocr/tesseract/blob/master/doc/tesseract.1.asc#languages
 my @installable_languages =
-  qw(afr amh ara asm aze aze-cyrl bel ben bod bos bre bul cat ceb ces chi-sim chi-sim-vert chi-tra chi-tra-vert chr cos cym dan dan-frak deu deu-frak div dzo ell eng enm epo equ est eus fao fas fil fin fra frk frm fry gla gle gle-uncial glg grc guj hat heb hin hrv hun hye iku ind isl ita ita-old jav jpn jpn-vert kan kat kat-old kaz khm kir kmr kor kor-vert lao lat lav lit ltz mal mar mkd mlt mon mri msa mya nep nld nor oci ori pan pol por pus que ron rus san sin slk slk-frak slv snd spa spa_old sqi srp srp_latn sun swa swe swe-frak syr tam tat tel tgk tgl tha tir ton tur uig ukr urd uzb uzb_cyrl vie yid yor);
+  qw(afr amh ara asm aze aze-cyrl bel ben bod bos bre bul cat ceb ces chi-sim
+  chi-sim-vert chi-tra chi-tra-vert chr cos cym dan dan-frak deu deu-frak div
+  dzo ell eng enm epo equ est eus fao fas fil fin fra frk frm fry gla gle
+  gle-uncial glg grc guj hat heb hin hrv hun hye iku ind isl ita ita-old jav
+  jpn jpn-vert kan kat kat-old kaz khm kir kmr kor kor-vert lao lat lav lit
+  ltz mal mar mkd mlt mon mri msa mya nep nld nor oci ori pan pol por pus que
+  ron rus san sin slk slk-frak slv snd spa spa_old sqi srp srp_latn sun swa
+  swe swe-frak syr tam tat tel tgk tgl tha tir ton tur uig ukr urd uzb
+  uzb_cyrl vie yid yor);
 my %non_iso639_3 = (
     'aze-cyrl'     => 'Azerbaijani (Cyrillic)',
     'chi-sim'      => 'Simplified Chinese',
