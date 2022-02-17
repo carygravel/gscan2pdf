@@ -1,4 +1,4 @@
-2.12.5 (20.12.2021):
+2.12.5 (15.02.2022):
 
 * Fixed "Wide character in print" warnings in log file.
 * Fixed parsing version from sane-backends v1.1.1.
