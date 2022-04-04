@@ -3,7 +3,7 @@ gscan2pdf (2.12.6-1) unstable; urgency=medium
   * New upstream release
     Closes: #1008724: date out of range after changing date before saving
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sun, 03 Apr 2022 13:07:50 +0200
 
 gscan2pdf (2.12.5-1) unstable; urgency=high
 

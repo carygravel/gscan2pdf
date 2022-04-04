@@ -13,7 +13,7 @@
 #    Download new translations (https://translations.launchpad.net/gscan2pdf)
 #    Update translators in credits (https://launchpad.net/gscan2pdf/+topcontributors)
 #    Check $VERSION. If necessary bump with something like
-#     xargs sed -i "s/\(\$VERSION *= \)'2\.12\.4'/\1'2.12.5'/" < MANIFEST
+#     xargs sed -i "s/\(\$VERSION *= \)'2\.12\.5'/\1'2.12.6'/" < MANIFEST
 #    Make appropriate updates to ../debian/changelog
 # 2.  perl Makefile.PL
 #     Upload .pot
@@ -158,7 +158,7 @@ Glib::set_application_name('gscan2pdf');
 Glib::Object::Introspection->invoke( 'GLib', undef, 'set_prgname',
     'net.sourceforge.gscan2pdf' );
 my $prog_name = Glib::get_application_name;
-my $VERSION   = '2.12.5';
+my $VERSION   = '2.12.6';
 
 # Image border to ensure that a scaled to fit image gets no scrollbars
 my $border = 1;
