@@ -1,3 +1,10 @@
+2.12.6 (03.04.2022):
+
+* Fixed crash saving document with date before 1970.
+  Closes Debian bug #1008724
+  (date out of range after changing date before saving)
+
+
 2.12.5 (15.02.2022):
 
 * Fixed "Wide character in print" warnings in log file.

@@ -2811,11 +2811,8 @@ sub update_metadata_settings {
                 text    => $msg,
             );
         };
-        $SETTING{'timezone offset'} = [
-            Gscan2pdf::Document::delta_timezone(
-                Timezone(), Timezone( Date_to_Time( @{$datetime} ) )
-            )
-        ];
+        $SETTING{'timezone offset'} =
+          [ Gscan2pdf::Document::delta_timezone_to_current($datetime) ];
     }
     return $success;
 }

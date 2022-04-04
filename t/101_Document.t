@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use IPC::System::Simple qw(system);
-use Test::More tests => 68;
+use Test::More tests => 70;
 use Glib 1.210 qw(TRUE FALSE);
 use Gtk3 -init;    # Could just call init separately
 use Encode;
@@ -375,6 +375,13 @@ is_deeply \@tz2, [ 0, 0, 0, 1, 0, 0, 0 ], 'Add_Delta_Timezone';
 
 @tz_delta = Gscan2pdf::Document::delta_timezone( @tz1, @tz2 );
 is_deeply \@tz_delta, [ 0, 0, 0, -1, 0, 0, -1 ], 'Delta_Timezone';
+
+# can't test exact result, as depends on timezone of test machine
+is Gscan2pdf::Document::delta_timezone_to_current( [ 2016, 1, 1, 2, 2, 2 ] ),
+  7, 'delta_timezone_to_current()';
+is_deeply [
+    Gscan2pdf::Document::delta_timezone_to_current( [ 1966, 1, 1, 2, 2, 2 ] ) ],
+  [ 0, 0, 0, 0, 0, 0, 0 ], 'delta_timezone_to_current() for <1970';
 
 #########################
 

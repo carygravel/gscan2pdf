@@ -65,6 +65,7 @@ Readonly my $ID_URI                       => 0;
 Readonly my $ID_PAGE                      => 1;
 Readonly my $STRFTIME_YEAR_OFFSET         => -1900;
 Readonly my $STRFTIME_MONTH_OFFSET        => -1;
+Readonly my $MIN_YEAR_FOR_DATECALC        => 1970;
 Readonly my $LAST_ELEMENT                 => -1;
 Readonly my $_90_DEGREES                  => 90;
 Readonly my $_270_DEGREES                 => 270;
@@ -2350,6 +2351,17 @@ sub delta_timezone {
         $tz_delta[$i] = $tz2[$i] - $tz1[$i];
     }
     return @tz_delta;
+}
+
+# delta timezone to current. Putting here to be able to test it for dates before 1970.
+
+sub delta_timezone_to_current {
+    my ($datetime) = @_;
+    if ( $datetime->[0] < $MIN_YEAR_FOR_DATECALC ) {
+        return 0, 0, 0, 0, 0, 0, 0;
+    }
+    return delta_timezone( Timezone(),
+        Timezone( Date_to_Time( @{$datetime} ) ) );
 }
 
 sub prepare_output_metadata {
