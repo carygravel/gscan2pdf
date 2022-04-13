@@ -6,13 +6,10 @@ use warnings;
 use feature 'switch';
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use Carp;
-use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
+use Glib qw(TRUE FALSE);             # To get TRUE and FALSE
 use File::Copy;
-use File::Temp;             # To create temporary files
-use HTML::TokeParser;
-use HTML::Entities;
+use File::Temp;                      # To create temporary files
 use Image::Magick;
-use Encode qw(decode_utf8 encode_utf8);
 use POSIX qw(locale_h);
 use Data::UUID;
 use English qw( -no_match_vars );    # for $ERRNO
