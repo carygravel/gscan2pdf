@@ -6,7 +6,6 @@ no if $] >= 5.018, warnings => 'experimental::smartmatch';
 use Carp;
 use Glib qw(TRUE FALSE);    # To get TRUE and FALSE
 use Image::Sane ':all';     # For enums
-use Storable qw(dclone);    # For cloning the options cache
 use feature 'switch';
 use Readonly;
 Readonly my $MAX_VALUES  => 255;
