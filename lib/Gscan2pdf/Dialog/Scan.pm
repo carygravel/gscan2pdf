@@ -296,7 +296,7 @@ use Glib::Object::Subclass Gscan2pdf::Dialog::, signals => {
     ),
   ];
 
-our $VERSION = '2.12.6';
+our $VERSION = '2.12.7';
 
 my ( $d_sane, $logger );
 my $SANE_NAME_SCAN_TL_X   = SANE_NAME_SCAN_TL_X;
