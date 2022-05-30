@@ -4445,7 +4445,7 @@ sub add_postprocessing_udt {
         $hboxudt->set_sensitive(FALSE);
         $udtbutton->set_active(FALSE);
     }
-    elsif ( $SETTING{udf_on_scan} ) {
+    elsif ( $SETTING{udt_on_scan} ) {
         $udtbutton->set_active(TRUE);
     }
     return $udtbutton, add_udt_combobox($hboxudt);

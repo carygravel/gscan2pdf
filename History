@@ -1,3 +1,8 @@
+2.12.7 (29.05.2022):
+
+* Fixed bug restoring user-defined tool on scan dialog.
+
+
 2.12.6 (03.04.2022):
 
 * Fixed crash saving document with date before 1970.
