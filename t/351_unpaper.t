@@ -88,8 +88,10 @@ SKIP: {
 
                         # if we use unlike, we no longer
                         # know how many tests there will be
-                        if ( $msg !~
-/(deprecated|Encoder did not produce proper pts, making some up)/
+                        if ( $msg !~ /( deprecated |
+                            \Qdoes not contain an image sequence pattern\E |
+                            \QEncoder did not produce proper pts, making some up\E |
+                            \Quse the -update option\E )/x
                           )
                         {
                             fail 'no warnings';
