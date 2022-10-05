@@ -1354,6 +1354,11 @@ sub create_menu_bar {
             sub { select_odd_even(1); }
         ],
         [
+            'Invert selection',     undef,
+            __('_Invert'),          '<control>i',
+            __('Invert selection'), \&select_invert
+        ],
+        [
             'Select Blank',
             'gtk-select-blank',
             __('_Blank'),
@@ -1590,6 +1595,7 @@ sub create_menu_bar {
     <menuitem action='Select All'/>
     <menuitem action='Select Odd'/>
     <menuitem action='Select Even'/>
+    <menuitem action='Invert selection'/>
     <menuitem action='Select Blank'/>
     <menuitem action='Select Dark'/>
     <menuitem action='Select Modified'/>
@@ -1715,6 +1721,7 @@ sub create_menu_bar {
   <menuitem action='Select All'/>
   <menuitem action='Select Odd'/>
   <menuitem action='Select Even'/>
+  <menuitem action='Invert selection'/>
   <separator/>
   <menuitem action='Rotate 90'/>
   <menuitem action='Rotate 180'/>
@@ -4848,6 +4855,22 @@ sub select_odd_even {
         if ( $slist->{data}[$_][0] % 2 xor $odd ) { push @selection, $_ }
     }
 
+    $slist->get_selection->unselect_all;
+    $slist->select(@selection);
+    return;
+}
+
+# Invert selection
+
+sub select_invert {
+    my @selection = $slist->get_selected_indices;
+    my %selection = map { $_ => 1 } @selection;
+    @selection = ();
+    for ( 0 .. $#{ $slist->{data} } ) {
+        if ( not $selection{$_} ) {
+            push @selection, $_;
+        }
+    }
     $slist->get_selection->unselect_all;
     $slist->select(@selection);
     return;

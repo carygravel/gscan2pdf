@@ -1,3 +1,9 @@
+2.13.0 (15.10.2022):
+
+* + Edit/Select/Invert menu item to invert selected pages.
+  Closes Debian bug #1008717 (Feature request: invert selection)
+
+
 2.12.8 (11.07.2022):
 
 * Fixed right-click pop-up behaviour with Wayland
