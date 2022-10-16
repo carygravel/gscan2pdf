@@ -2810,7 +2810,7 @@ sub _thread_get_file_info {
 
     $logger->info("Getting info for $options{filename}");
     ( undef, my $format ) =
-      exec_command( [ 'file', '-b', $options{filename} ] );
+      exec_command( [ 'file', '-Lb', $options{filename} ] );
     chomp $format;
     $logger->info("Format: '$format'");
 

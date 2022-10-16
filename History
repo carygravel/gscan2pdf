@@ -1,3 +1,9 @@
+2.13.1 (15.11.2022):
+
+* Fixed opening soft link to TIFF
+  Closes bug #406 (Cannot read linked files)
+
+
 2.13.0 (15.10.2022):
 
 * + Edit/Select/Invert menu item to invert selected pages.
