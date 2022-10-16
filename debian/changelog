@@ -3,7 +3,7 @@ gscan2pdf (2.13.0-1) unstable; urgency=medium
   * New upstream release
     Closes: #1008717: Feature request: invert selection
 
- --
+ -- Jeffrey Ratcliffe <jjr@debian.org>  Sat, 15 Oct 2022 08:01:05 +0200
 
 gscan2pdf (2.12.8-2) unstable; urgency=medium
 

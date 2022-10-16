@@ -5,7 +5,7 @@ use warnings;
 use POSIX qw/ceil/;
 use Readonly;
 Readonly my $EMPTY_LIST => -1;
-our $VERSION = '2.12.8';
+our $VERSION = '2.13.0';
 
 sub new {
     my ($class) = @_;

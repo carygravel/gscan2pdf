@@ -26,7 +26,7 @@ BEGIN {
     $EMPTY = q{};
 }
 my $SPACE = q{ };
-our $VERSION = '2.12.8';
+our $VERSION = '2.13.0';
 
 use Glib::Object::Subclass GooCanvas2::CanvasGroup::, signals => {
     'text-changed' => {
