@@ -2,6 +2,7 @@
 
 * Fixed opening soft link to TIFF
   Closes bug #406 (Cannot read linked files)
+* Update to Hungarian translation (thanks to csola)
 
 
 2.13.0 (15.10.2022):
